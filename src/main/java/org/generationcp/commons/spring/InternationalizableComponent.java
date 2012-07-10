@@ -11,7 +11,7 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.ibpworkbench.spring;
+package org.generationcp.commons.spring;
 
 public interface InternationalizableComponent {
     

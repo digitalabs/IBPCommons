@@ -10,7 +10,7 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.ibpworkbench.spring;
+package org.generationcp.commons.spring;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;

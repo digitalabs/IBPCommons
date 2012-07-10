@@ -10,7 +10,7 @@
  * 
  *******************************************************************************/
 
-package org.generationcp.ibpworkbench.util;
+package org.generationcp.commons.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
