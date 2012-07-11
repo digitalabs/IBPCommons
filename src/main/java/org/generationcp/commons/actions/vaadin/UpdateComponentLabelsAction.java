@@ -1,4 +1,4 @@
-package org.generationcp.commons.actions;
+package org.generationcp.commons.actions.vaadin;
 
 import java.util.Collection;
 import java.util.Locale;
