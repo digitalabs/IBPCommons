@@ -21,6 +21,7 @@ import java.util.Locale;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.vaadin.data.Property;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 
@@ -86,6 +87,14 @@ public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSour
     
     public void setCaption(Component component, Enum<?> messageCode) {
         component.setCaption(getMessage(messageCode.name()));
+    }
+    
+    public void setDescription(AbstractComponent abstractComponent, String messageCode) {
+    	abstractComponent.setDescription(getMessage(messageCode));
+    }
+    
+    public void setDescription(AbstractComponent abstractComponent, Enum<?> messageCode) {
+    	abstractComponent.setDescription(getMessage(messageCode.name()));
     }
     
     public void setColumnHeader(Table table, String propertyId, String messageCode) {
