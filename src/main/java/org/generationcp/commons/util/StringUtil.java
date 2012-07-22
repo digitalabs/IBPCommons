@@ -321,4 +321,12 @@ public abstract class StringUtil{
 
         return sb.toString();
     }
+    
+    public static boolean isEmpty(String s) {
+        return s == null || s.length() == 0;
+    }
+    
+    public static boolean isEmptyOrWhitespaceOnly(String s) {
+        return isEmpty(s) || s.matches("\\s+");
+    }
 }
