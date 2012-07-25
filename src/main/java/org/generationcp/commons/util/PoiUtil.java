@@ -16,6 +16,7 @@ import java.awt.Point;
 import java.util.Date;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -339,5 +340,24 @@ public class PoiUtil{
         int col = getColumnIndex(columnName);
 
         return new Point(row, col);
+    }
+    
+    /**
+     * Creates a cell and aligns it a certain way.
+     * 
+     * From: http://poi.apache.org/spreadsheet/quick-guide.html#Alignment
+     *
+     * @param wb     the workbook
+     * @param row    the row to create the cell in
+     * @param column the column number to create the cell in
+     * @param halign the horizontal alignment for the cell.
+     */
+    public static Cell createCell(Workbook wb, Row row, short column, short halign, short valign) {
+        Cell cell = row.createCell(column);
+        CellStyle cellStyle = wb.createCellStyle();
+        cellStyle.setAlignment(halign);
+        cellStyle.setVerticalAlignment(valign);
+        cell.setCellStyle(cellStyle);
+        return cell;
     }
 }
