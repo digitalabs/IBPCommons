@@ -1,5 +1,6 @@
 package org.generationcp.commons.vaadin.actions;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Queue;
@@ -13,7 +14,9 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Window;
 
-public class UpdateComponentLabelsAction implements SimpleResourceBundleMessageSourceListener {
+public class UpdateComponentLabelsAction implements Serializable, SimpleResourceBundleMessageSourceListener {
+
+    private static final long serialVersionUID = 1L;
     private Application application;
     
     public UpdateComponentLabelsAction(Application application) {
