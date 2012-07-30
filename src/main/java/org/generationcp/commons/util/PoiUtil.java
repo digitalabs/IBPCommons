@@ -28,7 +28,7 @@ import org.apache.poi.ss.util.CellUtil;
  * @author Glenn Marintes
  */
 public class PoiUtil{
-
+    
     // WorkBook convenience methods
     public static void setRepeatingRows(Workbook workBook, int sheetIndex, int fromRow, int toRow) {
         workBook.setRepeatingRowsAndColumns(sheetIndex, -1, -1, fromRow, toRow);
@@ -345,16 +345,15 @@ public class PoiUtil{
     /**
      * Creates a cell and aligns it a certain way.
      * 
-     * From: http://poi.apache.org/spreadsheet/quick-guide.html#Alignment
+     * based from: http://poi.apache.org/spreadsheet/quick-guide.html#Alignment
      *
-     * @param wb     the workbook
+     * @param cellStyle cell style object to use
      * @param row    the row to create the cell in
      * @param column the column number to create the cell in
      * @param halign the horizontal alignment for the cell.
      */
-    public static Cell createCell(Workbook wb, Row row, short column, short halign, short valign) {
+    public static Cell createCell(CellStyle cellStyle, Row row, short column, short halign, short valign) {
         Cell cell = row.createCell(column);
-        CellStyle cellStyle = wb.createCellStyle();
         cellStyle.setAlignment(halign);
         cellStyle.setVerticalAlignment(valign);
         cell.setCellStyle(cellStyle);
