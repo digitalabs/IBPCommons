@@ -12,6 +12,7 @@
 
 package org.generationcp.commons.exceptions;
 
+import org.generationcp.commons.util.StringUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,6 +35,8 @@ public class InternationalizableException extends RuntimeException implements In
     private String caption;
     
     private String description;
+    
+    private Object[] descParameters;
 
     /** The internationalization code for caption. */
     private Enum<?> i18nCaption;
@@ -72,6 +75,11 @@ public class InternationalizableException extends RuntimeException implements In
         this.i18nCaption = i18nCaption;
         this.i18nDescription = i18nDescription;
     }
+    
+    public InternationalizableException(Throwable t, Enum<?> i18nCaption, Enum<?> i18nDescription, Object... descParameters) {
+        this(t, i18nCaption, i18nDescription);
+        this.descParameters = descParameters;
+    }
 
     /**
      * Gets the caption.
@@ -107,7 +115,7 @@ public class InternationalizableException extends RuntimeException implements In
      */
     public String getDescription() {
         String toReturn = null;
-        if (description != null && !description.equals("")) {
+        if (!StringUtil.isEmpty(description)) {
             toReturn = "</br>" + description;
         } 
         return toReturn;
@@ -130,6 +138,10 @@ public class InternationalizableException extends RuntimeException implements In
     public void setDescription(Enum<?> code) {
         this.description = messageSource.getMessage(code);
     }
+    
+    public void setDescription(Enum<?> code, Object... descParameters) {
+        this.description = messageSource.getMessage(code, descParameters);
+    }
 
     /* (non-Javadoc)
      * @see org.generationcp.commons.vaadin.spring.InternationalizableComponent#updateLabels()
@@ -147,7 +159,11 @@ public class InternationalizableException extends RuntimeException implements In
             this.caption = messageSource.getMessage(i18nCaption);
         }
         if (i18nDescription != null){
-            this.description = messageSource.getMessage(i18nDescription);
+            if (descParameters != null) {
+                this.description = messageSource.getMessage(i18nDescription, descParameters);
+            } else {
+                this.description = messageSource.getMessage(i18nDescription);
+            }
         }
     }
 
