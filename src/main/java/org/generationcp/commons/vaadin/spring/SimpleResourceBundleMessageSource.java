@@ -61,11 +61,11 @@ public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSour
         return super.getMessage(code.name(), null, locale);
     }
     
-    public String getMessage(String code, Object[] args) {
+    public String getMessage(String code, Object... args) {
         return super.getMessage(code, args, locale);
     }
     
-    public String getMessage(Enum<?> code, Object[] args) {
+    public String getMessage(Enum<?> code, Object... args) {
         return super.getMessage(code.name(), args, locale);
     }
     
