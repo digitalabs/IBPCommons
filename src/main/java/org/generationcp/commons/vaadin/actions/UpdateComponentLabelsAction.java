@@ -2,10 +2,10 @@ package org.generationcp.commons.vaadin.actions;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Queue;
 
-import org.eclipse.jetty.util.ArrayQueue;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSourceListener;
 
@@ -37,7 +37,7 @@ public class UpdateComponentLabelsAction implements Serializable, SimpleResource
             }
             
             // update the labels on the child components
-            Queue<Component> childComponents = new ArrayQueue<Component>();
+            Queue<Component> childComponents = new LinkedList<Component>();
             while (window.getComponentIterator().hasNext()) {
                 Component component = window.getComponentIterator().next();
                 childComponents.add(component);
