@@ -15,7 +15,7 @@ package org.generationcp.commons.breedingview.xml;
 
 
 public enum ProjectType {
-    FIELD_TRIAL("Field Trial");
+    FIELD_TRIAL("field trial");
     
     private final String name;
     
