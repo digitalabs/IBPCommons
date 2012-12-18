@@ -13,21 +13,34 @@
  **************************************************************/
 package org.generationcp.commons.breedingview.xml;
 
+import java.io.Serializable;
 
-public enum DesignType {
-    RANDOMIZED_BLOCK_DESIGN("Randomized block design")
-    ,INCOMPLETE_BLOCK_DESIGN("Incomplete block design")
-    ,RESOLVABLE_INCOMPLETE_BLOCK_DESIGN("Resolvable incomplete block design")
-    ,ROW_COLUMN_DESIGN("Row-column design")
-    ,RESOLVABLE_ROW_COLUMN_DESIGN("Resolvable row-column design");
+import javax.xml.bind.annotation.XmlAttribute;
+
+
+public class EnvironmentLabel implements Serializable{
+
+    private static final long serialVersionUID = 6406971480443840786L;
     
-    private final String name;
+    private String name;
+    private boolean subset;
     
-    private DesignType(String name){
+    @XmlAttribute
+    public String getName() {
+        return name;
+    }
+    
+    public void setName(String name) {
         this.name = name;
     }
     
-    public String getName(){
-        return this.name;
+    @XmlAttribute
+    public boolean isSubset() {
+        return subset;
     }
+    
+    public void setSubset(boolean subset) {
+        this.subset = subset;
+    }
+    
 }

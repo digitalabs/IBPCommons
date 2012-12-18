@@ -19,12 +19,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-@XmlType(propOrder = {"traits", "genotypes", "blocks", "replicates", "fieldbook"})
+@XmlType(propOrder = {"traits", "environments", "genotypes", "blocks", "replicates", "fieldbook"})
 public class Phenotypic implements Serializable{
 
     private static final long serialVersionUID = 4607799676192587392L;
 
     private List<Trait> traits;
+    private Environment environments;
     private Genotypes genotypes;
     private Blocks blocks;
     private Replicates replicates;
@@ -38,7 +39,16 @@ public class Phenotypic implements Serializable{
     public void setTraits(List<Trait> traits) {
         this.traits = traits;
     }
+
+    @XmlElement(name = "Environments")
+    public Environment getEnvironments() {
+        return environments;
+    }
     
+    public void setEnvironments(Environment environments) {
+        this.environments = environments;
+    }
+
     @XmlElement(name = "Genotypes")
     public Genotypes getGenotypes() {
         return genotypes;

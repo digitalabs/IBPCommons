@@ -22,6 +22,8 @@ import javax.xml.bind.Marshaller;
 import org.generationcp.commons.breedingview.xml.Blocks;
 import org.generationcp.commons.breedingview.xml.BreedingViewProject;
 import org.generationcp.commons.breedingview.xml.BreedingViewProjectType;
+import org.generationcp.commons.breedingview.xml.Environment;
+import org.generationcp.commons.breedingview.xml.EnvironmentLabel;
 import org.generationcp.commons.breedingview.xml.Fieldbook;
 import org.generationcp.commons.breedingview.xml.Genotypes;
 import org.generationcp.commons.breedingview.xml.Phenotypic;
@@ -56,6 +58,14 @@ public class TestBreedingViewProjectXml{
         trait3.setActive(true);
         traits.add(trait3);
         
+        EnvironmentLabel envLabel = new EnvironmentLabel();
+        envLabel.setName("HN96b");
+        envLabel.setSubset(true);
+        
+        Environment environments = new Environment();
+        environments.setName("E");
+        environments.setLabel(envLabel);
+        
         Genotypes genotypes = new Genotypes();
         genotypes.setName("Genotype");
         
@@ -70,6 +80,7 @@ public class TestBreedingViewProjectXml{
         
         Phenotypic phenotypic = new Phenotypic();
         phenotypic.setTraits(traits);
+        phenotypic.setEnvironments(environments);
         phenotypic.setGenotypes(genotypes);
         phenotypic.setBlocks(blocks);
         phenotypic.setReplicates(replicates);
