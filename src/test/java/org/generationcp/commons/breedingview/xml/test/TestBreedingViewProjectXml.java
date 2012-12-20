@@ -22,12 +22,14 @@ import javax.xml.bind.Marshaller;
 import org.generationcp.commons.breedingview.xml.Blocks;
 import org.generationcp.commons.breedingview.xml.BreedingViewProject;
 import org.generationcp.commons.breedingview.xml.BreedingViewProjectType;
+import org.generationcp.commons.breedingview.xml.Columns;
 import org.generationcp.commons.breedingview.xml.Environment;
 import org.generationcp.commons.breedingview.xml.EnvironmentLabel;
 import org.generationcp.commons.breedingview.xml.Fieldbook;
 import org.generationcp.commons.breedingview.xml.Genotypes;
 import org.generationcp.commons.breedingview.xml.Phenotypic;
 import org.generationcp.commons.breedingview.xml.Replicates;
+import org.generationcp.commons.breedingview.xml.Rows;
 import org.generationcp.commons.breedingview.xml.Trait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -75,6 +77,12 @@ public class TestBreedingViewProjectXml{
         Replicates replicates = new Replicates();
         replicates.setName("REP");
         
+        Rows rows = new Rows();
+        rows.setName("ROWS");
+        
+        Columns columns = new Columns();
+        columns.setName("COLUMNS");
+        
         Fieldbook fieldbook = new Fieldbook();
         fieldbook.setFile("c:/my documents/fieldbook.xls");
         
@@ -84,6 +92,8 @@ public class TestBreedingViewProjectXml{
         phenotypic.setGenotypes(genotypes);
         phenotypic.setBlocks(blocks);
         phenotypic.setReplicates(replicates);
+        phenotypic.setRows(rows);
+        phenotypic.setColumns(columns);
         phenotypic.setFieldbook(fieldbook);
         
         BreedingViewProjectType projectType = new BreedingViewProjectType();
