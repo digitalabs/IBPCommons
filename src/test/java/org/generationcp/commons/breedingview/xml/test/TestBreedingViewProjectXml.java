@@ -62,6 +62,7 @@ public class TestBreedingViewProjectXml{
         
         EnvironmentLabel envLabel = new EnvironmentLabel();
         envLabel.setName("HN96b");
+        envLabel.setTrial("HN96b");
         envLabel.setSubset(true);
         
         Environment environments = new Environment();

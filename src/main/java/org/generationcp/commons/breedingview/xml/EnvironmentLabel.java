@@ -23,6 +23,7 @@ public class EnvironmentLabel implements Serializable{
     private static final long serialVersionUID = 6406971480443840786L;
     
     private String name;
+    private String trial;
     private boolean subset;
     
     @XmlAttribute
@@ -33,7 +34,16 @@ public class EnvironmentLabel implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
+
+    @XmlAttribute
+    public String getTrial() {
+        return trial;
+    }
     
+    public void setTrial(String trial) {
+        this.trial = trial;
+    }
+
     @XmlAttribute
     public boolean isSubset() {
         return subset;
