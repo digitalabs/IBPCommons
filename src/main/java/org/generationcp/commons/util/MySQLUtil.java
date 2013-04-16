@@ -14,12 +14,15 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Configurable;
+
 
 /**
  * A class that provides methods for backing up and restoring MySQL databases.
  * 
  * @author Glenn Marintes
  */
+@Configurable
 public class MySQLUtil {
     private String mysqlPath;
     private String mysqlDumpPath;
@@ -147,11 +150,14 @@ public class MySQLUtil {
         }
         
         String command = null;
+        
+        String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
+        
         if (StringUtil.isEmpty(password)) {
-            command = String.format("%s -n -c -P %d -u %s %s -r %s", mysqlDumpPath, mysqlPort, username, database, backupFilename);
+            command = String.format("%s -n -c -P %d -u %s %s -r %s",mysqlDumpAbsolutePath, mysqlPort, username, database, backupFilename);
         }
         else {
-            command = String.format("%s -n -c -P %d -u %s -p%s %s -r %s", mysqlDumpPath, mysqlPort, username, password, database, backupFilename);
+            command = String.format("%s -n -c -P %d -u %s -p%s %s -r %s", mysqlDumpAbsolutePath, mysqlPort, username, password, database, backupFilename);
         }
         
         Process process = Runtime.getRuntime().exec(command);
