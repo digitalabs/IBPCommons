@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = {"traits", "environments", "genotypes", "blocks", "replicates"
-        , "rows", "columns", "fieldbook"})
+        , "rows", "columns", "fieldbook", "webApiUrl", "workbenchProjectId", "outputDirectory"})
 public class Phenotypic implements Serializable{
 
     private static final long serialVersionUID = 4607799676192587392L;
@@ -33,7 +33,10 @@ public class Phenotypic implements Serializable{
     private Rows rows;
     private Columns columns;
     private Fieldbook fieldbook;
-    
+    private String webApiUrl;
+    private Long workbenchProjectId;
+    private String outputDirectory;
+
     @XmlElement(name = "Trait")
     public List<Trait> getTraits() {
         return traits;
@@ -105,5 +108,31 @@ public class Phenotypic implements Serializable{
     public void setFieldbook(Fieldbook fieldbook) {
         this.fieldbook = fieldbook;
     }
-    
+
+    @XmlElement(name = "WebApiUrl")
+    public String getWebApiUrl() {
+        return webApiUrl;
+    }
+
+    public void setWebApiUrl(String webApiUrl) {
+        this.webApiUrl = webApiUrl;
+    }
+
+    @XmlElement(name = "WorkbenchProjectId")
+    public Long getWorkbenchProjectId() {
+        return workbenchProjectId;
+    }
+
+    public void setWorkbenchProjectId(Long workbenchProjectId) {
+        this.workbenchProjectId = workbenchProjectId;
+    }
+
+    @XmlElement(name = "OutputDirectory")
+    public String getOutputDirectory() {
+        return outputDirectory;
+    }
+
+    public void setOutputDirectory(String outputDirectory) {
+        this.outputDirectory = outputDirectory;
+    }
 }
