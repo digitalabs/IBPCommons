@@ -140,7 +140,7 @@ public class MySQLUtil {
             return null;
         }
         
-        String backupFilename = getBackupFilename(database, null);
+        String backupFilename = getBackupFilename(database, ".sql");
         return backupDatabase(database, backupFilename);
     }
     
@@ -206,7 +206,7 @@ public class MySQLUtil {
         // backup the current database to a file
         File currentDbBackupFile = null;
         try {
-            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(databaseName, "system"));
+            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(databaseName, "system.sql"));
         }
         catch (InterruptedException e1) {
             throw new IllegalStateException("Unable to backup current database.");
@@ -266,7 +266,7 @@ public class MySQLUtil {
     }
     
     protected String getBackupFilename(String databaseName, String suffix) {
-        DateFormat format = new SimpleDateFormat("yyyyMMdd");
+        DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
         String timestamp = format.format(new Date());
         
         String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
