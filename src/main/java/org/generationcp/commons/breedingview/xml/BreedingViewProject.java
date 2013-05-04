@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "BreedingViewProject")
-@XmlType(propOrder = {"name", "version", "type", "phenotypic"})
+@XmlType(propOrder = {"name", "version", "type", "phenotypic", "ssaParameters"})
 public class BreedingViewProject implements Serializable{
 
     private static final long serialVersionUID = -1125312445342191068L;
@@ -30,6 +30,7 @@ public class BreedingViewProject implements Serializable{
     private String version;
     private BreedingViewProjectType type;
     private Phenotypic phenotypic;
+    private SSAParameters ssaParameters;
     
     @XmlAttribute
     public String getName() {
@@ -66,5 +67,13 @@ public class BreedingViewProject implements Serializable{
     public void setPhenotypic(Phenotypic phenotypic) {
         this.phenotypic = phenotypic;
     }
-    
+
+    @XmlElement(name = "IBWS")
+    public SSAParameters getSsaParameters() {
+        return ssaParameters;
+    }
+
+    public void setSsaParameters(SSAParameters ssaParameters) {
+        this.ssaParameters = ssaParameters;
+    }
 }
