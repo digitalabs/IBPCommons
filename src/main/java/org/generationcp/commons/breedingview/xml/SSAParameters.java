@@ -5,6 +5,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 public class SSAParameters {
     private String webApiUrl;
     private Long workbenchProjectId;
+    private Integer studyId;
+    private Integer inputDataSetId;
+    private Integer outputDataSetId;
     private String outputDirectory;
 
     @XmlAttribute(name="WebApiUrl")
@@ -23,6 +26,33 @@ public class SSAParameters {
 
     public void setWorkbenchProjectId(Long workbenchProjectId) {
         this.workbenchProjectId = workbenchProjectId;
+    }
+
+    @XmlAttribute(name="StudyId")
+    public Integer getStudyId() {
+        return studyId;
+    }
+
+    public void setStudyId(Integer studyId) {
+        this.studyId = studyId;
+    }
+
+    @XmlAttribute(name="InputDataSetId")
+    public Integer getInputDataSetId() {
+        return inputDataSetId;
+    }
+
+    public void setInputDataSetId(Integer dataSetId) {
+        this.inputDataSetId = dataSetId;
+    }
+
+    @XmlAttribute(name="OutputDataSetId")
+    public Integer getOutputDataSetId() {
+        return outputDataSetId;
+    }
+
+    public void setOutputDataSetId(Integer outputDataSetId) {
+        this.outputDataSetId = outputDataSetId;
     }
 
     @XmlAttribute(name="OutputDirectory")

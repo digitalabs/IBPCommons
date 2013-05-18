@@ -32,7 +32,7 @@ public class Phenotypic implements Serializable{
     private Replicates replicates;
     private Rows rows;
     private Columns columns;
-    private Fieldbook fieldbook;
+    private Data fieldbook;
 
     @XmlElement(name = "Trait")
     public List<Trait> getTraits() {
@@ -97,12 +97,12 @@ public class Phenotypic implements Serializable{
         this.columns = columns;
     }
 
-    @XmlElement(name = "Fieldbook")
-    public Fieldbook getFieldbook() {
+    @XmlElement(name = "Data")
+    public Data getFieldbook() {
         return fieldbook;
     }
     
-    public void setFieldbook(Fieldbook fieldbook) {
+    public void setFieldbook(Data fieldbook) {
         this.fieldbook = fieldbook;
     }
 }

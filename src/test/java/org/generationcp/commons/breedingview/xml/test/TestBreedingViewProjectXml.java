@@ -25,7 +25,7 @@ import org.generationcp.commons.breedingview.xml.BreedingViewProjectType;
 import org.generationcp.commons.breedingview.xml.Columns;
 import org.generationcp.commons.breedingview.xml.Environment;
 import org.generationcp.commons.breedingview.xml.EnvironmentLabel;
-import org.generationcp.commons.breedingview.xml.Fieldbook;
+import org.generationcp.commons.breedingview.xml.Data;
 import org.generationcp.commons.breedingview.xml.Genotypes;
 import org.generationcp.commons.breedingview.xml.Phenotypic;
 import org.generationcp.commons.breedingview.xml.Replicates;
@@ -84,8 +84,8 @@ public class TestBreedingViewProjectXml{
         Columns columns = new Columns();
         columns.setName("COLUMNS");
         
-        Fieldbook fieldbook = new Fieldbook();
-        fieldbook.setFile("c:/my documents/fieldbook.xls");
+        Data fieldbook = new Data();
+        fieldbook.setFieldBookFile("c:/my documents/fieldbook.xls");
         
         Phenotypic phenotypic = new Phenotypic();
         phenotypic.setTraits(traits);
