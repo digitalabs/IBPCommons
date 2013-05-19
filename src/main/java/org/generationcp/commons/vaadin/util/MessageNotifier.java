@@ -26,6 +26,7 @@ public class MessageNotifier{
 
     private static final int POSITION = Notification.POSITION_CENTERED_TOP;
     private static final int INDEFINITE_DELAY = -1;  // Lets the notification window stay until the user clicks it
+    private static final int DEFAULT_MESSAGE_DELAY = 3000;
     
     /**
      * Show warning.
@@ -52,7 +53,22 @@ public class MessageNotifier{
     public static void showMessage(Window window, String caption, String description) {
         Notification notification = new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
-        notification.setDelayMsec(INDEFINITE_DELAY); 
+        notification.setDelayMsec(DEFAULT_MESSAGE_DELAY); 
+        notification.setPosition(POSITION);
+        window.showNotification(notification);
+    }
+    
+    /**
+     * Show message.
+     *
+     * @param window the window
+     * @param caption the caption
+     * @param description the description
+     */
+    public static void showMessage(Window window, String caption, String description, int delayMs) {
+        Notification notification = new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
+        notification.setDescription(description == null ? "" : "</br>" + description);
+        notification.setDelayMsec(delayMs); 
         notification.setPosition(POSITION);
         window.showNotification(notification);
     }
