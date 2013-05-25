@@ -34,6 +34,10 @@ public class RegexValidator extends AbstractValidator {
 
     @Override
     public boolean isValid(Object value) {
+        if (!String.class.isInstance(value)) {
+            return true;
+        }
+        
         Matcher matcher = pattern.matcher(value.toString());
         
         return match ? matcher.matches() : !matcher.matches();
