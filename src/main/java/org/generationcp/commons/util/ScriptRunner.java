@@ -198,7 +198,15 @@ public class ScriptRunner {
     String trimmedLine = line.trim();
     if (lineIsComment(trimmedLine)) {
       println(trimmedLine);
-    } else if (commandReadyToExecute(trimmedLine)) {
+    }
+    else if (lineIsDelimier(trimmedLine)) {
+        println(trimmedLine);
+        String[] tokens = trimmedLine.split("\\s+");
+        if (tokens.length >= 2) {
+            delimiter = tokens[1];
+        }
+    }
+    else if (commandReadyToExecute(trimmedLine)) {
       command.append(line.substring(0, line.lastIndexOf(delimiter)));
       command.append(LINE_SEPARATOR);
       println(command);
@@ -213,6 +221,10 @@ public class ScriptRunner {
 
   private boolean lineIsComment(String trimmedLine) {
     return trimmedLine.startsWith("//") || trimmedLine.startsWith("--");
+  }
+  
+  private boolean lineIsDelimier(String trimmedLine) {
+      return trimmedLine.toLowerCase().startsWith("delimiter");
   }
 
   private boolean commandReadyToExecute(String trimmedLine) {
