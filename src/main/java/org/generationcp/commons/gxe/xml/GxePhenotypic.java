@@ -41,7 +41,7 @@ public class GxePhenotypic implements Serializable{
     private Replicates replicates;
     private Rows rows;
     private Columns columns;
-    private Data fieldbook;
+    private GxeData fieldbook;
 
     @XmlElement(name = "Trait")
     public List<Trait> getTraits() {
@@ -107,11 +107,11 @@ public class GxePhenotypic implements Serializable{
     }
 
     @XmlElement(name = "Data")
-    public Data getFieldbook() {
+    public GxeData getFieldbook() {
         return fieldbook;
     }
     
-    public void setFieldbook(Data fieldbook) {
+    public void setFieldbook(GxeData fieldbook) {
         this.fieldbook = fieldbook;
     }
 }
