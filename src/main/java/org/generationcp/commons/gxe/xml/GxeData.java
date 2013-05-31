@@ -29,6 +29,8 @@ public class GxeData implements Serializable{
     /** The file. */
     private String fieldBookFile;
     
+    private String csvFile;
+    
     /**
      * Gets the file.
      *
@@ -47,5 +49,16 @@ public class GxeData implements Serializable{
     public void setFieldBookFile(String file) {
         this.fieldBookFile = file;
     }
+
+    
+    @XmlAttribute(name="file")
+	public String getCsvFile() {
+		return csvFile;
+	}
+
+	
+	public void setCsvFile(String csvFile) {
+		this.csvFile = csvFile;
+	}
     
 }
