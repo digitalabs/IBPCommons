@@ -43,6 +43,14 @@ public class MessageNotifier{
       window.showNotification(notification);
     }
 
+    public static void showWarning(Window window, String caption, String description, int position) {      
+        Notification notification = new Notification(caption, Window.Notification.TYPE_WARNING_MESSAGE);
+        notification.setDescription(description == null ? "" : "</br>" + description);
+        notification.setDelayMsec(3000);
+        notification.setPosition(position);
+        window.showNotification(notification);
+    }
+    
     /**
      * Show message.
      *
@@ -55,6 +63,14 @@ public class MessageNotifier{
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(DEFAULT_MESSAGE_DELAY); 
         notification.setPosition(POSITION);
+        window.showNotification(notification);
+    }
+    
+    public static void showMessage(Window window, String caption, String description, int delayMs, int position) {
+        Notification notification = new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
+        notification.setDescription(description == null ? "" : "</br>" + description);
+        notification.setDelayMsec(delayMs); 
+        notification.setPosition(position);
         window.showNotification(notification);
     }
     
@@ -85,6 +101,14 @@ public class MessageNotifier{
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(INDEFINITE_DELAY); 
         notification.setPosition(POSITION);
+        window.showNotification(notification);
+    }
+    
+    public static void showError(Window window, String caption, String description, int position) {
+        Notification notification = new Notification(caption, description, Notification.TYPE_ERROR_MESSAGE);
+        notification.setDescription(description == null ? "" : "</br>" + description);
+        notification.setDelayMsec(INDEFINITE_DELAY); 
+        notification.setPosition(position);
         window.showNotification(notification);
     }
 
