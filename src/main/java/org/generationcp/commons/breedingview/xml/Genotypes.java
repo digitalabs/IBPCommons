@@ -23,6 +23,7 @@ public class Genotypes implements Serializable{
     private static final long serialVersionUID = 7988900674681004162L;
     
     private String name;
+    private String entry;
     
     @XmlAttribute
     public String getName() {
@@ -31,6 +32,15 @@ public class Genotypes implements Serializable{
     
     public void setName(String name) {
         this.name = name;
+    }
+    
+    @XmlAttribute
+    public String getEntry() {
+        return entry;
+    }
+    
+    public void setEntry(String entry) {
+        this.entry = entry;
     }
     
 }
