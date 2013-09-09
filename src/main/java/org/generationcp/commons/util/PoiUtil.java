@@ -13,7 +13,9 @@
 package org.generationcp.commons.util;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -359,4 +361,20 @@ public class PoiUtil{
         cell.setCellStyle(cellStyle);
         return cell;
     }
+    
+    public static List<Sheet> getSheets(Workbook workBook)
+    {
+    	int index  = 0;
+    	List<Sheet> l = new ArrayList<Sheet>();
+    	Sheet s = workBook.getSheetAt(index);
+    	while(s != null)
+    	{
+    		l.add(s);
+    		index++;
+    		s = workBook.getSheetAt(index);
+    		
+    	}
+    	return l;
+    }
+    
 }
