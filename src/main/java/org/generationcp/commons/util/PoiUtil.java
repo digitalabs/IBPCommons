@@ -454,11 +454,23 @@ public class PoiUtil{
     	
 		List<String> contents = new ArrayList<String>();
     	int index = 0;
-    	Row row = sheet.getRow(index);		
+    	Row row = sheet.getRow(index);	
+    	String cellvalue = "";
     	try{
 	    	while(row != null)
 	    	{
-	    		contents.add(getCellValue(row.getCell(columnIndex)).toString());
+	    		cellvalue = "";
+	    		try{
+	    			cellvalue = getCellValue(row.getCell(columnIndex)).toString();
+	    			if(cellvalue == null)
+	    			{
+	    				cellvalue = "";
+	    			}
+	    		}catch(Exception ec)
+	    		{
+	    			
+	    		}
+	    		contents.add(cellvalue);
 	    		index++;
 	    		row = sheet.getRow(index);
 	    	}
