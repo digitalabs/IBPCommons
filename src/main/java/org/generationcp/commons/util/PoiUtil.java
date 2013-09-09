@@ -14,6 +14,7 @@ package org.generationcp.commons.util;
 
 import java.awt.Point;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -359,4 +360,61 @@ public class PoiUtil{
         cell.setCellStyle(cellStyle);
         return cell;
     }
+    
+    
+    /******* COLUMN **********/
+    
+    public static Boolean columnIsEmpty(Sheet sheet, int columnIndex, int start, int end){
+		return false;
+    	
+    }
+    
+    /******* ROW **********/
+    public static Boolean rowIsEmpty(Sheet sheet, int rowIndex, int start, int end){
+		Row row = sheet.getRow(rowIndex);
+		Iterator<Cell> iterator = row.cellIterator();
+		Boolean isEmpty = true;
+		while(iterator.hasNext()){
+			if (PoiUtil.getCellValue(iterator.next()) != null){
+				isEmpty = false;
+			}
+		}
+    	return isEmpty;
+    }
+    
+    public static Boolean rowHasEmpty(Sheet sheet, int rowIndex, int start, int end){
+		Row row = sheet.getRow(rowIndex);
+		Iterator<Cell> iterator = row.cellIterator();
+		Boolean hasEmpty = false;
+		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
+			while(iterator.hasNext()){
+				if (PoiUtil.getCellValue(iterator.next()) == null){
+						hasEmpty = true;
+				}
+			}
+		}
+    	return hasEmpty;
+    }
+    
+    public static String rowAsStringArray(){
+    	
+    	
+		return null;
+    	
+    }
+    
+    public static String rowAsString (String delimiter){
+    	
+    	
+  		return null;
+      	
+      }
+    
+    public static String rowAsString (String delimiter, int max){
+    	
+    	
+  		return null;
+      	
+      }
+    
 }
