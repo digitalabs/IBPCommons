@@ -291,7 +291,44 @@ public class PoiUtil{
     public static Cell getCell(Sheet sheet, String columnName, int rowIndex) {
         return getCell(sheet, getColumnIndex(columnName), rowIndex);
     }
-
+    /*
+     * returns true if all cells in a column is empty or null
+     * returns false if one or more cells in the column is empty or null.
+     */
+    public static Boolean isEmptyColumn(Sheet sheet, int columnIndex)
+    {
+    	Boolean b = true;
+    	int index = 0;
+    	Row row = sheet.getRow(index);		
+    	while(row != null)
+    	{
+    		if(getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase(""))
+    		{
+    			//do nothing	
+    		  
+    		}else
+    		{
+    			return false;
+    		}
+    	}
+    	
+    	return b;
+    }
+    /*
+     * returns the content of the column into an array
+     */
+    public static List<String> asStringArrayColumn(Sheet sheet, int columnIndex)
+    {
+    	
+		List<String> contents = new ArrayList();
+    	int index = 0;
+    	Row row = sheet.getRow(index);		
+    	while(row != null)
+    	{
+    		contents.add(getCellValue(row.getCell(columnIndex)).toString());
+    	}
+    	return contents;
+    }
     public static Cell getCell(Sheet sheet, int columnIndex, int rowIndex) {
         Row row = sheet.getRow(rowIndex);
         if (row == null) {
