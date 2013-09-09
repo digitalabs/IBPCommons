@@ -374,27 +374,59 @@ public class PoiUtil{
     
     /******* ROW **********/
     public static Boolean rowIsEmpty(Sheet sheet, int rowIndex, int start, int end){
-		Row row = sheet.getRow(rowIndex);
-		Iterator<Cell> iterator = row.cellIterator();
+		
+    	Row row = sheet.getRow(rowIndex);
 		Boolean isEmpty = true;
-		while(iterator.hasNext()){
-			if (PoiUtil.getCellValue(iterator.next()) != null){
-				isEmpty = false;
-			}
-		}
+		int rowEnd;
+		try{
+			rowEnd = Math.max(row.getLastCellNum(), end);
+		}catch(Exception e){rowEnd = end;}
+
+		 for (int cn = 0; cn < rowEnd; cn++) {
+			 Cell c;
+				 try{
+					  c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
+				 }catch(Exception e){
+					 c = null;
+				 }
+	          if (c == null) {
+	        	  isEmpty = false;
+	          } else {
+	        	  Object cellValue = getCellValue(c);
+				  if (cellValue != null && !String.valueOf(cellValue).equals("")){
+					  isEmpty = false;
+				  }
+	          }
+	       }
+
     	return isEmpty;
     }
     
     public static Boolean rowHasEmpty(Sheet sheet, int rowIndex, int start, int end){
 		Row row = sheet.getRow(rowIndex);
-		Iterator<Cell> iterator = row.cellIterator();
 		Boolean hasEmpty = false;
 		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
-			while(iterator.hasNext()){
-				if (PoiUtil.getCellValue(iterator.next()) == null){
-						hasEmpty = true;
-				}
-			}
+			int rowEnd;
+			try{
+				rowEnd = Math.max(row.getLastCellNum(), end);
+			}catch(Exception e){rowEnd = end;}
+			 for (int cn = 0; cn < rowEnd; cn++) {
+				 Cell c;
+				 try{
+					  c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
+				 }catch(Exception e){
+					 c = null;
+				 }
+		          if (c == null) {
+		             hasEmpty = true;
+		          } else {
+		        	  Object cellValue = getCellValue(c);
+					  if (cellValue == null || String.valueOf(cellValue).equals("")){
+								hasEmpty = true;
+					  }
+		          }
+		       }
+			
 		}
     	return hasEmpty;
     }
@@ -405,7 +437,7 @@ public class PoiUtil{
 		Iterator<Cell> iterator = row.cellIterator();
 		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
 			while(iterator.hasNext()){
-				values.add(iterator.next().toString());
+				values.add(String.valueOf(iterator.next()));
 			}
 		}	
 		return values.toArray(new String[0]);
@@ -427,7 +459,7 @@ public class PoiUtil{
 		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
 			int counter = 0;
 			while(iterator.hasNext() && counter <= max){
-				values.add(iterator.next().toString());
+				values.add(String.valueOf(iterator.next()));
 				counter++;
 			}
 		}	
