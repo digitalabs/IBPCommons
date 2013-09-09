@@ -13,9 +13,12 @@
 package org.generationcp.commons.util;
 
 import java.awt.Point;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
@@ -396,25 +399,40 @@ public class PoiUtil{
     	return hasEmpty;
     }
     
-    public static String rowAsStringArray(){
-    	
-    	
-		return null;
+    public static String[] rowAsStringArray(Sheet sheet, int rowIndex, int start, int end){
+    	Row row = sheet.getRow(rowIndex);
+    	List<String> values = new ArrayList<String>();
+		Iterator<Cell> iterator = row.cellIterator();
+		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
+			while(iterator.hasNext()){
+				values.add(iterator.next().toString());
+			}
+		}	
+		return values.toArray(new String[0]);
     	
     }
     
-    public static String rowAsString (String delimiter){
+    public static String rowAsString (Sheet sheet, int rowIndex, int start, int end, String delimiter){
     	
-    	
-  		return null;
+    	return rowAsString ( sheet,  rowIndex,  start,  end,  delimiter,  Integer.MAX_VALUE);
+  		
       	
       }
     
-    public static String rowAsString (String delimiter, int max){
+    public static String rowAsString (Sheet sheet, int rowIndex, int start, int end, String delimiter, int max){
     	
+    	Row row = sheet.getRow(rowIndex);
+    	List<String> values = new ArrayList<String>();
+		Iterator<Cell> iterator = row.cellIterator();
+		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
+			int counter = 0;
+			while(iterator.hasNext() && counter <= max){
+				values.add(iterator.next().toString());
+				counter++;
+			}
+		}	
+		return StringUtils.join(values, delimiter);
     	
-  		return null;
-      	
       }
     
 }
