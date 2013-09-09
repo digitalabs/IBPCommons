@@ -385,15 +385,21 @@ public class PoiUtil{
 	    		if(getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase(""))
 	    		{
 	    			//do nothing	
+	    			
 	    		  
 	    		}else
 	    		{
+	    			
+	    			b = false;
 	    			return false;
 	    		}
+	    		index++;
+	    		row = sheet.getRow(index);
+	    		
 	    	}
     	}catch(Exception e)
     	{
-    		
+    		e.printStackTrace();
     	}finally
     	{
     		return b;
@@ -417,13 +423,21 @@ public class PoiUtil{
 	    	{
 	    		if(getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase(""))
 	    		{
+	    			
+	    			
+	    			b = true;
 	    			return true;
 	    		  
+	    		}else
+	    		{
+	    			//do nothing
 	    		}
+	    		index++;
+	    		row = sheet.getRow(index);
 	    	}
     	}catch(Exception e)
     	{
-    		
+    		e.printStackTrace();
     	}finally
     	{
     		return b;
@@ -445,6 +459,8 @@ public class PoiUtil{
 	    	while(row != null)
 	    	{
 	    		contents.add(getCellValue(row.getCell(columnIndex)).toString());
+	    		index++;
+	    		row = sheet.getRow(index);
 	    	}
     	}catch(Exception e)
     	{
