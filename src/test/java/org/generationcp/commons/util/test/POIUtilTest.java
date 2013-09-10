@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class POIUtilTest {
     
-	private static String fileName = "C:/Book2.xls";
+	private static String fileName = "C:/test.xls";
 	private static Workbook workbook;
 	private static Sheet sheet;
 	
@@ -31,7 +31,7 @@ public class POIUtilTest {
 
     @Test
     public void test() throws IOException, InterruptedException {    	
-<<<<<<< HEAD
+
     	System.out.println( "rowIsEmpty:" + PoiUtil.rowIsEmpty(sheet, 1, 0, 6));
     	System.out.println( "rowHasEmpty:" + PoiUtil.rowHasEmpty(sheet, 1, 0, 0));
     	System.out.println( "columnIsEmpty:" + PoiUtil.columnIsEmpty(sheet, 0));
@@ -42,7 +42,7 @@ public class POIUtilTest {
     	{
     		System.out.println( data[i] );
     	}
-=======
+
     	System.out.println( "rowIsEmpty:" + PoiUtil.rowIsEmpty(sheet, 1, 0, 5));
     	System.out.println( "rowHasEmpty:" + PoiUtil.rowHasEmpty(sheet, 1, 0, 5));
     	System.out.println( "rowAsString:" + PoiUtil.rowAsString(sheet, 2, 0, 5, ","));
@@ -51,7 +51,7 @@ public class POIUtilTest {
     	System.out.println( "columnIsEmpty:" + PoiUtil.columnIsEmpty(sheet, 0));
     	System.out.println( "columnHasEmpty:" + PoiUtil.columnHasEmpty(sheet,0));
     	System.out.println( "asStringArrayColumn:" + PoiUtil.asStringArrayColumn(sheet,0));
->>>>>>> 2735a217b4e5667093500bb2b3c489589212eb8a
+
     }
     
     @AfterClass
