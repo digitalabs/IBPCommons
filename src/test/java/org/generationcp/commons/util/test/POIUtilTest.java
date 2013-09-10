@@ -31,8 +31,10 @@ public class POIUtilTest {
 
     @Test
     public void test() throws IOException, InterruptedException {    	
-    	System.out.println( "rowIsEmpty:" + PoiUtil.rowIsEmpty(sheet, 1, 0, 6));
-    	System.out.println( "rowHasEmpty:" + PoiUtil.rowHasEmpty(sheet, 1, 0, 0));
+    	System.out.println( "rowIsEmpty:" + PoiUtil.rowIsEmpty(sheet, 1, 0, 5));
+    	System.out.println( "rowHasEmpty:" + PoiUtil.rowHasEmpty(sheet, 1, 0, 5));
+    	System.out.println( "rowAsString:" + PoiUtil.rowAsString(sheet, 2, 0, 5, ","));
+    	System.out.println( "rowAsStringMax:" + PoiUtil.rowAsString(sheet, 2, 0, 5, ",", 2));
     }
     
     @AfterClass
