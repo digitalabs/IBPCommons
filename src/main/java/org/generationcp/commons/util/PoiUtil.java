@@ -499,7 +499,7 @@ public class PoiUtil{
     	Row row = sheet.getRow(rowIndex);
 		Boolean isEmpty = true;
 
-		 for (int cn = 0; cn >= start && cn <= end; cn++) {
+		 for (int cn = start; cn <= end; cn++) {
 			 Cell c;
 				 try{
 					  c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
@@ -530,7 +530,7 @@ public class PoiUtil{
 		Boolean hasEmpty = false;
 		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
 		
-			 for (int cn = 0; cn >= start && cn <= end; cn++) {
+			 for (int cn = start; cn <= end; cn++) {
 				 Cell c;
 				 try{
 					  c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
@@ -564,7 +564,7 @@ public class PoiUtil{
 		
 		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
 			
-			 for (int cn = 0; cn >= start && cn <= end; cn++) {
+			 for (int cn = start; cn <= end; cn++) {
 				 try{
 					 values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
 				 }catch(Exception e){
@@ -604,11 +604,12 @@ public class PoiUtil{
     	List<String> values = new ArrayList<String>();
 		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
 			
-			 for (int cn = 0; cn >= start && cn <= end && cn < max; cn++) {
+			 for (int cn = start; cn <= end && cn < max; cn++) {
 				 try{
 					 values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
 				 }catch(Exception e){
 					 values.add("");
+					 
 				 }
 		         
 		       }
