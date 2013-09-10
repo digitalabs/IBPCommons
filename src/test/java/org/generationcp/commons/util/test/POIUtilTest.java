@@ -35,6 +35,10 @@ public class POIUtilTest {
     	System.out.println( "rowHasEmpty:" + PoiUtil.rowHasEmpty(sheet, 1, 0, 5));
     	System.out.println( "rowAsString:" + PoiUtil.rowAsString(sheet, 2, 0, 5, ","));
     	System.out.println( "rowAsStringMax:" + PoiUtil.rowAsString(sheet, 2, 0, 5, ",", 2));
+    	System.out.println( "rowAsStringArray:" + PoiUtil.rowAsStringArray(sheet, 2, 0, 5));
+    	System.out.println( "columnIsEmpty:" + PoiUtil.columnIsEmpty(sheet, 0));
+    	System.out.println( "columnHasEmpty:" + PoiUtil.columnHasEmpty(sheet,0));
+    	System.out.println( "asStringArrayColumn:" + PoiUtil.asStringArrayColumn(sheet,0));
     }
     
     @AfterClass
