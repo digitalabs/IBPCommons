@@ -546,9 +546,11 @@ public class PoiUtil{
 					  }
 		          }
 		       }
-			
+			return hasEmpty;
+		}else{
+			return true;
 		}
-    	return hasEmpty;
+    	
     }
     
     /** Returns the content of the row into an array
