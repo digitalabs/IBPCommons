@@ -1,14 +1,14 @@
 
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
  *******************************************************************************/
 
 package org.generationcp.commons.util;
@@ -29,11 +29,11 @@ import org.apache.poi.ss.util.CellUtil;
 
 /**
  * A convenience class for POI library.
- * 
+ *
  * @author Glenn Marintes
  */
-public class PoiUtil{
-    
+public class PoiUtil {
+
     // WorkBook convenience methods
     public static void setRepeatingRows(Workbook workBook, int sheetIndex, int fromRow, int toRow) {
         workBook.setRepeatingRowsAndColumns(sheetIndex, -1, -1, fromRow, toRow);
@@ -346,16 +346,16 @@ public class PoiUtil{
 
         return new Point(row, col);
     }
-    
+
     /**
      * Creates a cell and aligns it a certain way.
-     * 
+     * <p/>
      * based from: http://poi.apache.org/spreadsheet/quick-guide.html#Alignment
      *
      * @param cellStyle cell style object to use
-     * @param row    the row to create the cell in
-     * @param column the column number to create the cell in
-     * @param halign the horizontal alignment for the cell.
+     * @param row       the row to create the cell in
+     * @param column    the column number to create the cell in
+     * @param halign    the horizontal alignment for the cell.
      */
     public static Cell createCell(CellStyle cellStyle, Row row, short column, short halign, short valign) {
         Cell cell = row.createCell(column);
@@ -364,9 +364,11 @@ public class PoiUtil{
         cell.setCellStyle(cellStyle);
         return cell;
     }
-    
-    
-    /******* COLUMN **********/
+
+
+    /**
+     * **** COLUMN *********
+     */
     
     
     /*
@@ -374,183 +376,170 @@ public class PoiUtil{
      * returns false if one or more cells in the column is empty or null.
      */
     @SuppressWarnings("finally")
-	public static Boolean columnIsEmpty(Sheet sheet, int columnIndex)
-    {
-    	Boolean b = true;
-    	int index = 0;
-    	try{
-	    	Row row = sheet.getRow(index);		
-	    	while(row != null)
-	    	{
-	    		if(getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase(""))
-	    		{
-	    			//do nothing	
-	    			
-	    		  
-	    		}else
-	    		{
-	    			
-	    			b = false;
-	    			return false;
-	    		}
-	    		index++;
-	    		row = sheet.getRow(index);
-	    		
-	    	}
-    	}catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}finally
-    	{
-    		return b;
-    	}
-    	
-    
+    public static Boolean columnIsEmpty(Sheet sheet, int columnIndex) {
+        Boolean b = true;
+        int index = 0;
+        try {
+            Row row = sheet.getRow(index);
+            while (row != null) {
+                if (getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase("")) {
+                    //do nothing
+
+
+                } else {
+
+                    b = false;
+                    return false;
+                }
+                index++;
+                row = sheet.getRow(index);
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return b;
+        }
+
+
     }
-    
+
     /*
      * returns false if all cells in a column is not empty or null
      * returns true if one or more cells in the column is empty or null.
      */
     @SuppressWarnings("finally")
-	public static Boolean columnHasEmpty(Sheet sheet, int columnIndex)
-    {
-    	Boolean b = false;
-    	int index = 0;
-    	try{
-	    	Row row = sheet.getRow(index);		
-	    	while(row != null)
-	    	{
-	    		if(getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase(""))
-	    		{
-	    			
-	    			
-	    			b = true;
-	    			return true;
-	    		  
-	    		}else
-	    		{
-	    			//do nothing
-	    		}
-	    		index++;
-	    		row = sheet.getRow(index);
-	    	}
-    	}catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}finally
-    	{
-    		return b;
-    	}
-    	
-    
+    public static Boolean columnHasEmpty(Sheet sheet, int columnIndex) {
+        Boolean b = false;
+        int index = 0;
+        try {
+            Row row = sheet.getRow(index);
+            while (row != null) {
+                if (getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase("")) {
+
+
+                    b = true;
+                    return true;
+
+                } else {
+                    //do nothing
+                }
+                index++;
+                row = sheet.getRow(index);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return b;
+        }
+
+
     }
+
     /*
      * returns the content of the column into an array
      */
     @SuppressWarnings("finally")
-	public static String[]  asStringArrayColumn(Sheet sheet, int columnIndex)
-    {
-    	
-		List<String> contents = new ArrayList<String>();
-    	int index = 0;
-    	Row row = sheet.getRow(index);	
-    	String cellvalue = "";
-    	try{
-	    	while(row != null)
-	    	{
-	    		cellvalue = "";
-	    		try{
-	    			cellvalue = getCellValue(row.getCell(columnIndex)).toString();
-	    			if(cellvalue == null)
-	    			{
-	    				cellvalue = "";
-	    			}
-	    		}catch(Exception ec)
-	    		{
-	    			
-	    		}
-	    		contents.add(cellvalue);
-	    		index++;
-	    		row = sheet.getRow(index);
-	    	}
-    	}catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}finally
-    	{
-    		return contents.toArray(new String[0]);
-    	}
-    	
-    	
+    public static String[] asStringArrayColumn(Sheet sheet, int columnIndex) {
+
+        List<String> contents = new ArrayList<String>();
+        int index = 0;
+        Row row = sheet.getRow(index);
+        String cellvalue = "";
+        try {
+            while (row != null) {
+                cellvalue = "";
+                try {
+                    cellvalue = getCellValue(row.getCell(columnIndex)).toString();
+                    if (cellvalue == null) {
+                        cellvalue = "";
+                    }
+                } catch (Exception ec) {
+
+                }
+                contents.add(cellvalue);
+                index++;
+                row = sheet.getRow(index);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            return contents.toArray(new String[0]);
+        }
+
+
     }
-    
+
     /******* ROW **********/
-    
-    /** Checks whether row is empty or not
+
+    /**
+     * Checks whether row is empty or not
+     *
      * @param sheet
      * @param rowIndex
      * @param start
      * @param end
      * @return
      */
-    public static Boolean rowIsEmpty(Sheet sheet, int rowIndex, int start, int end){
-		
-    	Row row = sheet.getRow(rowIndex);
-		Boolean isEmpty = true;
+    public static Boolean rowIsEmpty(Sheet sheet, int rowIndex, int start, int end) {
 
-		 for (int cn = start; cn <= end; cn++) {
-			 Cell c;
-				 try{
-					  c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
-				 }catch(Exception e){
-					 c = null;
-				 }
-	          if (c != null) {
-	        	 
-	        	  Object cellValue = getCellValue(c);
-				  if (cellValue != null && !String.valueOf(cellValue).equals("")){
-					  isEmpty = false;
-				  }
-	          }
-	       }
+        Row row = sheet.getRow(rowIndex);
+        Boolean isEmpty = true;
 
-    	return isEmpty;
+        for (int cn = start; cn <= end; cn++) {
+            Cell c;
+            try {
+                c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
+            } catch (Exception e) {
+                c = null;
+            }
+            if (c != null) {
+
+                Object cellValue = getCellValue(c);
+                if (cellValue != null && !String.valueOf(cellValue).equals("")) {
+                    isEmpty = false;
+                }
+            }
+        }
+
+        return isEmpty;
     }
-    
-    /** Checks if the row has empty/blank values
+
+    /**
+     * Checks if the row has empty/blank values
+     *
      * @param sheet
      * @param rowIndex
      * @param start
      * @param end
      * @return
      */
-    public static Boolean rowHasEmpty(Sheet sheet, int rowIndex, int start, int end){
-		Row row = sheet.getRow(rowIndex);
-		Boolean hasEmpty = false;
-		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
-		
-			 for (int cn = start; cn <= end; cn++) {
-				 Cell c;
-				 try{
-					  c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
-				 }catch(Exception e){
-					 c = null;
-				 }
-		          if (c == null) {
-		             hasEmpty = true;
-		          } else {
-		        	  Object cellValue = getCellValue(c);
-					  if (cellValue == null || String.valueOf(cellValue).equals("")){
-								hasEmpty = true;
-					  }
-		          }
-		       }
-			return hasEmpty;
-		}else{
-			return true;
-		}
-    	
+    public static Boolean rowHasEmpty(Sheet sheet, int rowIndex, int start, int end) {
+        Row row = sheet.getRow(rowIndex);
+        Boolean hasEmpty = false;
+        if (!rowIsEmpty(sheet, rowIndex, start, end)) {
+
+            for (int cn = start; cn <= end; cn++) {
+                Cell c;
+                try {
+                    c = row.getCell(cn, Row.RETURN_BLANK_AS_NULL);
+                } catch (Exception e) {
+                    c = null;
+                }
+                if (c == null) {
+                    hasEmpty = true;
+                } else {
+                    Object cellValue = getCellValue(c);
+                    if (cellValue == null || String.valueOf(cellValue).equals("")) {
+                        hasEmpty = true;
+                    }
+                }
+            }
+            return hasEmpty;
+        } else {
+            return true;
+        }
+
     }
 
     /**
@@ -570,47 +559,53 @@ public class PoiUtil{
 
         return rowAsStringArray(sheet, rowIndex, start, end);
     }
-    
-    /** Returns the content of the row into an array
+
+    /**
+     * Returns the content of the row into an array
+     *
      * @param sheet
      * @param rowIndex
      * @param start
      * @param end
      * @return
      */
-    public static String[] rowAsStringArray(Sheet sheet, int rowIndex, int start, int end){
-    	Row row = sheet.getRow(rowIndex);
-    	List<String> values = new ArrayList<String>();
-		
-		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
-			
-			 for (int cn = start; cn <= end; cn++) {
-				 try{
-					 values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
-				 }catch(Exception e){
-					 values.add("");
-				 }
-		         
-		       }
-		}	
-		return values.toArray(new String[0]);
-    	
+    public static String[] rowAsStringArray(Sheet sheet, int rowIndex, int start, int end) {
+        Row row = sheet.getRow(rowIndex);
+        List<String> values = new ArrayList<String>();
+
+        if (!rowIsEmpty(sheet, rowIndex, start, end)) {
+
+            for (int cn = start; cn <= end; cn++) {
+                try {
+                    values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
+                } catch (Exception e) {
+                    values.add("");
+                }
+
+            }
+        }
+        return values.toArray(new String[0]);
+
     }
-    
-    /** Returns the content of the row into a delimited string
+
+    /**
+     * Returns the content of the row into a delimited string
+     *
      * @param sheet
      * @param rowIndex
      * @param start
      * @param end
      * @return
      */
-    public static String rowAsString (Sheet sheet, int rowIndex, int start, int end, String delimiter){
-    	
-    	return rowAsString ( sheet,  rowIndex,  start,  end,  delimiter,  Integer.MAX_VALUE);
-  		
-      }
-    
-    /** Returns the content of the row into a delimited string 
+    public static String rowAsString(Sheet sheet, int rowIndex, int start, int end, String delimiter) {
+
+        return rowAsString(sheet, rowIndex, start, end, delimiter, Integer.MAX_VALUE);
+
+    }
+
+    /**
+     * Returns the content of the row into a delimited string
+     *
      * @param sheet
      * @param rowIndex
      * @param start
@@ -618,25 +613,43 @@ public class PoiUtil{
      * @param max
      * @return
      */
-    public static String rowAsString (Sheet sheet, int rowIndex, int start, int end, String delimiter, int max){
-    	
-    	Row row = sheet.getRow(rowIndex);
-    	List<String> values = new ArrayList<String>();
-		if (!rowIsEmpty( sheet,  rowIndex,  start,  end)){
-			
-			 for (int cn = start; cn <= end && cn < max; cn++) {
-				 try{
-					 values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
-				 }catch(Exception e){
-					 values.add("");
-					 
-				 }
-		         
-		       }
-		}	
-		return StringUtils.join(values, delimiter);
-    	
-      }
-    
+    public static String rowAsString(Sheet sheet, int rowIndex, int start, int end, String delimiter, int max) {
+
+        Row row = sheet.getRow(rowIndex);
+        List<String> values = new ArrayList<String>();
+        if (!rowIsEmpty(sheet, rowIndex, start, end)) {
+
+            for (int cn = start; cn <= end && cn < max; cn++) {
+                try {
+                    values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
+                } catch (Exception e) {
+                    values.add("");
+
+                }
+
+            }
+        }
+        return StringUtils.join(values, delimiter);
+
+    }
+
+    public static String rowAsString(Sheet sheet, int rowIndex,String delimiter) {
+        Row row = sheet.getRow(rowIndex);
+
+        int startCell = row.getFirstCellNum();
+        int endCell = row.getLastCellNum() - 1;
+
+        return rowAsString(sheet, rowIndex, startCell, endCell, delimiter);
+    }
+
+    public static String rowAsString(Sheet sheet, int rowIndex, String delimiter, int maxStringLength) {
+        String resultString = rowAsString(sheet,rowIndex,delimiter);
+        if (maxStringLength < resultString.length()) {
+            return resultString.substring(0, maxStringLength);
+        } else {
+            return resultString;
+        }
+    }
+
 }
 
