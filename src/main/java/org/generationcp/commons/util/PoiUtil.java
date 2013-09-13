@@ -552,6 +552,24 @@ public class PoiUtil{
 		}
     	
     }
+
+    /**
+     * Returns the content of the row into an array using start and end values defined in the
+     * row
+     *
+     * @param sheet
+     * @param rowIndex
+     * @return
+     */
+
+    public static String[] rowAsStringArray(Sheet sheet, int rowIndex) {
+        Row row = sheet.getRow(rowIndex);
+
+        int start = row.getFirstCellNum();
+        int end = row.getLastCellNum() - 1;
+
+        return rowAsStringArray(sheet, rowIndex, start, end);
+    }
     
     /** Returns the content of the row into an array
      * @param sheet
