@@ -436,6 +436,12 @@ public class PoiUtil {
 
     }
 
+    public static Boolean isEmpty(Sheet sheet, int rowIndex, int columnIndex) {
+        Row row = sheet.getRow(rowIndex);
+
+        return row == null || getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase("");
+    }
+
     /*
      * returns the content of the column into an array
      */
