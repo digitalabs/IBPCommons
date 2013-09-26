@@ -52,7 +52,11 @@ public class PoiUtil {
     }
 
     public static String getCellStringValue(Cell cell) {
-        return cell == null ? null : cell.getStringCellValue();
+        try{
+        	return cell == null ? null : cell.getStringCellValue();
+        }catch(Exception e){
+        	return cell == null ? null : getCellValue(cell).toString();
+        }
     }
 
     public static Object getCellValue(Cell cell) {
