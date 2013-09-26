@@ -55,7 +55,7 @@ public class PoiUtil {
         try{
         	return cell == null ? null : cell.getStringCellValue();
         }catch(Exception e){
-        	return cell == null ? null : getCellValue(cell).toString();
+        	return String.format("%s", getCellValue(cell));
         }
     }
 
