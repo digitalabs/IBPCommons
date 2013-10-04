@@ -580,14 +580,35 @@ public class PoiUtil {
      * @return
      */
     public static String[] rowAsStringArray(Sheet sheet, int rowIndex, int start, int end) {
+        return rowAsStringArray(sheet,rowIndex,start,end,Integer.MAX_VALUE);
+
+    }
+
+    /**
+     * Returns the content of the row into an array
+     *
+     * @param sheet
+     * @param rowIndex
+     * @param start
+     * @param end
+     * @param max
+     * @return
+     */
+    public static String[] rowAsStringArray(Sheet sheet, int rowIndex, int start, int end,int max) {
         Row row = sheet.getRow(rowIndex);
         List<String> values = new ArrayList<String>();
 
         if (!rowIsEmpty(sheet, rowIndex, start, end)) {
 
-            for (int cn = start; cn <= end; cn++) {
+            for (int cn = start; cn <= end && cn < max; cn++) {
                 try {
-                    values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
+                    Cell cell = row.getCell(cn,Row.RETURN_BLANK_AS_NULL);
+                    if (cell != null) {
+                        cell.setCellType(Cell.CELL_TYPE_STRING);    // assures that the row we'll be getting is a string
+
+                        values.add(cell.getStringCellValue());
+
+                    }
                 } catch (Exception e) {
                     values.add("");
                 }
@@ -597,6 +618,7 @@ public class PoiUtil {
         return values.toArray(new String[0]);
 
     }
+
 
     /**
      * Returns the content of the row into a delimited string
@@ -625,22 +647,8 @@ public class PoiUtil {
      */
     public static String rowAsString(Sheet sheet, int rowIndex, int start, int end, String delimiter, int max) {
 
-        Row row = sheet.getRow(rowIndex);
-        if ( row == null ) return "";
-        List<String> values = new ArrayList<String>();
-        if (!rowIsEmpty(sheet, rowIndex, start, end)) {
 
-            for (int cn = start; cn <= end && cn < max; cn++) {
-                try {
-                    values.add(String.valueOf(row.getCell(cn, Row.RETURN_BLANK_AS_NULL)));
-                } catch (Exception e) {
-                    values.add("");
-
-                }
-
-            }
-        }
-        return StringUtils.join(values, delimiter);
+        return StringUtils.join(rowAsStringArray(sheet,rowIndex,start,end,max), delimiter);
 
     }
 
