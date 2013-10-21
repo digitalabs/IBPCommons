@@ -494,7 +494,7 @@ public class PoiUtil {
     public static Boolean rowIsEmpty(Sheet sheet, int rowIndex, int start, int end) {
 
         Row row = sheet.getRow(rowIndex);
-        Boolean isEmpty = true;
+        //Boolean isEmpty = true;
 
         for (int cn = start; cn <= end; cn++) {
             Cell c;
@@ -507,12 +507,16 @@ public class PoiUtil {
 
                 Object cellValue = getCellValue(c);
                 if (cellValue != null && !String.valueOf(cellValue).equals("")) {
-                    isEmpty = false;
+                    //isEmpty = false;
+                    // since there is a cell with value in this row, we should return it now
+                    return false;
+
                 }
             }
         }
 
-        return isEmpty;
+        //return isEmpty;
+        return true;
     }
 
     /**
@@ -670,5 +674,21 @@ public class PoiUtil {
         }
     }
 
+
+    public static Integer getLastRowNum(Sheet sheet) {
+        Integer lastRowNum = sheet.getLastRowNum() + 1;
+        Row row = null; int start = 0; int end = 0;
+
+        do {
+            lastRowNum --;
+
+            row = sheet.getRow(lastRowNum);
+            start = row.getFirstCellNum();
+            end = row.getLastCellNum() - 1;
+
+        } while (rowIsEmpty(sheet,lastRowNum,start,end) && lastRowNum > 0);
+
+        return lastRowNum;
+    }
 }
 
