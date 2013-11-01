@@ -677,6 +677,11 @@ public class PoiUtil {
 
     public static Integer getLastRowNum(Sheet sheet) {
         Integer lastRowNum = sheet.getLastRowNum() + 1;
+
+        if (lastRowNum == 1) {
+            return 0;
+        }
+
         Row row = null; int start = 0; int end = 0;
 
         do {
