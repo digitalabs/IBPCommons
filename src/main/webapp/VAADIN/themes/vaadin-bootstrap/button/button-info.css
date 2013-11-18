@@ -1,0 +1,64 @@
+.v-button-info:focus {
+    border: 1px solid #269abc;
+    background: #39b3d7;
+
+    outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
+}
+
+.v-button-info:hover {
+    border: 1px solid #269abc;
+    background: #39b3d7;
+}
+
+.v-button-info:hover .v-button-wrap,
+.v-button-info:focus .v-button-wrap
+{
+    border: none;
+    background: #39b3d7;
+}
+
+.v-button-info:active,
+.v-pressed.v-button-info {
+    border: 1px solid #46b8da;
+    background: #5bc0de;
+}
+
+.v-button-info:active .v-button-wrap,
+.v-pressed.v-button-info .v-button-wrap {
+    border: none;
+    background: #5bc0de;
+}
+
+.v-button-info:active .v-button-caption,
+.v-pressed.v-button-info .v-button-caption {
+    color: #fff;
+}
+
+.v-button-info,
+.v-disabled.v-button-info {
+    border: 1px solid #46b8da;
+    background: #5bc0de;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.v-button-info .v-button-wrap,
+.v-disabled.v-button-info .v-button-wrap {
+    box-sizing: border-box;
+    background: #5bc0de;
+
+    border: none;
+    border-radius: 3px;
+}
+
+.v-button-info .v-button-caption {
+    color: #fff;
+}
+
+
+/********************************
+ * "with-icon" style
+ ********************************/
+.v-button-info.with-icon .v-button-wrap {
+    padding-left: 8px;
+}

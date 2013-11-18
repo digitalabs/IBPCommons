@@ -1,0 +1,53 @@
+.v-button-link:focus .v-button-wrap,
+.v-button-link:hover .v-button-wrap {
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.v-button-link:hover,
+.v-button-link:focus {
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.v-button-link:focus .v-button-caption,
+.v-button-link:hover .v-button-caption
+{
+    color: #2a6496;
+    text-decoration: underline;
+    outline: none;
+}
+
+.v-button-link:active .v-button-caption,
+.v-pressed.v-button-link .v-button-caption {
+    color: #428bca;
+    text-decoration: none;
+}
+
+.v-button-link,
+.v-disabled.v-button-link {
+    border: none;
+    background: none;
+    box-sizing: border-box;
+}
+
+.v-button-link .v-button-wrap,
+.v-disabled.v-button-link .v-button-wrap {
+    border: none;
+    background: none;
+}
+
+.v-button-link .v-button-caption {
+    color: #428bca;
+    text-decoration: none;
+}
+
+
+/********************************
+ * "with-icon" style
+ ********************************/
+.v-button-link.with-icon .v-button-wrap {
+    padding-left: 8px;
+}

@@ -1,0 +1,63 @@
+.v-button:focus {
+    border: 1px solid #adadad;
+    background: #ebebeb;
+    outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
+
+}
+
+.v-button:hover {
+    border: 1px solid #adadad;
+    background: #ebebeb;
+}
+
+.v-button:focus .v-button-wrap,
+.v-button:hover .v-button-wrap{
+    border: none;
+    background: #ebebeb;
+}
+
+.v-button:active,
+.v-pressed.v-button {
+    border: 1px solid #adadad;
+    background: #ebebeb;
+}
+
+.v-button:active .v-button-wrap,
+.v-pressed.v-button .v-button-wrap {
+    border: none;
+    background: #ebebeb;
+}
+
+.v-button,
+.v-disabled.v-button {
+    border: 1px solid #ccc;
+    background: #fff;
+    box-sizing: border-box;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.v-button-wrap,
+.v-disabled.v-button .v-button-wrap {
+    box-sizing: border-box;
+    background: #fff;
+
+    border: none;
+    border-radius: 3px;
+}
+
+.v-button-caption {
+    color: #333;
+    font-weight: bold;
+    font-family: "Helvetica Neue";
+    text-shadow: none;
+    font-size:12px;
+}
+
+
+/********************************
+ * "with-icon" style
+ ********************************/
+.v-button-with-icon .v-button-wrap {
+    padding-left: 2px;
+}
