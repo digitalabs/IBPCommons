@@ -1,6 +1,5 @@
 @import url(../reindeer/styles.css);
-/*@import "fonts/font.css";*/
-@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300,600,700&subset=latin,greek-ext,greek,cyrillic-ext,cyrillic,latin-ext);
+@import "fonts/font.css";
 @import "common/common.css";
 @import "button/button.css";
 @import "label/label.css";
