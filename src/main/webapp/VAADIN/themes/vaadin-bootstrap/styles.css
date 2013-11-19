@@ -1,10 +1,35 @@
 @import url(../reindeer/styles.css);
-@import "fonts/font.css";
+/*@import "fonts/font.css";*/
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,300,600,700&subset=latin,greek-ext,greek,cyrillic-ext,cyrillic,latin-ext);
 @import "common/common.css";
 @import "button/button.css";
 @import "label/label.css";
 @import "table/table.css";
 
 body {
+    box-sizing: border-box;
+}
+
+/* TODO: MOVE THESE TO ACCORDION SPECIFIC STYLESHEET */
+.v-accordion-item-caption {
+    height: 25px;
+    background: #f5f5f5 repeat-x;
+    font-size: 14px;
+    border: 1px solid #e6e6e6;
+
+    border-radius: 3px;
+    margin: 5px;
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
+.v-accordion-item-open .v-accordion-item-caption {
+    background-image: none;
+    border: 1px solid #e6e6e6;
+    box-sizing: border-box;
+}
+
+.v-accordion-item-first .v-accordion-item-caption {
+    border: 1px solid #e6e6e6;
     box-sizing: border-box;
 }
