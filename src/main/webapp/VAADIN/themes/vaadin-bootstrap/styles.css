@@ -1,21 +1,6 @@
 @import url(../reindeer/styles.css);
+@import "common/common.css";
 @import "button/button.css";
-
-@font-face {
-    font-family: 'Helvetica Neue Light';
-    src: url('helveticaneue-light-webfont.eot');
-    src: url('helveticaneue-light-webfont.eot?#iefix') format('embedded-opentype'),
-    url('helveticaneue-light-webfont.woff') format('woff');
-}
-
-
-@font-face {
-    font-family: 'Helvetica Neue';
-    src: url('helveticaneue-webfont.eot');
-    src: url('helveticaneue-webfont.eot?#iefix') format('embedded-opentype'),
-    url('helveticaneue-webfont.woff') format('woff');
-}
-
 
 /* Vaadin 6 specific changes */
 
