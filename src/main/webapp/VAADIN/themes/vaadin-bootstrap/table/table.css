@@ -1,0 +1,9 @@
+/* Default & white style */
+.v-table-header-wrap,
+.white .v-table-header-wrap,
+.v-table-footer-wrap,
+.white .v-table-footer-wrap,
+.v-table-header-drag {
+    color: #333;
+    text-shadow: none;
+}

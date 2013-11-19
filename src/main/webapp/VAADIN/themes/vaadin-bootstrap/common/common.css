@@ -1,18 +1,3 @@
-@font-face {
-    font-family: 'Helvetica Neue Light';
-    src: url('../helveticaneue-light-webfont.eot');
-    src: url('../helveticaneue-light-webfont.eot?#iefix') format('embedded-opentype'),
-    url('../helveticaneue-light-webfont.woff') format('woff');
-}
-
-
-@font-face {
-    font-family: 'Helvetica Neue';
-    src: url('../helveticaneue-webfont.eot');
-    src: url('../helveticaneue-webfont.eot?#iefix') format('embedded-opentype'),
-    url('../helveticaneue-webfont.woff') format('woff');
-}
-
 .v-generated-body,
 .v-app {
     background: #fff;
@@ -41,7 +26,7 @@
 .v-menubar-submenu,
 .v-drag-element,
 .v-table-header-drag {
-    font-family: "Helvetica Neue", "Segoe UI", Arial, Tahoma, Verdana, sans-serif;
+    font-family: "Open Sans", "Segoe UI","Helvetica Neue", Arial, sans-serif;
     font-size: 12px;
     line-height: normal;
     color: #333;
