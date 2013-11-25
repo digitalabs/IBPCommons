@@ -1,5 +1,6 @@
 @import url(../reindeer/styles.css);
 @import "fonts/font.css";
+@import "glyphs/glyphs.css";
 @import "common/common.css";
 @import "button/button.css";
 @import "label/label.css";
