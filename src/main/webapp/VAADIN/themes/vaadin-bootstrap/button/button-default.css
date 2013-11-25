@@ -44,9 +44,11 @@
 
     border: none;
     border-radius: 3px;
+    height: 20px;
 }
 
 .v-button-caption {
+    font-family: "Helvetica Neue","Segoe UI","Arial",sans-serif;
     color: #333;
     font-weight: bold;
     text-shadow: none;

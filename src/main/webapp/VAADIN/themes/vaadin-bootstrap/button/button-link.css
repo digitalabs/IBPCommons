@@ -40,6 +40,7 @@
 }
 
 .v-button-link .v-button-caption {
+    font-family: "Open Sans","Helvetica Neue","Segoe UI","Arial",sans-serif;
     color: #428bca;
     text-decoration: none;
 }
