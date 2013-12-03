@@ -24,6 +24,9 @@ public class Trait implements Serializable{
 
     private String name;
     private boolean active;
+    private String blues;
+    private String blups;
+    private int id;
     
     @XmlAttribute
     public String getName() {
@@ -42,4 +45,32 @@ public class Trait implements Serializable{
     public void setActive(boolean active) {
         this.active = active;
     }
+
+    @XmlAttribute(name = "BLUEs")
+	public String getBlues() {
+		return blues;
+	}
+
+	public void setBlues(String blues) {
+		this.blues = blues;
+	}
+
+	@XmlAttribute(name = "BLUPs")
+	public String getBlups() {
+		return blups;
+	}
+
+	public void setBlups(String blups) {
+		this.blups = blups;
+	}
+	
+	@XmlAttribute
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+    
 }
