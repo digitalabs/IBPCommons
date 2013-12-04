@@ -2,7 +2,9 @@ package org.generationcp.commons.sea.xml;
 
 import java.io.Serializable;
 
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 public class Environment implements Serializable{
 
@@ -10,6 +12,9 @@ public class Environment implements Serializable{
 
     private String name;
     private String trial;
+    private String trialno;
+    private Boolean active;
+    private int id;
     
     @XmlAttribute
 	public String getName() {
@@ -25,6 +30,33 @@ public class Environment implements Serializable{
 	}
 	public void setTrial(String trial) {
 		this.trial = trial;
+	}
+	
+	@XmlAttribute
+	public Boolean getActive() {
+		return active;
+	}
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+	
+	@XmlAttribute
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	@XmlTransient
+	public String getTrialno() {
+		return trialno;
+	}
+	
+	
+	public void setTrialno(String trialno) {
+		this.trialno = trialno;
 	}
 
 }

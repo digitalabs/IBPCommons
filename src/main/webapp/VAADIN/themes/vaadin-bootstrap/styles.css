@@ -1,5 +1,6 @@
 @import url(../reindeer/styles.css);
 @import "fonts/font.css";
+@import "glyphs/glyphs.css";
 @import "common/common.css";
 @import "button/button.css";
 @import "label/label.css";
@@ -31,4 +32,101 @@ body {
 .v-accordion-item-first .v-accordion-item-caption {
     border: 1px solid #e6e6e6;
     box-sizing: border-box;
+}
+
+
+/* WINDOW */
+.v-window-light .v-window-closebox {
+    top: 12px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    background-image: none;
+
+    color: #cccccc;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 21px;
+    padding: 2px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-left: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    /*background: #d2322d;
+    border: 1px solid #ac2925;
+    */
+}
+.v-window-light .v-window-closebox:hover {
+    background: transparent;
+    background-image: none;
+
+    color: #aaa;
+
+}
+.v-window-light .v-window-closebox:active {
+    background: transparent;
+    background-image: none;
+
+    color: #aaa;
+
+}
+
+.v-window-light .v-window-closebox:before {
+    content: "\e014";
+}
+
+
+/* Table */
+.v-table-header-wrap,
+.white .v-table-header-wrap,
+.v-table-header-drag {
+    background-color: #d3d7d9;
+    font-size: 12px;
+    text-shadow: none;
+    height: 25px;
+}
+
+.v-table-header, .v-table-resizer {
+    height: 25px;
+}
+
+.v-table-column-selector {
+    margin-top: -25px;
+}
+
+/* table selected color */
+.v-table .v-selected,
+.black .v-table .v-selected {
+    background: #428bca;
+    color: #fff;
+    text-shadow: none;
+}
+
+/* TREE (MOVE TO COMMONS) */
+.v-tree-node span {
+    padding: 1px 2px;
+    margin-left: 5px;
+    display: inline-block;
+}
+.v-tree-node-selected span {
+    background: none;
+    background-color: #3276b1;
+    background-position: left -1876px;
+    color: #fff;
+    padding: 1px 5px !important;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    text-shadow: none;
+    display: inline-block;
+}
+
+.v-tree-node-focused span{
+    /* border: 1px solid #285e8e; */
+    border: none;
 }
