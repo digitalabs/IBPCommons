@@ -494,6 +494,10 @@ public class PoiUtil {
     public static Boolean rowIsEmpty(Sheet sheet, int rowIndex, int start, int end) {
 
         Row row = sheet.getRow(rowIndex);
+
+        if (row == null) {
+            return true;
+        }
         //Boolean isEmpty = true;
 
         for (int cn = start; cn <= end; cn++) {
@@ -688,6 +692,9 @@ public class PoiUtil {
             lastRowNum --;
 
             row = sheet.getRow(lastRowNum);
+            if (row == null) {
+                continue;
+            }
             start = row.getFirstCellNum();
             end = row.getLastCellNum() - 1;
 
