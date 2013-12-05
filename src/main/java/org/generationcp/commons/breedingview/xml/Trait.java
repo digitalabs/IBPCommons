@@ -16,6 +16,7 @@ package org.generationcp.commons.breedingview.xml;
 import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 
 public class Trait implements Serializable{
@@ -64,7 +65,7 @@ public class Trait implements Serializable{
 		this.blups = blups;
 	}
 	
-	@XmlAttribute
+	@XmlTransient
 	public int getId() {
 		return id;
 	}
