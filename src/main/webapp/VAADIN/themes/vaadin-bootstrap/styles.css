@@ -130,3 +130,62 @@ body {
     /* border: 1px solid #285e8e; */
     border: none;
 }
+
+
+/* selectbox */
+
+.v-filterselect-suggestmenu .gwt-MenuItem-selected {
+    background: #418bca;
+    background-image: none;	color: #fff;
+    text-shadow: none;
+}
+
+.v-filterselect-suggestpopup {
+    background: #fff;
+}
+
+/* date field */
+.v-sa .v-datefield-popup,
+.v-ff3 .v-datefield-popup,
+.v-op .v-datefield-popup {
+    background: #fff;
+}
+
+.v-datefield-calendarpanel-weekdays td {
+    background-color: transparent;
+    background-image: none;
+    text-shadow: none;
+    color: black;
+}
+
+.v-datefield-calendarpanel-weekdays .v-first {
+    background-image: none;
+}
+.v-datefield-calendarpanel-weekdays .v-last {
+    background-image: none;
+}
+
+
+.v-datefield-calendarpanel-weekdays strong {
+    border-top: none;
+}
+
+.v-datefield-calendarpanel-day-selected {
+    background: #418bca;
+    color: #fff;
+    text-shadow: none;
+}
+
+/* Text Field */
+.v-textfield,
+.v-textarea,
+.white .v-textfield,
+.white .v-textarea,
+div.v-table-full-height-fields input.v-textfield {
+    background-image: none;
+}
+
+/* Twin Col Buttons */
+.v-select-twincol-buttons .v-button {
+    margin: 8px;
+}
