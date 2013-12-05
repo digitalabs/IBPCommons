@@ -40,7 +40,7 @@ public class Environment implements Serializable{
 		this.active = active;
 	}
 	
-	@XmlAttribute
+	@XmlTransient
 	public int getId() {
 		return id;
 	}
