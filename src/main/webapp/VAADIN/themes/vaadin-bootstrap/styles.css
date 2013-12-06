@@ -144,6 +144,19 @@ body {
     background: #fff;
 }
 
+.v-filterselect-status {
+    text-shadow: none;
+    line-height: 11px;
+    background-color: #e9e9e9;
+    background-image: none;
+}
+
+.v-filterselect-nextpage:hover, .v-filterselect-nextpage:hover {
+    background-image: none;
+    background-color: #e9e9e9;
+}
+
+
 /* date field */
 .v-sa .v-datefield-popup,
 .v-ff3 .v-datefield-popup,
