@@ -7,17 +7,17 @@
     height: 100%;
     margin: 0;
     background: transparent;
-    background-image: url(../images/loading-indicator.gif);
+    background-image: url(../images/loading-animation.gif);
     background-position: 50%;
     background-repeat: no-repeat;
     background-attachment: fixed;
 }
 .v-loading-indicator-delay {
-    background-image: url(../images/loading-indicator.gif);
+    background-image: url(../images/loading-animation.gif);
 }
 
 .v-loading-indicator-wait {
-    background-image: url(../images/loading-indicator.gif);
+    background-image: url(../images/loading-animation.gif);
 }
 
 .v-generated-body,
