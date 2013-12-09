@@ -205,3 +205,8 @@ div.v-table-full-height-fields input.v-textfield {
 .v-contextmenu .gwt-MenuItem-selected .v-on {
     background-image: none;
 }
+
+/* split panel */
+.v-splitpanel-first-container-gcp-workbench-content-split-panel {
+    background-color: #f9f9f9;
+}
