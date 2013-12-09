@@ -2,13 +2,29 @@
 
 .v-table-header-wrap,
 .white .v-table-header-wrap,
+.v-table-footer-wrap,
+.white .v-table-footer-wrap,
 .v-table-header-drag {
-    background-color: #f5f5f5;
+    border-color: #ddd;
     background-image: none;
+    background-color: #f5f5f5;
     font-size: 12px;
     text-shadow: none;
     height: 25px;
     color: #333;
+}
+
+.v-table-body,
+.white .v-table-body {
+    border-color: #ddd;
+}
+
+.v-table-cell-content {
+    border-right-color: #ddd;
+}
+
+.v-table-row-odd {
+    background: #f9f9f9;
 }
 
 .v-table-header, .v-table-resizer {
