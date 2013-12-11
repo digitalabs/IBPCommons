@@ -10,16 +10,18 @@ body {
     box-sizing: border-box;
 }
 
-/* TODO: MOVE THESE TO ACCORDION SPECIFIC STYLESHEET */
+/* Accordion */
 .v-accordion {
-    border: 1px solid #e6e6e6; border-radius: 3px;
-}
+     border: 1px solid #dcdcdc;
+     border-radius: 3px;
+     background: #f6f6f6;
+ }
 
 .v-accordion-item-caption {
     height: 25px;
-    background: #f5f5f5 repeat-x;
+    background: #e3e3e3;
     font-size: 14px;
-    border: 1px solid #e6e6e6;
+    border: none;
 
     border-radius: 3px;
     margin: 5px;
@@ -28,15 +30,16 @@ body {
 }
 
 .v-accordion-item-open .v-accordion-item-caption {
-    background-image: none;
-    border: 1px solid #e6e6e6;
+    background: #e3e3e3;
+    border: 1px solid #dcdcdc;
     box-sizing: border-box;
 }
 
 .v-accordion-item-first .v-accordion-item-caption {
-    border: 1px solid #e6e6e6;
+    border: 1px solid #dcdcdc;
     box-sizing: border-box;
 }
+
 
 
 /* WINDOW */
@@ -92,9 +95,9 @@ body {
 }
 .v-tree-node-selected span {
     background: none;
-    background-color: #3276b1;
+    background-color: #BED6B2;
     background-position: left -1876px;
-    color: #fff;
+    color: #615d5e;
     padding: 1px 5px !important;
     border-radius: 10px;
     -webkit-border-radius: 10px;
@@ -112,8 +115,8 @@ body {
 /* selectbox */
 
 .v-filterselect-suggestmenu .gwt-MenuItem-selected {
-    background: #418bca;
-    background-image: none;	color: #fff;
+    background: #BED6B2;
+    background-image: none;	color: #615d5e;
     text-shadow: none;
 }
 
@@ -161,8 +164,9 @@ body {
 }
 
 .v-datefield-calendarpanel-day-selected {
-    background: #418bca;
-    color: #fff;
+    background: #BED6B2;
+    color: #615d5e;
+    outline: none;
     text-shadow: none;
 }
 
@@ -185,15 +189,18 @@ div.v-table-full-height-fields input.v-textfield {
     background: #fff;
 }
 .v-contextmenu .gwt-MenuItem-selected {
-    background-image: none;
-    background-color: #418bca;
-    color: #fff;
+    background: #BED6B2;
+    color: #615d5e;
     text-shadow: none;
 
 }
 .v-ie .v-contextmenu .gwt-MenuItem-selected {
-    background-image: none;
-    background-color: #418bca;
+    background: #BED6B2;
+    color: #615d5e;
+}
+
+.v-contextmenu .gwt-MenuItem-selected div {
+    color: #615d5e;
 }
 
 /* row in column selector */

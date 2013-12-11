@@ -94,11 +94,11 @@
 
     color: grey;
     position: relative;
-    top: 1px; left: 4px;
+    top: 1px;
 
     font-family: 'Glyphicons Halflings';
     -webkit-font-smoothing: antialiased;
-    font-size: 10px;
+    font-size: 12px;
     font-style: normal;
     font-weight: normal;
     line-height: 1;
@@ -107,7 +107,7 @@
 }
 
 .v-table-column-selector:before {
-    content: "\e165";
+    content: "\e056";
 }
 
 .v-table-column-selector:active {
@@ -122,3 +122,4 @@
 .v-table .v-selected .v-table-cell-content {
     border-right-color: inherit;
 }
+
