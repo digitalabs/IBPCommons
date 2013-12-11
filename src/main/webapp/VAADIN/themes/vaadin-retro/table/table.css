@@ -22,7 +22,7 @@
 }
 
 .v-table-cell-content {
-    border-bottom: 1px solid #cecece;
+    /* border-bottom: 1px solid #cecece; */
     border-right-color: #cecece;
 }
 
@@ -38,6 +38,10 @@
 .v-table-row, .v-table-row-odd {
     background: #e3e3e3;
     color: #615d5e;
+}
+
+.v-table-row-odd {
+    background: #dadada;
 }
 
 .v-table-header, .v-table-resizer {
@@ -70,7 +74,6 @@
     background-position: left -1005px;
 }
 
-
 .v-table-column-selector {
     margin-top: -20px;
     background: transparent no-repeat;
@@ -78,10 +81,11 @@
 
     color: grey;
     position: relative;
-    top: 1px;
+    top: 1px; left: 4px;
 
     font-family: 'Glyphicons Halflings';
     -webkit-font-smoothing: antialiased;
+    font-size: 10px;
     font-style: normal;
     font-weight: normal;
     line-height: 1;
@@ -90,12 +94,9 @@
 }
 
 .v-table-column-selector:before {
-    content: "\e011";
-}
-.v-table-column-selector:active {
-    background-image: none;
+    content: "\e165";
 }
 
-.v-table-resizer {
-    border: none;
+.v-table-column-selector:active {
+    background-image: none;
 }

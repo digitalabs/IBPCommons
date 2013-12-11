@@ -248,7 +248,7 @@ div.v-table-full-height-fields input.v-textfield {
 }
 .v-tabsheet-tabs .v-tabsheet-tabitem-selected,
 .white .v-tabsheet-tabs .v-tabsheet-tabitem-selected {
-    background: transparent;
+    background: #f6f6f6;
     border: 1px solid #bfbfbf;
     border-bottom: none;
     border-top-left-radius: 5px;
@@ -270,7 +270,93 @@ div.v-table-full-height-fields input.v-textfield {
 }
 
 .v-tabsheet-tabsheetpanel {
-    background: rgba(255,255,255,0.8);
+    background: #f6f6f6;
+}
+
+/* TAB + TABSHEETS */
+.v-tabsheet-tabs .v-tabsheet-spacertd div,
+.white .v-tabsheet-tabs .v-tabsheet-spacertd div {
+    border-bottom: 1px solid #e4e4e4;
+    height: auto;
+    background: transparent;
+}
+.v-tabsheet-tabs .v-tabsheet-tabitemcell,
+.v-tabsheet-tabs .v-tabsheet-spacertd {
+    height: auto;
+    background: transparent;
+    padding-left: 0;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell {
+
+}
+
+
+.v-tabsheet-spacertd div {
+    margin-right: 0px;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitem,
+.white .v-tabsheet-tabs .v-tabsheet-tabitem {
+    border-bottom: 1px solid #e4e4e4;
+    padding: 0;
+    height: auto;
+    background: transparent;
+    text-shadow: none;
+}
+
+
+
+.v-tabsheet-tabs .v-tabsheet-tabitem .v-caption {
+    padding: 5px 16px;
+    height: auto;
+    background: #eee;
+    border-radius: 3px 3px 0px 0px;
+    margin-left: 3px;
+    margin-right: 3px;
+    border-top: 1px solid #e4e4e4;
+    border-left: 1px solid #e4e4e4;
+    border-right: 1px solid #e4e4e4;
+    font-weight: bold;
+    color: #615d5e;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitemcell-selected {
+    background: transparent;
+}
+
+.v-tabsheet-tabs .v-tabsheet-tabitem-selected,
+.white .v-tabsheet-tabs .v-tabsheet-tabitem-selected {
+    background: #f6f6f6;
+    border: 1px solid #e4e4e4;
+    border-bottom: none;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #222;
+}
+
+
+
+.v-tabsheet-tabs .v-tabsheet-tabitem-selected .v-caption {
+    background: transparent;
+    padding: 4px 15px 6px 15px;
+
+    border: 0px;
+}
+
+
+.v-tabsheet-tabs .v-tabsheet-tabitem .v-caption-closable,
+.v-tabsheet-tabs .v-tabsheet-tabitem-selected .v-caption-closable {
+    padding-right: 6px;
+}
+
+.v-sa .v-tabsheet-content,
+.v-ff3 .v-tabsheet-content {
+    border-color: #e4e4e4;
+}
+
+.v-tabsheet-tabsheetpanel {
+    background: #f6f6f6;
 }
 
 /* tabs close ICON */
