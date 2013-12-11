@@ -1,0 +1,64 @@
+.v-button-danger:focus {
+    border: 1px solid #ac2925;
+    background: #ac2925;
+
+    outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
+}
+
+.v-button-danger:hover {
+    border: 1px solid #ac2925;
+    background: #ac2925;
+}
+
+.v-button-danger:hover .v-button-wrap,
+.v-button-danger:focus .v-button-wrap
+{
+    border: none;
+    background: #ac2925;
+}
+
+.v-button-danger:active,
+.v-pressed.v-button-danger {
+    border: 1px solid #d43f3a;
+    background: #d9534f;
+}
+
+.v-button-danger:active .v-button-wrap,
+.v-pressed.v-button-danger .v-button-wrap {
+    border: none;
+    background: #d9534f;
+}
+
+.v-button-danger:active .v-button-caption,
+.v-pressed.v-button-danger .v-button-caption {
+    color: #fff;
+}
+
+.v-button-danger,
+.v-disabled.v-button-danger {
+    border: 1px solid #d43f3a;
+    background: #d9534f;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.v-button-danger .v-button-wrap,
+.v-disabled.v-button-danger .v-button-wrap {
+    box-sizing: border-box;
+    background: #d9534f;
+
+    border: none;
+    border-radius: 3px;
+}
+
+.v-button-danger .v-button-caption {
+    color: #fff;
+}
+
+
+/********************************
+ * "with-icon" style
+ ********************************/
+.v-button-danger.with-icon .v-button-wrap {
+    padding-left: 8px;
+}

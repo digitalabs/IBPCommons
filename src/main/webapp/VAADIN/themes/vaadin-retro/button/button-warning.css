@@ -1,0 +1,64 @@
+.v-button-warning:focus {
+    border: 1px solid #d58512;
+    background: #ed9c28;
+
+    outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
+}
+
+.v-button-warning:hover {
+    border: 1px solid #d58512;
+    background: #ed9c28;
+}
+
+.v-button-warning:hover .v-button-wrap,
+.v-button-warning:focus .v-button-wrap
+{
+    border: none;
+    background: #ed9c28;
+}
+
+.v-button-warning:active,
+.v-pressed.v-button-warning {
+    border: 1px solid #eea236;
+    background: #f0ad4e;
+}
+
+.v-button-warning:active .v-button-wrap,
+.v-pressed.v-button-warning .v-button-wrap {
+    border: none;
+    background: #f0ad4e;
+}
+
+.v-button-warning:active .v-button-caption,
+.v-pressed.v-button-warning .v-button-caption {
+    color: #fff;
+}
+
+.v-button-warning,
+.v-disabled.v-button-warning {
+    border: 1px solid #eea236;
+    background: #f0ad4e;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.v-button-warning .v-button-wrap,
+.v-disabled.v-button-warning .v-button-wrap {
+    box-sizing: border-box;
+    background: #f0ad4e;
+
+    border: none;
+    border-radius: 3px;
+}
+
+.v-button-warning .v-button-caption {
+    color: #fff;
+}
+
+
+/********************************
+ * "with-icon" style
+ ********************************/
+.v-button-warning.with-icon .v-button-wrap {
+    padding-left: 8px;
+}

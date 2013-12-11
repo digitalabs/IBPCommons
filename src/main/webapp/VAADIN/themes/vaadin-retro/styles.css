@@ -1,0 +1,212 @@
+@import url(../reindeer/styles.css);
+@import "fonts/font.css";
+@import "glyphs/glyphs.css";
+@import "common/common.css";
+@import "button/button.css";
+@import "label/label.css";
+@import "table/table.css";
+
+body {
+    box-sizing: border-box;
+}
+
+/* TODO: MOVE THESE TO ACCORDION SPECIFIC STYLESHEET */
+.v-accordion {
+    border: 1px solid #e6e6e6; border-radius: 3px;
+}
+
+.v-accordion-item-caption {
+    height: 25px;
+    background: #f5f5f5 repeat-x;
+    font-size: 14px;
+    border: 1px solid #e6e6e6;
+
+    border-radius: 3px;
+    margin: 5px;
+    box-sizing: border-box;
+    font-weight: 600;
+}
+
+.v-accordion-item-open .v-accordion-item-caption {
+    background-image: none;
+    border: 1px solid #e6e6e6;
+    box-sizing: border-box;
+}
+
+.v-accordion-item-first .v-accordion-item-caption {
+    border: 1px solid #e6e6e6;
+    box-sizing: border-box;
+}
+
+
+/* WINDOW */
+.v-window-light .v-window-closebox {
+    top: 12px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    background: transparent;
+    background-image: none;
+
+    color: #cccccc;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 21px;
+    padding: 2px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-left: 8px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    /*background: #d2322d;
+    border: 1px solid #ac2925;
+    */
+}
+.v-window-light .v-window-closebox:hover {
+    background: transparent;
+    background-image: none;
+
+    color: #aaa;
+
+}
+.v-window-light .v-window-closebox:active {
+    background: transparent;
+    background-image: none;
+
+    color: #aaa;
+
+}
+
+.v-window-light .v-window-closebox:before {
+    content: "\e014";
+}
+
+/* TREE (MOVE TO COMMONS) */
+.v-tree-node span {
+    padding: 1px 2px;
+    margin-left: 5px;
+    display: inline-block;
+}
+.v-tree-node-selected span {
+    background: none;
+    background-color: #3276b1;
+    background-position: left -1876px;
+    color: #fff;
+    padding: 1px 5px !important;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    text-shadow: none;
+    display: inline-block;
+}
+
+.v-tree-node-focused span{
+    /* border: 1px solid #285e8e; */
+    border: none;
+}
+
+
+/* selectbox */
+
+.v-filterselect-suggestmenu .gwt-MenuItem-selected {
+    background: #418bca;
+    background-image: none;	color: #fff;
+    text-shadow: none;
+}
+
+.v-filterselect-suggestpopup {
+    background: #fff;
+}
+
+.v-filterselect-status {
+    text-shadow: none;
+    line-height: 11px;
+    background-color: #e9e9e9;
+    background-image: none;
+}
+
+.v-filterselect-nextpage:hover, .v-filterselect-prevpage:hover {
+    background-image: none;
+    background-color: #e9e9e9;
+}
+
+
+/* date field */
+.v-sa .v-datefield-popup,
+.v-ff3 .v-datefield-popup,
+.v-op .v-datefield-popup {
+    background: #fff;
+}
+
+.v-datefield-calendarpanel-weekdays td {
+    background-color: transparent;
+    background-image: none;
+    text-shadow: none;
+    color: black;
+}
+
+.v-datefield-calendarpanel-weekdays .v-first {
+    background-image: none;
+}
+.v-datefield-calendarpanel-weekdays .v-last {
+    background-image: none;
+}
+
+
+.v-datefield-calendarpanel-weekdays strong {
+    border-top: none;
+}
+
+.v-datefield-calendarpanel-day-selected {
+    background: #418bca;
+    color: #fff;
+    text-shadow: none;
+}
+
+/* Text Field */
+.v-textfield,
+.v-textarea,
+.white .v-textfield,
+.white .v-textarea,
+div.v-table-full-height-fields input.v-textfield {
+    background-image: none;
+}
+
+/* Twin Col Buttons */
+.v-select-twincol-buttons .v-button {
+    margin: 8px;
+}
+
+/* context menu */
+.v-contextmenu {
+    background: #fff;
+}
+.v-contextmenu .gwt-MenuItem-selected {
+    background-image: none;
+    background-color: #418bca;
+    color: #fff;
+    text-shadow: none;
+
+}
+.v-ie .v-contextmenu .gwt-MenuItem-selected {
+    background-image: none;
+    background-color: #418bca;
+}
+
+/* row in column selector */
+.v-contextmenu .v-on,
+.v-contextmenu .v-off {
+    background-image: none;
+}
+
+.v-contextmenu .gwt-MenuItem-selected .v-on {
+    background-image: none;
+}
+
+/* split panel */
+.v-splitpanel-first-container-gcp-workbench-content-split-panel {
+    background-color: #f9f9f9;
+}

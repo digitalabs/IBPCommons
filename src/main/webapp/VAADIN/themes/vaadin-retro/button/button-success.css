@@ -1,0 +1,64 @@
+.v-button-success:focus {
+    border: 1px solid #398439;
+    background: #47a447;
+
+    outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
+}
+
+.v-button-success:hover {
+    border: 1px solid #398439;
+    background: #47a447;
+}
+
+.v-button-success:hover .v-button-wrap,
+.v-button-success:focus .v-button-wrap
+{
+    border: none;
+    background: #47a447;
+}
+
+.v-button-success:active,
+.v-pressed.v-button-success {
+    border: 1px solid #4cae4c;
+    background: #5cb85c;
+}
+
+.v-button-success:active .v-button-wrap,
+.v-pressed.v-button-success .v-button-wrap {
+    border: none;
+    background: #5cb85c;
+}
+
+.v-button-success:active .v-button-caption,
+.v-pressed.v-button-success .v-button-caption {
+    color: #fff;
+}
+
+.v-button-success,
+.v-disabled.v-button-success {
+    border: 1px solid #4cae4c;
+    background: #5cb85c;
+    box-sizing: border-box;
+    border-radius: 3px;
+}
+
+.v-button-success .v-button-wrap,
+.v-disabled.v-button-success .v-button-wrap {
+    box-sizing: border-box;
+    background: #5cb85c;
+
+    border: none;
+    border-radius: 3px;
+}
+
+.v-button-success .v-button-caption {
+    color: #fff;
+}
+
+
+/********************************
+ * "with-icon" style
+ ********************************/
+.v-button-success.with-icon .v-button-wrap {
+    padding-left: 8px;
+}
