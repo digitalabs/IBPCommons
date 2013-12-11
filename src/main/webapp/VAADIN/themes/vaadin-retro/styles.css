@@ -391,6 +391,14 @@ div.v-table-full-height-fields input.v-textfield {
 .white .v-tabsheet-tabs .v-tabsheet-caption-close:active {
     background: #777;
 }
+
+.v-sa .v-tabsheet-deco,
+.v-ff3 .v-tabsheet-deco {
+    border-top-color: #e4e4e4;
+    background: transparent;
+}
+
+
 .v-popupview-popup {
 	background-color: #5A5A5A;
     color: white;

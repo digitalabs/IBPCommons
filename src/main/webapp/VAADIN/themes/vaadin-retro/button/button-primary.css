@@ -8,16 +8,21 @@
     outline:thin dotted #dd6f03;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
 }
 
+.v-button-primary:focus .v-button-wrap
+{
+    border: none;
+    background: #FF8109;
+}
+
 .v-button-primary:hover {
     border: 1px solid #f97e0a;
     background: #f9aa60;
 }
 
-.v-button-primary:hover .v-button-wrap,
-.v-button-primary:focus .v-button-wrap
-{
+.v-button-primary:hover .v-button-wrap {
     border: none;
     background: #f9aa60;
+
 }
 
 .v-button-primary:active,
