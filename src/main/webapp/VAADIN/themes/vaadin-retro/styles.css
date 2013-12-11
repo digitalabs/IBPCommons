@@ -305,3 +305,10 @@ div.v-table-full-height-fields input.v-textfield {
 .white .v-tabsheet-tabs .v-tabsheet-caption-close:active {
     background: #777;
 }
+.v-popupview-popup {
+	background-color: #5A5A5A;
+    color: white;
+    padding: 20px 20px;
+    border-radius: 8px;
+    text-align: justify;
+}
