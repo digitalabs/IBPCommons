@@ -54,8 +54,8 @@
 
 .v-table .v-selected,
 .black .v-table .v-selected {
-    background: #428bca;
-    color: #fff;
+    background: #BED6B2;
+    color: #615d5e;
     text-shadow: none;
 }
 
@@ -99,4 +99,13 @@
 
 .v-table-column-selector:active {
     background-image: none;
+}
+
+.v-table-focus .v-table-cell-content {
+    border-top: 1px dotted #BED6B2;
+    border-bottom: 1px dotted #BED6B2;
+}
+
+.v-table .v-selected .v-table-cell-content {
+    border-right-color: inherit;
 }
