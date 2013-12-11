@@ -399,6 +399,12 @@ div.v-table-full-height-fields input.v-textfield {
     background: #777;
 }
 
+.v-tabsheet-deco, .white .v-tabsheet-deco {
+    height: 1px;
+    border-top: 1px solid #e4e4e4;
+    background: transparent;
+}
+
 .v-sa .v-tabsheet-deco,
 .v-ff3 .v-tabsheet-deco {
     border-top-color: #e4e4e4;
@@ -406,10 +412,12 @@ div.v-table-full-height-fields input.v-textfield {
 }
 
 
-.v-popupview-popup {
+.v-popupview-popup,
+.v-tooltip {
 	background-color: #5A5A5A;
     color: white;
     padding: 20px 20px;
     border-radius: 8px;
     text-align: justify;
+    border: none;
 }
