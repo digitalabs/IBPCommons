@@ -84,3 +84,7 @@
     line-height: normal;
     font-size: 13px; font-weight: 300;
 }
+
+.v-window-modalitycurtain {
+    background: #fff;
+}
