@@ -6,8 +6,8 @@
 }
 
 .v-button-info:hover {
-    border: 1px solid #269abc;
-    background: #39b3d7;
+    border: 1px solid #1B95B2;
+    background: #29AFCF;
 }
 
 .v-button-info:hover .v-button-wrap,
@@ -36,8 +36,8 @@
 
 .v-button-info,
 .v-disabled.v-button-info {
-    border: 1px solid #46b8da;
-    background: #5bc0de;
+    border: 1px solid #0B748D;
+    background: #1B95B2;
     box-sizing: border-box;
     border-radius: 3px;
 }
@@ -45,7 +45,7 @@
 .v-button-info .v-button-wrap,
 .v-disabled.v-button-info .v-button-wrap {
     box-sizing: border-box;
-    background: #5bc0de;
+    background: #1B95B2;
 
     border: none;
     border-radius: 3px;
