@@ -87,6 +87,29 @@ body {
     content: "\e014";
 }
 
+/* Confirm Dialogs */
+.v-window-light.v-window-confirm .v-window-closebox {
+    color: #a0a0a0;
+}
+
+.v-window-light.v-window-confirm .v-window-wrap2 {
+    background: #cecece;
+    background-image: none;
+    -background-image: none;
+    background-position: left -2068px;
+}
+
+.v-window-light.v-window-confirm .v-window-header {
+    color: #4e4e4e;
+    text-align: center;
+    text-shadow: 1px 1px 2px #fff;
+}
+
+.v-window-light.v-window-confirm .v-label {
+    text-align: center;
+}
+
+
 /* TREE (MOVE TO COMMONS) */
 .v-tree-node span {
     padding: 1px 2px;

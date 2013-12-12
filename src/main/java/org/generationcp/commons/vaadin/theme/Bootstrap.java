@@ -35,6 +35,20 @@ public class Bootstrap {
         }
     }
 
+    public enum WINDOW {
+        CONFIRM(Reindeer.WINDOW_LIGHT + " confirm");
+
+        String styleName;
+
+        WINDOW(String value) {
+            this.styleName = value;
+        }
+
+        public String styleName() {
+            return this.styleName.toLowerCase().replaceAll("_","-");
+        }
+    }
+
     public enum Buttons {
         DEFAULT, PRIMARY, INFO, SUCCESS, WARNING, DANGER, LINK;
 

@@ -54,6 +54,33 @@
     color: #333;
 }
 
+.v-Notification {
+    opacity: 1 !important;
+    width: 300px;
+    margin-top: 20px !important;
+    border-radius: 10px;
+}
 .v-Notification.v-Notification-error {
     color: #fff;
+    border: none;
+    background: #990000 url(../images/v_x.png) no-repeat 97% 10px;
+}
+
+.v-Notification .gwt-HTML {
+    margin: 10px; margin-top: 15px;
+}
+
+.v-Notification .gwt-HTML h1 {
+    display: block;
+    line-height: 19pt;
+    font-weight: 500; font-size: 19pt;
+}
+.v-Notification .gwt-HTML p br {
+    display: none;
+}
+.v-Notification .gwt-HTML p  {
+    display: block;
+    margin-top: 5px; padding: 0;
+    line-height: normal;
+    font-size: 13px; font-weight: 300;
 }
