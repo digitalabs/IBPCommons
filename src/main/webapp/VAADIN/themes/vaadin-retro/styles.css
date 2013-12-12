@@ -51,7 +51,7 @@ body {
     background: transparent;
     background-image: none;
 
-    color: #cccccc;
+    color: #a0a0a0;
     font-family: 'Glyphicons Halflings';
     font-style: normal;
     font-size: 14px;
@@ -87,9 +87,22 @@ body {
     content: "\e014";
 }
 
+.v-window-light .v-window-outerheader {
+    background: #eeeeee;
+    height: 38px;
+}
+
+
+
 /* Confirm Dialogs */
 .v-window-light.v-window-confirm .v-window-closebox {
     color: #a0a0a0;
+}
+
+.v-window-light.v-window-confirm .v-window-outerheader {
+    background: transparent;
+    padding: 15px 32px 0 18px;
+    height: 23px;
 }
 
 .v-window-light.v-window-confirm .v-window-wrap2 {
@@ -434,7 +447,6 @@ div.v-table-full-height-fields input.v-textfield {
     background: transparent;
 }
 
-
 .v-popupview-popup,
 .v-tooltip {
 	background-color: #5A5A5A;
@@ -442,5 +454,12 @@ div.v-table-full-height-fields input.v-textfield {
     padding: 20px 20px;
     border-radius: 8px;
     text-align: justify;
+    border: none;
+}
+
+.v-tooltip .v-errormessage {
+    padding: 0;
+    background: 0;
+    color: white;
     border: none;
 }
