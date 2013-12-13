@@ -89,7 +89,8 @@
 
 .v-table-column-selector {
     margin-top: -20px;
-    background: transparent no-repeat;
+    background: no-repeat;
+    background-color: #e3e3e3;
     background-image: none;
 
     color: grey;
@@ -103,7 +104,7 @@
     font-weight: normal;
     line-height: 1;
     -moz-osx-font-smoothing: grayscale;
-
+	padding-left: 3px;
 }
 
 .v-table-column-selector:before {
