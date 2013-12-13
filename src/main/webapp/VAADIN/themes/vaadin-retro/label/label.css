@@ -17,7 +17,7 @@
     margin-top: 10px;
 }
 
-.h1 {
+.h1, .gcp-content-title {
     font-size: 26px;
     font-weight: 500;
     height: 29px;
@@ -25,26 +25,26 @@
     text-transform: uppercase;
 }
 
-.h2, .gcp-content-header {
+.h2, .gcp-content-subheading {
     font-size: 24px;
     height: 28px;
     font-weight: 300;
     line-height: 24px;
 }
 
-.h3, .gcp-content-title {
-    font-size: 18px;
-    height: 19px;
-    line-height: 19px;
-    text-transform: uppercase;
-}
-
-.h4, .gcp-table-header-bold  {
+.h3, .gcp-table-header-bold  {
     font-size: 16px;
     height: 17px;
     line-height: 17px;
-    font-weight: bold;
+    font-weight: 600;
     text-transform: uppercase;
+}
+
+.h4 {
+    font-size: 16px;
+    height: 17px;
+    line-height: 17px;
+    font-weight: 500;
 }
 
 .h5 {
