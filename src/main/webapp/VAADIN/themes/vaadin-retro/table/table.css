@@ -14,7 +14,7 @@
 .v-table-header-drag {
     border-color: transparent;
     background-image: none;
-    background-color: #e3e3e3;
+    background-color: #c8c6c6;
     font-size: 12px;
     text-shadow: none;
     height: 25px;
@@ -45,12 +45,12 @@
     border: 0px;
 }
 .v-table-row, .v-table-row-odd {
-    background: #e3e3e3;
+    background: #f0eeee;
     color: #615d5e;
 }
 
 .v-table-row-odd {
-    background: #dadada;
+    background: #e3e3e3;
 }
 
 .v-table-header, .v-table-resizer {
@@ -72,14 +72,27 @@
     text-shadow: none;
 }
 
-.v-table-header-cell-asc .v-table-sort-indicator {
-    background-position: center -841px;
-    position:relative; top: 8px;
+.v-table-header-cell-asc .v-table-sort-indicator,
+.v-table-header-cell-desc .v-table-sort-indicator {
+    background:none;
+    position: relative;
+    top: 8px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
+    font-size: 9px;
+    font-weight: 300;
+    line-height: 1;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.v-table-header-cell-desc .v-table-sort-indicator {
-    background-position: center -830px;
-    position:relative; top: 8px;
+.v-table-header-cell-asc .v-table-sort-indicator:before {
+    content: "\e113";
+}
+
+.v-table-header-cell-desc .v-table-sort-indicator:before {
+    content: "\e114";
 }
 
 /* column selector */
@@ -90,7 +103,7 @@
 .v-table-column-selector {
     margin-top: -20px;
     background: no-repeat;
-    background-color: #e3e3e3;
+    background-color: #c8c6c6;
     background-image: none;
 
     color: grey;
@@ -104,11 +117,11 @@
     font-weight: normal;
     line-height: 1;
     -moz-osx-font-smoothing: grayscale;
-	padding-left: 3px;
+    padding-left: 3px;
 }
 
 .v-table-column-selector:before {
-    content: "\e056";
+    content: "\e011";
 }
 
 .v-table-column-selector:active {
@@ -123,4 +136,3 @@
 .v-table .v-selected .v-table-cell-content {
     border-right-color: #cecece;
 }
-
