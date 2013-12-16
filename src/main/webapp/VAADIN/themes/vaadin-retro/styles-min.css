@@ -848,6 +848,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 .v-app,.v-window,.v-popupview-popup,.v-tooltip,.v-app input,.v-app select,.v-app button,.v-app textarea,.v-window input,.v-window select,.v-window button,.v-window textarea,.v-popupview-popup input,.v-popupview-popup select,.v-popupview-popup button,.v-popupview-popup textarea,.v-filterselect-suggestpopup,.v-datefield-popup,.v-contextmenu,.v-menubar-submenu,.v-drag-element,.v-table-header-drag{font-family:"Open Sans","Segoe UI","Helvetica Neue",Arial,sans-serif;font-size:13px;line-height:normal;color:#333}
 .v-Notification{width:300px;margin-top:20px !important;border-radius:10px;color:#fff;background:#02ac1e;font-family:"Open Sans","Segoe UI","Helvetica Neue",Arial,sans-serif;font-size:13px;line-height:normal}
 .v-Notification.v-Notification-error{color:#fff;border:0;background:#900 url(images/v_x.png) no-repeat 97% 10px}
+.v-Notification.v-Notification-warning{color:#fff;border:0;background:#C99808  no-repeat 97% 10px}
 .v-Notification .gwt-HTML{margin:10px;margin-top:15px}
 .v-Notification .gwt-HTML h1{display:block;line-height:19pt;font-weight:500;font-size:19pt}
 .v-Notification .gwt-HTML p br{display:none}

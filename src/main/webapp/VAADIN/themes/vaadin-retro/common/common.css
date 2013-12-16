@@ -71,6 +71,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
     border: none;
     background: #990000 url(../images/v_x.png) no-repeat 97% 10px;
 }
+.v-Notification.v-Notification-warning{color:#fff;border:0;background:#C99808 }
 
 .v-Notification .gwt-HTML {
     margin: 10px; margin-top: 15px;
