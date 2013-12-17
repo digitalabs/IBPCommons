@@ -10,37 +10,11 @@ body {
     box-sizing: border-box;
 }
 
-/* Accordion */
-.v-accordion {
-     border: 1px solid #dcdcdc;
-     border-radius: 3px;
-     background: #ffffff;
- }
-
-.v-accordion-item-caption {
-    height: 25px;
-    background: #e3e3e3;
-    font-size: 14px;
-    border: none;
-
-    border-radius: 3px;
-    margin: 5px;
-    box-sizing: border-box;
-    font-weight: 600;
-}
-
-.v-accordion-item-open .v-accordion-item-caption {
-    background: #e3e3e3;
-    border: 1px solid #dcdcdc;
-    box-sizing: border-box;
-}
-
-.v-accordion-item-first .v-accordion-item-caption {
-    border: 1px solid #dcdcdc;
-    box-sizing: border-box;
-}
-
-
+.v-accordion-item-caption{height:25px;background:#e3e3e3;font-size:14px;border-radius:3px;margin:5px;box-sizing:border-box;font-weight:600;border:1px solid #dcdcdc;text-shadow:none;color:#615d5e}
+.v-accordion-item-first .v-accordion-item-caption{border:1px solid #dcdcdc;box-sizing:border-box}
+.v-accordion-item-open .v-accordion-item-caption{background:#e3e3e3;border:1px solid #dcdcdc;box-sizing:border-box}
+.v-accordion-item{background-color:#f6f6f6}
+.v-accordion{border:1px solid #dcdcdc;border-radius:3px;background:#f6f6f6}
 
 /* WINDOW */
 .v-window-light .v-window-closebox {
@@ -266,6 +240,7 @@ div.v-table-full-height-fields input.v-textfield {
     height: auto;
     background: transparent;
     padding-left: 0;
+    cursor: pointer;
 }
 .v-tabsheet-spacertd div {
     margin-right: 0px;
@@ -305,11 +280,6 @@ div.v-table-full-height-fields input.v-textfield {
 .v-tabsheet-tabs .v-tabsheet-tabitem .v-caption-closable,
 .v-tabsheet-tabs .v-tabsheet-tabitem-selected .v-caption-closable {
     padding-right: 6px;
-}
-
-.v-sa .v-tabsheet-content,
-.v-ff3 .v-tabsheet-content {
-    border-color: #bfbfbf;
 }
 
 .v-tabsheet-tabsheetpanel {
@@ -396,6 +366,7 @@ div.v-table-full-height-fields input.v-textfield {
 .v-sa .v-tabsheet-content,
 .v-ff3 .v-tabsheet-content {
     border-color: #e4e4e4;
+    background: #f6f6f6;
 }
 
 .v-tabsheet-tabsheetpanel {
