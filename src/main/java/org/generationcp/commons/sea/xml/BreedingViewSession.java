@@ -26,7 +26,7 @@ public class BreedingViewSession implements Serializable {
 		this.ibws = ibws;
 	}
 	
-	@XmlElement(name = "Data")
+	@XmlElement(name = "Datafile")
 	public DataFile getDataFile() {
 		return dataFile;
 	}
