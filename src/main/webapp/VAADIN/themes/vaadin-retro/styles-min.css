@@ -977,8 +977,8 @@ body{box-sizing:border-box}
 .v-window-light .v-window-outerheader{background:#eee;height:38px}
 .v-window-light.v-window-confirm .v-window-closebox{color:#a0a0a0}
 .v-window-light.v-window-confirm .v-window-outerheader{background:transparent;padding:15px 32px 0 18px;height:23px}
-.v-window-light.v-window-confirm .v-window-wrap2{background: #cecece url("images/cecece.png") 0 0; }
-.v-window-light.v-window-confirm .v-window-header{color:#4e4e4e;text-align:center;text-shadow:1px 1px 2px #fff}
+.v-window-light.v-window-confirm .v-window-wrap2{background: #cecece; }
+.v-window-light.v-window-confirm .v-window-header{color:#4e4e4e;text-align:center}
 .v-window-light.v-window-confirm .v-label{text-align:center}
 .v-tree-node span{padding:1px 2px;margin-left:5px;display:inline-block}
 .v-tree-node-selected span{background:0;background-color:#bed6b2;background-position:left -1876px;color:#615d5e;padding:1px 5px !important;border-radius:10px;-webkit-border-radius:10px;-moz-border-radius:10px;text-shadow:none;display:inline-block}
