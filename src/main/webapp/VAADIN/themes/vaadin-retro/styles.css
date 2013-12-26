@@ -434,3 +434,6 @@ div.v-table-full-height-fields input.v-textfield {
     color: white;
     border: none;
 }
+
+/* textfields */
+.v-app input.v-textfield,.v-window input.v-textfield,.v-app textarea.v-textarea,.v-window textarea.v-textarea,div.v-table-full-height-fields input.v-textfield{padding:3px 3px 4px; font-family:'Helvetica Neue','Segoe UI',Arial,sans-serif}
