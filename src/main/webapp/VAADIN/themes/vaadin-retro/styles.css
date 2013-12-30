@@ -436,4 +436,4 @@ div.v-table-full-height-fields input.v-textfield {
 }
 
 /* textfields */
-.v-app input.v-textfield,.v-window input.v-textfield,.v-app textarea.v-textarea,.v-window textarea.v-textarea,div.v-table-full-height-fields input.v-textfield{padding:3px 3px 4px; font-family:'Helvetica Neue','Segoe UI',Arial,sans-serif}
+.v-app .v-textfield-focus,.v-window .v-textfield-focus,.v-popupview-popup .v-textfield-focus,.v-app .v-textarea-focus,.v-window .v-textarea-focus,.v-popupview-popup .v-textarea-focus{border-color:#5b97d0;border-top-color:#4f83b4;border-bottom-color:#5ca0df;outline:0;background-color:#fff}
