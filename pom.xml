@@ -15,7 +15,7 @@
     </developers>
 
     <properties>
-        <vaadin.version>6.7.8</vaadin.version>
+        <vaadin.version>6.8.13</vaadin.version>
         <gwt.version>2.3.0</gwt.version>
         <middleware.version>2.1.0</middleware.version>
     </properties>
