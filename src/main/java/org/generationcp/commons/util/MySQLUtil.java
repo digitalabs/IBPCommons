@@ -238,12 +238,6 @@ public class MySQLUtil {
             }
         }
         
-        //add Notes column to listnms table if not exists
-        try{
-        	executeQuery(connection, "ALTER TABLE listnms ADD COLUMN notes TEXT NULL DEFAULT NULL");
-        } catch(SQLException e){
-        	
-        }
         
     }
     

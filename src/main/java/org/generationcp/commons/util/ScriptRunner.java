@@ -247,6 +247,19 @@ public class ScriptRunner {
       } catch (SQLException e) {
         String message = "Error executing: " + command + ".  Cause: " + e;
         printlnError(message);
+        
+        //GCP-7192 Workaround for listnms
+        if (sql.contains("INSERT INTO `listnms` VALUES")){
+        	sql = sql.replace("INSERT INTO `listnms` VALUES", "INSERT INTO `listnms` (`listid`,`listname`,`listdate`,`listtype`,`listuid`,`listdesc`,`lhierarchy`,`liststatus`,`sdate`,`edate`,`listlocn`,`listref`,`projectid`) VALUES");
+        	try{
+        	hasResults = statement.execute(sql);
+        	} catch (SQLException e2) {
+                String message2 = "Error executing: " + command + ".  Cause: " + e;
+                printlnError(message2);
+        	}
+        }
+       //GCP-7192 Workaround for listnms
+        
       }
     }
     printResults(statement, hasResults);
