@@ -9,7 +9,6 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
  *******************************************************************************/
-
 package org.generationcp.commons.vaadin.util;
 
 import com.vaadin.ui.Window;
@@ -38,15 +37,18 @@ public class MessageNotifier{
      * @param description the description
      */
     public static void showWarning(Window window, String caption, String description) {      
-      Notification notification = new Notification(caption, Window.Notification.TYPE_WARNING_MESSAGE);
+      Notification notification = 
+              new Notification(caption, Window.Notification.TYPE_WARNING_MESSAGE);
       notification.setDescription(description == null ? "" : "</br>" + description);
       notification.setDelayMsec(LONG_DELEY);
       notification.setPosition(POSITION);
       window.showNotification(notification);
     }
 
-    public static void showWarning(Window window, String caption, String description, int position) {      
-        Notification notification = new Notification(caption, Window.Notification.TYPE_WARNING_MESSAGE);
+    public static void showWarning(
+            Window window, String caption, String description, int position) {      
+        Notification notification = 
+                new Notification(caption, Window.Notification.TYPE_WARNING_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(LONG_DELEY);
         notification.setPosition(position);
@@ -61,15 +63,18 @@ public class MessageNotifier{
      * @param description the description
      */
     public static void showMessage(Window window, String caption, String description) {
-        Notification notification = new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
+        Notification notification = 
+                new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(DEFAULT_MESSAGE_DELAY); 
         notification.setPosition(POSITION);
         window.showNotification(notification);
     }
     
-    public static void showMessage(Window window, String caption, String description, int delayMs, int position) {
-        Notification notification = new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
+    public static void showMessage(
+            Window window, String caption, String description, int delayMs, int position) {
+        Notification notification = 
+                new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(delayMs); 
         notification.setPosition(position);
@@ -83,8 +88,10 @@ public class MessageNotifier{
      * @param caption the caption
      * @param description the description
      */
-    public static void showMessage(Window window, String caption, String description, int delayMs) {
-        Notification notification = new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
+    public static void showMessage(
+            Window window, String caption, String description, int delayMs) {
+        Notification notification = 
+                new Notification(caption, Notification.TYPE_HUMANIZED_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(delayMs); 
         notification.setPosition(POSITION);
@@ -98,8 +105,10 @@ public class MessageNotifier{
      * @param caption the caption
      * @param description the description
      */
-    public static void showError(Window window, String caption, String description) {
-        Notification notification = new Notification(caption, description, Notification.TYPE_WARNING_MESSAGE);
+    public static void showError(
+            Window window, String caption, String description) {
+        Notification notification = 
+                new Notification(caption, description, Notification.TYPE_WARNING_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(LONG_DELEY);
         notification.setStyleName("error");
@@ -107,8 +116,10 @@ public class MessageNotifier{
         window.showNotification(notification);
     }
     
-    public static void showError(Window window, String caption, String description, int position) {
-        Notification notification = new Notification(caption, description, Notification.TYPE_WARNING_MESSAGE);
+    public static void showError(
+            Window window, String caption, String description, int position) {
+        Notification notification = 
+                new Notification(caption, description, Notification.TYPE_WARNING_MESSAGE);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(LONG_DELEY);
         notification.setStyleName("error");
@@ -123,14 +134,14 @@ public class MessageNotifier{
      * @param caption the caption
      * @param description the description
      */
-    public static void showTrayNotification(Window window, String caption, String description) {
-        Notification notification = new Notification(caption, Notification.TYPE_TRAY_NOTIFICATION);
+    public static void showTrayNotification(
+            Window window, String caption, String description) {
+        Notification notification = 
+                new Notification(caption, Notification.TYPE_TRAY_NOTIFICATION);
         notification.setDescription(description == null ? "" : "</br>" + description);
         notification.setDelayMsec(DEFAULT_MESSAGE_DELAY);
         //notification.setPosition(POSITION);
         window.showNotification(notification);
     }
-    
-
 
 }

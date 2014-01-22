@@ -9,7 +9,6 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
  *******************************************************************************/
-
 package org.generationcp.commons.vaadin.spring;
 
 import javax.servlet.ServletConfig;
@@ -60,11 +59,13 @@ public class SpringApplicationServlet extends AbstractApplicationServlet{
      */
     @Override
     protected Application getNewApplication(HttpServletRequest request) throws ServletException {
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        WebApplicationContext wac = WebApplicationContextUtils
+                        .getRequiredWebApplicationContext(getServletContext());
 
         Object bean = wac.getBean(name);
         if (!(bean instanceof Application)) {
-            throw new ServletException("Bean " + name + " is not an instance of " + Application.class);
+            throw new ServletException("Bean " + name 
+                    + " is not an instance of " + Application.class);
         }
 
         return (Application) bean;
@@ -78,7 +79,8 @@ public class SpringApplicationServlet extends AbstractApplicationServlet{
     @SuppressWarnings({ "rawtypes", "unchecked" })
     @Override
     protected Class<? extends Application> getApplicationClass() throws ClassNotFoundException {
-        WebApplicationContext wac = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
+        WebApplicationContext wac = WebApplicationContextUtils
+                                    .getRequiredWebApplicationContext(getServletContext());
 
         Object bean = wac.getBean(name);
         if (bean == null) {

@@ -19,11 +19,9 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-
 import org.generationcp.commons.breedingview.xml.Columns;
 import org.generationcp.commons.breedingview.xml.Rows;
 import org.generationcp.commons.breedingview.xml.Blocks;
-import org.generationcp.commons.breedingview.xml.Data;
 import org.generationcp.commons.breedingview.xml.Genotypes;
 import org.generationcp.commons.breedingview.xml.Replicates;
 import org.generationcp.commons.breedingview.xml.Trait;

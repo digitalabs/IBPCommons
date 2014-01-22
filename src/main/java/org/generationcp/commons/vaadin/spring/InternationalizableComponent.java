@@ -10,7 +10,6 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
  *******************************************************************************/
-
 package org.generationcp.commons.vaadin.spring;
 
 public interface InternationalizableComponent {

@@ -10,7 +10,6 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
  *******************************************************************************/
-
 package org.generationcp.commons.vaadin.spring;
 
 import java.io.Serializable;
@@ -25,12 +24,14 @@ import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Table;
 
-public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSource implements Serializable {
+public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSource 
+        implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Locale locale;
     
-    private List<SimpleResourceBundleMessageSourceListener> listeners = new LinkedList<SimpleResourceBundleMessageSourceListener>();
+    private List<SimpleResourceBundleMessageSourceListener> listeners = 
+            new LinkedList<SimpleResourceBundleMessageSourceListener>();
     
     public Locale getLocale() {
         return locale;

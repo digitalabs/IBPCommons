@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,7 +27,6 @@ public class MegaEnvironments implements Serializable{
 
     private List<MegaEnvironment> megaEnvironments;
     
-	
 	public void add(MegaEnvironment megaEnvironment){
 		
 		if (getMegaEnvironments() == null){
@@ -37,7 +35,6 @@ public class MegaEnvironments implements Serializable{
 		}else{
 			getMegaEnvironments().add(megaEnvironment);
 		}
-		
 		
 	}
 
@@ -49,6 +46,5 @@ public class MegaEnvironments implements Serializable{
 	public void setMegaEnvironments(List<MegaEnvironment> environments) {
 		this.megaEnvironments = environments;
 	}
-    
     
 }

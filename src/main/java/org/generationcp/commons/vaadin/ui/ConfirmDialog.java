@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.vaadin.ui;
 
 import com.vaadin.terminal.gwt.server.JsonPaintTarget;
@@ -9,7 +20,8 @@ import org.generationcp.commons.vaadin.theme.Bootstrap;
 import java.io.Serializable;
 
 /**
- * Cyrus: I've added the ConfirmDialog source from the Vaadin plugins as the base vaadin did not include confirmation dialogs
+ * Cyrus: I've added the ConfirmDialog source from the Vaadin plugins 
+ * as the base vaadin did not include confirmation dialogs
  * 
  * 
  */
@@ -216,7 +228,8 @@ public class ConfirmDialog extends Window {
     public final void setMessage(final String message) {
         originalMessageText = message;
         messageLabel
-                .setValue(CONTENT_TEXT_WITH_NEWLINES == msgContentMode ? formatDialogMessage(message)
+                .setValue(CONTENT_TEXT_WITH_NEWLINES == msgContentMode 
+                        ? formatDialogMessage(message)
                         : message);
     }
 
@@ -231,10 +244,12 @@ public class ConfirmDialog extends Window {
     public final void setContentMode(final int contentMode) {
         msgContentMode = contentMode;
         messageLabel
-                .setContentMode(contentMode == CONTENT_TEXT_WITH_NEWLINES ? CONTENT_TEXT
+                .setContentMode(contentMode == CONTENT_TEXT_WITH_NEWLINES 
+                        ? CONTENT_TEXT
                         : contentMode);
         messageLabel
-                .setValue(contentMode == CONTENT_TEXT_WITH_NEWLINES ? formatDialogMessage(originalMessageText)
+                .setValue(contentMode == CONTENT_TEXT_WITH_NEWLINES 
+                        ? formatDialogMessage(originalMessageText)
                         : originalMessageText);
     }
 

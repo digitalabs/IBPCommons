@@ -1,8 +1,16 @@
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.util;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +20,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
  
 public class SheetUtil {
+    
 	/**
 	 * Given a sheet, this method deletes a column from a sheet and moves
 	 * all the columns to the right of it to the left one cell.
@@ -92,36 +101,30 @@ public class SheetUtil {
 
 	
 	@SuppressWarnings("finally")
-	public static String[] sheetsToArray(Workbook workbook)
-	{
+	public static String[] sheetsToArray(Workbook workbook) {
 		
 		List<String> contents = new ArrayList<String>();
     	int index = 0;
     	Sheet sheet = workbook.getSheetAt(index);
     	String cellvalue = "";
     	try{
-	    	while(sheet != null)
-	    	{
+	    	while(sheet != null) {
 	    		cellvalue = "";
 	    		try{
 	    			cellvalue = sheet.getSheetName();
-	    			if(cellvalue == null)
-	    			{
+	    			if(cellvalue == null) {
 	    				cellvalue = "";
 	    			}
-	    		}catch(Exception ec)
-	    		{
+	    		} catch(Exception ec) {
 	    			
 	    		}
 	    		contents.add(cellvalue);
 	    		index++;
 	    		sheet = workbook.getSheetAt(index);
 	    	}
-    	}catch(Exception e)
-    	{
+    	} catch(Exception e) {
     	//	e.printStackTrace();
-    	}finally
-    	{
+    	} finally {
     		return contents.toArray(new String[0]);
     	}
 		

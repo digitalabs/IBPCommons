@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.hibernate;
 
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
@@ -25,17 +36,19 @@ public class HTTPRequestAwareServletFilter implements Filter {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse
+            , FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest)servletRequest;
         HttpServletResponse resp = (HttpServletResponse)servletResponse;
 
-        String request_uri = String.format("%s:%s%s?%s",req.getServerName(),req.getServerPort(),req.getRequestURI(),req.getQueryString());
-
+        String request_uri = String.format("%s:%s%s?%s", req.getServerName()
+                , req.getServerPort(), req.getRequestURI(), req.getQueryString());
 
         LOG.trace("Request started @ " + request_uri);
 
         synchronized (this) {
-            HttpRequestAwareUtil.onRequestStart(SpringAppContextProvider.getApplicationContext(),req,resp);
+            HttpRequestAwareUtil.onRequestStart(
+                    SpringAppContextProvider.getApplicationContext(),req,resp);
         }
 
         filterChain.doFilter(servletRequest,servletResponse);
@@ -43,7 +56,8 @@ public class HTTPRequestAwareServletFilter implements Filter {
         LOG.trace("Request ended @ " + request_uri);
 
         synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(SpringAppContextProvider.getApplicationContext(),req,resp);
+            HttpRequestAwareUtil.onRequestEnd(
+                    SpringAppContextProvider.getApplicationContext(),req,resp);
         }
 
     }

@@ -28,7 +28,8 @@ import org.springframework.beans.factory.annotation.Configurable;
  * 
  */
 @Configurable
-public class InternationalizableException extends RuntimeException implements InitializingBean, InternationalizableComponent{
+public class InternationalizableException extends RuntimeException 
+    implements InitializingBean, InternationalizableComponent{
 
     private static final long serialVersionUID = 1L;
     
@@ -76,7 +77,8 @@ public class InternationalizableException extends RuntimeException implements In
         this.i18nDescription = i18nDescription;
     }
     
-    public InternationalizableException(Throwable t, Enum<?> i18nCaption, Enum<?> i18nDescription, Object... descParameters) {
+    public InternationalizableException(Throwable t, Enum<?> i18nCaption
+            , Enum<?> i18nDescription, Object... descParameters) {
         this(t, i18nCaption, i18nDescription);
         this.descParameters = descParameters;
     }

@@ -19,8 +19,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
-import org.generationcp.commons.breedingview.xml.EnvironmentLabel;
-
 
 public class GxeEnvironment implements Serializable{
 

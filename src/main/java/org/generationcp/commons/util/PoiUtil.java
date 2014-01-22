@@ -10,13 +10,11 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  *
  *******************************************************************************/
-
 package org.generationcp.commons.util;
 
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,15 +33,18 @@ import org.apache.poi.ss.util.CellUtil;
 public class PoiUtil {
 
     // WorkBook convenience methods
-    public static void setRepeatingRows(Workbook workBook, int sheetIndex, int fromRow, int toRow) {
+    public static void setRepeatingRows(
+            Workbook workBook, int sheetIndex, int fromRow, int toRow) {
         workBook.setRepeatingRowsAndColumns(sheetIndex, -1, -1, fromRow, toRow);
     }
 
-    public static void setRepeatingColumns(Workbook workBook, int sheetIndex, int fromCol, int toCol) {
+    public static void setRepeatingColumns(
+            Workbook workBook, int sheetIndex, int fromCol, int toCol) {
         workBook.setRepeatingRowsAndColumns(sheetIndex, fromCol, toCol, -1, -1);
     }
 
-    public static void setRepeatingRowsAndColumns(Workbook workBook, int sheetIndex, int fromCol, int toCol, int fromRow, int toRow) {
+    public static void setRepeatingRowsAndColumns(
+            Workbook workBook, int sheetIndex, int fromCol, int toCol, int fromRow, int toRow) {
         workBook.setRepeatingRowsAndColumns(sheetIndex, fromCol, toCol, fromRow, toRow);
     }
 
@@ -155,7 +156,8 @@ public class PoiUtil {
         }
 
         if (row == null || cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         if (value == null) {
@@ -177,7 +179,8 @@ public class PoiUtil {
         }
 
         if (row == null || cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         if (value == null) {
@@ -199,7 +202,8 @@ public class PoiUtil {
         }
 
         if (row == null || cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         if (value == null) {
@@ -221,7 +225,8 @@ public class PoiUtil {
         }
 
         if (row == null || cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         if (value == null) {
@@ -243,7 +248,8 @@ public class PoiUtil {
         }
 
         if (row == null || cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         if (value == null) {
@@ -265,7 +271,8 @@ public class PoiUtil {
         }
 
         if (row == null || cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         if (value == null) {
@@ -275,15 +282,18 @@ public class PoiUtil {
         }
     }
 
-    public static void setCellAlignment(Sheet sheet, int rowIndex, String columnName, short alignment) {
+    public static void setCellAlignment(
+            Sheet sheet, int rowIndex, String columnName, short alignment) {
         setCellAlignment(sheet, rowIndex, getColumnIndex(columnName), alignment);
     }
 
-    public static void setCellAlignment(Sheet sheet, int rowIndex, int columnIndex, short alignment) {
+    public static void setCellAlignment(
+            Sheet sheet, int rowIndex, int columnIndex, short alignment) {
         Cell cell = getCell(sheet, columnIndex, rowIndex);
 
         if (cell == null) {
-            throw new IllegalArgumentException("Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
+            throw new IllegalArgumentException(
+                    "Cell with col=" + columnIndex + " and row=" + rowIndex + " is null.");
         }
 
         CellUtil.setAlignment(cell, sheet.getWorkbook(), alignment);
@@ -322,7 +332,8 @@ public class PoiUtil {
             char ch = columnName.charAt(index);
             int charIndex = chars.indexOf(ch);
             if (charIndex == -1) {
-                throw new IllegalArgumentException("Invalid character in column name: " + ch);
+                throw new IllegalArgumentException(
+                        "Invalid character in column name: " + ch);
             }
 
             columnIndex += (charIndex + 1) * Math.pow(26, charPosition);
@@ -361,7 +372,8 @@ public class PoiUtil {
      * @param column    the column number to create the cell in
      * @param halign    the horizontal alignment for the cell.
      */
-    public static Cell createCell(CellStyle cellStyle, Row row, short column, short halign, short valign) {
+    public static Cell createCell(
+            CellStyle cellStyle, Row row, short column, short halign, short valign) {
         Cell cell = row.createCell(column);
         cellStyle.setAlignment(halign);
         cellStyle.setVerticalAlignment(valign);
@@ -386,7 +398,9 @@ public class PoiUtil {
         try {
             Row row = sheet.getRow(index);
             while (row != null) {
-                if (getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase("")) {
+                if (getCellValue(row.getCell(columnIndex)) == null 
+                        || getCellValue(row.getCell(columnIndex))
+                                .toString().equalsIgnoreCase("")) {
                     //do nothing
 
 
@@ -419,7 +433,9 @@ public class PoiUtil {
         try {
             Row row = sheet.getRow(index);
             while (row != null) {
-                if (getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase("")) {
+                if (getCellValue(row.getCell(columnIndex)) == null 
+                        || getCellValue(row.getCell(columnIndex))
+                                .toString().equalsIgnoreCase("")) {
 
 
                     b = true;
@@ -443,7 +459,9 @@ public class PoiUtil {
     public static Boolean isEmpty(Sheet sheet, int rowIndex, int columnIndex) {
         Row row = sheet.getRow(rowIndex);
 
-        return row == null || getCellValue(row.getCell(columnIndex)) == null || getCellValue(row.getCell(columnIndex)).toString().equalsIgnoreCase("");
+        return row == null || getCellValue(row.getCell(columnIndex)) == null 
+                || getCellValue(row.getCell(columnIndex))
+                        .toString().equalsIgnoreCase("");
     }
 
     /*
@@ -637,7 +655,8 @@ public class PoiUtil {
      * @param end
      * @return
      */
-    public static String rowAsString(Sheet sheet, int rowIndex, int start, int end, String delimiter) {
+    public static String rowAsString(
+            Sheet sheet, int rowIndex, int start, int end, String delimiter) {
 
         return rowAsString(sheet, rowIndex, start, end, delimiter, Integer.MAX_VALUE);
 
@@ -653,7 +672,8 @@ public class PoiUtil {
      * @param max
      * @return
      */
-    public static String rowAsString(Sheet sheet, int rowIndex, int start, int end, String delimiter, int max) {
+    public static String rowAsString(
+            Sheet sheet, int rowIndex, int start, int end, String delimiter, int max) {
 
 
         return StringUtils.join(rowAsStringArray(sheet,rowIndex,start,end,max), delimiter);
@@ -669,7 +689,8 @@ public class PoiUtil {
         return rowAsString(sheet, rowIndex, startCell, endCell, delimiter);
     }
 
-    public static String rowAsString(Sheet sheet, int rowIndex, String delimiter, int maxStringLength) {
+    public static String rowAsString(
+            Sheet sheet, int rowIndex, String delimiter, int maxStringLength) {
         String resultString = rowAsString(sheet,rowIndex,delimiter);
         if (maxStringLength < resultString.length()) {
             return resultString.substring(0, maxStringLength);
@@ -702,5 +723,6 @@ public class PoiUtil {
 
         return lastRowNum;
     }
+    
 }
 

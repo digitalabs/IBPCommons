@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -27,8 +26,6 @@ public class Heritabilities implements Serializable{
     private static final long serialVersionUID = 1L;
 
     private List<Heritability> heritabilities;
-
-
 	
 	public void add(Heritability heritability){
 		
@@ -38,8 +35,6 @@ public class Heritabilities implements Serializable{
 		}else{
 			getHeritabilities().add(heritability);
 		}
-		
-		
 	}
 
 	@XmlElement(name = "H2")
@@ -50,6 +45,5 @@ public class Heritabilities implements Serializable{
 	public void setHeritabilities(List<Heritability> heritabilities) {
 		this.heritabilities = heritabilities;
 	}
-    
     
 }
