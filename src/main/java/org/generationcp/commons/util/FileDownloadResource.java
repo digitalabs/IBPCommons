@@ -16,8 +16,6 @@ package org.generationcp.commons.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.DownloadStream;
@@ -30,7 +28,6 @@ import com.vaadin.terminal.FileResource;
  * @author Dennis Billano
  * 
  */
-
 public class FileDownloadResource extends FileResource{
 	
 	private static final long serialVersionUID = 1L;

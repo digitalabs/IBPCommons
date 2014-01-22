@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.vaadin.ui;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -101,7 +112,6 @@ public class DefaultConfirmDialogFactory implements ConfirmDialog.Factory  {
             buttons.setComponentAlignment(cancel, Alignment.MIDDLE_RIGHT);
             confirm.setCancelButton(cancel);
         }
-        
         
         final Button ok = new Button(okCaption != null ? okCaption
                 : DEFAULT_OK_CAPTION);

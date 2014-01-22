@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.util;
 
 import java.io.BufferedReader;
@@ -15,7 +26,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Configurable;
-
 
 /**
  * A class that provides methods for backing up and restoring MySQL databases.
@@ -122,7 +132,8 @@ public class MySQLUtil {
         
         // connect
         if (mysqlHost != null) {
-            connection = DriverManager.getConnection("jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/", username, password);
+            connection = DriverManager.getConnection(
+                    "jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/", username, password);
         }
     }
     
@@ -144,7 +155,8 @@ public class MySQLUtil {
         return backupDatabase(database, backupFilename);
     }
     
-    public File backupDatabase(String database, String backupFilename) throws IOException, InterruptedException {
+    public File backupDatabase(String database, String backupFilename) 
+            throws IOException, InterruptedException {
         if (database == null || backupFilename == null) {
             return null;
         }
@@ -154,10 +166,12 @@ public class MySQLUtil {
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
         
         if (StringUtil.isEmpty(password)) {
-            command = String.format("%s -n -c -P %d -u %s %s -r %s",mysqlDumpAbsolutePath, mysqlPort, username, database, backupFilename);
+            command = String.format("%s -n -c -P %d -u %s %s -r %s"
+                    , mysqlDumpAbsolutePath, mysqlPort, username, database, backupFilename);
         }
         else {
-            command = String.format("%s -n -c -P %d -u %s -p%s %s -r %s", mysqlDumpAbsolutePath, mysqlPort, username, password, database, backupFilename);
+            command = String.format("%s -n -c -P %d -u %s -p%s %s -r %s"
+                    , mysqlDumpAbsolutePath, mysqlPort, username, password, database, backupFilename);
         }
         
         Process process = Runtime.getRuntime().exec(command);
@@ -181,7 +195,8 @@ public class MySQLUtil {
         return backupFiles;
     }
     
-    public void restoreDatabase(String databaseName, File backupFile) throws IOException, SQLException {
+    public void restoreDatabase(String databaseName, File backupFile) 
+            throws IOException, SQLException {
         connect();
         
         try {
@@ -192,7 +207,8 @@ public class MySQLUtil {
         }
     }
     
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile) throws IOException, SQLException {
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile) 
+            throws IOException, SQLException {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
         }
@@ -206,7 +222,8 @@ public class MySQLUtil {
         // backup the current database to a file
         File currentDbBackupFile = null;
         try {
-            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(databaseName, "system.sql"));
+            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
+                    databaseName, "system.sql"));
         }
         catch (InterruptedException e1) {
             throw new IllegalStateException("Unable to backup current database.");
@@ -247,7 +264,8 @@ public class MySQLUtil {
         
     }
     
-    protected void restoreDatabaseWithFile(Connection connection, File backupFile) throws IOException {
+    protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
+            throws IOException {
         if (backupFile == null) {
             return;
         }
@@ -297,7 +315,8 @@ public class MySQLUtil {
         }
     }
     
-    public String executeForStringResult(Connection connection, String query) throws SQLException {
+    public String executeForStringResult(Connection connection, String query) 
+            throws SQLException {
         Statement stmt = connection.createStatement();
         ResultSet rs = null;
         try {

@@ -1,4 +1,14 @@
-
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.hibernate.util;
 
 import junit.framework.Assert;
@@ -26,7 +36,8 @@ public class TestManagerFactoryProvider{
     @BeforeClass
     public static void setUp() throws Exception {
         hibernateUtil = new HibernateUtil("localhost", "3306", "workbench", "root", "admin");
-        HibernateSessionProvider sessionProvider = new HibernateSessionPerThreadProvider(hibernateUtil.getSessionFactory());
+        HibernateSessionProvider sessionProvider = 
+                new HibernateSessionPerThreadProvider(hibernateUtil.getSessionFactory());
         manager = new WorkbenchDataManagerImpl(sessionProvider);
     }
 
@@ -36,10 +47,12 @@ public class TestManagerFactoryProvider{
         ManagerFactory factory = null;
 
         try {
-            factory = provider.getManagerFactoryForCropType(manager.getCropTypeByName(CropType.CASSAVA));
+            factory = provider.getManagerFactoryForCropType(
+                    manager.getCropTypeByName(CropType.CASSAVA));
             Assert.assertNotNull(factory);
 
-            factory = provider.getManagerFactoryForCropType(manager.getCropTypeByName(CropType.CHICKPEA));
+            factory = provider.getManagerFactoryForCropType(
+                    manager.getCropTypeByName(CropType.CHICKPEA));
             Assert.assertNotNull(factory);
 
             Project project = new Project();

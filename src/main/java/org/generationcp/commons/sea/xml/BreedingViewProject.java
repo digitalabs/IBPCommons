@@ -14,7 +14,6 @@
 package org.generationcp.commons.sea.xml;
 
 import java.io.Serializable;
-import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -22,7 +21,6 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder = {"name", "version", "pipelines"})
 public class BreedingViewProject implements Serializable{
-
 	
     private static final long serialVersionUID = -1125312445342191068L;
 

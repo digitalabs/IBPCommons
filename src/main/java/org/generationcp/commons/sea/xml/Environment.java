@@ -2,7 +2,6 @@ package org.generationcp.commons.sea.xml;
 
 import java.io.Serializable;
 
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 

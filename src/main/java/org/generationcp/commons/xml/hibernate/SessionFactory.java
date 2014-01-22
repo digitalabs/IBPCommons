@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2013, All Rights Reserved.
+ * 
+ * Generation Challenge Programme (GCP)
+ * 
+ * 
+ * This software is licensed for use under the terms of the GNU General Public
+ * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
+ * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * 
+ *******************************************************************************/
 package org.generationcp.commons.xml.hibernate;
 
 import java.util.List;
@@ -41,7 +52,8 @@ public class SessionFactory {
             if (property.getName().equals("hibernate.connection.url")) {
                 String propertyValue = property.getValue();
                 
-                boolean sameValue = propertyValue == null ? connectionUrl == null : propertyValue.equals(connectionUrl);
+                boolean sameValue = propertyValue == null 
+                        ? connectionUrl == null : propertyValue.equals(connectionUrl);
                 if (!sameValue) {
                     property.setValue(connectionUrl);
                 }
@@ -64,7 +76,8 @@ public class SessionFactory {
             if (property.getName().equals("hibernate.connection.username")) {
                 String propertyValue = property.getValue();
                 
-                boolean sameValue = propertyValue == null ? username == null : propertyValue.equals(username);
+                boolean sameValue = propertyValue == null 
+                        ? username == null : propertyValue.equals(username);
                 if (!sameValue) {
                     property.setValue(username);
                 }
@@ -87,7 +100,8 @@ public class SessionFactory {
             if (property.getName().equals("hibernate.connection.password")) {
                 String propertyValue = property.getValue();
                 
-                boolean sameValue = propertyValue == null ? password == null : propertyValue.equals(password);
+                boolean sameValue = propertyValue == null 
+                        ? password == null : propertyValue.equals(password);
                 if (!sameValue) {
                     property.setValue(password);
                 }

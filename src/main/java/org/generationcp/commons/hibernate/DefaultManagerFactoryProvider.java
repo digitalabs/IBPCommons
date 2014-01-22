@@ -41,13 +41,18 @@ import org.hibernate.SessionFactory;
  * @author Glenn Marintes
  */
 public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, HttpRequestAware {
-    private Map<Long, SessionFactory> localSessionFactories = new HashMap<Long, SessionFactory>();
-    private Map<CropType, SessionFactory> centralSessionFactories = new HashMap<CropType, SessionFactory>();
+    private Map<Long, SessionFactory> localSessionFactories = 
+            new HashMap<Long, SessionFactory>();
+    private Map<CropType, SessionFactory> centralSessionFactories = 
+            new HashMap<CropType, SessionFactory>();
     
-    private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
+    private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = 
+            new ThreadLocal<HttpServletRequest>();
     
-    private Map<HttpServletRequest, HibernateSessionProvider> localSessionProviders = new HashMap<HttpServletRequest, HibernateSessionProvider>();
-    private Map<HttpServletRequest, HibernateSessionProvider> centralSessionProviders = new HashMap<HttpServletRequest, HibernateSessionProvider>();
+    private Map<HttpServletRequest, HibernateSessionProvider> localSessionProviders = 
+            new HashMap<HttpServletRequest, HibernateSessionProvider>();
+    private Map<HttpServletRequest, HibernateSessionProvider> centralSessionProviders = 
+            new HashMap<HttpServletRequest, HibernateSessionProvider>();
     
     private String localHost = "localhost";
 
@@ -105,7 +110,9 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
             return;
         }
         
-        for (int index = projectAccessList.size() - 1; index >= maxCachedLocalSessionFactories - 1; index--) {
+        for (int index = projectAccessList.size() - 1; 
+                index >= maxCachedLocalSessionFactories - 1;
+                index--) {
             Long projectId = projectAccessList.get(index);
             
             // close the session factory for the project
@@ -134,7 +141,8 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
             // close any excess cached session factory
             closeExcessLocalSessionFactory();
             
-            DatabaseConnectionParameters params = new DatabaseConnectionParameters(localHost, String.valueOf(localPort), localDbName, localUsername, localPassword);
+            DatabaseConnectionParameters params = new DatabaseConnectionParameters(
+                    localHost, String.valueOf(localPort), localDbName, localUsername, localPassword);
             try {
                 localSessionFactory = SessionFactoryUtil.openSessionFactory(params);
                 localSessionFactories.put(project.getProjectId(), localSessionFactory);
@@ -149,10 +157,13 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         
         // get or create a central session factory
         SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
-        if ((centralSessionFactory == null || centralSessionFactory.isClosed()) && project.getCropType().getCentralDbName() != null) {
+        if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
+                && project.getCropType().getCentralDbName() != null) {
             String centralDbName = project.getCropType().getCentralDbName();
             
-            DatabaseConnectionParameters params = new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), centralDbName, centralUsername, centralPassword);
+            DatabaseConnectionParameters params = 
+                    new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
+                            centralDbName, centralUsername, centralPassword);
             
             try {
                 centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
@@ -196,7 +207,10 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         
         SessionFactory centralSessionFactory = centralSessionFactories.get(cropType);
         if (centralSessionFactory == null || centralSessionFactory.isClosed()) {
-            DatabaseConnectionParameters params = new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), centralDbName, centralUsername, centralPassword);
+            DatabaseConnectionParameters params = 
+                    new DatabaseConnectionParameters(centralHost, 
+                            String.valueOf(centralPort), centralDbName, 
+                            centralUsername, centralPassword);
             
             try {
                 centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
