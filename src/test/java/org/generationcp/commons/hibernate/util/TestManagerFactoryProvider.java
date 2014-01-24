@@ -28,6 +28,9 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.InputStream;
+import java.util.Properties;
+
 public class TestManagerFactoryProvider{
 
     private static WorkbenchDataManager manager;
@@ -35,7 +38,18 @@ public class TestManagerFactoryProvider{
 
     @BeforeClass
     public static void setUp() throws Exception {
-        hibernateUtil = new HibernateUtil("localhost", "3306", "workbench", "root", "admin");
+        Properties props = new Properties();
+        InputStream propStream = ClassLoader.getSystemResourceAsStream("testDatabaseConfig.properties");
+        props.load(propStream);
+        propStream.close();
+
+        String hostName = props.getProperty("workbench.host");
+        String portNumber = props.getProperty("workbench.port");
+        String dbName = props.getProperty("workbench.dbname");
+        String dbUserName = props.getProperty("workbench.username");
+        String dbPassword = props.getProperty("workbench.password");
+
+        hibernateUtil = new HibernateUtil(hostName, portNumber, dbName, dbUserName, dbPassword);
         HibernateSessionProvider sessionProvider = 
                 new HibernateSessionPerThreadProvider(hibernateUtil.getSessionFactory());
         manager = new WorkbenchDataManagerImpl(sessionProvider);
