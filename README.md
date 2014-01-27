@@ -30,7 +30,7 @@ To build using a specific configuration, run the following:
     mvn clean install -DenvConfig=dev-config-dir  
 </pre>  
 
-To build using Eclipse, right-click on the IBPCommons project, select Run As --> Maven build..., then input the target discussed above:
+To build using Eclipse, right-click on the IBPCommons project, select Run As --> Maven build..., then input any of the following:
 <pre>
     clean install
 </pre>
