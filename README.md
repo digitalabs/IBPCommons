@@ -59,10 +59,9 @@ To Use
 -----------
 To add IBPCommons as a dependency to your project using Apache Maven, add the following to your list of dependencies:  
 <pre>
-	<groupId>org.generationcp</groupId>
-    <artifactId>ibpcommons</artifactId>
-    <version>1.3.0</version>
-      
+    groupId: org.generationcp
+    artifactId: ibpcommons
+    version: 1.3.0
 </pre>
 
 Take note of the version.  Use of the latest version is recommended.  
