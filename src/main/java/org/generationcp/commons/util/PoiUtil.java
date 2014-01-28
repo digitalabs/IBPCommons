@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
  *
@@ -24,6 +23,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A convenience class for POI library.
@@ -31,6 +32,8 @@ import org.apache.poi.ss.util.CellUtil;
  * @author Glenn Marintes
  */
 public class PoiUtil {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(PoiUtil.class);
 
     // WorkBook convenience methods
     public static void setRepeatingRows(
@@ -414,7 +417,7 @@ public class PoiUtil {
 
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } finally {
             return b;
         }
@@ -448,7 +451,7 @@ public class PoiUtil {
                 row = sheet.getRow(index);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } finally {
             return b;
         }
@@ -482,7 +485,7 @@ public class PoiUtil {
                     if (cellvalue == null) {
                         cellvalue = "";
                     }
-                } catch (Exception ec) {
+                } catch (Exception e) {
 
                 }
                 contents.add(cellvalue);
@@ -490,7 +493,7 @@ public class PoiUtil {
                 row = sheet.getRow(index);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(), e);
         } finally {
             return contents.toArray(new String[0]);
         }

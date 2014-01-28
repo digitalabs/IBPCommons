@@ -41,10 +41,10 @@ public class HTTPRequestAwareServletFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest)servletRequest;
         HttpServletResponse resp = (HttpServletResponse)servletResponse;
 
-        String request_uri = String.format("%s:%s%s?%s", req.getServerName()
+        String requestUri = String.format("%s:%s%s?%s", req.getServerName()
                 , req.getServerPort(), req.getRequestURI(), req.getQueryString());
 
-        LOG.trace("Request started @ " + request_uri);
+        LOG.trace("Request started @ " + requestUri);
 
         synchronized (this) {
             HttpRequestAwareUtil.onRequestStart(
@@ -53,7 +53,7 @@ public class HTTPRequestAwareServletFilter implements Filter {
 
         filterChain.doFilter(servletRequest,servletResponse);
 
-        LOG.trace("Request ended @ " + request_uri);
+        LOG.trace("Request ended @ " + requestUri);
 
         synchronized (this) {
             HttpRequestAwareUtil.onRequestEnd(
