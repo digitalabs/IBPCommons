@@ -166,12 +166,12 @@ public class MySQLUtil {
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
         
         if (StringUtil.isEmpty(password)) {
-            command = String.format("%s -n -c -P %d -u %s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlPort, username, database, backupFilename);
+            command = String.format("%s -n -c -h %s -P %d -u %s %s -r %s"
+                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, database, backupFilename);
         }
         else {
-            command = String.format("%s -n -c -P %d -u %s -p%s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlPort, username, password, database, backupFilename);
+            command = String.format("%s -n -c -h %s -P %d -u %s -p%s %s -r %s"
+                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, password, database, backupFilename);
         }
         
         Process process = Runtime.getRuntime().exec(command);
