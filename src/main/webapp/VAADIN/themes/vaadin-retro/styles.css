@@ -232,7 +232,7 @@ div.v-table-full-height-fields input.v-textfield {
 .v-tabsheet-tabs .v-tabsheet-spacertd div,
 .white .v-tabsheet-tabs .v-tabsheet-spacertd div {
     border-bottom: 1px solid #bfbfbf;
-    height: 36px;
+    height: auto;
     background: transparent;
 }
 .v-tabsheet-tabs .v-tabsheet-tabitemcell,
@@ -290,7 +290,7 @@ div.v-table-full-height-fields input.v-textfield {
 .v-tabsheet-tabs .v-tabsheet-spacertd div,
 .white .v-tabsheet-tabs .v-tabsheet-spacertd div {
     border-bottom: 1px solid #e4e4e4;
-    height: 36px;
+    height: auto;
     background: transparent;
 }
 .v-tabsheet-tabs .v-tabsheet-tabitemcell,
@@ -367,10 +367,6 @@ div.v-table-full-height-fields input.v-textfield {
 .v-ff3 .v-tabsheet-content {
     border-color: #e4e4e4;
     background: #f6f6f6;
-}
-
-.v-tabsheet-content {
-	position: absolute;
 }
 
 .v-tabsheet-tabsheetpanel {

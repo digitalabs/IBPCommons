@@ -319,7 +319,7 @@ div.v-progressindicator-indeterminate-disabled{height:20px;width:20px;overflow:h
 .v-tabsheet.v-disabled .v-tabsheet-tabitem,.v-tabsheet-tabitemcell-disabled .v-tabsheet-tabitem{cursor:default}
 .v-tabsheet-tabitem-selected{cursor:default;border-bottom-color:#fff}
 .v-tabsheet-tabitem-selected .v-caption{cursor:default}
-.v-tabsheet-content{border:1px solid #aaa;border-top:0;border-bottom:0;position:absolute}
+.v-tabsheet-content{border:1px solid #aaa;border-top:0;border-bottom:0;position:relative}
 .v-tabsheet-deco{height:1px;background:#aaa;overflow:hidden}
 .v-tabsheet-hidetabs .v-tabsheet-content{border:0}
 .v-tabsheet-hidetabs .v-tabsheet-deco{height:0}
@@ -749,7 +749,7 @@ td.v-datefield-calendarpanel-nextyear{text-align:left}
 .blue .v-tabsheet-tabs-minimal .v-tabsheet-caption-close{color:#7c8a91}
 .blue .v-tabsheet-tabs-minimal .v-tabsheet-caption-close:hover{color:#bcd3de;background:#778d98}
 .blue .v-tabsheet-tabs-minimal .v-tabsheet-caption-close:active{background:#4f6874}
-.v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{border-bottom:1px solid #bfbfbf;height:36px;background:transparent}
+.v-tabsheet-tabs-minimal .v-tabsheet-spacertd div,.white .v-tabsheet-tabs-minimal .v-tabsheet-spacertd div{border-bottom:1px solid #bfbfbf;height:auto;background:transparent}
 .v-tabsheet-tabs-minimal .v-tabsheet-tabitemcell,.v-tabsheet-tabs-minimal .v-tabsheet-spacertd{height:auto;background:transparent;padding-left:0}
 .v-tabsheet-tabs-minimal .v-tabsheet-tabitem,.white .v-tabsheet-tabs-minimal .v-tabsheet-tabitem{border:0;border-bottom:1px solid #bfbfbf;color:#4d748f;padding:0;height:auto;background:transparent;text-shadow:none}
 .v-tabsheet-tabs-minimal .v-tabsheet-tabitem .v-caption{padding:5px 16px;height:auto;background:transparent}
@@ -1002,7 +1002,7 @@ body{box-sizing:border-box}
 .v-contextmenu .v-on,.v-contextmenu .v-off{background-image:none}
 .v-contextmenu .gwt-MenuItem-selected .v-on{background-image:none}
 .v-splitpanel-first-container-gcp-workbench-content-split-panel{background-color:#e9e9e9}
-.v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{border-bottom:1px solid #bfbfbf;height:36px;background:transparent}
+.v-tabsheet-tabs .v-tabsheet-spacertd div,.white .v-tabsheet-tabs .v-tabsheet-spacertd div{border-bottom:1px solid #bfbfbf;height:auto;background:transparent}
 .v-tabsheet-tabs .v-tabsheet-tabitemcell,.v-tabsheet-tabs .v-tabsheet-spacertd{height:auto;background:transparent;padding-left:0;cursor: pointer;}
 .v-tabsheet-spacertd div{margin-right:0}
 .v-tabsheet-tabs .v-tabsheet-tabitem,.white .v-tabsheet-tabs .v-tabsheet-tabitem{border:0;border-bottom:1px solid #bfbfbf;color:#4d748f;padding:0;height:auto;background:transparent;text-shadow:none}
