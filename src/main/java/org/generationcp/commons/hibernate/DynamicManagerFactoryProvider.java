@@ -33,7 +33,7 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
 
 /**
- * The {@link DefaultManagerFactoryProviderDynamic} is an implementation of
+ * The {@link DynamicManagerFactoryProvider} is an implementation of
  * {@link ManagerFactoryProvider} that expects central databases are named using
  * the format: <br>
  * <code>ibdb_&lt;crop type&gt;_central</code><br>
@@ -42,13 +42,13 @@ import org.hibernate.SessionFactory;
  * 
  * @author Glenn Marintes
  */
-public class DefaultManagerFactoryProviderDynamic implements ManagerFactoryProvider, HttpRequestAware {
+public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, HttpRequestAware {
 	
-	public DefaultManagerFactoryProviderDynamic() {
+	public DynamicManagerFactoryProvider() {
 		
 	}
 	
-	public DefaultManagerFactoryProviderDynamic(WorkbenchDataManager workbenchDataManager) {
+	public DynamicManagerFactoryProvider(WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 	
@@ -136,7 +136,6 @@ public class DefaultManagerFactoryProviderDynamic implements ManagerFactoryProvi
         }
     }
     
-    @Override
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
     	Project project = workbenchDataManager.getLastOpenedProjectAnyUser();

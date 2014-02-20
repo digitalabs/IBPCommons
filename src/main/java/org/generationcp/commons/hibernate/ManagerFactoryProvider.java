@@ -55,5 +55,4 @@ public interface ManagerFactoryProvider {
      */
     public void close();
 
-	public ManagerFactory createInstance() throws MiddlewareQueryException;
 }

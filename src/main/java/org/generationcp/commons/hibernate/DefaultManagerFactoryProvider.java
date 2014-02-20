@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.generationcp.middleware.exceptions.ConfigException;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider;
 import org.generationcp.middleware.hibernate.HibernateSessionProvider;
 import org.generationcp.middleware.hibernate.SessionFactoryUtil;
@@ -300,4 +301,5 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         localSessionProviders.clear();
         centralSessionProviders.clear();
     }
+
 }
