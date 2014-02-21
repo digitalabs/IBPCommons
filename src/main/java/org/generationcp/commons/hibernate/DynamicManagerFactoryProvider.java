@@ -247,6 +247,12 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 	        if (centralSessionProvider != null) {
 	            centralSessionProvider.close();
 	        }
+	        
+	        if (workbenchDataManager != null) {
+	        	workbenchDataManager.close();
+	        }
+	        
+	        
 		
 	}
 
