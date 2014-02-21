@@ -80,6 +80,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
     private String centralPassword = "central";
     
     private int maxCachedLocalSessionFactories = 10;
+    
     private List<Long> projectAccessList = new LinkedList<Long>();
 
     public void setLocalHost(String localHost) {
@@ -115,12 +116,12 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
     }
     
     protected synchronized void closeExcessLocalSessionFactory() {
-        if (projectAccessList.size() - 1 > maxCachedLocalSessionFactories) {
+        if (projectAccessList.size() - 1 > getMaxCachedLocalSessionFactories()) {
             return;
         }
         
         for (int index = projectAccessList.size() - 1; 
-                index >= maxCachedLocalSessionFactories - 1;
+                index >= getMaxCachedLocalSessionFactories() - 1;
                 index--) {
             Long projectId = projectAccessList.get(index);
             
@@ -136,6 +137,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         }
     }
     
+  
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
     	Project project = workbenchDataManager.getLastOpenedProjectAnyUser();
@@ -246,6 +248,15 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 	            centralSessionProvider.close();
 	        }
 		
+	}
+
+	public int getMaxCachedLocalSessionFactories() {
+		return maxCachedLocalSessionFactories;
+	}
+
+	public void setMaxCachedLocalSessionFactories(
+			int maxCachedLocalSessionFactories) {
+		this.maxCachedLocalSessionFactories = maxCachedLocalSessionFactories;
 	}
 
    
