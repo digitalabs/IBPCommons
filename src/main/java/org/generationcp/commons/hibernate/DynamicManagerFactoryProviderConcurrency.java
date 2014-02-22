@@ -246,13 +246,7 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
 	        if (centralSessionProvider != null) {
 	            centralSessionProvider.close();
 	        }
-	        
-	        if (workbenchDataManager != null) {
-	        	workbenchDataManager.close();
-	        }
-	        
-	        
-		
+	       
 	}
 
 	public int getMaxCachedLocalSessionFactories() {
