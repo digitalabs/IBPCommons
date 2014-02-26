@@ -24,6 +24,60 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-menu:before {
+.icon-list:before {
     content: "\e600";
+}
+.icon-uniE601:before {
+    content: "\e601";
+}
+.icon-arrow-up:before {
+    content: "\e602";
+}
+.icon-arrow-down:before {
+    content: "\e603";
+}
+.icon-arrow-left:before {
+    content: "\e604";
+}
+.icon-arrow-right:before {
+    content: "\e605";
+}
+.icon-arrow-up2:before {
+    content: "\e606";
+}
+.icon-arrow-down2:before {
+    content: "\e607";
+}
+.icon-arrow-left2:before {
+    content: "\e608";
+}
+.icon-arrow-right2:before {
+    content: "\e609";
+}
+.icon-arrow-up3:before {
+    content: "\e60a";
+}
+.icon-arrow-down3:before {
+    content: "\e60b";
+}
+.icon-arrow-left3:before {
+    content: "\e60c";
+}
+.icon-flow-cascade:before {
+    content: "\e60d";
+}
+.icon-flow-branch:before {
+    content: "\e60e";
+}
+.icon-flow-line:before {
+    content: "\e60f";
+}
+.icon-flow-tree:before {
+    content: "\e610";
+}
+.icon-flow-parallel:before {
+    content: "\e611";
+}
+.icon-ellipsis:before {
+    content: "\e612";
 }
