@@ -303,7 +303,4 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-menu:before {
-    content: "\e600";
-}
 
