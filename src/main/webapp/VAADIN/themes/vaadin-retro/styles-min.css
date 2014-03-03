@@ -850,9 +850,9 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 .v-Notification.v-Notification-error{color:#fff;border:0;background:#900 url(images/v_x.png) no-repeat 97% 10px}
 .v-Notification.v-Notification-warning{color:#fff;border:0;background:#C99808  no-repeat 97% 10px}
 .v-Notification .gwt-HTML{margin:10px;margin-top:15px}
-.v-Notification .gwt-HTML h1{display:block;line-height:19pt;font-weight:500;font-size:19pt; white-space: pre-wrap; word-break: break-all; word-wrap: break-word}
+.v-Notification .gwt-HTML h1{display:block;line-height:19pt;font-weight:500;font-size:19pt; white-space: pre-wrap; word-break: break-word; word-wrap: break-word}
 .v-Notification .gwt-HTML p br{display:none}
-.v-Notification .gwt-HTML p{display:block;margin-top:5px;padding:0;line-height:normal;font-size:13px;font-weight:300; white-space: pre-wrap; word-break: break-all; word-wrap: break-word}
+.v-Notification .gwt-HTML p{display:block;margin-top:5px;padding:0;line-height:normal;font-size:13px;font-weight:300; white-space: pre-wrap; word-break: break-word; word-wrap: break-word}
 .v-window-modalitycurtain{background:#fff}
 .h1,.h2,.h3,.h4,.h5,.h6{display:block;color:#333;font-family:'Open Sans','Segoe UI','Helvetica Neue',Arial,sans-serif;letter-spacing:normal;font-weight:500;margin-bottom:5px;margin-left:0;margin-right:0;margin-top:10px;box-sizing:border-box}
 .h4,.h5,.h6{margin-top:5px}
