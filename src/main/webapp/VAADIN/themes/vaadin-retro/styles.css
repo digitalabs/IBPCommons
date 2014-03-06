@@ -379,7 +379,7 @@ div.v-table-full-height-fields input.v-textfield {
 .v-tabsheet-tabs .v-tabsheet-caption-close:active {
     text-indent: 0;
     background: transparent;
-    margin-left: 3px;
+    margin-left: 1px;
     margin-right: -3px;
     padding: 0;
     color: #999;

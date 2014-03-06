@@ -1021,7 +1021,7 @@ body{box-sizing:border-box}
 .v-tabsheet-tabs .v-tabsheet-tabitem .v-caption-closable,.v-tabsheet-tabs .v-tabsheet-tabitem-selected .v-caption-closable{padding-right:6px}
 .v-sa .v-tabsheet-content,.v-ff3 .v-tabsheet-content{border-color:#e4e4e4; background: #f6f6f6;}
 .v-tabsheet-tabsheetpanel{background:#f6f6f6}
-.v-tabsheet-tabs .v-tabsheet-caption-close,.v-tabsheet-tabs .v-tabsheet-caption-close:hover,.v-tabsheet-tabs .v-tabsheet-caption-close:active{text-indent:0;background:transparent;margin-left:3px;margin-right:-3px;padding:0;color:#999;width:14px;height:14px;line-height:14px;-webkit-border-radius:7px;-moz-border-radius:7px}
+.v-tabsheet-tabs .v-tabsheet-caption-close,.v-tabsheet-tabs .v-tabsheet-caption-close:hover,.v-tabsheet-tabs .v-tabsheet-caption-close:active{text-indent:0;background:transparent;margin-left:1px;margin-right:-3px;padding:0;color:#999;width:14px;height:14px;line-height:14px;-webkit-border-radius:7px;-moz-border-radius:7px}
 .v-tabsheet-tabs .v-tabsheet-caption-close{margin-top:1px}
 .v-ff .v-tabsheet-tabs .v-tabsheet-caption-close{margin-top:-15px}
 .v-tabsheet-tabs .v-tabsheet-caption-close:hover,.white .v-tabsheet-tabs .v-tabsheet-caption-close:hover{color:#fff;background:#aaa}
