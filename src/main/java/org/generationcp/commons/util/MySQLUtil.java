@@ -13,7 +13,9 @@ package org.generationcp.commons.util;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -23,7 +25,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -285,6 +290,97 @@ public class MySQLUtil {
         }
     }
     
+    /**
+     * Update the specified database using scripts from the specified <code>updateDir</code>.
+     * 
+     * @param databaseName
+     * @param updateDir
+     * @throws IOException
+     * @throws SQLException
+     */
+    public boolean upgradeDatabase(String databaseName, File updateDir) 
+        throws IOException, SQLException {
+        connect();
+
+        try {
+            return upgradeDatabase(connection, databaseName, updateDir);
+        }
+        finally {
+            disconnect();
+        }
+    }
+
+    public boolean upgradeDatabase(Connection connection, String databaseName, File updateDir) 
+        throws IOException, SQLException {
+        if (connection == null) {
+            throw new IllegalArgumentException("connection parameter must not be null");
+        }
+        if (databaseName == null) {
+            throw new IllegalArgumentException("databaseName parameter must not be null");
+        }
+        if (updateDir == null) {
+            throw new IllegalArgumentException("updateDir parameter must not be null");
+        }
+        if (!updateDir.exists()) {
+            return true;
+        }
+        
+        // use the target database
+        try {
+            executeQuery(connection, "USE " + databaseName);
+        }
+        catch (SQLException e) {
+            // ignore database creation error
+        }
+        
+        // check our schema version
+        String currentSchemaVersion = null;
+        try {
+            // get the current version of the database
+            currentSchemaVersion = executeForStringResult(connection, "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1");
+        }
+        catch (SQLException e) {
+            // assume old schema if there is an SQL error
+        }
+        
+        // upgrade the database
+        try {
+            String disableFk = "SET FOREIGN_KEY_CHECKS=0";
+            if (!executeUpdate(connection, disableFk)) {
+                return false;
+            }
+            
+            // get the list of schema versions included in the installer
+            List<File> schemaUpdateList = Arrays.asList(updateDir.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.exists() && pathname.isDirectory();
+                }
+            }));
+            Collections.sort(schemaUpdateList);
+            
+            // execute schema updates for each version greater than the current version
+            for (File schemaUpdateDir : schemaUpdateList) {
+                if (currentSchemaVersion != null) {
+                    int compareResult = schemaUpdateDir.getName().compareTo(currentSchemaVersion);
+                    if (compareResult <= 0) {
+                        continue;
+                    }
+                }
+                
+                runScriptsInDirectory(connection, schemaUpdateDir, false, false);
+            }
+            
+            return true;
+        }
+        finally {
+            String enableFk = "SET FOREIGN_KEY_CHECKS=1";
+            if (!executeUpdate(connection, enableFk)) {
+                return false;
+            }
+        }
+    }
+    
     protected String getBackupFilename(String databaseName, String suffix) {
         DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
         String timestamp = format.format(new Date());
@@ -301,6 +397,23 @@ public class MySQLUtil {
         }
         catch (SQLException e) {
             throw e;
+        }
+        finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+    
+    public boolean executeUpdate(Connection connection, String query) throws SQLException {
+        Statement stmt = connection.createStatement();
+        
+        try {
+            stmt.executeUpdate(query);
+            return true;
+        }
+        catch (SQLException e) {
+            return false;
         }
         finally {
             if (stmt != null) {
@@ -340,5 +453,66 @@ public class MySQLUtil {
                 }
             }
         }
+    }
+    
+    public void runScriptsInDirectory(File directory) 
+        throws IOException, SQLException {
+        connect();
+
+        try {
+            runScriptsInDirectory(connection, directory);
+        }
+        finally {
+            disconnect();
+        }
+    }
+    
+    public boolean runScriptsInDirectory(Connection conn, File directory) {
+        return runScriptsInDirectory(conn, directory, true);
+    }
+    
+    public boolean runScriptsInDirectory(Connection conn
+            , File directory, boolean stopOnError) {
+        return runScriptsInDirectory(conn, directory, stopOnError, true);
+    }
+    
+    public boolean runScriptsInDirectory(Connection conn
+            , File directory, boolean stopOnError, boolean logSqlError) {
+        // get the sql files
+        File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".sql");
+            }
+        });
+        if (sqlFilesArray == null) {
+            sqlFilesArray = new File[0];
+        }
+        List<File> sqlFiles = Arrays.asList(sqlFilesArray);
+        Collections.sort(sqlFiles);
+        
+        for (File sqlFile : sqlFiles) {
+            BufferedReader br = null;
+            
+            try {
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
+                
+                ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
+                runner.runScript(br);
+            }
+            catch (IOException e1) {
+            }
+            finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        
+        return true;
     }
 }
