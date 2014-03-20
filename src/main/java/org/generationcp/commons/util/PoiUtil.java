@@ -81,7 +81,15 @@ public class PoiUtil {
             		return doubleVal;
             	}
             case Cell.CELL_TYPE_FORMULA:
-                return cell.getCellFormula();
+            	
+            	switch(cell.getCachedFormulaResultType()) { 
+                 case Cell.CELL_TYPE_NUMERIC:
+                     return cell.getNumericCellValue();
+                 case Cell.CELL_TYPE_STRING:
+                     return cell.getRichStringCellValue();
+                 default: return cell.getCellFormula();    
+                 
+            	 }
             default:
                 return null;
         }
