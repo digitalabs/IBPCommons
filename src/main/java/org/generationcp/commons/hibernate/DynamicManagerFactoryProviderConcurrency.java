@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -248,6 +249,20 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
 	        }
 	       
 	}
+	
+	protected synchronized void closeAllSessionFactories() {
+		
+		for (Entry<Long, SessionFactory> entry : localSessionFactories.entrySet()){
+			entry.getValue().close();
+			localSessionFactories.remove(entry);
+		}
+   
+		for (Entry<CropType, SessionFactory> entry : centralSessionFactories.entrySet()){
+			entry.getValue().close();
+			centralSessionFactories.remove(entry);
+		}
+       
+    }
 
 	public int getMaxCachedLocalSessionFactories() {
 		return maxCachedLocalSessionFactories;
