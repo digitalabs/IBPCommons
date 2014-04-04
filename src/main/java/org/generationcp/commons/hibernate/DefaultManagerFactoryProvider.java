@@ -303,7 +303,7 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     }
 
     public void removeProjectFromLocalSession(int projectId) {
-    	if(localSessionFactories!=null) {
+    	if(localSessionFactories!=null && localSessionFactories.containsKey(projectId)) {
     		localSessionFactories.get(projectId).close();
     		localSessionFactories.remove(projectId);
     	}
