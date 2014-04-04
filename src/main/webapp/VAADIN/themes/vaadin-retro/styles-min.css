@@ -859,7 +859,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 .h1{font-size:26px;font-weight:500;height:26px;line-height:26px;text-transform:uppercase}
 .h2{font-size:18px;height:18px;line-height:18px;font-weight:600;text-transform:uppercase}
 .h3,.gcp-table-header-bold,.gcp-content-title,.v-horizontallayout .v-captiontext{font-size:16px;height:16px;line-height:16px;font-weight:600;text-transform:uppercase}
-.h4{font-size:17px;height:17px;line-height:17px;font-weight:500}
+.h4{font-size:17px;height:24px;line-height:24px;font-weight:500}
 .h5{font-size:15px;font-weight:500;height:15px;line-height:15px;text-transform:uppercase}
 .h6{font-size:13px;font-weight:500;line-height:13px}
 .bodycopy,.lead{font-family:'Open Sans','Segoe UI','Helvetica Neue',Arial,sans-serif;display:block;font-size:14px;line-height:20px;margin-bottom:10px;margin-left:0;margin-right:0;margin-top:0;box-sizing:border-box}
