@@ -207,7 +207,11 @@ public class ScriptRunner {
         }
     }
     else if (commandReadyToExecute(trimmedLine)) {
-      command.append(line.substring(0, line.lastIndexOf(delimiter)));
+    
+      int lastIndex = trimmedLine.lastIndexOf(delimiter); 
+      if (lastIndex < 0) lastIndex = 0;
+      
+      command.append(trimmedLine.substring(0, lastIndex));
       command.append(LINE_SEPARATOR);
       println(command);
       executeStatement(command.toString());

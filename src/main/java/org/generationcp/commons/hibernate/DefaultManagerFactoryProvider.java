@@ -302,4 +302,10 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         centralSessionProviders.clear();
     }
 
+    public void removeProjectFromLocalSession(long projectId) {
+    	if(localSessionFactories!=null && localSessionFactories.containsKey(projectId)) {
+    		localSessionFactories.get(projectId).close();
+    		localSessionFactories.remove(projectId);
+    	}
+    }
 }
