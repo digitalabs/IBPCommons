@@ -92,4 +92,8 @@ public class ComponentTreeItem extends CssLayout implements ClickListener {
         l.addComponent(headerLayout);
         return l;
 	}
+	
+	public void addExpanderClickListener(ClickListener listener){
+		expander.addListener(listener);
+	}
 }
