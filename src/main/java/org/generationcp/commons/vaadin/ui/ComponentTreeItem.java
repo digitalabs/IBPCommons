@@ -3,6 +3,7 @@ package org.generationcp.commons.vaadin.ui;
 import org.generationcp.commons.vaadin.theme.Bootstrap;
 
 import com.vaadin.terminal.ThemeResource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -87,6 +88,7 @@ public class ComponentTreeItem extends CssLayout implements ClickListener {
         headerLayout.setWidth("100%");
         headerLayout.setHeight("30px");
         headerLayout.addComponent(headerLabel);
+        headerLayout.setComponentAlignment(headerLabel, Alignment.TOP_LEFT);
         
         CssLayout l = new CssLayout();
         l.addComponent(headerLayout);
