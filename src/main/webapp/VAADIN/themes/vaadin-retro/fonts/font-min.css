@@ -27,19 +27,25 @@
      line-height: 1;
      -webkit-font-smoothing: antialiased;
      -moz-osx-font-smoothing: grayscale;
+    display: inline-block;
  }
 
 [class^="bms-"]:before,
-[class*=" bms-"]:before {
+  [class*=" bms-"]:before {
+    display:inline-block;
+
     font-family: "BMS" !important;
-    font-style: normal !important;
-    font-weight: normal !important;
-    font-variant: normal !important;
-    text-transform: none !important;
-    speak: none;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+      font-style: normal !important;
+      font-weight: normal !important;
+      font-variant: normal !important;
+      text-transform: none !important;
+      speak: none;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+
+       position: relative;
+      top: 5px;
 }
 
 .bms-add:before {
