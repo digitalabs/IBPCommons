@@ -273,7 +273,7 @@ public class MySQLUtil {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(backupFile)));
-            scriptRunner.runScript(br);
+            scriptRunner.runScript(br,true);
         }
         catch (IOException e) {
             throw e;
@@ -514,5 +514,18 @@ public class MySQLUtil {
         }
         
         return true;
+    }
+    
+    public void updateOwnerships(String databaseName, Integer userId) 
+            throws IOException, SQLException {
+        connect();
+        
+        try {
+        	executeQuery(connection, "USE " + databaseName);
+        	executeQuery(connection, "UPDATE LISTNMS SET LISTUID = "+userId);
+        }
+        finally {
+            disconnect();
+        }
     }
 }
