@@ -100,22 +100,26 @@ public class ScriptRunner {
   public void setFullLineDelimiter(boolean fullLineDelimiter) {
     this.fullLineDelimiter = fullLineDelimiter;
   }
-
+  
   public void runScript(Reader reader) {
+	  runScript(reader,false);
+  }
+
+  public void runScript(Reader reader, boolean restore) {
     setAutoCommit();
 
     try {
-      if (sendFullScript) {
-        executeFullScript(reader);
-      } else {
-        executeLineByLine(reader);
-      }
+      //if (sendFullScript) {
+      //  executeFullScript(reader, restore);
+      //} else {
+        executeLineByLine(reader, restore);
+      //}
     } finally {
       rollbackConnection();
     }
   }
-
-  private void executeFullScript(Reader reader) {
+  @Deprecated /* there are issues in running the full script  */
+  private void executeFullScript(Reader reader, boolean restore) {
     StringBuilder script = new StringBuilder();
     try {
       BufferedReader lineReader = new BufferedReader(reader);
@@ -124,7 +128,7 @@ public class ScriptRunner {
         script.append(line);
         script.append(LINE_SEPARATOR);
       }
-      executeStatement(script.toString());
+      executeStatement(script.toString(), restore);
       commitConnection();
     } catch (Exception e) {
       String message = "Error executing: " + script + ".  Cause: " + e;
@@ -133,13 +137,13 @@ public class ScriptRunner {
     }
   }
 
-  private void executeLineByLine(Reader reader) {
+  private void executeLineByLine(Reader reader, boolean restore) {
     StringBuilder command = new StringBuilder();
     try {
       BufferedReader lineReader = new BufferedReader(reader);
       String line;
       while ((line = lineReader.readLine()) != null) {
-        command = handleLine(command, line);
+        command = handleLine(command, line, restore);
       }
       commitConnection();
       checkForMissingLineTerminator(command);
@@ -194,7 +198,7 @@ public class ScriptRunner {
     }
   }
 
-  private StringBuilder handleLine(StringBuilder command, String line) throws SQLException, UnsupportedEncodingException {
+  private StringBuilder handleLine(StringBuilder command, String line, boolean restore) throws SQLException, UnsupportedEncodingException {
     String trimmedLine = line.trim();
     if (lineIsComment(trimmedLine)) {
       println(trimmedLine);
@@ -214,7 +218,7 @@ public class ScriptRunner {
       command.append(trimmedLine.substring(0, lastIndex));
       command.append(LINE_SEPARATOR);
       println(command);
-      executeStatement(command.toString());
+      executeStatement(command.toString(), restore);
       command.setLength(0);
     } else if (trimmedLine.length() > 0) {
       command.append(line);
@@ -236,7 +240,7 @@ public class ScriptRunner {
     return !fullLineDelimiter && trimmedLine.contains(delimiter) || fullLineDelimiter && trimmedLine.equals(delimiter);
   }
 
-  protected void executeStatement(String command) throws SQLException, UnsupportedEncodingException {
+  protected void executeStatement(String command, boolean restore) throws SQLException, UnsupportedEncodingException {
     boolean hasResults = false;
     Statement statement = connection.createStatement();
     statement.setEscapeProcessing(escapeProcessing);
@@ -247,7 +251,17 @@ public class ScriptRunner {
       hasResults = statement.execute(sql);
     } else {
       try {
-        hasResults = statement.execute(sql);
+    	  //GCP-7958 - short term solution - don't restore the users and persons table
+          if (restore && (sql.contains("DROP TABLE IF EXISTS `users`") || sql.contains("CREATE TABLE `users`") ||
+        	  sql.contains("INSERT INTO `users`") || 
+        	  sql.contains("DROP TABLE IF EXISTS `persons`") || sql.contains("CREATE TABLE `persons`") ||
+        	  sql.contains("INSERT INTO `persons`"))){ 
+        	  //do nothing
+          } else {
+        	  hasResults = statement.execute(sql);
+          }
+    	  
+        
       } catch (SQLException e) {
         String message = "Error executing: " + command + ".  Cause: " + e;
         printlnError(message);
