@@ -30,7 +30,11 @@ import org.slf4j.LoggerFactory;
  * A convenience class for POI library.
  *
  * @author Glenn Marintes
+ *
  */
+
+@Deprecated
+// DMV : deprecated in favor of PoiUtil found in the middleware library
 public class PoiUtil {
     
     private static final Logger LOG = LoggerFactory.getLogger(PoiUtil.class);
