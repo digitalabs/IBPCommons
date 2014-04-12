@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -39,6 +41,9 @@ import org.springframework.beans.factory.annotation.Configurable;
  */
 @Configurable
 public class MySQLUtil {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(MySQLUtil.class);
+	
     private String mysqlPath;
     private String mysqlDumpPath;
 
@@ -224,16 +229,6 @@ public class MySQLUtil {
             throw new IllegalArgumentException("backupFile parameter must not be null");
         }
         
-        // backup the current database to a file
-        File currentDbBackupFile = null;
-        try {
-            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
-                    databaseName, "system.sql"));
-        }
-        catch (InterruptedException e1) {
-            throw new IllegalStateException("Unable to backup current database.");
-        }
-        
         // create the target database
         try {
             executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
@@ -245,11 +240,18 @@ public class MySQLUtil {
         
         // restore the backup
         try {
+        	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
             restoreDatabaseWithFile(connection, backupFile);
         }
         catch (IOException e) {
+        	LOG.debug(e.getStackTrace().toString());
             try {
+            	// backup the current database to a file
+                File currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
+                            databaseName, "system.sql"));
+                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
                 restoreDatabaseWithFile(connection, currentDbBackupFile);
+                throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
             }
             catch (IOException e1) {
                 String sorryMessage = "For some reason, the backup file cannot be restored"
@@ -257,7 +259,13 @@ public class MySQLUtil {
                                     + " If you have a backup file of your original database,"
                                     + " you can try to restore it.";
                 throw new IllegalStateException(sorryMessage);
-            }
+            } catch (InterruptedException e1) {
+            	String sorryMessage = "For some reason, the backup file cannot be restored"
+                        + " and your original database is now broken. I'm so sorry."
+                        + " If you have a backup file of your original database,"
+                        + " you can try to restore it.";
+            	throw new IllegalStateException(sorryMessage);
+			}
         }
         
         
@@ -309,10 +317,11 @@ public class MySQLUtil {
             disconnect();
         }
     }
-
+    
     public boolean upgradeDatabase(Connection connection, String databaseName, File updateDir) 
         throws IOException, SQLException {
-        if (connection == null) {
+    	
+    	if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
         }
         if (databaseName == null) {
@@ -333,7 +342,7 @@ public class MySQLUtil {
             // ignore database creation error
         }
         
-        // check our schema version
+     // check our schema version
         String currentSchemaVersion = null;
         try {
             // get the current version of the database
@@ -342,6 +351,9 @@ public class MySQLUtil {
         catch (SQLException e) {
             // assume old schema if there is an SQL error
         }
+        LOG.debug("Executing upgradeDatabase from directory "+updateDir.getAbsolutePath());
+        LOG.debug("Applying upgrade in database "+databaseName);
+        LOG.debug("The schema version is "+currentSchemaVersion);
         
         // upgrade the database
         try {
@@ -349,6 +361,7 @@ public class MySQLUtil {
             if (!executeUpdate(connection, disableFk)) {
                 return false;
             }
+            LOG.debug("Disabling foreign key checks...");
             
             // get the list of schema versions included in the installer
             List<File> schemaUpdateList = Arrays.asList(updateDir.listFiles(new FileFilter() {
@@ -367,7 +380,7 @@ public class MySQLUtil {
                         continue;
                     }
                 }
-                
+                LOG.debug("Running scripts from directory: "+schemaUpdateDir.getAbsolutePath());
                 runScriptsInDirectory(connection, schemaUpdateDir, false, false);
             }
             
@@ -378,6 +391,7 @@ public class MySQLUtil {
             if (!executeUpdate(connection, enableFk)) {
                 return false;
             }
+            LOG.debug("Enabling foreign key checks...");
         }
     }
     
@@ -478,7 +492,7 @@ public class MySQLUtil {
     
     public boolean runScriptsInDirectory(Connection conn
             , File directory, boolean stopOnError, boolean logSqlError) {
-        // get the sql files
+    	// get the sql files
         File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
                 return name.endsWith(".sql");
@@ -494,6 +508,8 @@ public class MySQLUtil {
             BufferedReader br = null;
             
             try {
+            	LOG.debug("Running script: "+sqlFile.getAbsolutePath());
+            	
                 br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
                 
                 ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
@@ -523,6 +539,19 @@ public class MySQLUtil {
         try {
         	executeQuery(connection, "USE " + databaseName);
         	executeQuery(connection, "UPDATE LISTNMS SET LISTUID = "+userId);
+        }
+        finally {
+            disconnect();
+        }
+    }
+    
+    public void dropSchemaVersion(String databaseName) 
+            throws IOException, SQLException {
+        connect();
+        
+        try {
+        	executeQuery(connection, "USE " + databaseName);
+        	executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
         }
         finally {
             disconnect();
