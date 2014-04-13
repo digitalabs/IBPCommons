@@ -287,8 +287,7 @@ public class MySQLUtil {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(backupFile)));
-            scriptRunner.runS
-            cript(br,true);
+            scriptRunner.runScript(br,true);
         }
         catch (IOException e) {
             throw e;
