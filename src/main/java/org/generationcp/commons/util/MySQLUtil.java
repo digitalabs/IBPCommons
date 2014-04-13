@@ -185,6 +185,12 @@ public class MySQLUtil {
         }
         
         Process process = Runtime.getRuntime().exec(command);
+        /* Added while loop to get input stream because process.waitFor() has a problem
+         * Reference: 
+         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
+         */
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        while ((reader.readLine()) != null) {}
         process.waitFor();
         
         File file = new File(backupFilename);
@@ -281,7 +287,8 @@ public class MySQLUtil {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(backupFile)));
-            scriptRunner.runScript(br,true);
+            scriptRunner.runS
+            cript(br,true);
         }
         catch (IOException e) {
             throw e;
