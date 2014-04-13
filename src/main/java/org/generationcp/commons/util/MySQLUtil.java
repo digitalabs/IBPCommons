@@ -172,15 +172,15 @@ public class MySQLUtil {
         }
         
         String command = null;
-        
+
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
         
         if (StringUtil.isEmpty(password)) {
-            command = String.format("%s -n -c -h %s -P %d -u %s %s -r %s"
+            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s %s -r %s"
                     , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, database, backupFilename);
         }
         else {
-            command = String.format("%s -n -c -h %s -P %d -u %s -p%s %s -r %s"
+            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s --password=%s %s -r %s"
                     , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, password, database, backupFilename);
         }
         
@@ -224,7 +224,7 @@ public class MySQLUtil {
     }
     
     public void restoreDatabase(Connection connection, String databaseName, File backupFile) 
-            throws IOException, SQLException {
+            throws IOException, SQLException, IllegalArgumentException {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
         }
@@ -234,14 +234,25 @@ public class MySQLUtil {
         if (backupFile == null) {
             throw new IllegalArgumentException("backupFile parameter must not be null");
         }
-        
+
+        // backup before doing anything else
+        File currentDbBackupFile = null;
+        try {
+            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
+                    databaseName, "system.sql","temp"));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // create the target database
         try {
+            executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
             executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
             executeQuery(connection, "USE " + databaseName);
         }
         catch (SQLException e) {
             // ignore database creation error
+            e.printStackTrace();
         }
         
         // restore the backup
@@ -250,39 +261,36 @@ public class MySQLUtil {
             restoreDatabaseWithFile(connection, backupFile);
         }
         catch (IOException e) {
+            // fail restore using the selected backup, reverting to previous DB..
         	LOG.debug(e.getStackTrace().toString());
             try {
-            	// backup the current database to a file
-                File currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
-                            databaseName, "system.sql"));
                 LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+
+                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+                executeQuery(connection, "USE " + databaseName);
+
                 restoreDatabaseWithFile(connection, currentDbBackupFile);
-                throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
             }
-            catch (IOException e1) {
+            catch (Exception e1) {
                 String sorryMessage = "For some reason, the backup file cannot be restored"
                                     + " and your original database is now broken. I'm so sorry."
                                     + " If you have a backup file of your original database,"
                                     + " you can try to restore it.";
                 throw new IllegalStateException(sorryMessage);
-            } catch (InterruptedException e1) {
-            	String sorryMessage = "For some reason, the backup file cannot be restored"
-                        + " and your original database is now broken. I'm so sorry."
-                        + " If you have a backup file of your original database,"
-                        + " you can try to restore it.";
-            	throw new IllegalStateException(sorryMessage);
-			}
+            }
+            throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
         }
         
         
     }
-    
+
     protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
             throws IOException {
         if (backupFile == null) {
             return;
         }
-        
+
         ScriptRunner scriptRunner = new ScriptRunner(connection);
         BufferedReader br = null;
         try {
@@ -404,9 +412,22 @@ public class MySQLUtil {
     protected String getBackupFilename(String databaseName, String suffix) {
         DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
         String timestamp = format.format(new Date());
-        
+
         String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
-        return StringUtil.joinIgnoreEmpty(File.separator, backupDir, name);
+        return StringUtil.joinIgnoreEmpty(File.separator, (new File(backupDir)).getAbsolutePath(), name);
+    }
+
+    protected String getBackupFilename(String databaseName, String suffix,String customDir) {
+        DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
+        String timestamp = format.format(new Date());
+
+        String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
+
+        File _customDir = new File(new File(customDir).getAbsolutePath());
+        if (!_customDir.exists() || !_customDir.isDirectory())
+            _customDir.mkdirs();
+
+        return StringUtil.joinIgnoreEmpty(File.separator, _customDir.getAbsolutePath(), name);
     }
     
     public void executeQuery(Connection connection, String query) throws SQLException {
