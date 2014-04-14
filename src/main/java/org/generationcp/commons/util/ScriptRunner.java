@@ -251,15 +251,15 @@ public class ScriptRunner {
       hasResults = statement.execute(sql);
     } else {
       try {
-    	  //GCP-7958 - short term solution - don't restore the users and persons table
-          if (restore && (sql.contains("DROP TABLE IF EXISTS `users`") || sql.contains("CREATE TABLE `users`") ||
+    	//GCP-7958 - short term solution - don't restore the users and persons table
+        if (restore && (sql.contains("DROP TABLE IF EXISTS `users`") || sql.contains("CREATE TABLE `users`") ||
         	  sql.contains("INSERT INTO `users`") || 
         	  sql.contains("DROP TABLE IF EXISTS `persons`") || sql.contains("CREATE TABLE `persons`") ||
         	  sql.contains("INSERT INTO `persons`"))){ 
         	  //do nothing
-          } else {
+         } else {
         	  hasResults = statement.execute(sql);
-          }
+         }
     	  
         
       } catch (SQLException e) {
