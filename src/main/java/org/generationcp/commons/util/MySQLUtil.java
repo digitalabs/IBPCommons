@@ -299,7 +299,7 @@ public class MySQLUtil {
             executeQuery(connection,"DROP table IF EXISTS users");
             executeQuery(connection,"CREATE TABLE users LIKE " + databaseName + ".users");
             executeQuery(connection,"INSERT users SELECT * FROM " + databaseName +".users");
-            executeQuery(connection,"DROP table IF EXISTS persons;");
+            executeQuery(connection,"DROP table IF EXISTS persons");
             executeQuery(connection,"CREATE TABLE persons LIKE " + databaseName + ".persons");
             executeQuery(connection,"INSERT persons SELECT * FROM " + databaseName +".persons");
         } catch (SQLException e) {
