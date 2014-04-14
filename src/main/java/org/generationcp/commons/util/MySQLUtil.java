@@ -294,12 +294,12 @@ public class MySQLUtil {
 
     protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
         try {
-            executeQuery(connection,"CREATE DATABASE IF EXISTS temp_db;");
+            executeQuery(connection,"CREATE DATABASE IF NOT EXISTS temp_db");
             executeQuery(connection,"USE temp_db");
-            executeQuery(connection,"DROP table if exists users");
+            executeQuery(connection,"DROP table IF EXISTS users");
             executeQuery(connection,"CREATE TABLE users LIKE " + databaseName + ".users");
             executeQuery(connection,"INSERT users SELECT * FROM " + databaseName +".persons");
-            executeQuery(connection,"DROP table if exists persons;");
+            executeQuery(connection,"DROP table IF EXISTS persons;");
             executeQuery(connection,"CREATE TABLE persons LIKE " + databaseName + ".persons");
             executeQuery(connection,"INSERT persons SELECT * FROM " + databaseName +".persons");
         } catch (SQLException e) {
@@ -310,10 +310,10 @@ public class MySQLUtil {
     protected  void restoreUsersPersonsAfterRestoreDB(Connection connection, String databaseName) {
         try {
             executeQuery(connection,"USE " + databaseName);
-            executeQuery(connection,"DROP table if exists users");
-            executeQuery(connection,"CREATE TABLE users LIKE " + databaseName + ".users");
+            executeQuery(connection,"DROP table IF EXISTS users");
+            executeQuery(connection,"CREATE TABLE users LIKE temp_db.users");
             executeQuery(connection,"INSERT users SELECT * FROM temp_db.persons");
-            executeQuery(connection,"DROP table if exists persons;");
+            executeQuery(connection,"DROP table IF EXISTS persons;");
             executeQuery(connection,"CREATE TABLE persons LIKE temp_db.persons");
             executeQuery(connection,"INSERT persons SELECT * FROM temp_db.persons");
             executeQuery(connection,"DROP DATABASE IF EXISTS temp_db");
