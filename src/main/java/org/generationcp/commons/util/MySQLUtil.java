@@ -213,22 +213,17 @@ public class MySQLUtil {
     
     public void restoreDatabase(String databaseName, File backupFile) 
             throws IOException, SQLException {
-        restoreDatabase(connection, databaseName, backupFile, null);
-    }
-    
-    public void restoreDatabase(String databaseName, File backupFile, File additionalBackupFile) 
-            throws IOException, SQLException {
         connect();
         
         try {
-            restoreDatabase(connection, databaseName, backupFile, additionalBackupFile);
+            restoreDatabase(connection, databaseName, backupFile);
         }
         finally {
             disconnect();
         }
     }
     
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File additionalBackupFile) 
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile) 
             throws IOException, SQLException, IllegalArgumentException {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
@@ -263,10 +258,7 @@ public class MySQLUtil {
         // restore the backup
         try {
         	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
-            restoreDatabaseWithFile(connection, backupFile, true);
-            if(additionalBackupFile!=null) {
-            	restoreDatabaseWithFile(connection, additionalBackupFile);
-            }
+            restoreDatabaseWithFile(connection, backupFile);
         }
         catch (IOException e) {
             // fail restore using the selected backup, reverting to previous DB..
@@ -293,7 +285,7 @@ public class MySQLUtil {
         
     }
 
-    protected void restoreDatabaseWithFile(Connection connection, File backupFile, boolean restore) 
+    protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
             throws IOException {
         if (backupFile == null) {
             return;
@@ -303,7 +295,7 @@ public class MySQLUtil {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(backupFile)));
-            scriptRunner.runScript(br,restore);
+            scriptRunner.runScript(br,true);
         }
         catch (IOException e) {
             throw e;
@@ -318,11 +310,6 @@ public class MySQLUtil {
                 }
             }
         }
-    }
-    
-    protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
-            throws IOException {
-    	restoreDatabaseWithFile(connection, backupFile, false);
     }
     
     /**
@@ -596,43 +583,5 @@ public class MySQLUtil {
         finally {
             disconnect();
         }
-    }
-    
-    public File backupSpecificTablesFromDatabase(String database, String... tables) throws IOException, InterruptedException {
-    	StringBuilder tableSb = new StringBuilder();
-    	int i = 0;
-    	for (String tableName : tables) {
-    		if(i!=0) {
-    			tableSb.append(" ");
-    		}
-    		tableSb.append(tableName);
-    		i++;
-		}
-    	String suffix = tableSb.toString().replace(" ", "_") + ".sql";
-    	String backupFilename = getBackupFilename(database, suffix,"temp");
-    	String command = null;
-
-        String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
-        
-        if (StringUtil.isEmpty(password)) {
-            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s %s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, database, tableSb.toString(), backupFilename);
-        }
-        else {
-            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s --password=%s %s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, password, database, tableSb.toString(), backupFilename);
-        }
-        
-        Process process = Runtime.getRuntime().exec(command);
-        /* Added while loop to get input stream because process.waitFor() has a problem
-         * Reference: 
-         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
-         */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        while ((reader.readLine()) != null) {}
-        process.waitFor();
-        
-        File file = new File(backupFilename);
-        return file.exists() ? file.getAbsoluteFile() : null;
     }
 }
