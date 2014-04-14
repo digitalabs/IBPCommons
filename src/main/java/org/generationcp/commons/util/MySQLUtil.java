@@ -298,7 +298,7 @@ public class MySQLUtil {
             executeQuery(connection,"USE temp_db");
             executeQuery(connection,"DROP table IF EXISTS users");
             executeQuery(connection,"CREATE TABLE users LIKE " + databaseName + ".users");
-            executeQuery(connection,"INSERT users SELECT * FROM " + databaseName +".persons");
+            executeQuery(connection,"INSERT users SELECT * FROM " + databaseName +".users");
             executeQuery(connection,"DROP table IF EXISTS persons;");
             executeQuery(connection,"CREATE TABLE persons LIKE " + databaseName + ".persons");
             executeQuery(connection,"INSERT persons SELECT * FROM " + databaseName +".persons");
@@ -312,7 +312,7 @@ public class MySQLUtil {
             executeQuery(connection,"USE " + databaseName);
             executeQuery(connection,"DROP table IF EXISTS users");
             executeQuery(connection,"CREATE TABLE users LIKE temp_db.users");
-            executeQuery(connection,"INSERT users SELECT * FROM temp_db.persons");
+            executeQuery(connection,"INSERT users SELECT * FROM temp_db.users");
             executeQuery(connection,"DROP table IF EXISTS persons;");
             executeQuery(connection,"CREATE TABLE persons LIKE temp_db.persons");
             executeQuery(connection,"INSERT persons SELECT * FROM temp_db.persons");
