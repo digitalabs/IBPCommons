@@ -316,11 +316,19 @@ public class MySQLUtil {
             executeQuery(connection,"DROP table IF EXISTS persons;");
             executeQuery(connection,"CREATE TABLE persons LIKE temp_db.persons");
             executeQuery(connection,"INSERT persons SELECT * FROM temp_db.persons");
-            executeQuery(connection,"DROP DATABASE IF EXISTS temp_db");
-
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            // make sure to drop temp_db regardless of errors
+            try {
+                executeQuery(connection,"DROP DATABASE IF EXISTS temp_db");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
+
+
+
     }
 
     protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
