@@ -231,19 +231,23 @@ public class MySQLUtil {
         return backupFiles;
     }
     
-    public void restoreDatabase(String databaseName, File backupFile) 
+    public void restoreDatabase(String databaseName, File backupFile)throws IOException, SQLException {
+    	restoreDatabase(databaseName, backupFile, null);
+    }
+    
+    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile) 
             throws IOException, SQLException {
         connect();
         
         try {
-            restoreDatabase(connection, databaseName, backupFile);
+            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile);
         }
         finally {
             disconnect();
         }
     }
     
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile) 
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile) 
             throws IOException, SQLException, IllegalArgumentException {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
@@ -253,15 +257,6 @@ public class MySQLUtil {
         }
         if (backupFile == null) {
             throw new IllegalArgumentException("backupFile parameter must not be null");
-        }
-
-        // backup before doing anything else
-        File currentDbBackupFile = null;
-        try {
-            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
-                    databaseName, "system.sql","temp"));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         // create the target database
@@ -603,5 +598,37 @@ public class MySQLUtil {
         finally {
             disconnect();
         }
+    }
+    
+    public void restoreOriginalState(String databaseName, File currentDbBackupFile) throws Exception {
+    	if(currentDbBackupFile!=null && currentDbBackupFile.exists()) {
+    		connect();
+
+            try {
+            	LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+            	executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+            	executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+            	executeQuery(connection, "USE " + databaseName);
+
+            	restoreDatabaseWithFile(connection, currentDbBackupFile);
+            }
+            finally {
+            	disconnect();
+            }
+        }
+        
+    }
+    
+    public File createCurrentDbBackupFile(String databaseName) throws Exception {
+    	 connect();
+
+         try {
+        	 return backupDatabase(databaseName, getBackupFilename(
+ 	                databaseName, "system.sql","temp"));
+         }
+         finally {
+             disconnect();
+         }
+    	
     }
 }
