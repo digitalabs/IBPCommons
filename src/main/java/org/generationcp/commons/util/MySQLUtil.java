@@ -171,20 +171,40 @@ public class MySQLUtil {
             return null;
         }
         
-        String command = null;
-
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
         
+        ProcessBuilder pb = null;
         if (StringUtil.isEmpty(password)) {
-            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, database, backupFilename);
+            pb = new ProcessBuilder(mysqlDumpAbsolutePath
+                                   ,"--complete-insert"
+                                   ,"--extended-insert"
+                                   ,"--no-create-db"
+                                   ,"--single-transaction"
+                                   ,"--default-character-set=utf8"
+                                   ,"--host=" + mysqlHost
+                                   ,"--port=" + mysqlPort
+                                   ,"--user=" + username
+                                   ,database
+                                   ,"-r", backupFilename
+                );
         }
         else {
-            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s --password=%s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, password, database, backupFilename);
+            pb = new ProcessBuilder(mysqlDumpAbsolutePath
+                                    ,"--complete-insert"
+                                    ,"--extended-insert"
+                                    ,"--no-create-db"
+                                    ,"--single-transaction"
+                                    ,"--default-character-set=utf8"
+                                    ,"--host=" + mysqlHost
+                                    ,"--port=" + mysqlPort
+                                    ,"--user=" + username
+                                    ,"--password=" + password
+                                    ,database
+                                    ,"-r", backupFilename
+                 );
         }
         
-        Process process = Runtime.getRuntime().exec(command);
+        Process process = pb.start();
         /* Added while loop to get input stream because process.waitFor() has a problem
          * Reference: 
          * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
