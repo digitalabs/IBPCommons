@@ -171,20 +171,40 @@ public class MySQLUtil {
             return null;
         }
         
-        String command = null;
-
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
         
+        ProcessBuilder pb = null;
         if (StringUtil.isEmpty(password)) {
-            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, database, backupFilename);
+            pb = new ProcessBuilder(mysqlDumpAbsolutePath
+                                   ,"--complete-insert"
+                                   ,"--extended-insert"
+                                   ,"--no-create-db"
+                                   ,"--single-transaction"
+                                   ,"--default-character-set=utf8"
+                                   ,"--host=" + mysqlHost
+                                   ,"--port=" + mysqlPort
+                                   ,"--user=" + username
+                                   ,database
+                                   ,"-r", backupFilename
+                );
         }
         else {
-            command = String.format("%s --complete-insert --extended-insert --no-create-db --single-transaction --default-character-set=utf8 --host=%s --port=%d --user=%s --password=%s %s -r %s"
-                    , mysqlDumpAbsolutePath, mysqlHost, mysqlPort, username, password, database, backupFilename);
+            pb = new ProcessBuilder(mysqlDumpAbsolutePath
+                                    ,"--complete-insert"
+                                    ,"--extended-insert"
+                                    ,"--no-create-db"
+                                    ,"--single-transaction"
+                                    ,"--default-character-set=utf8"
+                                    ,"--host=" + mysqlHost
+                                    ,"--port=" + mysqlPort
+                                    ,"--user=" + username
+                                    ,"--password=" + password
+                                    ,database
+                                    ,"-r", backupFilename
+                 );
         }
         
-        Process process = Runtime.getRuntime().exec(command);
+        Process process = pb.start();
         /* Added while loop to get input stream because process.waitFor() has a problem
          * Reference: 
          * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
@@ -211,19 +231,23 @@ public class MySQLUtil {
         return backupFiles;
     }
     
-    public void restoreDatabase(String databaseName, File backupFile) 
+    public void restoreDatabase(String databaseName, File backupFile)throws IOException, SQLException {
+    	restoreDatabase(databaseName, backupFile, null);
+    }
+    
+    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile) 
             throws IOException, SQLException {
         connect();
         
         try {
-            restoreDatabase(connection, databaseName, backupFile);
+            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile);
         }
         finally {
             disconnect();
         }
     }
     
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile) 
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile) 
             throws IOException, SQLException, IllegalArgumentException {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
@@ -235,24 +259,11 @@ public class MySQLUtil {
             throw new IllegalArgumentException("backupFile parameter must not be null");
         }
 
-        // backup before doing anything else
-        File currentDbBackupFile = null;
-        try {
-            currentDbBackupFile = backupDatabase(databaseName, getBackupFilename(
-                    databaseName, "system.sql","temp"));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         // create the target database
         try {
-            // backup current users + table in a temporary schema
-            backupUserPersonsBeforeRestoreDB(connection,databaseName);
-
             executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
             executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
             executeQuery(connection, "USE " + databaseName);
-
         }
         catch (SQLException e) {
             // ignore database creation error
@@ -263,9 +274,6 @@ public class MySQLUtil {
         try {
         	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
             restoreDatabaseWithFile(connection, backupFile);
-
-            // after restore, restore from backup schema the users + persons table
-            restoreUsersPersonsAfterRestoreDB(connection,databaseName);
         }
         catch (IOException e) {
             // fail restore using the selected backup, reverting to previous DB..
@@ -290,45 +298,6 @@ public class MySQLUtil {
         }
         
         
-    }
-
-    protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
-        try {
-            executeQuery(connection,"CREATE DATABASE IF NOT EXISTS temp_db");
-            executeQuery(connection,"USE temp_db");
-            executeQuery(connection,"DROP table IF EXISTS users");
-            executeQuery(connection,"CREATE TABLE users LIKE " + databaseName + ".users");
-            executeQuery(connection,"INSERT users SELECT * FROM " + databaseName +".users");
-            executeQuery(connection,"DROP table IF EXISTS persons");
-            executeQuery(connection,"CREATE TABLE persons LIKE " + databaseName + ".persons");
-            executeQuery(connection,"INSERT persons SELECT * FROM " + databaseName +".persons");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected  void restoreUsersPersonsAfterRestoreDB(Connection connection, String databaseName) {
-        try {
-            executeQuery(connection,"USE " + databaseName);
-            executeQuery(connection,"DROP table IF EXISTS users");
-            executeQuery(connection,"CREATE TABLE users LIKE temp_db.users");
-            executeQuery(connection,"INSERT users SELECT * FROM temp_db.users");
-            executeQuery(connection,"DROP table IF EXISTS persons;");
-            executeQuery(connection,"CREATE TABLE persons LIKE temp_db.persons");
-            executeQuery(connection,"INSERT persons SELECT * FROM temp_db.persons");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            // make sure to drop temp_db regardless of errors
-            try {
-                executeQuery(connection,"DROP DATABASE IF EXISTS temp_db");
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-
-
-
     }
 
     protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
@@ -629,5 +598,37 @@ public class MySQLUtil {
         finally {
             disconnect();
         }
+    }
+    
+    public void restoreOriginalState(String databaseName, File currentDbBackupFile) throws Exception {
+    	if(currentDbBackupFile!=null && currentDbBackupFile.exists()) {
+    		connect();
+
+            try {
+            	LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+            	executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+            	executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+            	executeQuery(connection, "USE " + databaseName);
+
+            	restoreDatabaseWithFile(connection, currentDbBackupFile);
+            }
+            finally {
+            	disconnect();
+            }
+        }
+        
+    }
+    
+    public File createCurrentDbBackupFile(String databaseName) throws Exception {
+    	 connect();
+
+         try {
+        	 return backupDatabase(databaseName, getBackupFilename(
+ 	                databaseName, "system.sql","temp"));
+         }
+         finally {
+             disconnect();
+         }
+    	
     }
 }
