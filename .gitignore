@@ -1,5 +1,4 @@
 # PROJECT SPECIFIC IGNORES
-/src/main/resources/*
 
 # Maven
 log/
