@@ -261,9 +261,14 @@ public class MySQLUtil {
 
         // create the target database
         try {
+        	
+            // backup current users + table in a temporary schema
+            backupUserPersonsBeforeRestoreDB(connection,databaseName);
+
             executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
             executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
             executeQuery(connection, "USE " + databaseName);
+
         }
         catch (SQLException e) {
             // ignore database creation error
@@ -274,6 +279,9 @@ public class MySQLUtil {
         try {
         	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
             restoreDatabaseWithFile(connection, backupFile);
+            
+            // after restore, restore from backup schema the users + persons table
+            restoreUsersPersonsAfterRestoreDB(connection,databaseName);
         }
         catch (IOException e) {
             // fail restore using the selected backup, reverting to previous DB..
@@ -298,6 +306,45 @@ public class MySQLUtil {
         }
         
         
+    }
+    
+    protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
+        try {
+            executeQuery(connection,"CREATE DATABASE IF NOT EXISTS temp_db");
+            executeQuery(connection,"USE temp_db");
+            executeQuery(connection,"DROP table IF EXISTS users");
+            executeQuery(connection,"CREATE TABLE users LIKE " + databaseName + ".users");
+            executeQuery(connection,"INSERT users SELECT * FROM " + databaseName +".users");
+            executeQuery(connection,"DROP table IF EXISTS persons");
+            executeQuery(connection,"CREATE TABLE persons LIKE " + databaseName + ".persons");
+            executeQuery(connection,"INSERT persons SELECT * FROM " + databaseName +".persons");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected  void restoreUsersPersonsAfterRestoreDB(Connection connection, String databaseName) {
+        try {
+            executeQuery(connection,"USE " + databaseName);
+            executeQuery(connection,"DROP table IF EXISTS users");
+            executeQuery(connection,"CREATE TABLE users LIKE temp_db.users");
+            executeQuery(connection,"INSERT users SELECT * FROM temp_db.users");
+            executeQuery(connection,"DROP table IF EXISTS persons;");
+            executeQuery(connection,"CREATE TABLE persons LIKE temp_db.persons");
+            executeQuery(connection,"INSERT persons SELECT * FROM temp_db.persons");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            // make sure to drop temp_db regardless of errors
+            try {
+                executeQuery(connection,"DROP DATABASE IF EXISTS temp_db");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
     }
 
     protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
