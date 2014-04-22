@@ -278,12 +278,12 @@ public class MySQLUtil {
         // restore the backup
         try {
         	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
-            restoreDatabaseWithFile(connection, backupFile);
+            restoreDatabaseWithFile(databaseName, backupFile);
             
             // after restore, restore from backup schema the users + persons table
             restoreUsersPersonsAfterRestoreDB(connection,databaseName);
         }
-        catch (IOException e) {
+        catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
         	LOG.debug(e.getStackTrace().toString());
             try {
@@ -293,7 +293,7 @@ public class MySQLUtil {
                 executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
                 executeQuery(connection, "USE " + databaseName);
 
-                restoreDatabaseWithFile(connection, currentDbBackupFile);
+                restoreDatabaseWithFile(databaseName, currentDbBackupFile);
             }
             catch (Exception e1) {
                 String sorryMessage = "For some reason, the backup file cannot be restored"
@@ -347,33 +347,44 @@ public class MySQLUtil {
 
     }
 
-    protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
-            throws IOException {
-        if (backupFile == null) {
-            return;
+
+
+    protected void restoreDatabaseWithFile(String dbName,File backupFile) throws IOException, InterruptedException {
+        ProcessBuilder pb;
+
+        String mysqlExePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
+
+        if (null == password) {
+            pb = new ProcessBuilder(mysqlExePath
+                    ,"--user=" + username
+                    ,dbName
+                    ,"-e"
+                    ,"source " + backupFile.getAbsoluteFile()
+            );
+        }
+        else {
+            pb = new ProcessBuilder(mysqlExePath
+                    ,"--user=" + username
+                    , "--password=" + password
+                    ,dbName
+                    ,"-e"
+                    ,"source " + backupFile.getAbsoluteFile()
+            );
         }
 
-        ScriptRunner scriptRunner = new ScriptRunner(connection);
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(backupFile)));
-            scriptRunner.runScript(br,true);
-        }
-        catch (IOException e) {
-            throw e;
-        }
-        finally {
-            if (br != null) {
-                try {
-                    br.close();
-                }
-                catch (IOException e) {
-                    // intentionally empty
-                }
+            Process mysqlRestoreProcess = pb.start();
+
+            if (0 != mysqlRestoreProcess.waitFor()) {
+                // fail
+                throw new IOException("Could not restore the backup");
+            } else {
+                // success
             }
-        }
+
+
     }
-    
+
+
     /**
      * Update the specified database using scripts from the specified <code>updateDir</code>.
      * 
@@ -657,7 +668,7 @@ public class MySQLUtil {
             	executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
             	executeQuery(connection, "USE " + databaseName);
 
-            	restoreDatabaseWithFile(connection, currentDbBackupFile);
+            	restoreDatabaseWithFile(databaseName, currentDbBackupFile);
             }
             finally {
             	disconnect();
