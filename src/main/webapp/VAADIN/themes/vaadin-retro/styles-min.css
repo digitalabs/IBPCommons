@@ -917,8 +917,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 .v-button-primary .v-button-wrap,.v-disabled.v-button-primary .v-button-wrap{box-sizing:border-box;background:#ff8109;border:0;border-radius:3px}
 .v-button-primary .v-button-caption{color:#fff}
 .v-button-primary.with-icon .v-button-wrap{padding-left:8px}
-.v-button-info:focus{border:1px solid #269abc;background:#39b3d7;outline:thin dotted #333;outline:1px auto -webkit-focus-ring-color;outline-offset:-3px}
-.v-button-info:hover{border:1px solid #1b95b2;background:#29afcf}
+.v-button-info:hover,.v-button-info:focus{border:1px solid #1b95b2;background:#29afcf}
 .v-button-info:hover .v-button-wrap,.v-button-info:focus .v-button-wrap{border:0;background: #29afcf;}
 .v-button-info:active,.v-pressed.v-button-info{border:1px solid #46b8da;background:#5bc0de}
 .v-button-info:active .v-button-wrap,.v-pressed.v-button-info .v-button-wrap{border:0;background:#5bc0de}
@@ -1033,8 +1032,7 @@ body{box-sizing:border-box}
 
 /* UPLOAD PRIMARY BUTTON STYLE */
 .v-upload-primary .v-button{border:1px solid #f97e0a;background:#FF8109;box-sizing:border-box;border-radius:3px}.v-upload-primary .v-button .v-button-wrap,.v-upload-primary .v-disabled.v-button .v-button-wrap{box-sizing:border-box;background:#FF8109;border:0;border-radius:3px}.v-upload-primary .v-button:hover{border:1px solid #f97e0a;background:#f9aa60}.v-upload-primary .v-button:hover .v-button-wrap{border:0;background:#f9aa60}.v-upload-primary .v-button:focus{border:1px solid #f97e0a;background:#FF8109;outline:thin dotted #dd6f03;outline:1px auto -webkit-focus-ring-color;outline-offset:-3px}.v-upload-primary .v-button:focus .v-button-wrap{border:0;background:#FF8109}.v-upload-primary .v-button:active,.v-upload-primary .v-pressed.v-button{border:1px solid #f97e0a;background:#FF8109}.v-upload-primary .v-button:active .v-button-wrap,.v-upload-primary .v-pressed.v-button .v-button-wrap{border:0;background:#FF8109}.v-upload-primary .v-button:active .v-button-caption,.v-upload-primary .v-pressed.v-button .v-button-caption{color:#fff}
-.v-upload-info .v-button:focus{border:1px solid #269abc;background:#39b3d7;outline:thin dotted #333;outline:1px auto -webkit-focus-ring-color;outline-offset:-3px}
-.v-upload-info .v-button:hover{border:1px solid #1b95b2;background:#29afcf}
+.v-upload-info .v-button:hover,.v-upload-info .v-button:focus{border:1px solid #1b95b2;background:#29afcf}
 .v-upload-info .v-button:hover .v-button-wrap,.v-button-info:focus .v-button-wrap{border:0;background:#29afcf}
 .v-upload-info .v-button:active,.v-pressed.v-button-info{border:1px solid #46b8da;background:#5bc0de}
 .v-upload-info .v-button:active .v-button-wrap,.v-pressed.v-button-info .v-button-wrap{border:0;background:#5bc0de}
