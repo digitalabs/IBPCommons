@@ -205,12 +205,7 @@ public class MySQLUtil {
         }
         
         Process process = pb.start();
-        /* Added while loop to get input stream because process.waitFor() has a problem
-         * Reference: 
-         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
-         */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        while ((reader.readLine()) != null) {}
+        readProcessInputAndErrorStream(process);
         process.waitFor();
         
         File file = new File(backupFilename);
@@ -351,52 +346,67 @@ public class MySQLUtil {
     protected void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
-
         if (mysqlPath != null)
             mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
-
+        LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
+        
         if (StringUtil.isEmpty(password)) {
             pb = new ProcessBuilder(mysqlAbsolutePath
+            		,"--host=" + mysqlHost
+                    ,"--port=" + mysqlPort
                     ,"--user=" + username
-                    ,"--verbose"
                     ,"--default-character-set=utf8"
                     ,dbName
-                    ,"-e"
-                    ,"source " + sqlFile.getAbsoluteFile()
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()+""
             );
         }
         else {
             pb = new ProcessBuilder(mysqlAbsolutePath
+            		,"--host=" + mysqlHost
+                    ,"--port=" + mysqlPort
                     ,"--user=" + username
                     , "--password=" + password
-                    ,"--verbose"
                     ,"--default-character-set=utf8"
                     ,dbName
-                    ,"-e"
-                    ,"source " + sqlFile.getAbsoluteFile()
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()+""
             );
         }
 
         Process mysqlRestoreProcess = pb.start();
-
-        /* Added while loop to get input stream because process.waitFor() has a problem
-         * Reference: 
-         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
-         */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(mysqlRestoreProcess.getInputStream()));
-        while ((reader.readLine()) != null) {}
+        readProcessInputAndErrorStream(mysqlRestoreProcess);
+        
+        
         int exitValue = mysqlRestoreProcess.waitFor();
         LOG.debug("Process terminated with value "+exitValue);
-        if (0 != exitValue) {
+        if (exitValue != 0) {
             // fail
-            throw new IOException("Could not restore the backup");
+        	throw new IOException("Could not restore the backup");
         } else {
             // success
         }
     }
 
 
-    /**
+    private void readProcessInputAndErrorStream(Process process) throws IOException {
+    	/* Added while loop to get input stream because process.waitFor() has a problem
+         * Reference: 
+         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
+         */
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        while ((reader.readLine()) != null) {}
+        
+        /* When the process writes to stderr the output goes to a fixed-size buffer. 
+         * If the buffer fills up then the process blocks until the buffer gets emptied. 
+         * So if the buffer doesn't empty then the process will hang.
+         * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
+         */
+    	BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while ((errorReader.readLine()) != null) {
+        	LOG.debug(errorReader.readLine());
+        }
+	}
+
+	/**
      * Update the specified database using scripts from the specified <code>updateDir</code>.
      * 
      * @param databaseName
