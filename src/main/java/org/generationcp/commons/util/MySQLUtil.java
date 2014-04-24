@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -230,24 +231,24 @@ public class MySQLUtil {
         return backupFiles;
     }
     
-    public void restoreDatabase(String databaseName, File backupFile)throws IOException, SQLException {
-    	restoreDatabase(databaseName, backupFile, null);
+    public void restoreDatabase(String databaseName, File backupFile,Callable<Boolean> preRestoreTasks) throws Exception {
+    	restoreDatabase(databaseName, backupFile, null,preRestoreTasks);
     }
     
-    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile) 
-            throws IOException, SQLException {
+    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile,Callable<Boolean> preRestoreTasks)
+            throws Exception {
         connect();
         
         try {
-            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile);
+            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile,preRestoreTasks);
         }
         finally {
             disconnect();
         }
     }
     
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile) 
-            throws IOException, SQLException, IllegalArgumentException {
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile,Callable<Boolean> preRestoreTasks)
+            throws Exception {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
         }
@@ -259,28 +260,27 @@ public class MySQLUtil {
         }
 
         // create the target database
-        try {
-        	
-            // backup current users + table in a temporary schema
-            backupUserPersonsBeforeRestoreDB(connection,databaseName);
 
-            executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
-            executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-            executeQuery(connection, "USE " + databaseName);
+        // backup current users + table in a temporary schema
+        backupUserPersonsBeforeRestoreDB(connection,databaseName);
 
+        executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
+        //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+        if (preRestoreTasks != null) {
+            if (!preRestoreTasks.call()) {
+                throw new Exception("Failure to generate LocalDB");
+            }
         }
-        catch (SQLException e) {
-            // ignore database creation error
-            e.printStackTrace();
-        }
-        
+
+        executeQuery(connection, "USE " + databaseName);
+
         // restore the backup
         try {
-        	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
+        	LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
             runScriptFromFile(databaseName, backupFile);
             
             // after restore, restore from backup schema the users + persons table
-            restoreUsersPersonsAfterRestoreDB(connection,databaseName);
+            restoreUsersPersonsAfterRestoreDB(connection, databaseName);
         }
         catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
