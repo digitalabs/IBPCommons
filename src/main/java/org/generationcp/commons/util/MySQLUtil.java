@@ -358,6 +358,8 @@ public class MySQLUtil {
         if (StringUtil.isEmpty(password)) {
             pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--user=" + username
+                    ,"--verbose"
+                    ,"--default-character-set=utf8"
                     ,dbName
                     ,"-e"
                     ,"source " + sqlFile.getAbsoluteFile()
@@ -367,6 +369,8 @@ public class MySQLUtil {
             pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--user=" + username
                     , "--password=" + password
+                    ,"--verbose"
+                    ,"--default-character-set=utf8"
                     ,dbName
                     ,"-e"
                     ,"source " + sqlFile.getAbsoluteFile()
