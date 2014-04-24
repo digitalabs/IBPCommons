@@ -42,6 +42,6 @@ public class MySQLBackupTest {
     
     @Test
     public void testRestore() throws IOException, SQLException {
-        mysqlBackup.restoreDatabase("ibdbv1_groundnut_local", backupFile);
+        mysqlBackup.restoreDatabase("ibdbv1_groundnut_local", backupFile, null);
     }
 }
