@@ -14,7 +14,6 @@ package org.generationcp.commons.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -29,6 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -205,12 +205,7 @@ public class MySQLUtil {
         }
         
         Process process = pb.start();
-        /* Added while loop to get input stream because process.waitFor() has a problem
-         * Reference: 
-         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
-         */
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        while ((reader.readLine()) != null) {}
+        readProcessInputAndErrorStream(process);
         process.waitFor();
         
         File file = new File(backupFilename);
@@ -231,24 +226,24 @@ public class MySQLUtil {
         return backupFiles;
     }
     
-    public void restoreDatabase(String databaseName, File backupFile)throws IOException, SQLException {
-    	restoreDatabase(databaseName, backupFile, null);
+    public void restoreDatabase(String databaseName, File backupFile,Callable<Boolean> preRestoreTasks) throws Exception {
+    	restoreDatabase(databaseName, backupFile, null,preRestoreTasks);
     }
     
-    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile) 
-            throws IOException, SQLException {
+    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile,Callable<Boolean> preRestoreTasks)
+            throws Exception {
         connect();
         
         try {
-            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile);
+            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile,preRestoreTasks);
         }
         finally {
             disconnect();
         }
     }
     
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile) 
-            throws IOException, SQLException, IllegalArgumentException {
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile,Callable<Boolean> preRestoreTasks)
+            throws Exception {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
         }
@@ -256,56 +251,55 @@ public class MySQLUtil {
             throw new IllegalArgumentException("databaseName parameter must not be null");
         }
         if (backupFile == null) {
-            throw new IllegalArgumentException("backupFile parameter must not be null");
+            throw new IllegalArgumentException("sqlFile parameter must not be null");
         }
 
         // create the target database
-        try {
-        	
-            // backup current users + table in a temporary schema
-            backupUserPersonsBeforeRestoreDB(connection,databaseName);
 
-            executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
-            executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-            executeQuery(connection, "USE " + databaseName);
+        // backup current users + table in a temporary schema
+        backupUserPersonsBeforeRestoreDB(connection,databaseName);
 
+        executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
+        //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+        if (preRestoreTasks != null) {
+            if (!preRestoreTasks.call()) {
+                throw new Exception("Failure to generate LocalDB");
+            }
         }
-        catch (SQLException e) {
-            // ignore database creation error
-            e.printStackTrace();
-        }
-        
+
+        executeQuery(connection, "USE " + databaseName);
+
         // restore the backup
         try {
-        	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
-            restoreDatabaseWithFile(connection, backupFile);
+        	LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
+            runScriptFromFile(databaseName, backupFile);
             
             // after restore, restore from backup schema the users + persons table
-            restoreUsersPersonsAfterRestoreDB(connection,databaseName);
+            restoreUsersPersonsAfterRestoreDB(connection, databaseName);
         }
-        catch (IOException e) {
+        catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
-        	LOG.debug(e.getStackTrace().toString());
-            try {
-                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
-
-                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
-                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-                executeQuery(connection, "USE " + databaseName);
-
-                restoreDatabaseWithFile(connection, currentDbBackupFile);
-            }
-            catch (Exception e1) {
-                String sorryMessage = "For some reason, the backup file cannot be restored"
-                                    + " and your original database is now broken. I'm so sorry."
-                                    + " If you have a backup file of your original database,"
-                                    + " you can try to restore it.";
-                throw new IllegalStateException(sorryMessage);
-            }
+        	LOG.debug("Error encountered on restore ",e);
+        	if(currentDbBackupFile!=null) {
+	            try {
+	                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+	
+	                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+	                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+	                executeQuery(connection, "USE " + databaseName);
+	
+	                runScriptFromFile(databaseName, currentDbBackupFile);
+	            }
+	            catch (Exception e1) {
+	                String sorryMessage = "For some reason, the backup file cannot be restored"
+	                                    + " and your original database is now broken. I'm so sorry."
+	                                    + " If you have a backup file of your original database,"
+	                                    + " you can try to restore it.";
+	                throw new IllegalStateException(sorryMessage);
+	            }
+        	}
             throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
         }
-        
-        
     }
     
     protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
@@ -347,34 +341,72 @@ public class MySQLUtil {
 
     }
 
-    protected void restoreDatabaseWithFile(Connection connection, File backupFile) 
-            throws IOException {
-        if (backupFile == null) {
-            return;
+
+
+    protected void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
+        ProcessBuilder pb;
+        String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
+        if (mysqlPath != null)
+            mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
+        LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
+        
+        if (StringUtil.isEmpty(password)) {
+            pb = new ProcessBuilder(mysqlAbsolutePath
+            		,"--host=" + mysqlHost
+                    ,"--port=" + mysqlPort
+                    ,"--user=" + username
+                    ,"--default-character-set=utf8"
+                    ,dbName
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()+""
+            );
+        }
+        else {
+            pb = new ProcessBuilder(mysqlAbsolutePath
+            		,"--host=" + mysqlHost
+                    ,"--port=" + mysqlPort
+                    ,"--user=" + username
+                    , "--password=" + password
+                    ,"--default-character-set=utf8"
+                    ,dbName
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()+""
+            );
         }
 
-        ScriptRunner scriptRunner = new ScriptRunner(connection);
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(backupFile)));
-            scriptRunner.runScript(br,true);
-        }
-        catch (IOException e) {
-            throw e;
-        }
-        finally {
-            if (br != null) {
-                try {
-                    br.close();
-                }
-                catch (IOException e) {
-                    // intentionally empty
-                }
-            }
+        Process mysqlRestoreProcess = pb.start();
+        readProcessInputAndErrorStream(mysqlRestoreProcess);
+        
+        
+        int exitValue = mysqlRestoreProcess.waitFor();
+        LOG.debug("Process terminated with value "+exitValue);
+        if (exitValue != 0) {
+            // fail
+        	throw new IOException("Could not restore the backup");
+        } else {
+            // success
         }
     }
-    
-    /**
+
+
+    private void readProcessInputAndErrorStream(Process process) throws IOException {
+    	/* Added while loop to get input stream because process.waitFor() has a problem
+         * Reference: 
+         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
+         */
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        while ((reader.readLine()) != null) {}
+        
+        /* When the process writes to stderr the output goes to a fixed-size buffer. 
+         * If the buffer fills up then the process blocks until the buffer gets emptied. 
+         * So if the buffer doesn't empty then the process will hang.
+         * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
+         */
+    	BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        while ((errorReader.readLine()) != null) {
+        	LOG.debug(errorReader.readLine());
+        }
+	}
+
+	/**
      * Update the specified database using scripts from the specified <code>updateDir</code>.
      * 
      * @param databaseName
@@ -457,7 +489,9 @@ public class MySQLUtil {
                     }
                 }
                 LOG.debug("Running scripts from directory: "+schemaUpdateDir.getAbsolutePath());
-                runScriptsInDirectory(connection, schemaUpdateDir, false, false);
+                //runScriptsInDirectory(connection, schemaUpdateDir, false, false);
+                runScriptsInDirectory(databaseName,schemaUpdateDir,false,false);
+
             }
             
             return true;
@@ -558,27 +592,17 @@ public class MySQLUtil {
         }
     }
     
-    public void runScriptsInDirectory(File directory) 
-        throws IOException, SQLException {
-        connect();
 
-        try {
-            runScriptsInDirectory(connection, directory);
-        }
-        finally {
-            disconnect();
-        }
+    public boolean runScriptsInDirectory(String databaseName, File directory) {
+        return runScriptsInDirectory(databaseName, directory, true);
     }
     
-    public boolean runScriptsInDirectory(Connection conn, File directory) {
-        return runScriptsInDirectory(conn, directory, true);
-    }
-    
-    public boolean runScriptsInDirectory(Connection conn
+    public boolean runScriptsInDirectory(String databaseName
             , File directory, boolean stopOnError) {
-        return runScriptsInDirectory(conn, directory, stopOnError, true);
+        return runScriptsInDirectory(databaseName, directory, stopOnError, true);
     }
-    
+
+    /*
     public boolean runScriptsInDirectory(Connection conn
             , File directory, boolean stopOnError, boolean logSqlError) {
     	// get the sql files
@@ -598,11 +622,12 @@ public class MySQLUtil {
             
             try {
             	LOG.debug("Running script: "+sqlFile.getAbsolutePath());
-            	
+
                 br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
                 
                 ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
                 runner.runScript(br);
+
             }
             catch (IOException e1) {
             }
@@ -619,8 +644,46 @@ public class MySQLUtil {
         }
         
         return true;
+    } */
+
+    public boolean runScriptsInDirectory(String databaseName
+            , File directory, boolean stopOnError, boolean logSqlError) {
+        // get the sql files
+        File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".sql");
+            }
+        });
+        if (sqlFilesArray == null) {
+            sqlFilesArray = new File[0];
+        }
+        List<File> sqlFiles = Arrays.asList(sqlFilesArray);
+        Collections.sort(sqlFiles);
+
+        for (File sqlFile : sqlFiles) {
+            try {
+                LOG.debug("Running script: "+sqlFile.getAbsolutePath());
+
+                /*
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
+
+                ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
+                runner.runScript(br);
+                */
+
+                runScriptFromFile(databaseName, sqlFile);
+            }
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return true;
     }
-    
+
     public void updateOwnerships(String databaseName, Integer userId) 
             throws IOException, SQLException {
         connect();
@@ -657,7 +720,7 @@ public class MySQLUtil {
             	executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
             	executeQuery(connection, "USE " + databaseName);
 
-            	restoreDatabaseWithFile(connection, currentDbBackupFile);
+            	runScriptFromFile(databaseName, currentDbBackupFile);
             }
             finally {
             	disconnect();
