@@ -14,7 +14,6 @@ package org.generationcp.commons.util;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -256,7 +255,7 @@ public class MySQLUtil {
             throw new IllegalArgumentException("databaseName parameter must not be null");
         }
         if (backupFile == null) {
-            throw new IllegalArgumentException("backupFile parameter must not be null");
+            throw new IllegalArgumentException("sqlFile parameter must not be null");
         }
 
         // create the target database
@@ -278,7 +277,7 @@ public class MySQLUtil {
         // restore the backup
         try {
         	LOG.debug("Trying to restore the original file "+backupFile.getAbsolutePath());
-            restoreDatabaseWithFile(databaseName, backupFile);
+            runScriptFromFile(databaseName, backupFile);
             
             // after restore, restore from backup schema the users + persons table
             restoreUsersPersonsAfterRestoreDB(connection,databaseName);
@@ -293,7 +292,7 @@ public class MySQLUtil {
                 executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
                 executeQuery(connection, "USE " + databaseName);
 
-                restoreDatabaseWithFile(databaseName, currentDbBackupFile);
+                runScriptFromFile(databaseName, currentDbBackupFile);
             }
             catch (Exception e1) {
                 String sorryMessage = "For some reason, the backup file cannot be restored"
@@ -304,8 +303,6 @@ public class MySQLUtil {
             }
             throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
         }
-        
-        
     }
     
     protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
@@ -349,39 +346,39 @@ public class MySQLUtil {
 
 
 
-    protected void restoreDatabaseWithFile(String dbName,File backupFile) throws IOException, InterruptedException {
+    protected void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
         ProcessBuilder pb;
+        String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
 
-        String mysqlExePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
+        if (mysqlPath != null)
+            mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
 
         if (null == password) {
-            pb = new ProcessBuilder(mysqlExePath
+            pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--user=" + username
                     ,dbName
                     ,"-e"
-                    ,"source " + backupFile.getAbsoluteFile()
+                    ,"source " + sqlFile.getAbsoluteFile()
             );
         }
         else {
-            pb = new ProcessBuilder(mysqlExePath
+            pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--user=" + username
                     , "--password=" + password
                     ,dbName
                     ,"-e"
-                    ,"source " + backupFile.getAbsoluteFile()
+                    ,"source " + sqlFile.getAbsoluteFile()
             );
         }
 
-            Process mysqlRestoreProcess = pb.start();
+        Process mysqlRestoreProcess = pb.start();
 
-            if (0 != mysqlRestoreProcess.waitFor()) {
-                // fail
-                throw new IOException("Could not restore the backup");
-            } else {
-                // success
-            }
-
-
+        if (0 != mysqlRestoreProcess.waitFor()) {
+            // fail
+            throw new IOException("Could not restore the backup");
+        } else {
+            // success
+        }
     }
 
 
@@ -468,7 +465,9 @@ public class MySQLUtil {
                     }
                 }
                 LOG.debug("Running scripts from directory: "+schemaUpdateDir.getAbsolutePath());
-                runScriptsInDirectory(connection, schemaUpdateDir, false, false);
+                //runScriptsInDirectory(connection, schemaUpdateDir, false, false);
+                runScriptsInDirectory(databaseName,schemaUpdateDir,false,false);
+
             }
             
             return true;
@@ -569,27 +568,17 @@ public class MySQLUtil {
         }
     }
     
-    public void runScriptsInDirectory(File directory) 
-        throws IOException, SQLException {
-        connect();
 
-        try {
-            runScriptsInDirectory(connection, directory);
-        }
-        finally {
-            disconnect();
-        }
+    public boolean runScriptsInDirectory(String databaseName, File directory) {
+        return runScriptsInDirectory(databaseName, directory, true);
     }
     
-    public boolean runScriptsInDirectory(Connection conn, File directory) {
-        return runScriptsInDirectory(conn, directory, true);
-    }
-    
-    public boolean runScriptsInDirectory(Connection conn
+    public boolean runScriptsInDirectory(String databaseName
             , File directory, boolean stopOnError) {
-        return runScriptsInDirectory(conn, directory, stopOnError, true);
+        return runScriptsInDirectory(databaseName, directory, stopOnError, true);
     }
-    
+
+    /*
     public boolean runScriptsInDirectory(Connection conn
             , File directory, boolean stopOnError, boolean logSqlError) {
     	// get the sql files
@@ -609,11 +598,12 @@ public class MySQLUtil {
             
             try {
             	LOG.debug("Running script: "+sqlFile.getAbsolutePath());
-            	
+
                 br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
                 
                 ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
                 runner.runScript(br);
+
             }
             catch (IOException e1) {
             }
@@ -630,8 +620,46 @@ public class MySQLUtil {
         }
         
         return true;
+    } */
+
+    public boolean runScriptsInDirectory(String databaseName
+            , File directory, boolean stopOnError, boolean logSqlError) {
+        // get the sql files
+        File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".sql");
+            }
+        });
+        if (sqlFilesArray == null) {
+            sqlFilesArray = new File[0];
+        }
+        List<File> sqlFiles = Arrays.asList(sqlFilesArray);
+        Collections.sort(sqlFiles);
+
+        for (File sqlFile : sqlFiles) {
+            try {
+                LOG.debug("Running script: "+sqlFile.getAbsolutePath());
+
+                /*
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
+
+                ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
+                runner.runScript(br);
+                */
+
+                runScriptFromFile(databaseName, sqlFile);
+            }
+            catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return true;
     }
-    
+
     public void updateOwnerships(String databaseName, Integer userId) 
             throws IOException, SQLException {
         connect();
@@ -668,7 +696,7 @@ public class MySQLUtil {
             	executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
             	executeQuery(connection, "USE " + databaseName);
 
-            	restoreDatabaseWithFile(databaseName, currentDbBackupFile);
+            	runScriptFromFile(databaseName, currentDbBackupFile);
             }
             finally {
             	disconnect();
