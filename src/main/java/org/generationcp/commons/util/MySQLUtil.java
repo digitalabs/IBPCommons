@@ -284,23 +284,25 @@ public class MySQLUtil {
         }
         catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
-        	LOG.debug(e.getStackTrace().toString());
-            try {
-                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
-
-                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
-                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-                executeQuery(connection, "USE " + databaseName);
-
-                runScriptFromFile(databaseName, currentDbBackupFile);
-            }
-            catch (Exception e1) {
-                String sorryMessage = "For some reason, the backup file cannot be restored"
-                                    + " and your original database is now broken. I'm so sorry."
-                                    + " If you have a backup file of your original database,"
-                                    + " you can try to restore it.";
-                throw new IllegalStateException(sorryMessage);
-            }
+        	LOG.debug("Error encountered on restore ",e);
+        	if(currentDbBackupFile!=null) {
+	            try {
+	                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+	
+	                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+	                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+	                executeQuery(connection, "USE " + databaseName);
+	
+	                runScriptFromFile(databaseName, currentDbBackupFile);
+	            }
+	            catch (Exception e1) {
+	                String sorryMessage = "For some reason, the backup file cannot be restored"
+	                                    + " and your original database is now broken. I'm so sorry."
+	                                    + " If you have a backup file of your original database,"
+	                                    + " you can try to restore it.";
+	                throw new IllegalStateException(sorryMessage);
+	            }
+        	}
             throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
         }
     }
@@ -353,7 +355,7 @@ public class MySQLUtil {
         if (mysqlPath != null)
             mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
 
-        if (null == password) {
+        if (StringUtil.isEmpty(password)) {
             pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--user=" + username
                     ,dbName
@@ -373,7 +375,15 @@ public class MySQLUtil {
 
         Process mysqlRestoreProcess = pb.start();
 
-        if (0 != mysqlRestoreProcess.waitFor()) {
+        /* Added while loop to get input stream because process.waitFor() has a problem
+         * Reference: 
+         * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
+         */
+        BufferedReader reader = new BufferedReader(new InputStreamReader(mysqlRestoreProcess.getInputStream()));
+        while ((reader.readLine()) != null) {}
+        int exitValue = mysqlRestoreProcess.waitFor();
+        LOG.debug("Process terminated with value "+exitValue);
+        if (0 != exitValue) {
             // fail
             throw new IOException("Could not restore the backup");
         } else {
