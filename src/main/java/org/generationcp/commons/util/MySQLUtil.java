@@ -357,8 +357,9 @@ public class MySQLUtil {
                     ,"--user=" + username
                     ,"--default-character-set=utf8"
                     ,dbName
-                    ,"--execute=source " + sqlFile.getAbsoluteFile()+""
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()
             );
+
         }
         else {
             pb = new ProcessBuilder(mysqlAbsolutePath
@@ -368,7 +369,7 @@ public class MySQLUtil {
                     , "--password=" + password
                     ,"--default-character-set=utf8"
                     ,dbName
-                    ,"--execute=source " + sqlFile.getAbsoluteFile()+""
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()
             );
         }
 
@@ -393,7 +394,10 @@ public class MySQLUtil {
          * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
          */
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        while ((reader.readLine()) != null) {}
+        String line = null;
+        while ( (line = reader.readLine()) != null) {
+            //System.out.println(line);
+        }
         
         /* When the process writes to stderr the output goes to a fixed-size buffer. 
          * If the buffer fills up then the process blocks until the buffer gets emptied. 
@@ -401,9 +405,11 @@ public class MySQLUtil {
          * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
          */
     	BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-        while ((errorReader.readLine()) != null) {
-        	LOG.debug(errorReader.readLine());
+        while ((line = errorReader.readLine()) != null) {
+            System.err.println(line);
         }
+
+
 	}
 
 	/**
