@@ -54,6 +54,8 @@ public class MySQLUtil {
     private int mysqlPort = 3306;
     private String username;
     private String password;
+    
+    private String mysqlErrorMessage = "";
 
     private Connection connection;
     
@@ -254,6 +256,8 @@ public class MySQLUtil {
             throw new IllegalArgumentException("sqlFile parameter must not be null");
         }
 
+        mysqlErrorMessage = "";
+        
         // create the target database
 
         // backup current users + table in a temporary schema
@@ -280,25 +284,51 @@ public class MySQLUtil {
         catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
         	LOG.debug("Error encountered on restore ",e);
-        	if(currentDbBackupFile!=null) {
-	            try {
-	                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
-	
-	                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
-	                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+        	
+        	//GCP-7192 (Workaround) If insert data to listnms script fails and throws an error "Column count doesn't match value count at row 1" 
+        	// try to adjust the table schema so the script will be executed successfully. 
+        	if (mysqlErrorMessage.contains("ERROR 1136 ")){ // ERROR 1136 = Column count doesn't match value count at row 1
+            	
+	        		executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
+	                //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+	                if (preRestoreTasks != null) {
+	                    if (!preRestoreTasks.call()) {
+	                        throw new Exception("Failure to generate LocalDB");
+	                    }
+	                }
+	                
 	                executeQuery(connection, "USE " + databaseName);
-	
-	                runScriptFromFile(databaseName, currentDbBackupFile);
-	            }
-	            catch (Exception e1) {
-	                String sorryMessage = "For some reason, the backup file cannot be restored"
-	                                    + " and your original database is now broken. I'm so sorry."
-	                                    + " If you have a backup file of your original database,"
-	                                    + " you can try to restore it.";
-	                throw new IllegalStateException(sorryMessage);
-	            }
-        	}
-            throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
+	         
+	            	alterListNmsTable(connection, databaseName); // delete the notes field
+	            	
+	            	runScriptFromFile(databaseName, backupFile);
+	                
+	                // after restore, restore from backup schema the users + persons table
+	                restoreUsersPersonsAfterRestoreDB(connection, databaseName);
+            	
+                
+        	}else{
+        	
+		        	if(currentDbBackupFile!=null) {
+			            try {
+			                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+			
+			                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+			                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+			                executeQuery(connection, "USE " + databaseName);
+			
+			                runScriptFromFile(databaseName, currentDbBackupFile);
+			            }
+			            catch (Exception e1) {
+			                String sorryMessage = "For some reason, the backup file cannot be restored"
+			                                    + " and your original database is now broken. I'm so sorry."
+			                                    + " If you have a backup file of your original database,"
+			                                    + " you can try to restore it.";
+			                throw new IllegalStateException(sorryMessage);
+			            }
+		        	}
+		            throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
+		        	}
         }
     }
     
@@ -341,7 +371,15 @@ public class MySQLUtil {
 
     }
 
-
+    protected  void alterListNmsTable(Connection connection, String databaseName) {
+        try {
+          
+            executeQuery(connection,"USE " + databaseName);
+            executeQuery(connection,"ALTER TABLE " + databaseName + ".listnms DROP COLUMN notes");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     protected void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
         ProcessBuilder pb;
@@ -405,10 +443,12 @@ public class MySQLUtil {
          * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
          */
     	BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+    	StringBuilder sb = new StringBuilder();
         while ((line = errorReader.readLine()) != null) {
+        	sb.append(line);
             System.err.println(line);
         }
-
+        if (mysqlErrorMessage.isEmpty()) mysqlErrorMessage = sb.toString();
 
 	}
 
