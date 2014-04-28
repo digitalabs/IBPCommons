@@ -131,7 +131,7 @@ public class MySQLUtil {
         this.connection = connection;
     }
 
-    protected void connect() throws SQLException {
+    public void connect() throws SQLException {
         // load the JDBC driver
         if (mysqlDriver != null) {
             try {
@@ -149,7 +149,7 @@ public class MySQLUtil {
         }
     }
     
-    protected void disconnect() {
+    public void disconnect() {
         try {
             connection.close();
         }
@@ -381,7 +381,7 @@ public class MySQLUtil {
         }
     }
 
-    protected void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
+    public void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
         if (mysqlPath != null)
@@ -420,6 +420,48 @@ public class MySQLUtil {
         if (exitValue != 0) {
             // fail
         	throw new IOException("Could not restore the backup");
+        } else {
+            // success
+        }
+    }
+
+    public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
+        ProcessBuilder pb;
+        String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
+        if (mysqlPath != null)
+            mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
+        LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
+
+        if (StringUtil.isEmpty(password)) {
+            pb = new ProcessBuilder(mysqlAbsolutePath
+                    ,"--host=" + mysqlHost
+                    ,"--port=" + mysqlPort
+                    ,"--user=" + username
+                    ,"--default-character-set=utf8"
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()
+            );
+
+        }
+        else {
+            pb = new ProcessBuilder(mysqlAbsolutePath
+                    ,"--host=" + mysqlHost
+                    ,"--port=" + mysqlPort
+                    ,"--user=" + username
+                    , "--password=" + password
+                    ,"--default-character-set=utf8"
+                    ,"--execute=source " + sqlFile.getAbsoluteFile()
+            );
+        }
+
+        Process mysqlRestoreProcess = pb.start();
+        readProcessInputAndErrorStream(mysqlRestoreProcess);
+
+
+        int exitValue = mysqlRestoreProcess.waitFor();
+        LOG.debug("Process terminated with value "+exitValue);
+        if (exitValue != 0) {
+            // fail
+            throw new IOException("Could not restore the backup");
         } else {
             // success
         }
@@ -637,7 +679,8 @@ public class MySQLUtil {
             }
         }
     }
-    
+
+
 
     public boolean runScriptsInDirectory(String databaseName, File directory) {
         return runScriptsInDirectory(databaseName, directory, true);
@@ -717,7 +760,10 @@ public class MySQLUtil {
                 runner.runScript(br);
                 */
 
-                runScriptFromFile(databaseName, sqlFile);
+                if (null == databaseName)
+                    runScriptFromFile(databaseName, sqlFile);
+                else
+                    runScriptsInDirectory(sqlFile);
             }
             catch (IOException e1) {
                 e1.printStackTrace();
@@ -728,6 +774,10 @@ public class MySQLUtil {
         }
 
         return true;
+    }
+
+    public boolean runScriptsInDirectory(File directory) {
+        return runScriptsInDirectory(null, directory, true);
     }
 
     public void updateOwnerships(String databaseName, Integer userId) 
