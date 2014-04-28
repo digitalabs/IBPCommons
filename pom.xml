@@ -3,9 +3,23 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.generationcp</groupId>
     <artifactId>ibpcommons</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>IBPCommons</name>
+    
+    <distributionManagement>  
+	  <repository>
+	     <id>efficio-nexus</id>
+	     <name>Releases</name>
+	     <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/releases/</url>
+	  </repository>
+	  <snapshotRepository>
+	     <id>efficio-nexus</id>
+	     <name>Snapshots</name>
+	     <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/snapshots/</url>
+	  </snapshotRepository>
+	</distributionManagement>
+	
     <developers>
         <developer>
             <id>gmarintes</id>
@@ -17,7 +31,7 @@
     <properties>
         <vaadin.version>6.8.13</vaadin.version>
         <gwt.version>2.3.0</gwt.version>
-        <middleware.version>2.1.0</middleware.version>
+        <middleware.version>2.1.0-SNAPSHOT</middleware.version>
     </properties>
 
     <dependencies>
