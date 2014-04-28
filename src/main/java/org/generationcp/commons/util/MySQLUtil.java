@@ -419,7 +419,7 @@ public class MySQLUtil {
         LOG.debug("Process terminated with value "+exitValue);
         if (exitValue != 0) {
             // fail
-        	throw new IOException("Could not restore the backup");
+        	throw new IOException("Error Executing " + sqlFile.getAbsoluteFile());
         } else {
             // success
         }
@@ -760,10 +760,10 @@ public class MySQLUtil {
                 runner.runScript(br);
                 */
 
-                if (null == databaseName)
+                if (null != databaseName)
                     runScriptFromFile(databaseName, sqlFile);
                 else
-                    runScriptsInDirectory(sqlFile);
+                    runScriptFromFile(sqlFile);
             }
             catch (IOException e1) {
                 e1.printStackTrace();
