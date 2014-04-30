@@ -275,7 +275,7 @@ public class MySQLUtil {
         }
         catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
-            LOG.error("Error encountered on restore ",e);
+            LOG.error("Error encountered on restore",e);
 
             //GCP-7192 (Workaround) If insert data to listnms script fails and throws an error "Column count doesn't match value count at row 1"
             // try to adjust the table schema so the script will be executed successfully.
@@ -298,19 +298,24 @@ public class MySQLUtil {
                 // after restore, restore from backup schema the users + persons table
                 restoreUsersPersonsAfterRestoreDB(connection, databaseName);
             } else {
-                throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile);
+                throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
             }
         }
     }
 
-    private IllegalStateException doRestoreToPreviousBackup(String databaseName,File currentDbBackupFile) {
+    private IllegalStateException doRestoreToPreviousBackup(String databaseName,File currentDbBackupFile,String sqlErrorMsg) {
         if(currentDbBackupFile!=null) {
             try {
+
                 LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+
+                connect();
 
                 executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
                 executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
                 executeQuery(connection, "USE " + databaseName);
+
+                disconnect();
 
                 runScriptFromFile(databaseName, currentDbBackupFile);
             }
@@ -322,7 +327,7 @@ public class MySQLUtil {
                 return new IllegalStateException(sorryMessage);
             }
         }
-        return new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
+        return new IllegalStateException("Looks like there are errors in your SQL file. Please use another backup file.");
     }
 
     
@@ -337,7 +342,7 @@ public class MySQLUtil {
             executeQuery(connection,"CREATE TABLE persons LIKE " + databaseName + ".persons");
             executeQuery(connection,"INSERT persons SELECT * FROM " + databaseName +".persons");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Cannot backup users and persons table",e);
         }
     }
 
@@ -351,18 +356,15 @@ public class MySQLUtil {
             executeQuery(connection,"CREATE TABLE persons LIKE temp_db.persons");
             executeQuery(connection,"INSERT persons SELECT * FROM temp_db.persons");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("Cannot restore users and persons table",e);
         } finally {
             // make sure to drop temp_db regardless of errors
             try {
                 executeQuery(connection,"DROP DATABASE IF EXISTS temp_db");
             } catch (SQLException e) {
-                e.printStackTrace();
+                LOG.error("Cannot drop temp_db",e);
             }
         }
-
-
-
     }
 
     protected  void alterListNmsTable(Connection connection, String databaseName) {
@@ -371,7 +373,7 @@ public class MySQLUtil {
             executeQuery(connection,"USE " + databaseName);
             executeQuery(connection,"ALTER TABLE " + databaseName + ".listnms DROP COLUMN notes");
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.error("SQLException caught",e);
         }
     }
 
@@ -413,7 +415,7 @@ public class MySQLUtil {
         LOG.debug("Process terminated with value "+exitValue);
 
         if (exitValue != 0)
-        	throw new IOException("Error Executing " + sqlFile.getAbsoluteFile() + " , [" + errorOut + "]");
+        	throw new IOException(errorOut);
     }
 
     public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
@@ -431,7 +433,6 @@ public class MySQLUtil {
                     ,"--default-character-set=utf8"
                     ,"--execute=source " + sqlFile.getAbsoluteFile()
             );
-
         }
         else {
             pb = new ProcessBuilder(mysqlAbsolutePath
@@ -759,10 +760,10 @@ public class MySQLUtil {
                     runScriptFromFile(sqlFile);
             }
             catch (IOException e1) {
-                e1.printStackTrace();
+                LOG.error("IOException caught",e1);
             }
             catch (InterruptedException e) {
-                e.printStackTrace();
+                LOG.error("InterruptedException caught",e);
             }
         }
 
@@ -773,7 +774,7 @@ public class MySQLUtil {
         return runScriptsInDirectory(null, directory, true);
     }
 
-    public void updateOwnerships(String databaseName, Integer userId) 
+    public void updateOwnerships(String databaseName, Integer userId)
             throws IOException, SQLException {
         connect();
         
@@ -798,26 +799,7 @@ public class MySQLUtil {
             disconnect();
         }
     }
-    
-    public void restoreOriginalState(String databaseName, File currentDbBackupFile) throws Exception {
-    	if(currentDbBackupFile!=null && currentDbBackupFile.exists()) {
-    		connect();
 
-            try {
-            	LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
-            	executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
-            	executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-            	executeQuery(connection, "USE " + databaseName);
-
-            	runScriptFromFile(databaseName, currentDbBackupFile);
-            }
-            finally {
-            	disconnect();
-            }
-        }
-        
-    }
-    
     public File createCurrentDbBackupFile(String databaseName) throws Exception {
     	 connect();
 
