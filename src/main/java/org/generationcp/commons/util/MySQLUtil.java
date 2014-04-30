@@ -11,12 +11,7 @@
  *******************************************************************************/
 package org.generationcp.commons.util;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -54,8 +49,6 @@ public class MySQLUtil {
     private int mysqlPort = 3306;
     private String username;
     private String password;
-    
-    private String mysqlErrorMessage = "";
 
     private Connection connection;
     
@@ -256,15 +249,14 @@ public class MySQLUtil {
             throw new IllegalArgumentException("sqlFile parameter must not be null");
         }
 
-        mysqlErrorMessage = "";
-        
         // create the target database
 
         // backup current users + table in a temporary schema
         backupUserPersonsBeforeRestoreDB(connection,databaseName);
 
         executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
-        //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+
+        // CREATE LOCAL DB INSTANCE
         if (preRestoreTasks != null) {
             if (!preRestoreTasks.call()) {
                 throw new Exception("Failure to generate LocalDB");
@@ -283,54 +275,56 @@ public class MySQLUtil {
         }
         catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
-        	LOG.debug("Error encountered on restore ",e);
-        	
-        	//GCP-7192 (Workaround) If insert data to listnms script fails and throws an error "Column count doesn't match value count at row 1" 
-        	// try to adjust the table schema so the script will be executed successfully. 
-        	if (mysqlErrorMessage.contains("ERROR 1136 ")){ // ERROR 1136 = Column count doesn't match value count at row 1
-            	
-	        		executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
-	                //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-	                if (preRestoreTasks != null) {
-	                    if (!preRestoreTasks.call()) {
-	                        throw new Exception("Failure to generate LocalDB");
-	                    }
-	                }
-	                
-	                executeQuery(connection, "USE " + databaseName);
-	         
-	            	alterListNmsTable(connection, databaseName); // delete the notes field
-	            	
-	            	runScriptFromFile(databaseName, backupFile);
-	                
-	                // after restore, restore from backup schema the users + persons table
-	                restoreUsersPersonsAfterRestoreDB(connection, databaseName);
-            	
-                
-        	}else{
-        	
-		        	if(currentDbBackupFile!=null) {
-			            try {
-			                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
-			
-			                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
-			                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-			                executeQuery(connection, "USE " + databaseName);
-			
-			                runScriptFromFile(databaseName, currentDbBackupFile);
-			            }
-			            catch (Exception e1) {
-			                String sorryMessage = "For some reason, the backup file cannot be restored"
-			                                    + " and your original database is now broken. I'm so sorry."
-			                                    + " If you have a backup file of your original database,"
-			                                    + " you can try to restore it.";
-			                throw new IllegalStateException(sorryMessage);
-			            }
-		        	}
-		            throw new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
-		        	}
+            LOG.error("Error encountered on restore ",e);
+
+            //GCP-7192 (Workaround) If insert data to listnms script fails and throws an error "Column count doesn't match value count at row 1"
+            // try to adjust the table schema so the script will be executed successfully.
+            if (e.getMessage().contains("ERROR 1136 ")) { // ERROR 1136 = Column count doesn't match value count at row 1
+
+                executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
+                //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+                if (preRestoreTasks != null) {
+                    if (!preRestoreTasks.call()) {
+                        throw new Exception("Failure to generate LocalDB");
+                    }
+                }
+
+                executeQuery(connection, "USE " + databaseName);
+
+                alterListNmsTable(connection, databaseName); // delete the notes field
+
+                runScriptFromFile(databaseName, backupFile);
+
+                // after restore, restore from backup schema the users + persons table
+                restoreUsersPersonsAfterRestoreDB(connection, databaseName);
+            } else {
+                throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile);
+            }
         }
     }
+
+    private IllegalStateException doRestoreToPreviousBackup(String databaseName,File currentDbBackupFile) {
+        if(currentDbBackupFile!=null) {
+            try {
+                LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
+
+                executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+                executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+                executeQuery(connection, "USE " + databaseName);
+
+                runScriptFromFile(databaseName, currentDbBackupFile);
+            }
+            catch (Exception e1) {
+                String sorryMessage = "For some reason, the backup file cannot be restored"
+                        + " and your original database is now broken. I'm so sorry."
+                        + " If you have a backup file of your original database,"
+                        + " you can try to restore it.";
+                return new IllegalStateException(sorryMessage);
+            }
+        }
+        return new IllegalStateException("The backup file cannot be restored. Restore has been canceled.");
+    }
+
     
     protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
         try {
@@ -412,17 +406,14 @@ public class MySQLUtil {
         }
 
         Process mysqlRestoreProcess = pb.start();
-        readProcessInputAndErrorStream(mysqlRestoreProcess);
+        String errorOut = readProcessInputAndErrorStream(mysqlRestoreProcess);
         
         
         int exitValue = mysqlRestoreProcess.waitFor();
         LOG.debug("Process terminated with value "+exitValue);
-        if (exitValue != 0) {
-            // fail
-        	throw new IOException("Error Executing " + sqlFile.getAbsoluteFile());
-        } else {
-            // success
-        }
+
+        if (exitValue != 0)
+        	throw new IOException("Error Executing " + sqlFile.getAbsoluteFile() + " , [" + errorOut + "]");
     }
 
     public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
@@ -468,7 +459,7 @@ public class MySQLUtil {
     }
 
 
-    private void readProcessInputAndErrorStream(Process process) throws IOException {
+    private String readProcessInputAndErrorStream(Process process) throws IOException {
     	/* Added while loop to get input stream because process.waitFor() has a problem
          * Reference: 
          * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
@@ -478,20 +469,22 @@ public class MySQLUtil {
         while ( (line = reader.readLine()) != null) {
             //System.out.println(line);
         }
-        
+        reader.close();
         /* When the process writes to stderr the output goes to a fixed-size buffer. 
          * If the buffer fills up then the process blocks until the buffer gets emptied. 
          * So if the buffer doesn't empty then the process will hang.
          * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
          */
     	BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-    	StringBuilder sb = new StringBuilder();
+    	StringBuilder errorOut = new StringBuilder();
         while ((line = errorReader.readLine()) != null) {
-        	sb.append(line);
-            System.err.println(line);
+        	errorOut.append(line);
+        //    System.err.println(line);
         }
-        if (mysqlErrorMessage.isEmpty()) mysqlErrorMessage = sb.toString();
 
+        errorReader.close();
+
+        return errorOut.toString();
 	}
 
 	/**
