@@ -280,23 +280,27 @@ public class MySQLUtil {
             //GCP-7192 (Workaround) If insert data to listnms script fails and throws an error "Column count doesn't match value count at row 1"
             // try to adjust the table schema so the script will be executed successfully.
             if (e.getMessage().contains("ERROR 1136 ")) { // ERROR 1136 = Column count doesn't match value count at row 1
-
-                executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
-                //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-                if (preRestoreTasks != null) {
-                    if (!preRestoreTasks.call()) {
-                        throw new Exception("Failure to generate LocalDB");
+                try {
+                    executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
+                    //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+                    if (preRestoreTasks != null) {
+                        if (!preRestoreTasks.call()) {
+                            throw new Exception("Failure to generate LocalDB");
+                        }
                     }
+
+                    executeQuery(connection, "USE " + databaseName);
+
+                    alterListNmsTable(connection, databaseName); // delete the notes field
+
+                    runScriptFromFile(databaseName, backupFile);
+
+                    // after restore, restore from backup schema the users + persons table
+                    restoreUsersPersonsAfterRestoreDB(connection, databaseName);
+
+                } catch (Exception e2) {
+                    throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
                 }
-
-                executeQuery(connection, "USE " + databaseName);
-
-                alterListNmsTable(connection, databaseName); // delete the notes field
-
-                runScriptFromFile(databaseName, backupFile);
-
-                // after restore, restore from backup schema the users + persons table
-                restoreUsersPersonsAfterRestoreDB(connection, databaseName);
             } else {
                 throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
             }
