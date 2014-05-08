@@ -1,13 +1,13 @@
 /*******************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
  *******************************************************************************/
 package org.generationcp.commons.util;
 
@@ -31,19 +31,19 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A class that provides methods for backing up and restoring MySQL databases.
- * 
+ *
  * @author Glenn Marintes
  */
 @Configurable
 public class MySQLUtil {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(MySQLUtil.class);
-	
+
+    private static final Logger LOG = LoggerFactory.getLogger(MySQLUtil.class);
+
     private String mysqlPath;
     private String mysqlDumpPath;
 
     private String backupDir;
-    
+
     private String mysqlDriver = "com.mysql.jdbc.Driver";
     private String mysqlHost;
     private int mysqlPort = 3306;
@@ -51,7 +51,7 @@ public class MySQLUtil {
     private String password;
 
     private Connection connection;
-    
+
     public String getMysqlPath() {
         return mysqlPath;
     }
@@ -134,14 +134,14 @@ public class MySQLUtil {
                 throw new SQLException("Cannot connect to database", e);
             }
         }
-        
+
         // connect
         if (mysqlHost != null) {
             connection = DriverManager.getConnection(
                     "jdbc:mysql://" + mysqlHost + ":" + mysqlPort + "/", username, password);
         }
     }
-    
+
     public void disconnect() {
         try {
             connection.close();
@@ -150,59 +150,48 @@ public class MySQLUtil {
             // intentionally empty
         }
     }
-    
+
     public File backupDatabase(String database) throws IOException, InterruptedException {
         if (database == null) {
             return null;
         }
-        
+
         String backupFilename = getBackupFilename(database, ".sql");
-        return backupDatabase(database, backupFilename);
+        return backupDatabase(database, backupFilename,false);
     }
-    
-    public File backupDatabase(String database, String backupFilename) 
+
+    public File backupDatabase(String database, String backupFilename,boolean includeProcedures)
             throws IOException, InterruptedException {
         if (database == null || backupFilename == null) {
             return null;
         }
-        
+
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
-        
-        ProcessBuilder pb = null;
-        if (StringUtil.isEmpty(password)) {
-            pb = new ProcessBuilder(mysqlDumpAbsolutePath
-                                   ,"--complete-insert"
-                                   ,"--extended-insert"
-                                   ,"--no-create-db"
-                                   ,"--single-transaction"
-                                   ,"--default-character-set=utf8"
-                                   ,"--host=" + mysqlHost
-                                   ,"--port=" + mysqlPort
-                                   ,"--user=" + username
-                                   ,database
-                                   ,"-r", backupFilename
-                );
-        }
-        else {
-            pb = new ProcessBuilder(mysqlDumpAbsolutePath
-                                    ,"--complete-insert"
-                                    ,"--extended-insert"
-                                    ,"--no-create-db"
-                                    ,"--single-transaction"
-                                    ,"--default-character-set=utf8"
-                                    ,"--host=" + mysqlHost
-                                    ,"--port=" + mysqlPort
-                                    ,"--user=" + username
-                                    ,"--password=" + password
-                                    ,database
-                                    ,"-r", backupFilename
-                 );
-        }
-        
+
+        List<String> command = Arrays.asList(mysqlDumpAbsolutePath
+                ,"--complete-insert"
+                ,"--extended-insert"
+                ,"--no-create-db"
+                ,"--single-transaction"
+                ,"--default-character-set=utf8"
+                ,"--host=" + mysqlHost
+                ,"--port=" + mysqlPort
+                ,"--user=" + username
+                ,database
+                ,"-r", backupFilename);
+
+        if (includeProcedures)
+            command.add(0,"--routines");
+
+        if (!StringUtil.isEmpty(password))
+            command.add(0,"--password=" + password);
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+
         Process process = pb.start();
         readProcessInputAndErrorStream(process);
         process.waitFor();
-        
+
         File file = new File(backupFilename);
         return file.exists() ? file.getAbsoluteFile() : null;
     }
@@ -211,33 +200,28 @@ public class MySQLUtil {
         if (databases == null || databases.length == 0) {
             return new File[0];
         }
-        
+
         File[] backupFiles = new File[databases.length];
-        
+
         for (int i=0; i < databases.length; i++) {
             backupFiles[i] = backupDatabase(databases[i]);
         }
-        
+
         return backupFiles;
     }
-    
+
     public void restoreDatabase(String databaseName, File backupFile,Callable<Boolean> preRestoreTasks) throws Exception {
-    	restoreDatabase(databaseName, backupFile, null,preRestoreTasks);
-    }
-    
-    public void restoreDatabase(String databaseName, File backupFile, File currentDbBackupFile,Callable<Boolean> preRestoreTasks)
-            throws Exception {
         connect();
-        
+
         try {
-            restoreDatabase(connection, databaseName, backupFile, currentDbBackupFile,preRestoreTasks);
+            restoreDatabase(connection, databaseName, backupFile,preRestoreTasks);
         }
         finally {
             disconnect();
         }
     }
-    
-    public void restoreDatabase(Connection connection, String databaseName, File backupFile, File currentDbBackupFile,Callable<Boolean> preRestoreTasks)
+
+    public void restoreDatabase(Connection connection, String databaseName, File backupFile,Callable<Boolean> preRestoreTasks)
             throws Exception {
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
@@ -249,10 +233,11 @@ public class MySQLUtil {
             throw new IllegalArgumentException("sqlFile parameter must not be null");
         }
 
-        // create the target database
-
         // backup current users + table in a temporary schema
         backupUserPersonsBeforeRestoreDB(connection,databaseName);
+
+        // 05-08-14 Backup current DB + Stored Procedure
+        final File currentDbBackupFile = createCurrentDbBackupFile(databaseName);
 
         executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
 
@@ -267,9 +252,9 @@ public class MySQLUtil {
 
         // restore the backup
         try {
-        	LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
+            LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
             runScriptFromFile(databaseName, backupFile);
-            
+
             // after restore, restore from backup schema the users + persons table
             restoreUsersPersonsAfterRestoreDB(connection, databaseName);
         }
@@ -334,7 +319,7 @@ public class MySQLUtil {
         return new IllegalStateException("Looks like there are errors in your SQL file. Please use another backup file.");
     }
 
-    
+
     protected  void backupUserPersonsBeforeRestoreDB(Connection connection, String databaseName) {
         try {
             executeQuery(connection,"CREATE DATABASE IF NOT EXISTS temp_db");
@@ -373,7 +358,7 @@ public class MySQLUtil {
 
     protected  void alterListNmsTable(Connection connection, String databaseName) {
         try {
-          
+
             executeQuery(connection,"USE " + databaseName);
             executeQuery(connection,"ALTER TABLE " + databaseName + ".listnms DROP COLUMN notes");
         } catch (SQLException e) {
@@ -387,10 +372,10 @@ public class MySQLUtil {
         if (mysqlPath != null)
             mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
         LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
-        
+
         if (StringUtil.isEmpty(password)) {
             pb = new ProcessBuilder(mysqlAbsolutePath
-            		,"--host=" + mysqlHost
+                    ,"--host=" + mysqlHost
                     ,"--port=" + mysqlPort
                     ,"--user=" + username
                     ,"--default-character-set=utf8"
@@ -401,7 +386,7 @@ public class MySQLUtil {
         }
         else {
             pb = new ProcessBuilder(mysqlAbsolutePath
-            		,"--host=" + mysqlHost
+                    ,"--host=" + mysqlHost
                     ,"--port=" + mysqlPort
                     ,"--user=" + username
                     , "--password=" + password
@@ -413,13 +398,13 @@ public class MySQLUtil {
 
         Process mysqlRestoreProcess = pb.start();
         String errorOut = readProcessInputAndErrorStream(mysqlRestoreProcess);
-        
-        
+
+
         int exitValue = mysqlRestoreProcess.waitFor();
         LOG.debug("Process terminated with value "+exitValue);
 
         if (exitValue != 0)
-        	throw new IOException(errorOut);
+            throw new IOException(errorOut);
     }
 
     public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
@@ -480,28 +465,28 @@ public class MySQLUtil {
          * So if the buffer doesn't empty then the process will hang.
          * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
          */
-    	BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-    	StringBuilder errorOut = new StringBuilder();
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+        StringBuilder errorOut = new StringBuilder();
         while ((line = errorReader.readLine()) != null) {
-        	errorOut.append(line);
-        //    System.err.println(line);
+            errorOut.append(line);
+            //    System.err.println(line);
         }
 
         errorReader.close();
 
         return errorOut.toString();
-	}
+    }
 
-	/**
+    /**
      * Update the specified database using scripts from the specified <code>updateDir</code>.
-     * 
+     *
      * @param databaseName
      * @param updateDir
      * @throws IOException
      * @throws SQLException
      */
-    public boolean upgradeDatabase(String databaseName, File updateDir) 
-        throws IOException, SQLException {
+    public boolean upgradeDatabase(String databaseName, File updateDir)
+            throws IOException, SQLException {
         connect();
 
         try {
@@ -511,11 +496,11 @@ public class MySQLUtil {
             disconnect();
         }
     }
-    
-    public boolean upgradeDatabase(Connection connection, String databaseName, File updateDir) 
-        throws IOException, SQLException {
-    	
-    	if (connection == null) {
+
+    public boolean upgradeDatabase(Connection connection, String databaseName, File updateDir)
+            throws IOException, SQLException {
+
+        if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
         }
         if (databaseName == null) {
@@ -527,7 +512,7 @@ public class MySQLUtil {
         if (!updateDir.exists()) {
             return true;
         }
-        
+
         // use the target database
         try {
             executeQuery(connection, "USE " + databaseName);
@@ -535,8 +520,8 @@ public class MySQLUtil {
         catch (SQLException e) {
             // ignore database creation error
         }
-        
-     // check our schema version
+
+        // check our schema version
         String currentSchemaVersion = null;
         try {
             // get the current version of the database
@@ -548,7 +533,7 @@ public class MySQLUtil {
         LOG.debug("Executing upgradeDatabase from directory "+updateDir.getAbsolutePath());
         LOG.debug("Applying upgrade in database "+databaseName);
         LOG.debug("The schema version is "+currentSchemaVersion);
-        
+
         // upgrade the database
         try {
             String disableFk = "SET FOREIGN_KEY_CHECKS=0";
@@ -556,7 +541,7 @@ public class MySQLUtil {
                 return false;
             }
             LOG.debug("Disabling foreign key checks...");
-            
+
             // get the list of schema versions included in the installer
             List<File> schemaUpdateList = Arrays.asList(updateDir.listFiles(new FileFilter() {
                 @Override
@@ -565,7 +550,7 @@ public class MySQLUtil {
                 }
             }));
             Collections.sort(schemaUpdateList);
-            
+
             // execute schema updates for each version greater than the current version
             for (File schemaUpdateDir : schemaUpdateList) {
                 if (currentSchemaVersion != null) {
@@ -579,7 +564,7 @@ public class MySQLUtil {
                 runScriptsInDirectory(databaseName,schemaUpdateDir,false,false);
 
             }
-            
+
             return true;
         }
         finally {
@@ -590,7 +575,7 @@ public class MySQLUtil {
             LOG.debug("Enabling foreign key checks...");
         }
     }
-    
+
     protected String getBackupFilename(String databaseName, String suffix) {
         DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
         String timestamp = format.format(new Date());
@@ -611,10 +596,10 @@ public class MySQLUtil {
 
         return StringUtil.joinIgnoreEmpty(File.separator, _customDir.getAbsolutePath(), name);
     }
-    
+
     public void executeQuery(Connection connection, String query) throws SQLException {
         Statement stmt = connection.createStatement();
-        
+
         try {
             stmt.execute(query);
         }
@@ -627,10 +612,10 @@ public class MySQLUtil {
             }
         }
     }
-    
+
     public boolean executeUpdate(Connection connection, String query) throws SQLException {
         Statement stmt = connection.createStatement();
-        
+
         try {
             stmt.executeUpdate(query);
             return true;
@@ -644,14 +629,14 @@ public class MySQLUtil {
             }
         }
     }
-    
-    public String executeForStringResult(Connection connection, String query) 
+
+    public String executeForStringResult(Connection connection, String query)
             throws SQLException {
         Statement stmt = connection.createStatement();
         ResultSet rs = null;
         try {
             rs = stmt.executeQuery(query);
-            
+
             if (rs.next()) {
                 return rs.getString(1);
             }
@@ -683,7 +668,7 @@ public class MySQLUtil {
     public boolean runScriptsInDirectory(String databaseName, File directory) {
         return runScriptsInDirectory(databaseName, directory, true);
     }
-    
+
     public boolean runScriptsInDirectory(String databaseName
             , File directory, boolean stopOnError) {
         return runScriptsInDirectory(databaseName, directory, stopOnError, true);
@@ -781,39 +766,31 @@ public class MySQLUtil {
     public void updateOwnerships(String databaseName, Integer userId)
             throws IOException, SQLException {
         connect();
-        
+
         try {
-        	executeQuery(connection, "USE " + databaseName);
-        	executeQuery(connection, "UPDATE LISTNMS SET LISTUID = "+userId);
+            executeQuery(connection, "USE " + databaseName);
+            executeQuery(connection, "UPDATE LISTNMS SET LISTUID = "+userId);
         }
         finally {
             disconnect();
         }
     }
-    
-    public void dropSchemaVersion(String databaseName) 
+
+    public void dropSchemaVersion(String databaseName)
             throws IOException, SQLException {
         connect();
-        
+
         try {
-        	executeQuery(connection, "USE " + databaseName);
-        	executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
+            executeQuery(connection, "USE " + databaseName);
+            executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
         }
         finally {
             disconnect();
         }
     }
 
-    public File createCurrentDbBackupFile(String databaseName) throws Exception {
-    	 connect();
-
-         try {
-        	 return backupDatabase(databaseName, getBackupFilename(
- 	                databaseName, "system.sql","temp"));
-         }
-         finally {
-             disconnect();
-         }
-    	
+    public File createCurrentDbBackupFile(String databaseName) throws IOException, InterruptedException {
+        return backupDatabase(databaseName, getBackupFilename(
+                databaseName, "system.sql","temp"),true);
     }
 }
