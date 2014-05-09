@@ -178,10 +178,10 @@ public class MySQLUtil {
                 ,"-r", backupFilename));
 
         if (includeProcedures)
-            command.add(0,"--routines");
+            command.add(1,"--routines");
 
         if (!StringUtil.isEmpty(password))
-            command.add(0,"--password=" + password);
+            command.add(1,"--password=" + password);
 
         ProcessBuilder pb = new ProcessBuilder(command);
 
