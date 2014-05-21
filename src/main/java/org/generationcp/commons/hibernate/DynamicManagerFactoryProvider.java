@@ -24,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider;
-import org.generationcp.middleware.hibernate.HibernateSessionProvider;
 import org.generationcp.middleware.hibernate.SessionFactoryUtil;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
 import org.generationcp.middleware.manager.ManagerFactory;
@@ -141,6 +140,8 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
   
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
+    	String localDbName = null;
+    	String centralDbName = null;
     	Project project = workbenchDataManager.getLastOpenedProjectAnyUser();
     	
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
@@ -150,7 +151,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         }
         
         if (localSessionFactory == null || localSessionFactory.isClosed()) {
-            String localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
+        	localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
             
             // close any excess cached session factory
             closeExcessLocalSessionFactory();
@@ -173,7 +174,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
         if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
                 && project.getCropType().getCentralDbName() != null) {
-            String centralDbName = project.getCropType().getCentralDbName();
+            centralDbName = project.getCropType().getCentralDbName();
             
             DatabaseConnectionParameters params = 
                     new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
@@ -207,6 +208,8 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProviderForLocal(localSessionProvider);
         factory.setSessionProviderForCentral(centralSessionProvider);
+        factory.setCentralDatabaseName(centralDbName);
+        factory.setLocalDatabaseName(localDbName);
         
         return factory;
     }
