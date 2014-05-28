@@ -62,7 +62,7 @@ public class Bootstrap {
     }
 
     public enum Buttons {
-        DEFAULT, PRIMARY, INFO, SUCCESS, WARNING, DANGER, LINK;
+        DEFAULT, PRIMARY, INFO, SUCCESS, WARNING, DANGER, LINK, BORDERED;
 
         public String styleName() {
             return this.toString().toLowerCase().replaceAll("_","-");
