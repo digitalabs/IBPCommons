@@ -48,23 +48,6 @@
             <artifactId>vaadin</artifactId>
             <version>${vaadin.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-        </dependency>
-        -->
-
-        <!--
-        <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all-server</artifactId>
-            <version>7.6.2.v20120308</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
-        -->
         <!-- Middleware Dependency -->
         <dependency>
             <groupId>org.generationcp</groupId>
@@ -72,12 +55,6 @@
             <version>${middleware.version}</version>
             <type>jar</type>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-jdk14</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Spring Dependency -->
         <dependency>
