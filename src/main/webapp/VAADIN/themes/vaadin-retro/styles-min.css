@@ -967,15 +967,15 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 
 
 .v-button-bordered:focus {
-    border: 1px solid #7C7C7C;
-    background: #cecece;
+    border: 1px solid #96B2CA;
+    background: #C8E1F7;
 
     outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
 }
 
 .v-button-bordered:hover {
-    border: 1px solid #7C7C7C;
-    background: #cecece;
+    border: 1px solid #96B2CA;
+    background: #C8E1F7;
 }
 
 .v-button-bordered:hover .v-button-wrap,
@@ -987,8 +987,8 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 
 .v-button-bordered:active,
 .v-pressed.v-button-bordered {
-    border: 1px solid #7C7C7C;
-    background: #cecece;
+    border: 1px solid #96B2CA;
+    background: #C8E1F7;
 }
 
 .v-button-bordered:active .v-button-wrap,
@@ -999,12 +999,12 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 
 .v-button-bordered:active .v-button-caption,
 .v-pressed.v-button-bordered .v-button-caption {
-    color: #615D5E;
+    color: #428BCA;
 }
 
 .v-button-bordered,
 .v-disabled.v-button-bordered {
-    border: 1px solid #7C7C7C;
+    border: 1px solid #96B2CA;
     background: transparent;
     box-sizing: border-box;
     border-radius: 3px;
@@ -1020,7 +1020,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 }
 
 .v-button-bordered .v-button-caption {
-    color: #615D5E;
+    color: #428BCA;
 }
 
 
