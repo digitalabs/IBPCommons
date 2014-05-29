@@ -45,13 +45,11 @@ public class HeaderLabelLayout extends HorizontalLayout implements InitializingB
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Embedded icon = new Embedded(null,ICON);
-	
-		icon.setStyleName("header-img");
+
 		setSpacing(false);
 		addComponent(icon);
 		addComponent(label);
-		
-		//this.addStyleName("no-caption");
+
 	}
 	
 	
