@@ -968,7 +968,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 
 .v-button-bordered:focus {
     border: 1px solid #96B2CA;
-    background: #C8E1F7;
+    background: none;
 
     outline:thin dotted #333;outline: 1px auto -webkit-focus-ring-color;outline-offset:-3px;
 }
@@ -988,7 +988,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 .v-button-bordered:active,
 .v-pressed.v-button-bordered {
     border: 1px solid #96B2CA;
-    background: #C8E1F7;
+    background: none;
 }
 
 .v-button-bordered:active .v-button-wrap,
