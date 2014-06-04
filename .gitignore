@@ -78,3 +78,9 @@ local.properties
 .Trashes
 ehthumbs.db
 Thumbs.db
+/.project
+/.settings
+/.classpath
+
+/.settings/org.eclipse.jdt.core.prefs
+/.settings/org.eclipse.jdt.core.prefs

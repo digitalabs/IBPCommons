@@ -29,6 +29,9 @@ public class DataFile implements Serializable{
     /** The file. */
     private String name;
     
+    /** The summary stats file. */
+    private String summarystats;
+    
     /**
      * Gets the file.
      *
@@ -47,5 +50,14 @@ public class DataFile implements Serializable{
     public void setName(String file) {
         this.name = file;
     }
+
+    @XmlAttribute
+	public String getSummarystats() {
+		return summarystats;
+	}
+
+	public void setSummarystats(String summarystats) {
+		this.summarystats = summarystats;
+	}
     
 }
