@@ -165,6 +165,8 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
             catch (FileNotFoundException e) {
                 throw new ConfigException("Cannot create a SessionFactory for " + project, e);
             }
+        } else {
+        	localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
         }
         
         // add this local session factory to the head of the access list
@@ -187,6 +189,8 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
             catch (FileNotFoundException e) {
                 throw new ConfigException("Cannot create a SessionFactory for " + project, e);
             }
+        } else {
+        	centralDbName = project.getCropType().getCentralDbName();
         }
         
 
