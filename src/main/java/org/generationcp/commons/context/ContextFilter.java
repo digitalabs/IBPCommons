@@ -29,11 +29,11 @@ public class ContextFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
 		Long selectedProjectId = getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-		Long userId = getParamAsLong(request, ContextConstants.PARAM_USER_ID); 
+		Long userId = getParamAsLong(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
 		
 		if (selectedProjectId != null && userId != null) {
 			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, new ContextInfo(userId, selectedProjectId));
-			response.addCookie(new Cookie(ContextConstants.PARAM_USER_ID, userId.toString()));
+			response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, userId.toString()));
 			response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId.toString()));
 		}
 		
@@ -43,7 +43,7 @@ public class ContextFilter implements Filter {
 			if(contextInfo == null) {
 				//this happens when session attribute gets lost due to session.invalidate() calls when navigating within application.
 				//restore session attribure from cookies
-				Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_USER_ID);
+				Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
 				Cookie selectedProjectIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
 				if(userIdCookie != null && selectedProjectIdCookie != null) {
 					WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, 
