@@ -147,7 +147,7 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
         }
     }
     
-	private Project gepProjectInContext() throws MiddlewareQueryException {
+	private Project getProjectInContext() throws MiddlewareQueryException {
 		
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(CURRENT_REQUEST.get(), ContextConstants.SESSION_ATTR_CONTEXT_INFO);    	
     	
@@ -158,12 +158,12 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
     	}
     	
     	throw new MiddlewareQueryException("No information about the current project (program) found in context. "
-    			+ "Unaable to determine program local/central databases to connect to.");
+    			+ "Unable to determine program local/central databases to connect to.");
 	}
 
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
-    	Project project = gepProjectInContext();
+    	Project project = getProjectInContext();
     	
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());       
         if (localSessionFactory != null) {
