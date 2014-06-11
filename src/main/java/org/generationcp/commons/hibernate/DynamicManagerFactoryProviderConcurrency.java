@@ -21,6 +21,8 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.generationcp.commons.context.ContextConstants;
+import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerThreadProvider;
@@ -31,6 +33,9 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.util.WebUtils;
 
 /**
  * The {@link DynamicManagerFactoryProviderConcurrency} is an implementation of
@@ -44,6 +49,8 @@ import org.hibernate.SessionFactory;
  */
 public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryProvider, HttpRequestAware {
 	
+    private final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
+
 	public DynamicManagerFactoryProviderConcurrency() {
 		
 	}
@@ -59,6 +66,9 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
             new HashMap<Long, SessionFactory>();
     private Map<CropType, SessionFactory> centralSessionFactories = 
             new HashMap<CropType, SessionFactory>();
+    
+    private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = 
+            new ThreadLocal<HttpServletRequest>();
     
     
     private WorkbenchDataManager workbenchDataManager;
@@ -137,13 +147,25 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
         }
     }
     
-  
+	private Project gepProjectInContext() throws MiddlewareQueryException {
+		
+		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(CURRENT_REQUEST.get(), ContextConstants.SESSION_ATTR_CONTEXT_INFO);    	
+    	
+    	if(contextInfo != null) {
+    		Project project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
+    		LOG.info("Project in context is " + project.getProjectName() + "[id = " + project.getProjectId() + "].");
+    		return project;
+    	}
+    	
+    	throw new MiddlewareQueryException("No information about the current project (program) found in context. "
+    			+ "Unaable to determine program local/central databases to connect to.");
+	}
+
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
-    	Project project = workbenchDataManager.getLastOpenedProjectAnyUser();
+    	Project project = gepProjectInContext();
     	
-        SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
-        
+        SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());       
         if (localSessionFactory != null) {
             projectAccessList.remove(project.getProjectId());
         }
@@ -214,15 +236,16 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
 	@Override
 	public void onRequestStarted(HttpServletRequest request,
 			HttpServletResponse response) {
-		// TODO Auto-generated method stub
+
+		CURRENT_REQUEST.set(request);
 		
 	}
 
 	@Override
 	public void onRequestEnded(HttpServletRequest request,
 			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+		 
+		CURRENT_REQUEST.remove();
 	}
 
 	@Override
