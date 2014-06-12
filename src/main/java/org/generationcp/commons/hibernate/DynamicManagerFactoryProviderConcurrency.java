@@ -21,8 +21,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.generationcp.commons.context.ContextConstants;
-import org.generationcp.commons.context.ContextInfo;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerThreadProvider;
@@ -35,7 +34,6 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.util.WebUtils;
 
 /**
  * The {@link DynamicManagerFactoryProviderConcurrency} is an implementation of
@@ -147,23 +145,9 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
         }
     }
     
-	private Project getProjectInContext() throws MiddlewareQueryException {
-		
-		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(CURRENT_REQUEST.get(), ContextConstants.SESSION_ATTR_CONTEXT_INFO);    	
-    	
-    	if(contextInfo != null) {
-    		Project project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
-    		LOG.info("Project in context is " + project.getProjectName() + "[id = " + project.getProjectId() + "].");
-    		return project;
-    	}
-    	
-    	throw new MiddlewareQueryException("No information about the current project (program) found in context. "
-    			+ "Unable to determine program local/central databases to connect to.");
-	}
-
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
-    	Project project = getProjectInContext();
+    	Project project = ContextUtil.getProjectInContext(workbenchDataManager, CURRENT_REQUEST.get());
     	
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());       
         if (localSessionFactory != null) {
