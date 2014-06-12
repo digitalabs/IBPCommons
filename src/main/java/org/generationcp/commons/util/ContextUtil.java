@@ -21,9 +21,13 @@ public class ContextUtil {
     	
     	if(contextInfo != null) {
     		Project project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
-    		LOG.info("Project in context is " + project.getProjectName() + "[id = " + project.getProjectId() + "].");
+    		LOG.debug("Project in context is: " + project.getProjectName() + " [id = " + project.getProjectId() + "]. "
+    				+ "Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName());
     		return project;
     	}
+    	
+    	// Should never come here in theory. If and when we do, it means the context parameters are most likely being lost due to
+    	// session.invalidate() call being made somwhere in the request handling cycle where it should not be.
     	
     	throw new MiddlewareQueryException("No information about the current project (program) found in context. "
     			+ "Unable to determine program local/central databases to connect to.");
