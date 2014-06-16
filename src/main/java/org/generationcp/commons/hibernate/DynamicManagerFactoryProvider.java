@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider;
@@ -55,11 +56,10 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 	private HibernateSessionPerRequestProvider localSessionProvider; 
 	private HibernateSessionPerRequestProvider centralSessionProvider; 
 	
-    private Map<Long, SessionFactory> localSessionFactories = 
-            new HashMap<Long, SessionFactory>();
-    private Map<CropType, SessionFactory> centralSessionFactories = 
-            new HashMap<CropType, SessionFactory>();
+    private Map<Long, SessionFactory> localSessionFactories = new HashMap<Long, SessionFactory>();
+    private Map<CropType, SessionFactory> centralSessionFactories = new HashMap<CropType, SessionFactory>();
     
+    private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
     
     private WorkbenchDataManager workbenchDataManager;
     
@@ -142,7 +142,8 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
     	
     	String localDbName = null;
     	String centralDbName = null;
-    	Project project = workbenchDataManager.getLastOpenedProjectAnyUser();
+    	Project project = ContextUtil.getProjectInContext(workbenchDataManager, CURRENT_REQUEST.get());
+
     	
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
         
@@ -220,17 +221,13 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 
 
 	@Override
-	public void onRequestStarted(HttpServletRequest request,
-			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+	public void onRequestStarted(HttpServletRequest request, HttpServletResponse response) {
+		CURRENT_REQUEST.set(request);
 	}
 
 	@Override
-	public void onRequestEnded(HttpServletRequest request,
-			HttpServletResponse response) {
-		// TODO Auto-generated method stub
-		
+	public void onRequestEnded(HttpServletRequest request, HttpServletResponse response) {
+		CURRENT_REQUEST.remove();
 	}
 
 	@Override
