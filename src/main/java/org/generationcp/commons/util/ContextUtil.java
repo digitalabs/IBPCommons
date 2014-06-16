@@ -20,18 +20,20 @@ public class ContextUtil {
 		
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);    	
     	
+		Project project = null;
+		
     	if(contextInfo != null) {
-    		Project project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
-    		LOG.debug("Project in context is: " + project.getProjectName() + " [id = " + project.getProjectId() + "]. "
-    				+ "Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName());
-    		return project;
+    		LOG.info("Found context information from session context attributes.");
+    		project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
+    	} else {
+    		// Fall-back to the old method so that single user, local installation scenario continues to work while we make all parts of BMS multi-user aware.
+    		LOG.info("No context information found from session. Falling back to the single user mode method of determining Project in context.");
+    		project = workbenchDataManager.getLastOpenedProjectAnyUser();    		
     	}
     	
-    	// Should never come here in theory. If and when we do, it means the context parameters are most likely being lost due to
-    	// session.invalidate() call being made somwhere in the request handling cycle where it should not be.
-    	
-    	throw new MiddlewareQueryException("No information about the current project (program) found in context. "
-    			+ "Unable to determine program local/central databases to connect to.");
+		LOG.info("Project in context is: " + project.getProjectName() + " [id = " + project.getProjectId() + "]. "
+				+ "Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName());
+		return project;
 	}
 	
 	
