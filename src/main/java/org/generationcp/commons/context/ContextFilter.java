@@ -12,7 +12,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
+import org.generationcp.commons.util.ContextUtil;
 import org.springframework.web.util.WebUtils;
 
 public class ContextFilter implements Filter {
@@ -28,8 +28,8 @@ public class ContextFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-		Long selectedProjectId = getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-		Long userId = getParamAsLong(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
+		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
+		Long userId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
 		
 		if (selectedProjectId != null && userId != null) {
 			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, new ContextInfo(userId, selectedProjectId));
@@ -58,19 +58,6 @@ public class ContextFilter implements Filter {
 	@Override
 	public void destroy() {
 		//NOOP
-	}
-
-	
-	private Long getParamAsLong(HttpServletRequest request, String paramName) {
-		Long id = null;
-		if (!StringUtils.isBlank(request.getParameter(paramName))) {
-			try {
-				id = new Long(request.getParameter(paramName));
-			} catch (NumberFormatException e) {
-				id = null;
-			}
-		}
-		return id;
 	}
     
 }
