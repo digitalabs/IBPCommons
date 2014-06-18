@@ -51,7 +51,10 @@ public class ContextUtil {
 	}
 	
 	public static String getContextParameterString(ContextInfo contextInfo) {
-		return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+		if(contextInfo != null) {
+			return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+		}
+		return "";
 	}
 	
 	public static String getContextParameterString(HttpServletRequest request) {
