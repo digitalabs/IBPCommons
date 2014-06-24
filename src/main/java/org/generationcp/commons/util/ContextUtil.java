@@ -19,23 +19,38 @@ public class ContextUtil {
 	public static Project getProjectInContext(WorkbenchDataManager workbenchDataManager, HttpServletRequest request) throws MiddlewareQueryException {
 		
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);    	
-    	
 		Project project = null;
+		boolean resolvedFromSessionContext = false;
 		
     	if(contextInfo != null) {
-    		LOG.info("Found context information from session context attributes.");
+    		resolvedFromSessionContext = true;
     		project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
     	} else {
-    		// Fall-back to the old method so that single user, local installation scenario continues to work while we make all parts of BMS multi-user aware.
-    		LOG.info("No context information found from session. Falling back to the single user mode method of determining Project in context.");
     		project = workbenchDataManager.getLastOpenedProjectAnyUser();    		
-    	}
-    	
-		LOG.info("Project in context is: " + project.getProjectName() + " [id = " + project.getProjectId() + "]. "
-				+ "Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName());
+    	}  	
+		LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId()
+				+ ". Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName()
+				+ ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
 		return project;
 	}
 	
+	public static Integer getCurrentWorkbenchUserId(WorkbenchDataManager workbenchDataManager, HttpServletRequest request) throws MiddlewareQueryException {
+		
+		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		Integer currentWorkbenchUserId = null;
+		boolean resolvedFromSessionContext = false;
+		
+		if(contextInfo != null) {
+			resolvedFromSessionContext = true;
+			currentWorkbenchUserId = contextInfo.getloggedInUserId();
+		} else {
+			currentWorkbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+		}		
+		
+		LOG.info("Logged in Workbench user id is: " + currentWorkbenchUserId 
+				 + ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));		
+		return currentWorkbenchUserId;
+	}	
 	
 	public static Long getParamAsLong(HttpServletRequest request, String paramName) {
 		
