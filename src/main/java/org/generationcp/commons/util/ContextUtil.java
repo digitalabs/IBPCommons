@@ -50,6 +50,19 @@ public class ContextUtil {
 		return id;
 	}
 	
+	public static Integer getParamAsInt(HttpServletRequest request, String paramName) {
+		
+		Integer id = null;
+		if (!StringUtils.isBlank(request.getParameter(paramName))) {
+			try {
+				id = new Integer(request.getParameter(paramName));
+			} catch (NumberFormatException e) {
+				id = null;
+			}
+		}
+		return id;
+	}
+	
 	public static String getContextParameterString(ContextInfo contextInfo) {
 		if(contextInfo != null) {
 			return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
@@ -58,22 +71,27 @@ public class ContextUtil {
 	}
 	
 	public static String getContextParameterString(HttpServletRequest request) {
-		Long loggedInUserId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
+		Integer loggedInUserId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
 		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
 		return ContextUtil.getContextParameterString(loggedInUserId, selectedProjectId);
 	}
 	
-	public static String getContextParameterString(Long loggedInUserId, Long selectedProjectId) {
+	public static String getContextParameterString(Integer loggedInUserId, Long selectedProjectId) {
 
 		StringBuffer contextParameters = new StringBuffer();
-		contextParameters
-			.append(addQueryParameter(ContextConstants.PARAM_LOGGED_IN_USER_ID, loggedInUserId))
-			.append(addQueryParameter(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId));
-
+		
+		if(loggedInUserId != null) {
+			contextParameters.append(addQueryParameter(ContextConstants.PARAM_LOGGED_IN_USER_ID, loggedInUserId.toString()));
+		}
+		
+		if(selectedProjectId != null) {
+			contextParameters.append(addQueryParameter(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId.toString()));
+		}
+		
 		return contextParameters.toString();
 	}
 
-	private static String addQueryParameter(String parameterName, Object parameterValue) {
+	private static String addQueryParameter(String parameterName, String parameterValue) {
 		return "&" + parameterName + "=" + parameterValue;
 	}
 
