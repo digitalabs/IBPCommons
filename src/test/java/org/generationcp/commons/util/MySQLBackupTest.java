@@ -9,7 +9,7 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
  *******************************************************************************/
-package org.generationcp.commons.util.test;
+package org.generationcp.commons.util;
 
 import java.io.File;
 import java.io.IOException;
