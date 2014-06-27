@@ -17,8 +17,10 @@ import java.sql.SQLException;
 
 import org.generationcp.commons.util.MySQLUtil;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class MySQLBackupTest {
     private static MySQLUtil mysqlBackup;
     

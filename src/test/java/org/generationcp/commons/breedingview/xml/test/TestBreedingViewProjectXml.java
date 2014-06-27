@@ -33,9 +33,10 @@ import org.generationcp.commons.breedingview.xml.Rows;
 import org.generationcp.commons.breedingview.xml.Trait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
-
+@Ignore
 public class TestBreedingViewProjectXml{
     
     private static BreedingViewProject project;

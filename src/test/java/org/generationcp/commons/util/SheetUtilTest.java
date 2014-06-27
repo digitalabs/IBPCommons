@@ -21,8 +21,10 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.util.SheetUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class SheetUtilTest {
     
 	private static String fileName = "C:/Book2.xls";

@@ -26,11 +26,13 @@ import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.Properties;
 
+@Ignore
 public class TestManagerFactoryProvider{
 
     private static WorkbenchDataManager manager;
@@ -39,7 +41,7 @@ public class TestManagerFactoryProvider{
     @BeforeClass
     public static void setUp() throws Exception {
         Properties props = new Properties();
-        InputStream propStream = ClassLoader.getSystemResourceAsStream("testDatabaseConfig.properties");
+        InputStream propStream = ClassLoader.getSystemResourceAsStream("test.properties");
         props.load(propStream);
         propStream.close();
 
