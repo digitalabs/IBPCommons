@@ -28,26 +28,28 @@ public class ContextFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-		Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
-		
-		if (selectedProjectId != null && userId != null) {
-			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, new ContextInfo(userId, selectedProjectId));
-			response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, userId.toString()));
-			response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId.toString()));
-		}
-		
-		else {
-			ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		if(!ContextUtil.isStaticResourceRequest(request.getRequestURI())) {
+			Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
+			Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
 			
-			if(contextInfo == null) {
-				//this happens when session attribute gets lost due to session.invalidate() calls when navigating within application.
-				//restore session attribure from cookies
-				Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
-				Cookie selectedProjectIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-				if(userIdCookie != null && selectedProjectIdCookie != null) {
-					WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, 
-						new ContextInfo(Integer.valueOf(userIdCookie.getValue()), Long.valueOf(selectedProjectIdCookie.getValue())));
+			if (selectedProjectId != null && userId != null) {
+				WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, new ContextInfo(userId, selectedProjectId));
+				response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, userId.toString()));
+				response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId.toString()));
+			}
+			
+			else {
+				ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+				
+				if(contextInfo == null) {
+					//this happens when session attribute gets lost due to session.invalidate() calls when navigating within application.
+					//restore session attribure from cookies
+					Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
+					Cookie selectedProjectIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
+					if(userIdCookie != null && selectedProjectIdCookie != null) {
+						WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, 
+							new ContextInfo(Integer.valueOf(userIdCookie.getValue()), Long.valueOf(selectedProjectIdCookie.getValue())));
+					}
 				}
 			}
 		}

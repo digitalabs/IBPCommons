@@ -71,6 +71,16 @@ public class ContextUtilTest {
 		verify(this.workbenchDataManager, never()).getProjectById(Matchers.anyLong());
 	}
 	
+	@Test(expected = MiddlewareQueryException.class)
+	public void testExceptionIsThrownWhenProjectCannotBeResolved() throws MiddlewareQueryException {
+		
+		when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
+		when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);	
+		when(this.workbenchDataManager.getLastOpenedProjectAnyUser()).thenReturn(null);
+		
+		ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
+	}
+	
 	@Test
 	public void testCurrentWorkbenchUserIdResolvesFromSessionContext() throws MiddlewareQueryException {
 		ContextInfo contextInfo = new ContextInfo(1, 1L);
@@ -93,6 +103,32 @@ public class ContextUtilTest {
 		Assert.assertEquals(workbenchRuntimeData.getUserId(), ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request));
 		
 		verify(this.workbenchDataManager).getWorkbenchRuntimeData();
+	}
+	
+	@Test(expected = MiddlewareQueryException.class)
+	public void testExceptionIsThrownWhenWorkbenchUserCannotBeResolved() throws MiddlewareQueryException {		
+		when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
+		when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);	
+		WorkbenchRuntimeData workbenchRuntimeData = new WorkbenchRuntimeData();
+		workbenchRuntimeData.setUserId(null);
+		when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(workbenchRuntimeData);
+		
+		ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
+	}
+	
+	@Test
+	public void testIsStaticResourceRequest() {
+		
+		Assert.assertFalse(ContextUtil.isStaticResourceRequest("/App/NonStaticResource"));
+
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/static/app.whatever"));
+		
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/js/app.js"));
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/css/app.css"));
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/img/app.png"));
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/img/app.gif"));
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/img/app.jpg"));
+		Assert.assertTrue(ContextUtil.isStaticResourceRequest("/App/font/app.woff"));
 	}
 
 }
