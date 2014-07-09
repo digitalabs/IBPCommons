@@ -19,23 +19,38 @@ public class ContextUtil {
 	public static Project getProjectInContext(WorkbenchDataManager workbenchDataManager, HttpServletRequest request) throws MiddlewareQueryException {
 		
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);    	
-    	
 		Project project = null;
+		boolean resolvedFromSessionContext = false;
 		
     	if(contextInfo != null) {
-    		LOG.info("Found context information from session context attributes.");
+    		resolvedFromSessionContext = true;
     		project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
     	} else {
-    		// Fall-back to the old method so that single user, local installation scenario continues to work while we make all parts of BMS multi-user aware.
-    		LOG.info("No context information found from session. Falling back to the single user mode method of determining Project in context.");
     		project = workbenchDataManager.getLastOpenedProjectAnyUser();    		
-    	}
-    	
-		LOG.info("Project in context is: " + project.getProjectName() + " [id = " + project.getProjectId() + "]. "
-				+ "Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName());
+    	}  	
+		LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId()
+				+ ". Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName()
+				+ ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
 		return project;
 	}
 	
+	public static Integer getCurrentWorkbenchUserId(WorkbenchDataManager workbenchDataManager, HttpServletRequest request) throws MiddlewareQueryException {
+		
+		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		Integer currentWorkbenchUserId = null;
+		boolean resolvedFromSessionContext = false;
+		
+		if(contextInfo != null) {
+			resolvedFromSessionContext = true;
+			currentWorkbenchUserId = contextInfo.getloggedInUserId();
+		} else {
+			currentWorkbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
+		}		
+		
+		LOG.info("Logged in Workbench user id is: " + currentWorkbenchUserId 
+				 + ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));		
+		return currentWorkbenchUserId;
+	}	
 	
 	public static Long getParamAsLong(HttpServletRequest request, String paramName) {
 		
@@ -50,27 +65,48 @@ public class ContextUtil {
 		return id;
 	}
 	
+	public static Integer getParamAsInt(HttpServletRequest request, String paramName) {
+		
+		Integer id = null;
+		if (!StringUtils.isBlank(request.getParameter(paramName))) {
+			try {
+				id = new Integer(request.getParameter(paramName));
+			} catch (NumberFormatException e) {
+				id = null;
+			}
+		}
+		return id;
+	}
+	
 	public static String getContextParameterString(ContextInfo contextInfo) {
-		return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+		if(contextInfo != null) {
+			return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+		}
+		return "";
 	}
 	
 	public static String getContextParameterString(HttpServletRequest request) {
-		Long loggedInUserId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
+		Integer loggedInUserId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
 		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
 		return ContextUtil.getContextParameterString(loggedInUserId, selectedProjectId);
 	}
 	
-	public static String getContextParameterString(Long loggedInUserId, Long selectedProjectId) {
+	public static String getContextParameterString(Integer loggedInUserId, Long selectedProjectId) {
 
 		StringBuffer contextParameters = new StringBuffer();
-		contextParameters
-			.append(addQueryParameter(ContextConstants.PARAM_LOGGED_IN_USER_ID, loggedInUserId))
-			.append(addQueryParameter(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId));
-
+		
+		if(loggedInUserId != null) {
+			contextParameters.append(addQueryParameter(ContextConstants.PARAM_LOGGED_IN_USER_ID, loggedInUserId.toString()));
+		}
+		
+		if(selectedProjectId != null) {
+			contextParameters.append(addQueryParameter(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId.toString()));
+		}
+		
 		return contextParameters.toString();
 	}
 
-	private static String addQueryParameter(String parameterName, Object parameterValue) {
+	private static String addQueryParameter(String parameterName, String parameterValue) {
 		return "&" + parameterName + "=" + parameterValue;
 	}
 

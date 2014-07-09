@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.generationcp.commons.breedingview.xml.Blocks;
 import org.generationcp.commons.breedingview.xml.Columns;
+import org.generationcp.commons.breedingview.xml.Plot;
 import org.generationcp.commons.breedingview.xml.Replicates;
 import org.generationcp.commons.breedingview.xml.Rows;
 
@@ -30,6 +31,7 @@ public class Design implements Serializable {
 	private Blocks blocks;
 	private Rows rows;
 	private Columns columns;
+	private Plot plot;
 	
 	@XmlAttribute
 	public String getType() {
@@ -70,5 +72,15 @@ public class Design implements Serializable {
 	public void setColumns(Columns columns) {
 		this.columns = columns;
 	}
+	
+	@XmlElement(name ="PlotNo")
+	public Plot getPlot() {
+		return plot;
+	}
+	public void setPlot(Plot plot) {
+		this.plot = plot;
+	}
+	
+	
 	
 }

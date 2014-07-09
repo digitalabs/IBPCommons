@@ -7,15 +7,15 @@ package org.generationcp.commons.context;
  */
 public class ContextInfo {
 	
-	private final Long loggedInUserId; 
+	private final Integer loggedInUserId; 
 	private final Long selectedProjectId;
 		
-	public ContextInfo(Long loggedInUserId, Long selectedProjectId) {
+	public ContextInfo(Integer loggedInUserId, Long selectedProjectId) {
 		this.loggedInUserId = loggedInUserId;
 		this.selectedProjectId = selectedProjectId;
 	}
 
-	public Long getloggedInUserId() {
+	public Integer getloggedInUserId() {
 		return loggedInUserId;
 	}
 

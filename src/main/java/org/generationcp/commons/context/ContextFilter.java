@@ -29,7 +29,7 @@ public class ContextFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
 		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-		Long userId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
+		Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
 		
 		if (selectedProjectId != null && userId != null) {
 			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, new ContextInfo(userId, selectedProjectId));
@@ -47,7 +47,7 @@ public class ContextFilter implements Filter {
 				Cookie selectedProjectIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
 				if(userIdCookie != null && selectedProjectIdCookie != null) {
 					WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, 
-						new ContextInfo(Long.valueOf(userIdCookie.getValue()), Long.valueOf(selectedProjectIdCookie.getValue())));
+						new ContextInfo(Integer.valueOf(userIdCookie.getValue()), Long.valueOf(selectedProjectIdCookie.getValue())));
 				}
 			}
 		}

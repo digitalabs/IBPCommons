@@ -9,7 +9,7 @@
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * 
  *******************************************************************************/
-package org.generationcp.commons.util.test;
+package org.generationcp.commons.util;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,10 @@ import java.sql.SQLException;
 
 import org.generationcp.commons.util.MySQLUtil;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+@Ignore
 public class MySQLBackupTest {
     private static MySQLUtil mysqlBackup;
     
