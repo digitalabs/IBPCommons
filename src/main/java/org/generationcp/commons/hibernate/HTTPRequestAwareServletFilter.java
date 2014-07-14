@@ -12,6 +12,7 @@
 package org.generationcp.commons.hibernate;
 
 import org.generationcp.commons.hibernate.util.HttpRequestAwareUtil;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.util.SpringAppContextProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 
 /**
@@ -33,37 +35,42 @@ public class HTTPRequestAwareServletFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
+    	//NOOP
     }
 
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse
-            , FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest)servletRequest;
-        HttpServletResponse resp = (HttpServletResponse)servletResponse;
+	@Override
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+			FilterChain filterChain) throws IOException, ServletException {
+		
+		HttpServletRequest req = (HttpServletRequest) servletRequest;
+		HttpServletResponse resp = (HttpServletResponse) servletResponse;
 
-        String requestUri = String.format("%s:%s%s?%s", req.getServerName()
-                , req.getServerPort(), req.getRequestURI(), req.getQueryString());
+		String requestUri = String.format("%s:%s%s?%s", req.getServerName(), req.getServerPort(),
+				req.getRequestURI(), req.getQueryString());
 
-        LOG.trace("Request started @ " + requestUri);
+		if (!ContextUtil.isStaticResourceRequest(req.getRequestURI())) {
+			LOG.trace("Request started @ " + requestUri);
 
-        synchronized (this) {
-            HttpRequestAwareUtil.onRequestStart(
-                    SpringAppContextProvider.getApplicationContext(),req,resp);
-        }
+			synchronized (this) {
+				HttpRequestAwareUtil.onRequestStart(
+						SpringAppContextProvider.getApplicationContext(), req, resp);
+			}
 
-        filterChain.doFilter(servletRequest,servletResponse);
+			filterChain.doFilter(servletRequest, servletResponse);
 
-        LOG.trace("Request ended @ " + requestUri);
+			LOG.trace("Request ended @ " + requestUri);
 
-        synchronized (this) {
-            HttpRequestAwareUtil.onRequestEnd(
-                    SpringAppContextProvider.getApplicationContext(),req,resp);
-        }
-
+			synchronized (this) {
+				HttpRequestAwareUtil.onRequestEnd(SpringAppContextProvider.getApplicationContext(),
+						req, resp);
+			}
+		} else {
+			filterChain.doFilter(servletRequest, servletResponse);
+		}
     }
 
     @Override
     public void destroy() {
-
+    	//NOOP
     }
 }
