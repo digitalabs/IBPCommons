@@ -48,6 +48,8 @@ public class MySQLUtil {
     private String password;
 
     private Connection connection;
+    
+    private File currentDbBackupFile;
 
     public String getMysqlPath() {
         return mysqlPath;
@@ -234,7 +236,7 @@ public class MySQLUtil {
         backupUserPersonsBeforeRestoreDB(connection,databaseName);
 
         // 05-08-14 Backup current DB + Stored Procedure
-        final File currentDbBackupFile = createCurrentDbBackupFile(databaseName);
+        currentDbBackupFile = createCurrentDbBackupFile(databaseName);
 
         executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
 
@@ -246,9 +248,12 @@ public class MySQLUtil {
         }
 
         executeQuery(connection, "USE " + databaseName);
-
+        
         // restore the backup
         try {
+        	
+        	dropSchemaVersion(databaseName);//this is needed because the schema_version of the file must be followed
+        	
             LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
             runScriptFromFile(databaseName, backupFile);
 
@@ -499,7 +504,7 @@ public class MySQLUtil {
      * @throws SQLException
      */
     public boolean upgradeDatabase(String databaseName, File updateDir)
-            throws IOException, SQLException {
+            throws Exception {
         connect();
 
         try {
@@ -511,7 +516,7 @@ public class MySQLUtil {
     }
 
     public boolean upgradeDatabase(Connection connection, String databaseName, File updateDir)
-            throws IOException, SQLException {
+            throws Exception {
 
         if (connection == null) {
             throw new IllegalArgumentException("connection parameter must not be null");
@@ -524,6 +529,10 @@ public class MySQLUtil {
         }
         if (!updateDir.exists()) {
             return true;
+        }
+        
+        if(currentDbBackupFile==null) {
+        	currentDbBackupFile = createCurrentDbBackupFile(databaseName);
         }
 
         // use the target database
@@ -579,8 +588,9 @@ public class MySQLUtil {
             }
 
             return true;
-        }
-        finally {
+        } catch(Exception e) {
+        	throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
+    	} finally {
             String enableFk = "SET FOREIGN_KEY_CHECKS=1";
             if (!executeUpdate(connection, enableFk)) {
                 return false;
@@ -678,12 +688,12 @@ public class MySQLUtil {
 
 
 
-    public boolean runScriptsInDirectory(String databaseName, File directory) {
+    public boolean runScriptsInDirectory(String databaseName, File directory) throws Exception {
         return runScriptsInDirectory(databaseName, directory, true);
     }
 
     public boolean runScriptsInDirectory(String databaseName
-            , File directory, boolean stopOnError) {
+            , File directory, boolean stopOnError) throws Exception {
         return runScriptsInDirectory(databaseName, directory, stopOnError, true);
     }
 
@@ -732,7 +742,7 @@ public class MySQLUtil {
     } */
 
     public boolean runScriptsInDirectory(String databaseName
-            , File directory, boolean stopOnError, boolean logSqlError) {
+            , File directory, boolean stopOnError, boolean logSqlError) throws Exception {
         // get the sql files
         File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -746,33 +756,17 @@ public class MySQLUtil {
         Collections.sort(sqlFiles);
 
         for (File sqlFile : sqlFiles) {
-            try {
-                LOG.debug("Running script: "+sqlFile.getAbsolutePath());
-
-                /*
-                br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
-
-                ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
-                runner.runScript(br);
-                */
-
-                if (null != databaseName)
-                    runScriptFromFile(databaseName, sqlFile);
-                else
-                    runScriptFromFile(sqlFile);
-            }
-            catch (IOException e1) {
-                LOG.error("IOException caught",e1);
-            }
-            catch (InterruptedException e) {
-                LOG.error("InterruptedException caught",e);
-            }
+            LOG.debug("Running script: "+sqlFile.getAbsolutePath());
+           	if (null != databaseName)
+                runScriptFromFile(databaseName, sqlFile);
+            else
+                runScriptFromFile(sqlFile);
         }
 
         return true;
     }
 
-    public boolean runScriptsInDirectory(File directory) {
+    public boolean runScriptsInDirectory(File directory) throws Exception {
         return runScriptsInDirectory(null, directory, true);
     }
 
