@@ -162,13 +162,13 @@
 .v-menubar-submenu-check-column .v-menubar-menuitem-caption{padding-left:18px}
 .v-menubar-submenu .v-menubar-menuitem-checked .v-menubar-menuitem-caption{background:transparent url(../base/menubar/img/check.gif) no-repeat left}
 .v-Notification{background:#999;color:#fff;cursor:pointer;overflow:hidden;padding:1em;max-width:85%}
-.v-Notification h1,.v-Notification p,.v-Notification-error h1,.v-Notification-error p,.v-Notification-warning h1,.v-Notification-warning p{display:inline;margin:0 .5em 0 0}
+.v-Notification h1,.v-Notification p,.v-Notification-error h1,.v-Notification-error p,.v-Notification-warning h1,.v-Notification-warning p,.v-Notification-system p{display:inline;margin:0 .5em 0 0}
 .v-Notification-warning{background:orange}
 .v-Notification-error{background:red}
 .v-Notification-tray h1{display:block}
 .v-Notification-tray p{display:block}
-.v-Notification-system{background-color:red;opacity:.7;filter:alpha(opacity=70)}
-.v-Notification-system h1{display:block;margin:0}
+.v-Notification-system{background-color:red;opacity:.7;filter:alpha(opacity=70); left:100% !important; margin-left:-350px !important;}
+.v-Notification-system h1{display:block;margin:0;}
 .v-orderedlayout-margin-top,.v-horizontallayout-margin-top,.v-verticallayout-margin-top{padding-top:12px}
 .v-orderedlayout-margin-right,.v-horizontallayout-margin-right,.v-verticallayout-margin-right{padding-right:12px}
 .v-orderedlayout-margin-bottom,.v-horizontallayout-margin-bottom,.v-verticallayout-margin-bottom{padding-bottom:12px}
@@ -568,11 +568,10 @@ td.v-datefield-calendarpanel-nextyear{text-align:left}
 .v-ie9 .v-Notification H1{font-weight:bold}
 .v-Notification p{line-height:1.3}
 .v-Notification-warning{background:#fdf3b5;color:#ca9a61;border:3px solid #fee3af}
-.v-Notification-error{background:#b40000 url(../reindeer/notification/img/error-close.png) no-repeat right top;border:3px solid #ca3030}
+.v-Notification-error, .v-Notification-system{background:#b40000 url(../reindeer/notification/img/error-close.png) no-repeat right top;border:3px solid #ca3030}
 .v-Notification-tray{margin:0 5px 5px 0;background:#3b3c3e;border:2px solid #585b5c;padding:.8em .9em}
 .v-Notification-tray h1{font-size:14px;line-height:18px}
 .v-Notification-tray p{font-size:12px;font-weight:normal}
-.v-Notification-system{background-color:#b40000}
 .blue .v-panel-caption,.blue .v-panel-nocaption,.blue .v-panel-content{border-color:#a8bcc5}
 .v-panel-caption,.v-panel-nocaption,.white .v-panel-caption,.white .v-panel-nocaption{border-bottom:1px solid #e5e5e5;line-height:16px}
 .v-webkit .v-panel-caption,.v-webkit .v-panel-nocaption,.v-gecko .v-panel-caption,.v-gecko .v-panel-nocaption,.v-ie9 .v-panel-caption,.v-ie9 .v-panel-nocaption{border-bottom-color:rgba(0,0,0,.08)}
@@ -860,6 +859,7 @@ div.v-app-loading{background-image:url(images/loading-animation.gif);background-
 	border: solid 1px #A7D093;
 	color: #416138;
     }
+.v-Notification.v-Notification-system,
 .v-Notification.v-Notification-error{
     background: #FFDFDF;
 	border: solid 1px #E08989;
