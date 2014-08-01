@@ -27,11 +27,16 @@ public class ContextUtil {
     		project = workbenchDataManager.getProjectById(contextInfo.getSelectedProjectId());
     	} else {
     		project = workbenchDataManager.getLastOpenedProjectAnyUser();    		
-    	}  	
-		LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId()
-				+ ". Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName()
-				+ ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
-		return project;
+    	}
+    	
+    	if(project != null) {
+			LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId()
+					+ ". Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName()
+					+ ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
+			return project;
+    	}
+    	
+    	throw new MiddlewareQueryException("Could not resolve selected project in Workbench.");
 	}
 	
 	public static Integer getCurrentWorkbenchUserId(WorkbenchDataManager workbenchDataManager, HttpServletRequest request) throws MiddlewareQueryException {
@@ -47,10 +52,14 @@ public class ContextUtil {
 			currentWorkbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 		}		
 		
-		LOG.info("Logged in Workbench user id is: " + currentWorkbenchUserId 
+		if(currentWorkbenchUserId != null) {
+			LOG.info("Logged in Workbench user id is: " + currentWorkbenchUserId 
 				 + ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));		
-		return currentWorkbenchUserId;
-	}	
+			return currentWorkbenchUserId;
+		}
+		
+		throw new MiddlewareQueryException("Could not resolve current user id in Workbench.");
+	}
 	
 	public static Long getParamAsLong(HttpServletRequest request, String paramName) {
 		
@@ -108,6 +117,17 @@ public class ContextUtil {
 
 	private static String addQueryParameter(String parameterName, String parameterValue) {
 		return "&" + parameterName + "=" + parameterValue;
+	}
+	
+	
+	public static boolean isStaticResourceRequest(String requestUri) {
+		if (requestUri.contains("/static/") 
+				|| requestUri.endsWith(".js") || requestUri.endsWith(".css") 
+				|| requestUri.endsWith(".png") || requestUri.endsWith(".gif") || requestUri.endsWith(".jpg")
+				|| requestUri.endsWith(".woff")) {
+			return true;
+		}
+		return false;
 	}
 
 }
