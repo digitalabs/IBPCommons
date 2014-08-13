@@ -131,13 +131,14 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     @Override
     public synchronized ManagerFactory getManagerFactoryForProject(Project project) {
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
-        
+        String localDbName = null;
+        String centralDbName = null;
         if (localSessionFactory != null) {
             projectAccessList.remove(project.getProjectId());
         }
         
         if (localSessionFactory == null || localSessionFactory.isClosed()) {
-            String localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
+            localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
             
             // close any excess cached session factory
             closeExcessLocalSessionFactory();
@@ -160,7 +161,7 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
         if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
                 && project.getCropType().getCentralDbName() != null) {
-            String centralDbName = project.getCropType().getCentralDbName();
+            centralDbName = project.getCropType().getCentralDbName();
             
             DatabaseConnectionParameters params = 
                     new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
@@ -195,7 +196,8 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProviderForLocal(localSessionProvider);
         factory.setSessionProviderForCentral(centralSessionProvider);
-        
+        factory.setLocalDatabaseName(localDbName);
+        factory.setCentralDatabaseName(centralDbName);
         return factory;
     }
     
