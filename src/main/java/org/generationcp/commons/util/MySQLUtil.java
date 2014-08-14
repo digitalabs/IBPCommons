@@ -260,10 +260,6 @@ public class MySQLUtil {
             // after restore, restore from backup schema the users + persons table
             restoreUsersPersonsAfterRestoreDB(connection, databaseName);
 
-            // restore is successful, lets delete favorite local locations+methods in the workbench database as it is not matched
-            // anymore to the newly restored local database
-            deleteLocalFavorites(connection);
-
 
         }
         catch (Exception e) {
@@ -297,16 +293,6 @@ public class MySQLUtil {
             } else {
                 throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
             }
-        }
-    }
-
-    private void deleteLocalFavorites(Connection connection) {
-        try {
-            executeQuery(connection,"USE workbench");
-            executeQuery(connection,"DELETE FROM workbench_project_method where method_id < 0");
-            executeQuery(connection,"DELETE FROM workbench_project_loc_map where location_id < 0");
-        } catch (SQLException e) {
-            LOG.error("Something happened when deleting local favorite methods or locations",e);
         }
     }
 
@@ -421,8 +407,10 @@ public class MySQLUtil {
         int exitValue = mysqlRestoreProcess.waitFor();
         LOG.debug("Process terminated with value "+exitValue);
 
-        if (exitValue != 0)
+        if (exitValue != 0) {
+        	LOG.error(errorOut);
             throw new IOException(errorOut);
+        }
     }
 
     public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
