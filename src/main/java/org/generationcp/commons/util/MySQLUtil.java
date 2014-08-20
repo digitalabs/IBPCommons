@@ -21,7 +21,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -36,6 +37,7 @@ public class MySQLUtil {
 
     private static final Logger LOG = LoggerFactory.getLogger(MySQLUtil.class);
 
+    
     private String mysqlPath;
     private String mysqlDumpPath;
 
@@ -252,7 +254,7 @@ public class MySQLUtil {
         // restore the backup
         try {
         	
-        	dropSchemaVersion(databaseName);//this is needed because the schema_version of the file must be followed
+        	dropSchemaVersion(connection, databaseName);//this is needed because the schema_version of the file must be followed
         	
             LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
             runScriptFromFile(databaseName, backupFile);
@@ -288,27 +290,23 @@ public class MySQLUtil {
                     restoreUsersPersonsAfterRestoreDB(connection, databaseName);
 
                 } catch (Exception e2) {
-                    throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
+                    throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
                 }
             } else {
-                throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
+                throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
             }
         }
     }
 
-    private IllegalStateException doRestoreToPreviousBackup(String databaseName,File currentDbBackupFile,String sqlErrorMsg) {
+    private IllegalStateException doRestoreToPreviousBackup(Connection connection, String databaseName,File currentDbBackupFile,String sqlErrorMsg) {
         if(currentDbBackupFile!=null) {
             try {
 
                 LOG.debug("Trying to revert to the current state by restoring "+currentDbBackupFile.getAbsolutePath());
 
-                connect();
-
                 executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
                 executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
                 executeQuery(connection, "USE " + databaseName);
-
-                disconnect();
 
                 runScriptFromFile(databaseName, currentDbBackupFile);
             }
@@ -577,7 +575,7 @@ public class MySQLUtil {
 
             return true;
         } catch(Exception e) {
-        	throw doRestoreToPreviousBackup(databaseName,currentDbBackupFile,e.getMessage());
+        	throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
     	} finally {
             String enableFk = "SET FOREIGN_KEY_CHECKS=1";
             if (!executeUpdate(connection, enableFk)) {
@@ -771,21 +769,71 @@ public class MySQLUtil {
         }
     }
 
-    public void dropSchemaVersion(String databaseName)
+    public void dropSchemaVersion(Connection connection, String databaseName)
             throws IOException, SQLException {
-        connect();
-
-        try {
-            executeQuery(connection, "USE " + databaseName);
-            executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
-        }
-        finally {
-            disconnect();
-        }
+        executeQuery(connection, "USE " + databaseName);
+        executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
     }
 
     public File createCurrentDbBackupFile(String databaseName) throws IOException, InterruptedException {
         return backupDatabase(databaseName, getBackupFilename(
                 databaseName, "system.sql","temp"),true);
     }
+    
+    public void restoreDatabaseIfNotExists(String databaseName, String installationDirectory) {
+    	try {
+    		connect();    		
+    		try {
+    			executeQuery(connection, "USE " + databaseName);
+    		} catch(Exception e) {
+    			File backupFile = getLatestSystemBackupFile(installationDirectory,databaseName);
+        	    try {
+        	    	executeQuery(connection,"DROP DATABASE IF EXISTS  " + databaseName);
+        			executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+        			executeQuery(connection, "USE " + databaseName);
+					runScriptFromFile(databaseName, backupFile);
+				} catch (Exception e1) {
+					LOG.error(e.getMessage(),e);
+				}
+    		}
+    	} catch(Exception e) {
+    		LOG.error(e.getMessage(),e);
+    	} finally {
+    		disconnect();
+    	}
+    }
+
+	private File getLatestSystemBackupFile(String installationDirectory,String databaseName) {
+		String backupFilenamePattern = databaseName + "_\\d+_\\d+_\\d+_system(.*).sql";
+	    Pattern pattern = Pattern.compile(backupFilenamePattern);
+	    
+	    File tempDirectory = new File(installationDirectory+"/"+"temp");
+	    File[] filesInDir = tempDirectory.listFiles();
+	    String restoreFilename = null;
+	    for(File file : filesInDir){
+	    	String filename = file.getName();
+	    	Matcher matcher = pattern.matcher(filename);
+	    	if(matcher.matches()) {
+	    		if(restoreFilename != null) {
+	    			StringTokenizer currentFilenameTokens = new StringTokenizer(
+		    				filename.substring(databaseName.length()),"_");
+	    			StringTokenizer previousFilenameTokens = new StringTokenizer(
+	    					restoreFilename.substring(databaseName.length()),"_");
+		    		while(currentFilenameTokens.hasMoreTokens()) {
+		    			String currentToken = currentFilenameTokens.nextToken();
+		    			if(previousFilenameTokens.hasMoreTokens() && !currentToken.contains("system.sql")) {
+		    				String previousToken = previousFilenameTokens.nextToken();
+		    				if(Integer.parseInt(currentToken) > Integer.parseInt(previousToken)) {
+	    						restoreFilename = filename;
+	    						break;
+	    					}
+		    			}
+		    		}
+	    		} else {
+	    			restoreFilename = filename;
+	    		}
+	    	}
+	    }
+	    return new File(tempDirectory+"/"+restoreFilename);
+	}
 }
