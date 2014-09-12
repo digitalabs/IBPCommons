@@ -118,24 +118,6 @@ public class ScriptRunner {
       rollbackConnection();
     }
   }
-  @Deprecated /* there are issues in running the full script  */
-  private void executeFullScript(Reader reader, boolean restore) {
-    StringBuilder script = new StringBuilder();
-    try {
-      BufferedReader lineReader = new BufferedReader(reader);
-      String line;
-      while ((line = lineReader.readLine()) != null) {
-        script.append(line);
-        script.append(LINE_SEPARATOR);
-      }
-      executeStatement(script.toString(), restore);
-      commitConnection();
-    } catch (Exception e) {
-      String message = "Error executing: " + script + ".  Cause: " + e;
-      printlnError(message);
-      throw new RuntimeSqlException(message, e);
-    }
-  }
 
   private void executeLineByLine(Reader reader, boolean restore) {
     StringBuilder command = new StringBuilder();
@@ -167,7 +149,7 @@ public class ScriptRunner {
       if (autoCommit != connection.getAutoCommit()) {
         connection.setAutoCommit(autoCommit);
       }
-    } catch (Throwable t) {
+    } catch (SQLException t) {
       throw new RuntimeSqlException("Could not set AutoCommit to " + autoCommit + ". Cause: " + t, t);
     }
   }
@@ -177,7 +159,7 @@ public class ScriptRunner {
       if (!connection.getAutoCommit()) {
         connection.commit();
       }
-    } catch (Throwable t) {
+    } catch (SQLException t) {
       throw new RuntimeSqlException("Could not commit transaction. Cause: " + t, t);
     }
   }
@@ -187,7 +169,7 @@ public class ScriptRunner {
       if (!connection.getAutoCommit()) {
         connection.rollback();
       }
-    } catch (Throwable t) {
+    } catch (SQLException t) {
       // ignore
     }
   }
