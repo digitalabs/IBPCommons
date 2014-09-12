@@ -838,7 +838,8 @@ input.v-textfield-readonly textarea.v-textarea-readonly{border:0;background:tran
 .v-window-light .v-window-closebox:hover{background-image:url(../reindeer/common/img/vertical-sprites.png);background-position:left -2038px}
 .v-window-light .v-window-closebox:active{background-image:url(../reindeer/common/img/vertical-sprites.png);background-position:left -2053px}
 .v-window-light .v-window-contents{background:transparent}
-.v-window-light .v-window-wrap2{background:#f7f7f8 repeat-x;background-image:url(../reindeer/common/img/vertical-sprites.png);background-position:left -2068px}
+.v-window-light .v-window-wrap2{background: #fff; border-radius: 8px;}
+.v-window-light .v-window-wrap{border-radius: 8px;}
 div.v-app-loading{background-image:url(images/loading-animation.gif);background-repeat:no-repeat;background-position:50%;width:100%;height:100%}
 .v-loading-indicator,.v-loading-indicator-delay,.v-loading-indicator-wait{z-index:40000;width:100%;height:100%;margin:0;background:transparent;background-position:50%;background-repeat:no-repeat;background-attachment:fixed;position: fixed !important;}
 .v-loading-indicator-delay{background-image:url(images/loading-animation.gif)}
@@ -1078,7 +1079,7 @@ body{box-sizing:border-box}
 .v-window-light .v-window-closebox:hover{background:transparent;background-image:none;color:#aaa}
 .v-window-light .v-window-closebox:active{background:transparent;background-image:none;color:#aaa}
 .v-window-light .v-window-closebox:before{content:"\e014"}
-.v-window-light .v-window-outerheader{background:#eee;height:38px}
+.v-window-light .v-window-outerheader{background:transparent;height:38px}
 .v-window-light.v-window-confirm .v-window-closebox{color:#a0a0a0}
 .v-window-light.v-window-confirm .v-window-outerheader{background:transparent;padding:15px 32px 0 18px;height:23px}
 .v-window-light.v-window-confirm .v-window-wrap2{background: #cecece; }
