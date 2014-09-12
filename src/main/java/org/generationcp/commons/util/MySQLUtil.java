@@ -572,16 +572,13 @@ public class MySQLUtil {
                 runScriptsInDirectory(databaseName,schemaUpdateDir,false,false);
 
             }
-
             return true;
         } catch(Exception e) {
         	throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
     	} finally {
-            String enableFk = "SET FOREIGN_KEY_CHECKS=1";
-            if (!executeUpdate(connection, enableFk)) {
-                return false;
-            }
-            LOG.debug("Enabling foreign key checks...");
+    		LOG.debug("Enabling foreign key checks...");
+    		String enableFk = "SET FOREIGN_KEY_CHECKS=1";
+            executeUpdate(connection, enableFk);
         }
     }
 

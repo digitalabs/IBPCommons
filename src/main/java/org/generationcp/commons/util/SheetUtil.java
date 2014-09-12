@@ -18,8 +18,12 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
  
 public class SheetUtil {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(SheetUtil.class);
     
 	/**
 	 * Given a sheet, this method deletes a column from a sheet and moves
@@ -100,7 +104,6 @@ public class SheetUtil {
 	}
 
 	
-	@SuppressWarnings("finally")
 	public static String[] sheetsToArray(Workbook workbook) {
 		
 		List<String> contents = new ArrayList<String>();
@@ -123,10 +126,8 @@ public class SheetUtil {
 	    		sheet = workbook.getSheetAt(index);
 	    	}
     	} catch(Exception e) {
-    	//	e.printStackTrace();
-    	} finally {
-    		return contents.toArray(new String[0]);
-    	}
-		
+    		LOG.error(e.getMessage(), e);
+    	} 
+    	return contents.toArray(new String[0]);	
 	}
 }
