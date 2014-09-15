@@ -103,6 +103,18 @@ public class MessageNotifier{
         window.showNotification(notification);
     }
     
+    /**
+     * Show error for required fields.
+     *
+     * @param window the window
+     * @param caption the caption
+     * @param description the description
+     */
+    public static void showRequiredFieldError(
+            Window window, String description) {
+        showError(window, "Invalid Input", description);
+    }
+    
     @Deprecated
     public static void showError(
             Window window, String caption, String description, int position) {
