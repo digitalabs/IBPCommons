@@ -193,6 +193,9 @@ public class DateUtil {
     	if(year < 1900){
     		return false;
     	}
+    	else if(year > 9999){
+    		return false;
+    	}
     	return true;
     }
     

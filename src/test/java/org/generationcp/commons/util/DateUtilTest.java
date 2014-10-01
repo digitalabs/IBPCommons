@@ -202,6 +202,11 @@ public class DateUtilTest {
 		year = 1899;
 		Assert.assertFalse("Expecting a false return from the method IsValidYear for invalid year input",
 				DateUtil.isValidYear(year));
+		
+		// invalid year: year > 9999
+		year = 10000;
+		Assert.assertFalse("Expecting a false return from the method IsValidYear for invalid year input",
+				DateUtil.isValidYear(year));
 	}
 	
 	@Test
@@ -233,6 +238,16 @@ public class DateUtilTest {
 		
 		// year < 1900
 		year = 1888;
+		month = 9;
+		day = 21;
+		calendar.set(year, month, day);
+		date.setTime(calendar.getTimeInMillis());
+		
+		Assert.assertFalse("Expecting a false return from the method IsValidYear for date with invalid year input",
+				DateUtil.isValidYear(date));
+		
+		// year > 9999
+		year = 10000;
 		month = 9;
 		day = 21;
 		calendar.set(year, month, day);
