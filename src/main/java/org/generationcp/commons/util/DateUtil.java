@@ -84,8 +84,6 @@ public class DateUtil {
         } else if (((month == 4 || month == 6 || month == 9 || month == 11) && (day > 30))  || (day < 0 || day > 31)){
         	throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);                    
         }
-        
-        throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);
     }
     
     /**
