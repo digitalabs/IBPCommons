@@ -37,14 +37,20 @@ public class BmsDateField extends DateField {
 		// Since setRangeStart not working on Vaadin 6,
 		// temporarily make a workaround here for setting a minimum value for
 		// year
-		if (!DateUtil.isValidYear((Date) this.getValue())) {
+		Date date = (Date) this.getValue();
+		if (date != null && !DateUtil.isValidYear(date)) {
 			throw new InvalidValueException(BmsDateField.INVALID_YEAR);
 		}
 	}
 	
 	@Override
 	public boolean isValid() {
+		boolean isValidYear = false;
+		Date date = (Date) this.getValue();
+		if(date != null && DateUtil.isValidYear(date)){
+			isValidYear = true;
+		}
 		// Added validation for possible minimum year for date
-		return super.isValid() && DateUtil.isValidYear((Date) this.getValue());
+		return super.isValid() && isValidYear;
 	}
 }
