@@ -273,7 +273,7 @@ public class MySQLUtil {
             if (e.getMessage().contains("ERROR 1136 ")) { // ERROR 1136 = Column count doesn't match value count at row 1
                 try {
                     executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
-                    //executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
+
                     if (preRestoreTasks != null) {
                         if (!preRestoreTasks.call()) {
                             throw new Exception("Failure to generate LocalDB");
@@ -461,7 +461,7 @@ public class MySQLUtil {
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line = null;
         while ( (line = reader.readLine()) != null) {
-            //System.out.println(line);
+
         }
         reader.close();
         /* When the process writes to stderr the output goes to a fixed-size buffer. 
@@ -473,7 +473,6 @@ public class MySQLUtil {
         StringBuilder errorOut = new StringBuilder();
         while ((line = errorReader.readLine()) != null) {
             errorOut.append(line);
-            //    System.err.println(line);
         }
 
         errorReader.close();
@@ -568,7 +567,7 @@ public class MySQLUtil {
                     }
                 }
                 LOG.debug("Running scripts from directory: "+schemaUpdateDir.getAbsolutePath());
-                //runScriptsInDirectory(connection, schemaUpdateDir, false, false);
+
                 runScriptsInDirectory(databaseName,schemaUpdateDir,false,false);
 
             }
@@ -678,51 +677,7 @@ public class MySQLUtil {
     public boolean runScriptsInDirectory(String databaseName
             , File directory, boolean stopOnError) throws Exception {
         return runScriptsInDirectory(databaseName, directory, stopOnError, true);
-    }
-
-    /*
-    public boolean runScriptsInDirectory(Connection conn
-            , File directory, boolean stopOnError, boolean logSqlError) {
-    	// get the sql files
-        File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".sql");
-            }
-        });
-        if (sqlFilesArray == null) {
-            sqlFilesArray = new File[0];
-        }
-        List<File> sqlFiles = Arrays.asList(sqlFilesArray);
-        Collections.sort(sqlFiles);
-        
-        for (File sqlFile : sqlFiles) {
-            BufferedReader br = null;
-            
-            try {
-            	LOG.debug("Running script: "+sqlFile.getAbsolutePath());
-
-                br = new BufferedReader(new InputStreamReader(new FileInputStream(sqlFile)));
-                
-                ScriptRunner runner = new ScriptRunner(conn, false, stopOnError);
-                runner.runScript(br);
-
-            }
-            catch (IOException e1) {
-            }
-            finally {
-                if (br != null) {
-                    try {
-                        br.close();
-                    }
-                    catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        
-        return true;
-    } */
+    }    
 
     public boolean runScriptsInDirectory(String databaseName
             , File directory, boolean stopOnError, boolean logSqlError) throws Exception {

@@ -245,20 +245,13 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 	@Override
 	public void close() {
 		
-		 if (localSessionProvider != null) {
-	            localSessionProvider.close();
-	        }
-	        
-	        if (centralSessionProvider != null) {
-	            centralSessionProvider.close();
-	        }
-	        
-	        //if (workbenchDataManager != null) {
-	        //	workbenchDataManager.close();
-	        //}
-	        
-	        
-		
+		if (localSessionProvider != null) {
+            localSessionProvider.close();
+        }
+        
+        if (centralSessionProvider != null) {
+            centralSessionProvider.close();
+        }	      
 	}
 	
 	protected synchronized void closeAllSessionFactories() {

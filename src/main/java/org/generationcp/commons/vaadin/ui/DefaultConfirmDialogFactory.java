@@ -194,10 +194,7 @@ public class DefaultConfirmDialogFactory implements ConfirmDialog.Factory  {
         // Estimate extra lines
         if (style == ConfirmDialog.CONTENT_TEXT_WITH_NEWLINES) {
             rows += count("\n", message);
-        }
-
-        // System.out.println(message.length() + " = " + length + "em");
-        // System.out.println("Rows: " + (length / MAX_WIDTH) + " = " + rows);
+        }        
 
         // Obey maximum size
         double width = Math.min(MAX_WIDTH, length);
@@ -214,7 +211,7 @@ public class DefaultConfirmDialogFactory implements ConfirmDialog.Factory  {
 
         double[] res = new double[] { width + hmargin,
                 height + btnHeight + vmargin };
-        // System.out.println(res[0] + "," + res[1]);
+
         return res;
     }
 

@@ -524,7 +524,6 @@ public class PoiUtil {
         if (row == null) {
             return true;
         }
-        //Boolean isEmpty = true;
 
         for (int cn = start; cn <= end; cn++) {
             Cell c;
@@ -537,7 +536,6 @@ public class PoiUtil {
 
                 Object cellValue = getCellValue(c);
                 if (cellValue != null && !String.valueOf(cellValue).equals("")) {
-                    //isEmpty = false;
                     // since there is a cell with value in this row, we should return it now
                     return false;
 
@@ -545,7 +543,6 @@ public class PoiUtil {
             }
         }
 
-        //return isEmpty;
         return true;
     }
 

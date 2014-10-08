@@ -108,12 +108,8 @@ public class ScriptRunner {
   public void runScript(Reader reader, boolean restore) {
     setAutoCommit();
 
-    try {
-      //if (sendFullScript) {
-      //  executeFullScript(reader, restore);
-      //} else {
+    try {    
         executeLineByLine(reader, restore);
-      //}
     } finally {
       rollbackConnection();
     }

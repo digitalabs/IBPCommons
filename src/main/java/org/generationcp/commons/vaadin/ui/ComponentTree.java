@@ -1,12 +1,7 @@
 package org.generationcp.commons.vaadin.ui;
 
-import org.generationcp.commons.vaadin.theme.Bootstrap;
-
-import com.vaadin.terminal.ThemeResource;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
 
 public class ComponentTree extends CssLayout {
 
