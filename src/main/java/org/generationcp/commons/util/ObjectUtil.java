@@ -2,11 +2,17 @@ package org.generationcp.commons.util;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ObjectUtil<T> {
 
+	private static final Logger LOG = LoggerFactory.getLogger(ObjectUtil.class);
+	
 	public void serializeObject(T o, String filename){
 		
 	    // save the object to file
@@ -18,8 +24,8 @@ public class ObjectUtil<T> {
 	      out.writeObject(o);
 
 	      out.close();
-	    } catch (Exception ex) {
-	      ex.printStackTrace();
+	    } catch (IOException ex) {
+	    	LOG.error("Error: ", ex);
 	    }
 		
 	}
@@ -36,7 +42,7 @@ public class ObjectUtil<T> {
 		      object = (T) in.readObject();
 		      in.close();
 		    } catch (Exception ex) {
-		      ex.printStackTrace();
+		    	LOG.error("Error: ", ex);
 		    }
 		    
 		return object;

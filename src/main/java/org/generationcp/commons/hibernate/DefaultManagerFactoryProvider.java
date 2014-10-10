@@ -32,6 +32,8 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DefaultManagerFactoryProvider} is an implementation of
@@ -57,6 +59,8 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     private Map<HttpServletRequest, HibernateSessionProvider> centralSessionProviders = 
             new HashMap<HttpServletRequest, HibernateSessionProvider>();
     
+	private static final Logger LOG = LoggerFactory.getLogger(DefaultManagerFactoryProvider.class);
+
     private String localHost = "localhost";
 
     private Integer localPort = 13306;
@@ -159,7 +163,7 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
 					workbenchDataManager.getWorkbenchSetting().getInstallationDirectory());
         	}
 		} catch (MiddlewareQueryException e1) {
-			e1.printStackTrace();
+			LOG.error("Error: ", e1);
 		}
     	
         if (localSessionFactory == null || localSessionFactory.isClosed()) {
