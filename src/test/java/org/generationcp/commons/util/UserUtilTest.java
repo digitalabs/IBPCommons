@@ -41,12 +41,6 @@ public class UserUtilTest {
 			Assert.fail("Failed to create an ibdbuser instance.");
 		}
 
-		try {
-			Mockito.when(UserUtil.getCurrentUserLocalId(this.workbenchDataManager)).thenReturn(EXPECTED_USER_ID);
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-			Assert.fail("Failed to create a ibdbuser data.");
-		}
 	}
 	
 	@Test
