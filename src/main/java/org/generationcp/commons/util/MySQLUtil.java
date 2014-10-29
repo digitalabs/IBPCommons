@@ -181,11 +181,13 @@ public class MySQLUtil {
                 ,database
                 ,"-r", backupFilename));
 
-        if (includeProcedures)
+        if (includeProcedures) {
             command.add(1,"--routines");
+        }
 
-        if (!StringUtil.isEmpty(password))
+        if (!StringUtil.isEmpty(password)) {
             command.add(1,"--password=" + password);
+        }
 
         ProcessBuilder pb = new ProcessBuilder(command);
 
@@ -371,8 +373,9 @@ public class MySQLUtil {
     public void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
-        if (mysqlPath != null)
+        if (mysqlPath != null) {
             mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
+        }
         LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
 
         if (StringUtil.isEmpty(password)) {
@@ -414,8 +417,9 @@ public class MySQLUtil {
     public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
-        if (mysqlPath != null)
+        if (mysqlPath != null) {
             mysqlAbsolutePath = new File(mysqlPath).getAbsolutePath();
+        }
         LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
 
         if (StringUtil.isEmpty(password)) {
@@ -596,8 +600,9 @@ public class MySQLUtil {
         String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
 
         File _customDir = new File(new File(customDir).getAbsolutePath());
-        if (!_customDir.exists() || !_customDir.isDirectory())
+        if (!_customDir.exists() || !_customDir.isDirectory()) {
             _customDir.mkdirs();
+        }
 
         return StringUtil.joinIgnoreEmpty(File.separator, _customDir.getAbsolutePath(), name);
     }
@@ -695,10 +700,11 @@ public class MySQLUtil {
 
         for (File sqlFile : sqlFiles) {
             LOG.debug("Running script: "+sqlFile.getAbsolutePath());
-           	if (null != databaseName)
+           	if (null != databaseName) {
                 runScriptFromFile(databaseName, sqlFile);
-            else
+           	} else {
                 runScriptFromFile(sqlFile);
+           	}
         }
 
         return true;

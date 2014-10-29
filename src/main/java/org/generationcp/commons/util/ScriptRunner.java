@@ -191,7 +191,9 @@ public class ScriptRunner {
     else if (commandReadyToExecute(trimmedLine)) {
     
       int lastIndex = trimmedLine.lastIndexOf(delimiter); 
-      if (lastIndex < 0) lastIndex = 0;
+      if (lastIndex < 0) { 
+    	  lastIndex = 0;      
+      }
       
       command.append(trimmedLine.substring(0, lastIndex));
       command.append(LINE_SEPARATOR);
@@ -223,8 +225,9 @@ public class ScriptRunner {
     Statement statement = connection.createStatement();
     statement.setEscapeProcessing(escapeProcessing);
     String sql = command;
-    if (removeCRs)
+    if (removeCRs) {
       sql = sql.replaceAll("\r\n", "\n");
+    }
     if (stopOnError) {
       hasResults = statement.execute(sql);
     } else {

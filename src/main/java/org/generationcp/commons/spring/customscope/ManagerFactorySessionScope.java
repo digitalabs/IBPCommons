@@ -29,7 +29,9 @@ public class ManagerFactorySessionScope extends SessionScope {
 	public void registerDestructionCallback(String name, Runnable callback) {
 		// TODO Auto-generated method stub
 		
-		if (this.managerFactory!= null) this.managerFactory.close();
+		if (this.managerFactory!= null) { 
+			this.managerFactory.close();		
+		}
 		this.managerFactory = null;
 		
 		LOG.info("registerDestructionCallback");

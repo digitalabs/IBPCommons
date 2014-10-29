@@ -40,24 +40,28 @@ public class SheetUtil {
 			Row	row	= sheet.getRow( r );
 			
 			// if no row exists here; then nothing to do; next!
-			if ( row == null )
+			if ( row == null ) {
 				continue;
+			}
 			
 			// if the row doesn't have this many columns then we are good; next!
 			int lastColumn = row.getLastCellNum();
-			if ( lastColumn > maxColumn )
+			if ( lastColumn > maxColumn ) {
 				maxColumn = lastColumn;
+			}
 			
-			if ( lastColumn < columnToDelete )
+			if ( lastColumn < columnToDelete ) {
 				continue;
+			}
 			
 			for ( int x=columnToDelete+1; x < lastColumn + 1; x++ ){
 				Cell oldCell	= row.getCell(x-1);
-				if ( oldCell != null )
+				if ( oldCell != null ) {
 					row.removeCell( oldCell );
+				}
 				
 				Cell nextCell	= row.getCell( x );
-				if ( nextCell != null ){
+				if ( nextCell != null ) {
 					Cell newCell	= row.createCell( x-1, nextCell.getCellType() );
 					cloneCell(newCell, nextCell);
 				}

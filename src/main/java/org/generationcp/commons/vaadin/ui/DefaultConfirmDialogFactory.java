@@ -162,8 +162,9 @@ public class DefaultConfirmDialogFactory implements ConfirmDialog.Factory  {
 
         };
         
-        if (cancel != null)
+        if (cancel != null) {
         	cancel.addListener(cb);
+        }
         ok.addListener(cb);
 
         // Approximate the size of the dialog
