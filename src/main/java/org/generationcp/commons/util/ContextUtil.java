@@ -115,7 +115,7 @@ public class ContextUtil {
 		return contextParameters.toString();
 	}
 
-	private static String addQueryParameter(String parameterName, String parameterValue) {
+	public static String addQueryParameter(String parameterName, String parameterValue) {
 		return "&" + parameterName + "=" + parameterValue;
 	}
 	

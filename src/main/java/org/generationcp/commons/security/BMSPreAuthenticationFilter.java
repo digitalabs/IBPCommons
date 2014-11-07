@@ -2,6 +2,7 @@ package org.generationcp.commons.security;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.generationcp.commons.context.ContextConstants;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 
 
@@ -9,7 +10,7 @@ public class BMSPreAuthenticationFilter extends AbstractPreAuthenticatedProcessi
 
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-		String ssUserName = request.getParameter("ssUserName");
+		String ssUserName = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
 		return ssUserName;
 	}
 
