@@ -10,5 +10,5 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 
 public interface ExportService {
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
-			List<ExportColumnHeader> exportColumnHeaders, String fileName) throws IOException;
+			List<ExportColumnHeader> exportColumnHeaders, String fileNameFullPath) throws IOException;
 }
