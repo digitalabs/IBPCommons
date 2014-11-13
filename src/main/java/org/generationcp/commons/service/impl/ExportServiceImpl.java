@@ -24,10 +24,14 @@ import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
 public class ExportServiceImpl implements ExportService{
+	
+	private static final Logger LOG = LoggerFactory.getLogger(ExportServiceImpl.class);
 	
 	//List Details
 	private static final String LIST_NAME = "LIST NAME";
@@ -156,16 +160,17 @@ public class ExportServiceImpl implements ExportService{
 
 	private int writeColumnValues(List<Map<Integer, ExportColumnValue>> exportColumnValues, 
 				HSSFSheet sheet, int rowIndex) {
+		int currentRowIndex = rowIndex;
 		for(Map<Integer,ExportColumnValue> exportRowValue : exportColumnValues){
-			HSSFRow row = sheet.createRow(rowIndex);
+			HSSFRow row = sheet.createRow(currentRowIndex);
 			for (Map.Entry<Integer, ExportColumnValue> entry : exportRowValue.entrySet()){
 				int columnIndex = entry.getKey();
 				ExportColumnValue columnValue = entry.getValue();
 			    row.createCell(columnIndex).setCellValue(columnValue.getValue());
 			}
-			rowIndex++;
+			currentRowIndex++;
 		}
-		return rowIndex;
+		return currentRowIndex;
 	}
 
 	private void writeColumHeaders(List<ExportColumnHeader> exportColumnHeaders, 
@@ -187,8 +192,8 @@ public class ExportServiceImpl implements ExportService{
         Map<String, CellStyle> sheetStyles = createStyles(wb);
         
         //create two worksheets - Description and Observations
-        HSSFSheet descriptionSheet = generateDescriptionSheet(wb,sheetStyles, input);
-        HSSFSheet observationSheet = generateObservationSheet(wb,sheetStyles, input); 
+        generateDescriptionSheet(wb,sheetStyles, input);
+        generateObservationSheet(wb,sheetStyles, input); 
         
         String filename = input.getFileName();
         try {
@@ -198,6 +203,7 @@ public class ExportServiceImpl implements ExportService{
             fileOutputStream.close();
             return fileOutputStream;
         } catch(Exception ex) {
+        	LOG.error(ex.getMessage(),ex);
             throw new GermplasmListExporterException();
         }
 	}
@@ -213,7 +219,7 @@ public class ExportServiceImpl implements ExportService{
 		return count;
 	}
 
-	protected HSSFSheet generateObservationSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles, 
+	protected void generateObservationSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles, 
 				GermplasmListExportInputValues input) throws GermplasmListExporterException {
 		
 		HSSFSheet observationSheet = wb.createSheet("Observation");
@@ -224,7 +230,6 @@ public class ExportServiceImpl implements ExportService{
         for(int ctr = 0; ctr < noOfVisibleColumns; ctr++) {
             observationSheet.autoSizeColumn(ctr);
         }
-		return observationSheet;
 	}
 	
     private void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet, 
@@ -324,7 +329,7 @@ public class ExportServiceImpl implements ExportService{
         }
 	}
 	
-	protected HSSFSheet generateDescriptionSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles,
+	protected void generateDescriptionSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 		
 		HSSFSheet descriptionSheet = wb.createSheet("Description");
@@ -338,8 +343,6 @@ public class ExportServiceImpl implements ExportService{
         for(int ctr = 0; ctr < noOfVisibleColumns; ctr++) {
             descriptionSheet.autoSizeColumn(ctr);
         }
-        
-        return descriptionSheet;
 	}
 	
     private void writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 

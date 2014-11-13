@@ -229,12 +229,14 @@ public class ExportServiceImplTest {
         Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
         
         //to test
-        HSSFSheet observationSheet = null;
+        
         try {
-        	observationSheet = exportService.generateObservationSheet(wb, sheetStyles, input);
+        	exportService.generateObservationSheet(wb, sheetStyles, input);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail(e.getMessage());
 		}
+        
+        HSSFSheet observationSheet = wb.getSheet("Observation");
         
         HSSFRow row = null;
         int columnIndex = 0;
@@ -311,12 +313,13 @@ public class ExportServiceImplTest {
         Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
         
         //to test
-        HSSFSheet descriptionSheet = null;
         try {
-			descriptionSheet = exportService.generateDescriptionSheet(wb, sheetStyles, input);
+			exportService.generateDescriptionSheet(wb, sheetStyles, input);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail(e.getMessage());
 		}
+        
+        HSSFSheet descriptionSheet = wb.getSheet("Description");
         
         Assert.assertNotNull("Expected to successfully generated the description sheet.", descriptionSheet);
         Assert.assertTrue("The sheet name is Description.","Description".equalsIgnoreCase(descriptionSheet.getSheetName()));
