@@ -6,7 +6,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,11 +15,6 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 	
 	private WorkbenchDataManager workbenchDataManager;
 	
-	@Autowired
-	public WorkbenchUserDetailsService(WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
-	}
-
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
@@ -35,5 +29,9 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 		} catch (MiddlewareQueryException e) {
 			throw new AuthenticationServiceException("Data access error while authenticaing user against Workbench.", e);
 		}
+	}
+
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
 	}
 } 
