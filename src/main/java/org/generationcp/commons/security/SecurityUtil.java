@@ -33,12 +33,14 @@ public class SecurityUtil {
 		return Collections.emptyList();
 	}
 	
-	public static Collection<? extends GrantedAuthority> getRolesAsAuthorities(User workbenchUser) { 
+	public static Collection<? extends GrantedAuthority> getRolesAsAuthorities(User workbenchUser) {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		List<UserRole> userRoles = workbenchUser.getRoles();
-		if(userRoles!= null && !userRoles.isEmpty()) {
-			for(UserRole role : userRoles) {
-				authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getRole()));
+		if (workbenchUser != null) {
+			List<UserRole> userRoles = workbenchUser.getRoles();
+			if (userRoles != null && !userRoles.isEmpty()) {
+				for (UserRole role : userRoles) {
+					authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + role.getRole()));
+				}
 			}
 		}
 		return authorities;

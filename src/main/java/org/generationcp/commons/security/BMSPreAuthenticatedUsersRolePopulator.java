@@ -39,4 +39,8 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 			throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
 		}
 	}
+
+	void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
 }
