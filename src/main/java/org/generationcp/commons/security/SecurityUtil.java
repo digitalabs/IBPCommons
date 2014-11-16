@@ -15,6 +15,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtil {
 	
+	/**
+	 * While role prefix is configurable and can be set to empty, having a prefix is recommended.
+	 * See JavaDoc for org.springframework.security.access.vote.RoleVoter
+	 */
 	public static final String ROLE_PREFIX = "ROLE_";
 
 	public static String getLoggedInUserName() {
