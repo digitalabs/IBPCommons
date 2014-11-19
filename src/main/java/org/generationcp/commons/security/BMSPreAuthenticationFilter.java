@@ -10,8 +10,12 @@ public class BMSPreAuthenticationFilter extends AbstractPreAuthenticatedProcessi
 
 	@Override
 	protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-		String ssUserName = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
-		return ssUserName;
+		String authToken = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
+		if(authToken != null) {
+			String principal = SecurityUtil.decodeToken(authToken);
+			return principal;
+		}
+		return null;
 	}
 
 	@Override

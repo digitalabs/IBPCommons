@@ -1,10 +1,13 @@
 package org.generationcp.commons.security;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.springframework.security.core.Authentication;
@@ -48,5 +51,13 @@ public class SecurityUtil {
 			}
 		}
 		return authorities;
+	}
+	
+	public static String getEncodedToken() {
+		return Base64.encodeBase64URLSafeString(getLoggedInUserName().getBytes());
+	}
+	
+	public static String decodeToken(String token) {
+		return new String(Base64.decodeBase64(token));
 	}
 }
