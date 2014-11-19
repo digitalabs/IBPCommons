@@ -163,10 +163,11 @@ public class ExportServiceImpl implements ExportService{
 		int currentRowIndex = rowIndex;
 		for(Map<Integer,ExportColumnValue> exportRowValue : exportColumnValues){
 			HSSFRow row = sheet.createRow(currentRowIndex);
+			int columnIndex = 0;
 			for (Map.Entry<Integer, ExportColumnValue> entry : exportRowValue.entrySet()){
-				int columnIndex = entry.getKey();
 				ExportColumnValue columnValue = entry.getValue();
 			    row.createCell(columnIndex).setCellValue(columnValue.getValue());
+			    columnIndex++;
 			}
 			currentRowIndex++;
 		}
