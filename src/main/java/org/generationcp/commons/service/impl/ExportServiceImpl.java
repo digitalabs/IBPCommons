@@ -150,7 +150,7 @@ public class ExportServiceImpl implements ExportService{
 		writeColumHeaders(exportColumnHeaders, sheet, rowIndex);
 		rowIndex++;
 		
-		rowIndex = writeColumnValues(exportColumnValues, sheet, rowIndex);
+		rowIndex = writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex);
         
         for(int ctr = 0; ctr < rowIndex; ctr++) {
         	sheet.autoSizeColumn(rowIndex);
@@ -158,18 +158,20 @@ public class ExportServiceImpl implements ExportService{
 		return wb;
 	}
 
-	private int writeColumnValues(List<Map<Integer, ExportColumnValue>> exportColumnValues, 
+	private int writeColumnValues(List<ExportColumnHeader> exportColumnHeaders, List<Map<Integer, ExportColumnValue>> exportColumnValues, 
 				HSSFSheet sheet, int rowIndex) {
 		int currentRowIndex = rowIndex;
 		for(Map<Integer,ExportColumnValue> exportRowValue : exportColumnValues){
 			HSSFRow row = sheet.createRow(currentRowIndex);
+			
 			int columnIndex = 0;
-			for (Map.Entry<Integer, ExportColumnValue> entry : exportRowValue.entrySet()){
-				ExportColumnValue columnValue = entry.getValue();
-			    row.createCell(columnIndex).setCellValue(columnValue.getValue());
-			    columnIndex++;
+			for(ExportColumnHeader columnHeader : exportColumnHeaders){
+				ExportColumnValue columnValue = exportRowValue.get(columnHeader.getId());
+				row.createCell(columnIndex).setCellValue(columnValue.getValue());
+				columnIndex++;
 			}
 			currentRowIndex++;
+			
 		}
 		return currentRowIndex;
 	}
