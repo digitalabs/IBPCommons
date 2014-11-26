@@ -46,7 +46,6 @@ import org.hibernate.SessionFactory;
 public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, HttpRequestAware {
 	
 	public DynamicManagerFactoryProvider() {
-		
 	}
 	
 	public DynamicManagerFactoryProvider(WorkbenchDataManager workbenchDataManager) {
@@ -54,29 +53,20 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 	}
 	
 	private HibernateSessionPerRequestProvider localSessionProvider; 
-	private HibernateSessionPerRequestProvider centralSessionProvider; 
-	
     private Map<Long, SessionFactory> localSessionFactories = new HashMap<Long, SessionFactory>();
-    private Map<CropType, SessionFactory> centralSessionFactories = new HashMap<CropType, SessionFactory>();
     
     private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
     
     private WorkbenchDataManager workbenchDataManager;
     
     private String localHost = "localhost";
-
     private Integer localPort = 13306;
-
     private String localUsername = "local";
-
     private String localPassword = "local";
 
     private String centralHost = "localhost";
-
     private Integer centralPort = 13306;
-
     private String centralUsername = "central";
-
     private String centralPassword = "central";
     
     private int maxCachedLocalSessionFactories = 10;
@@ -141,7 +131,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
     	String localDbName = null;
-    	String centralDbName = null;
+    	//String centralDbName = null;
     	Project project = ContextUtil.getProjectInContext(workbenchDataManager, CURRENT_REQUEST.get());
 
     	
@@ -172,28 +162,6 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         
         // add this local session factory to the head of the access list
         projectAccessList.add(0, project.getProjectId());
-        
-        // get or create a central session factory
-        SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
-        if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
-                && project.getCropType().getCentralDbName() != null) {
-            centralDbName = project.getCropType().getCentralDbName();
-            
-            DatabaseConnectionParameters params = 
-                    new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
-                            centralDbName, centralUsername, centralPassword);
-            
-            try {
-                centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                centralSessionFactories.put(project.getCropType(), centralSessionFactory);
-            }
-            catch (FileNotFoundException e) {
-                throw new ConfigException("Cannot create a SessionFactory for " + project, e);
-            }
-        } else {
-        	centralDbName = project.getCropType().getCentralDbName();
-        }
-        
 
         if (localSessionProvider == null && localSessionFactory != null) {
             localSessionProvider = new HibernateSessionPerRequestProvider(localSessionFactory);
@@ -201,19 +169,11 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         	localSessionProvider.setSessionFactory(localSessionFactory);
         }
         
-        if (centralSessionProvider == null && centralSessionFactory != null) {
-            centralSessionProvider = new HibernateSessionPerRequestProvider(centralSessionFactory);
-        }else{
-        	centralSessionProvider.setSessionFactory(centralSessionFactory);
-        }
-        
         // create a ManagerFactory and set the HibernateSessionProviders
         // we don't need to set the SessionFactories here
         // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProviderForLocal(localSessionProvider);
-        factory.setSessionProviderForCentral(centralSessionProvider);
-        factory.setCentralDatabaseName(centralDbName);
         factory.setLocalDatabaseName(localDbName);
         
         return factory;
@@ -232,38 +192,25 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 
 	@Override
 	public ManagerFactory getManagerFactoryForProject(Project project) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public ManagerFactory getManagerFactoryForCropType(CropType cropType) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void close() {
-		
 		if (localSessionProvider != null) {
             localSessionProvider.close();
         }
-        
-        if (centralSessionProvider != null) {
-            centralSessionProvider.close();
-        }	      
 	}
 	
-	protected synchronized void closeAllSessionFactories() {
-		
+	protected synchronized void closeAllSessionFactories() {	
 		for (Entry<Long, SessionFactory> entry : localSessionFactories.entrySet()){
 			entry.getValue().close();
 			localSessionFactories.remove(entry);
-		}
-   
-		for (Entry<CropType, SessionFactory> entry : centralSessionFactories.entrySet()){
-			entry.getValue().close();
-			centralSessionFactories.remove(entry);
 		}
        
     }

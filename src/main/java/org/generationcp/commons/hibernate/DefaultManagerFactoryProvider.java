@@ -184,22 +184,22 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         projectAccessList.add(0, project.getProjectId());
         
         // get or create a central session factory
-        centralDbName = project.getCropType().getCentralDbName();
-        
-        SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
-        if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
-                && project.getCropType().getCentralDbName() != null) {
-            DatabaseConnectionParameters params = 
-                    new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
-                            centralDbName, centralUsername, centralPassword);
-            try {
-                centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                centralSessionFactories.put(project.getCropType(), centralSessionFactory);
-            }
-            catch (FileNotFoundException e) {
-                throw new ConfigException("Cannot create a SessionFactory for " + project, e);
-            }
-        }
+//        centralDbName = project.getCropType().getCentralDbName();
+//        
+//        SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
+//        if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
+//                && project.getCropType().getCentralDbName() != null) {
+//            DatabaseConnectionParameters params = 
+//                    new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
+//                            centralDbName, centralUsername, centralPassword);
+//            try {
+//                centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
+//                centralSessionFactories.put(project.getCropType(), centralSessionFactory);
+//            }
+//            catch (FileNotFoundException e) {
+//                throw new ConfigException("Cannot create a SessionFactory for " + project, e);
+//            }
+//        }
         
         // get or create the HibernateSessionProvider for the current request
         HttpServletRequest request = CURRENT_REQUEST.get();
@@ -209,20 +209,20 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
             localSessionProviders.put(request, localSessionProvider);
         }
         
-        HibernateSessionProvider centralSessionProvider = centralSessionProviders.get(request);
-        if (centralSessionProvider == null && centralSessionFactory != null) {
-            centralSessionProvider = new HibernateSessionPerRequestProvider(centralSessionFactory);
-            centralSessionProviders.put(request, centralSessionProvider);
-        }
+//        HibernateSessionProvider centralSessionProvider = centralSessionProviders.get(request);
+//        if (centralSessionProvider == null && centralSessionFactory != null) {
+//            centralSessionProvider = new HibernateSessionPerRequestProvider(centralSessionFactory);
+//            centralSessionProviders.put(request, centralSessionProvider);
+//        }
         
         // create a ManagerFactory and set the HibernateSessionProviders
         // we don't need to set the SessionFactories here
         // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProviderForLocal(localSessionProvider);
-        factory.setSessionProviderForCentral(centralSessionProvider);
+        //factory.setSessionProviderForCentral(centralSessionProvider);
         factory.setLocalDatabaseName(localDbName);
-        factory.setCentralDatabaseName(centralDbName);
+        //factory.setCentralDatabaseName(centralDbName);
         return factory;
     }
     
