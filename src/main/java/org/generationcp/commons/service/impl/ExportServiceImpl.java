@@ -34,39 +34,39 @@ public class ExportServiceImpl implements ExportService{
 	private static final Logger LOG = LoggerFactory.getLogger(ExportServiceImpl.class);
 	
 	//List Details
-	private static final String LIST_NAME = "LIST NAME";
-	private static final String LIST_DESCRIPTION = "LIST DESCRIPTION";
-	private static final String LIST_TYPE = "LIST TYPE";
-	private static final String LIST_DATE = "LIST DATE";
+	public static final String LIST_NAME = "LIST NAME";
+	public static final String LIST_DESCRIPTION = "LIST DESCRIPTION";
+	public static final String LIST_TYPE = "LIST TYPE";
+	public static final String LIST_DATE = "LIST DATE";
 	
 	//Condition
-	private static final String CONDITION = "CONDITION";
-	private static final String DESCRIPTION = "DESCRIPTION";
-	private static final String PROPERTY = "PROPERTY";
-	private static final String SCALE = "SCALE";
-	private static final String METHOD = "METHOD";
-	private static final String DATA_TYPE = "DATA TYPE";
-	private static final String NESTED_IN = "NESTED IN";
+	public static final String CONDITION = "CONDITION";
+	public static final String DESCRIPTION = "DESCRIPTION";
+	public static final String PROPERTY = "PROPERTY";
+	public static final String SCALE = "SCALE";
+	public static final String METHOD = "METHOD";
+	public static final String DATA_TYPE = "DATA TYPE";
+	public static final String NESTED_IN = "NESTED IN";
 	
 	//Factor
-	private static final String FACTOR = "FACTOR";
+	public static final String FACTOR = "FACTOR";
 	
 	//Values
-	private static final String ASSIGNED = "ASSIGNED";
-	private static final String PERSON = "PERSON";
+	public static final String ASSIGNED = "ASSIGNED";
+	public static final String PERSON = "PERSON";
 	
 	//Styles
-	private static final String LABEL_STYLE = "labelStyle";
-    private static final String HEADING_STYLE = "headingStyle";
-    private static final String NUMERIC_STYLE = "numericStyle";
+	public static final String LABEL_STYLE = "labelStyle";
+	public static final String HEADING_STYLE = "headingStyle";
+	public static final String NUMERIC_STYLE = "numericStyle";
     
     //Columns
-    private static final String ENTRY_ID = "entryId";
-    private static final String GID = "gid";
-    private static final String ENTRY_CODE = "entryCode";
-    private static final String DESIGNATION = "desig";
-    private static final String PARENTAGE = "parentage";
-    private static final String SEED_SOURCE = "seedSource";
+	public static final String ENTRY_ID = "entryId";
+	public static final String GID = "gid";
+	public static final String ENTRY_CODE = "entryCode";
+	public static final String DESIGNATION = "desig";
+	public static final String PARENTAGE = "parentage";
+	public static final String SEED_SOURCE = "seedSource";
     
 	@Override
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
@@ -158,7 +158,7 @@ public class ExportServiceImpl implements ExportService{
 		return wb;
 	}
 
-	private int writeColumnValues(List<ExportColumnHeader> exportColumnHeaders, List<Map<Integer, ExportColumnValue>> exportColumnValues, 
+	protected int writeColumnValues(List<ExportColumnHeader> exportColumnHeaders, List<Map<Integer, ExportColumnValue>> exportColumnValues, 
 				HSSFSheet sheet, int rowIndex) {
 		int currentRowIndex = rowIndex;
 		for(Map<Integer,ExportColumnValue> exportRowValue : exportColumnValues){
@@ -176,7 +176,7 @@ public class ExportServiceImpl implements ExportService{
 		return currentRowIndex;
 	}
 
-	private void writeColumHeaders(List<ExportColumnHeader> exportColumnHeaders, 
+	protected void writeColumHeaders(List<ExportColumnHeader> exportColumnHeaders, 
 			HSSFSheet sheet, int rowIndex) {
 		int noOfColumns = exportColumnHeaders.size();
 		HSSFRow header = sheet.createRow(rowIndex);
@@ -235,7 +235,7 @@ public class ExportServiceImpl implements ExportService{
         }
 	}
 	
-    private void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet, 
+	public void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet, 
     			GermplasmListExportInputValues input) throws GermplasmListExporterException {
     	
     	Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
@@ -284,7 +284,7 @@ public class ExportServiceImpl implements ExportService{
         
     }
 
-	private void createListEntriesHeaderRow(Map<String, CellStyle> styles,
+	public void createListEntriesHeaderRow(Map<String, CellStyle> styles,
 			HSSFSheet observationSheet, Map<String, Boolean> visibleColumnMap) {
 		HSSFRow listEntriesHeader = observationSheet.createRow(0);
         
@@ -348,7 +348,7 @@ public class ExportServiceImpl implements ExportService{
         }
 	}
 	
-    private void writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
+	public void writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
     		int startingRow, Map<String, Boolean> visibleColumnMap) {
     	
         int actualRow = startingRow - 1;
@@ -443,7 +443,7 @@ public class ExportServiceImpl implements ExportService{
         }
     }
 
-	private void writeListConditionSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
+	protected void writeListConditionSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
     		int startingRow, GermplasmListExportInputValues input) throws GermplasmListExporterException {
     	
 		//prepare inputs
@@ -519,7 +519,7 @@ public class ExportServiceImpl implements ExportService{
         localIdCell.setCellStyle(styles.get(NUMERIC_STYLE));
     }
 	
-	private void writeListDetailsSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
+	protected void writeListDetailsSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
 			int startingRow, GermplasmList germplasmList) {
         int actualRow = startingRow - 1;
         
