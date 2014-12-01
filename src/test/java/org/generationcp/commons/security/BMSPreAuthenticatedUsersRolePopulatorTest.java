@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Base64;
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedG
 public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	
 	private static final String TEST_USER = "testUser";
+	private static final String AUTH_TOKEN = Base64.encodeBase64URLSafeString(TEST_USER.getBytes());
 	private WorkbenchDataManager workbenchDataManager;
 	private BMSPreAuthenticatedUsersRolePopulator rolesPopulator;
 	
@@ -39,7 +41,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	@Test
 	public void testBuildDetails() {
 		try {
-			Mockito.when(request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(TEST_USER);
+			Mockito.when(request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(AUTH_TOKEN);
 			rolesPopulator.buildDetails(request);
 			
 			List<User> matchingUsers = new ArrayList<User>();
@@ -64,7 +66,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	
 	@Test(expected = AuthenticationServiceException.class)
 	public void testLoadUserDataAccessError() throws MiddlewareQueryException {
-		Mockito.when(request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(TEST_USER);
+		Mockito.when(request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(AUTH_TOKEN);
 		Mockito.when(workbenchDataManager.getUserByName(TEST_USER, 0, 1, Operation.EQUAL)).thenThrow(new MiddlewareQueryException("Boom!"));
 		rolesPopulator.buildDetails(request);
 	}

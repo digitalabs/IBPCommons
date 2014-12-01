@@ -26,9 +26,10 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 	@Override
 	public GrantedAuthoritiesContainer buildDetails(HttpServletRequest request) {
 		
-		String ssUserName = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
+		String authToken = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
+		String userName = SecurityUtil.decodeToken(authToken);
 		try {
-			List<User> matchingUsers = workbenchDataManager.getUserByName(ssUserName, 0, 1, Operation.EQUAL);
+			List<User> matchingUsers = workbenchDataManager.getUserByName(userName, 0, 1, Operation.EQUAL);
 			List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
 			if(matchingUsers != null && !matchingUsers.isEmpty()) {
 				User workbenchUser = matchingUsers.get(0);
