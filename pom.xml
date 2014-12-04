@@ -19,19 +19,12 @@
 	     <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/snapshots/</url>
 	  </snapshotRepository>
 	</distributionManagement>
-	
-    <developers>
-        <developer>
-            <id>gmarintes</id>
-            <name>Glenn Marintes</name>
-            <email>glenn@efficio.us.com</email>
-        </developer>
-    </developers>
 
     <properties>
         <vaadin.version>6.8.13</vaadin.version>
         <middleware.version>3.1.0.SNAPSHOT</middleware.version>
         <spring.version>3.2.11.RELEASE</spring.version>
+        <spring.security.version>3.2.5.RELEASE</spring.security.version>
     </properties>
 
     <dependencies>
@@ -78,6 +71,34 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
+        <!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-taglibs</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-aspects</artifactId>
+			<version>${spring.security.version}</version>
+		</dependency>
+		
         <!-- Hibernate Dependency -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -98,7 +119,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.6</version>
+            <version>1.10</version>
         </dependency>
         <!-- Other Apache Libs -->
         <dependency>
