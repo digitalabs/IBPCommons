@@ -19,14 +19,6 @@
 	     <url>http://gcp.efficio.us.com:8081/nexus/content/repositories/snapshots/</url>
 	  </snapshotRepository>
 	</distributionManagement>
-	
-    <developers>
-        <developer>
-            <id>gmarintes</id>
-            <name>Glenn Marintes</name>
-            <email>glenn@efficio.us.com</email>
-        </developer>
-    </developers>
 
     <properties>
         <vaadin.version>6.8.13</vaadin.version>
