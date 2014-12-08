@@ -6,6 +6,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.generationcp.commons.context.ContextConstants;
+import org.generationcp.commons.context.ContextInfo;
+import org.generationcp.commons.util.ContextUtil;
+import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -22,21 +25,22 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
-	
+
 	@Override
 	public GrantedAuthoritiesContainer buildDetails(HttpServletRequest request) {
-		
-		String authToken = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
-		String userName = SecurityUtil.decodeToken(authToken);
+
+		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
+
 		try {
-			List<User> matchingUsers = workbenchDataManager.getUserByName(userName, 0, 1, Operation.EQUAL);
-			List<GrantedAuthority> roles = new ArrayList<GrantedAuthority>();
-			if(matchingUsers != null && !matchingUsers.isEmpty()) {
-				User workbenchUser = matchingUsers.get(0);
-				roles.addAll(SecurityUtil.getRolesAsAuthorities(workbenchUser));
-			}
-			return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, roles);
+			User user = ContextUtil.getCurrentWorkbenchUser(workbenchDataManager,request);
+
+			List<GrantedAuthority> role = new ArrayList<>();
+			role.addAll(SecurityUtil.getRolesAsAuthorities(user));
+
+			return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request,role);
+
 		} catch (MiddlewareQueryException e) {
+
 			throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
 		}
 	}

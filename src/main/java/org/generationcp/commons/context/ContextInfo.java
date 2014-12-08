@@ -7,12 +7,19 @@ package org.generationcp.commons.context;
  */
 public class ContextInfo {
 	
-	private final Integer loggedInUserId; 
+	private final Integer loggedInUserId;
 	private final Long selectedProjectId;
-		
-	public ContextInfo(Integer loggedInUserId, Long selectedProjectId) {
-		this.loggedInUserId = loggedInUserId;
+	private final String authToken;
+
+
+	public ContextInfo(Integer userId, Long selectedProjectId, String authToken) {
+		this.loggedInUserId = userId;
 		this.selectedProjectId = selectedProjectId;
+		this.authToken = authToken;
+	}
+
+	public ContextInfo(Integer userId, Long selectedProjectId) {
+		this(userId,selectedProjectId,"");
 	}
 
 	public Integer getloggedInUserId() {
@@ -22,4 +29,9 @@ public class ContextInfo {
 	public Long getSelectedProjectId() {
 		return selectedProjectId;
 	}
+
+	public String getAuthToken() {
+		return authToken;
+	}
+
 }
