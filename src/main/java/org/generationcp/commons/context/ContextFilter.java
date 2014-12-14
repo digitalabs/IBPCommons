@@ -29,13 +29,15 @@ public class ContextFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) servletResponse;
 
 		if(!ContextUtil.isStaticResourceRequest(request.getRequestURI())) {
-			Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-			Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID); 
-			
-			if (selectedProjectId != null && userId != null) {
-				WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, new ContextInfo(userId, selectedProjectId));
-				response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, userId.toString()));
-				response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, selectedProjectId.toString()));
+			ContextInfo requestContextInfo = ContextUtil.getContextInfoFromRequest(request);
+
+
+			if (requestContextInfo.getSelectedProjectId() != null && requestContextInfo.getloggedInUserId() != null) {
+				WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
+						requestContextInfo);
+				response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, requestContextInfo.getloggedInUserId().toString()));
+				response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, requestContextInfo.getSelectedProjectId().toString()));
+				response.addCookie(new Cookie(ContextConstants.PARAM_AUTH_TOKEN,requestContextInfo.getAuthToken()));
 			}
 			
 			else {
@@ -46,9 +48,11 @@ public class ContextFilter implements Filter {
 					//restore session attribure from cookies
 					Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
 					Cookie selectedProjectIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
+					Cookie authTokenCookie = WebUtils.getCookie(request,ContextConstants.PARAM_AUTH_TOKEN);
 					if(userIdCookie != null && selectedProjectIdCookie != null) {
 						WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, 
-							new ContextInfo(Integer.valueOf(userIdCookie.getValue()), Long.valueOf(selectedProjectIdCookie.getValue())));
+							new ContextInfo(Integer.valueOf(userIdCookie.getValue()), Long.valueOf(
+									selectedProjectIdCookie.getValue()),authTokenCookie.getValue()));
 					}
 				}
 			}

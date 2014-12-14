@@ -22,6 +22,9 @@ public class SecurityUtil {
 	 */
 	public static final String ROLE_PREFIX = "ROLE_";
 
+	private SecurityUtil() {
+	}
+
 	public static String getLoggedInUserName() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(authentication != null) {

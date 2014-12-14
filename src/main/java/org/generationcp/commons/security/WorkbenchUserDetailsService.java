@@ -21,7 +21,7 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 			List<User> matchingUsers = workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
 			if(matchingUsers != null && !matchingUsers.isEmpty()) {
 				User workbenchUser = matchingUsers.get(0);
-				//TODO Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
+				//FIXME Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
 				return new org.springframework.security.core.userdetails.User(workbenchUser.getName(), workbenchUser.getPassword(), 
 						SecurityUtil.getRolesAsAuthorities(workbenchUser));
 			}
