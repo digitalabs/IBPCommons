@@ -173,8 +173,8 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
         // we don't need to set the SessionFactories here
         // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
-        factory.setSessionProviderForLocal(localSessionProvider);
-        factory.setLocalDatabaseName(localDbName);
+        factory.setSessionProvider(localSessionProvider);
+        factory.setDatabaseName(localDbName);
         
         return factory;
     }
