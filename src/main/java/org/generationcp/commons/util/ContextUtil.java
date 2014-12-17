@@ -37,7 +37,6 @@ public class ContextUtil {
     	
     	if(project != null) {
 			LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId()
-					+ ". Local DB: " + project.getLocalDbName() + ". Central DB: " + project.getCentralDbName()
 					+ ". Resolved " + (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
 			return project;
     	}
