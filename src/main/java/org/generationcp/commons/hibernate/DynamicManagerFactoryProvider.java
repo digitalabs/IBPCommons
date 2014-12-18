@@ -130,11 +130,8 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
   
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
-    	String localDbName = null;
-    	//String centralDbName = null;
+    	String databaseName = null;
     	Project project = ContextUtil.getProjectInContext(workbenchDataManager, CURRENT_REQUEST.get());
-
-    	
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
         
         if (localSessionFactory != null) {
@@ -142,13 +139,13 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         }
         
         if (localSessionFactory == null || localSessionFactory.isClosed()) {
-        	localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
+        	databaseName = project.getDatabaseName();
             
             // close any excess cached session factory
             closeExcessLocalSessionFactory();
             
             DatabaseConnectionParameters params = new DatabaseConnectionParameters(
-                    localHost, String.valueOf(localPort), localDbName, localUsername, localPassword);
+                    localHost, String.valueOf(localPort), databaseName, localUsername, localPassword);
             try {
                 localSessionFactory = SessionFactoryUtil.openSessionFactory(params);
                 localSessionFactories.put(project.getProjectId(), localSessionFactory);
@@ -157,7 +154,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
                 throw new ConfigException("Cannot create a SessionFactory for " + project, e);
             }
         } else {
-        	localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
+        	databaseName = project.getDatabaseName();
         }
         
         // add this local session factory to the head of the access list
@@ -174,7 +171,7 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
         // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProvider(localSessionProvider);
-        factory.setDatabaseName(localDbName);
+        factory.setDatabaseName(databaseName);
         
         return factory;
     }

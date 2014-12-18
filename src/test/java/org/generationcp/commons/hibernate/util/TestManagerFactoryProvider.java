@@ -64,16 +64,16 @@ public class TestManagerFactoryProvider{
 
         try {
             factory = provider.getManagerFactoryForCropType(
-                    manager.getCropTypeByName(CropType.CASSAVA));
+                    manager.getCropTypeByName(CropType.CropEnum.CASSAVA.toString()));
             Assert.assertNotNull(factory);
 
             factory = provider.getManagerFactoryForCropType(
-                    manager.getCropTypeByName(CropType.CHICKPEA));
+                    manager.getCropTypeByName(CropType.CropEnum.CHICKPEA.toString()));
             Assert.assertNotNull(factory);
 
             Project project = new Project();
             project.setProjectId(1L);
-            project.setCropType(manager.getCropTypeByName(CropType.CHICKPEA));
+            project.setCropType(manager.getCropTypeByName(CropType.CropEnum.CHICKPEA.toString()));
             factory = provider.getManagerFactoryForProject(project);
             Assert.assertNotNull(factory);
 

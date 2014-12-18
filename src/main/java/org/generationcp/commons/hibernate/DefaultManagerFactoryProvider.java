@@ -149,16 +149,16 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     @Override
     public synchronized ManagerFactory getManagerFactoryForProject(Project project) {
         SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
-        String localDbName = null;
+        String databaseName = null;
         if (localSessionFactory != null) {
             projectAccessList.remove(project.getProjectId());
         }
         
-        localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
+        databaseName = project.getDatabaseName();
         try {
         	if(mySQLUtil!=null) {
         		mySQLUtil.restoreDatabaseIfNotExists(
-					localDbName,
+					databaseName,
 					workbenchDataManager.getWorkbenchSetting().getInstallationDirectory());
         	}
 		} catch (MiddlewareQueryException e1) {
@@ -170,7 +170,7 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
             closeExcessLocalSessionFactory();
             
             DatabaseConnectionParameters params = new DatabaseConnectionParameters(
-                    localHost, String.valueOf(localPort), localDbName, localUsername, localPassword);
+                    localHost, String.valueOf(localPort), databaseName, localUsername, localPassword);
             try {
                 localSessionFactory = SessionFactoryUtil.openSessionFactory(params);
                 localSessionFactories.put(project.getProjectId(), localSessionFactory);
@@ -195,13 +195,13 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProvider(localSessionProvider);
-        factory.setDatabaseName(localDbName);
+        factory.setDatabaseName(databaseName);
         return factory;
     }
     
     @Override
     public synchronized ManagerFactory getManagerFactoryForCropType(CropType cropType) {
-        String centralDbName = cropType.getCentralDbName();
+        String centralDbName = cropType.getDbName();
         if (centralDbName == null) {
             return null;
         }
