@@ -125,15 +125,6 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
         }
         
         databaseName = project.getDatabaseName();
-        try {
-        	if(mySQLUtil!=null) {
-        		mySQLUtil.restoreDatabaseIfNotExists(
-					databaseName,
-					workbenchDataManager.getWorkbenchSetting().getInstallationDirectory());
-        	}
-		} catch (MiddlewareQueryException e1) {
-			LOG.error("Error: ", e1);
-		}
     	
         if (localSessionFactory == null || localSessionFactory.isClosed()) {
             // close any excess cached session factory
