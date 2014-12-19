@@ -20,20 +20,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.generationcp.commons.util.MySQLUtil;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider;
 import org.generationcp.middleware.hibernate.HibernateSessionProvider;
 import org.generationcp.middleware.hibernate.SessionFactoryUtil;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
 import org.generationcp.middleware.manager.ManagerFactory;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link DefaultManagerFactoryProvider} is an implementation of
@@ -53,8 +47,6 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     
     private Map<HttpServletRequest, HibernateSessionProvider> localSessionProviders = new HashMap<HttpServletRequest, HibernateSessionProvider>();
     
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultManagerFactoryProvider.class);
-
     private String localHost = "localhost";
 
     private Integer localPort = 13306;
@@ -66,18 +58,9 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     private int maxCachedLocalSessionFactories = 10;
     private List<Long> projectAccessList = new LinkedList<Long>();
     
-    private WorkbenchDataManager workbenchDataManager;
-    
-    private MySQLUtil mySQLUtil;
-    
     public DefaultManagerFactoryProvider() {
 	}
     
-    public DefaultManagerFactoryProvider(WorkbenchDataManager workbenchDataManager, MySQLUtil mySQLUtil) {
-    	this.workbenchDataManager = workbenchDataManager;
-    	this.mySQLUtil = mySQLUtil;
-	}
-
     public void setLocalHost(String localHost) {
         this.localHost = localHost;
     }
