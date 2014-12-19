@@ -196,11 +196,6 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
 	}
 
 	@Override
-	public ManagerFactory getManagerFactoryForCropType(CropType cropType) {
-		return null;
-	}
-
-	@Override
 	public void close() {
 		if (localSessionProvider != null) {
 			localSessionProvider.close();

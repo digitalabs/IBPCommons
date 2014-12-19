@@ -193,11 +193,6 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 	}
 
 	@Override
-	public ManagerFactory getManagerFactoryForCropType(CropType cropType) {
-		return null;
-	}
-
-	@Override
 	public void close() {
 		if (localSessionProvider != null) {
             localSessionProvider.close();
@@ -220,6 +215,4 @@ public class DynamicManagerFactoryProvider implements ManagerFactoryProvider, Ht
 			int maxCachedLocalSessionFactories) {
 		this.maxCachedLocalSessionFactories = maxCachedLocalSessionFactories;
 	}
-
-   
 }
