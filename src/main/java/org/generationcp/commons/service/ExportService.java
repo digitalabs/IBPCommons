@@ -15,6 +15,9 @@ public interface ExportService {
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
 			List<ExportColumnHeader> exportColumnHeaders, String fileNameFullPath) throws IOException;
 	
+	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
+			List<ExportColumnHeader> exportColumnHeaders, String fileNameFullPath, boolean includeHeader) throws IOException;
+	
 	public FileOutputStream generateExcelFileForSingleSheet(List<Map<Integer, ExportColumnValue>> exportColumnValues,
 			List<ExportColumnHeader> exportColumnHeaders, String filename, String sheetName) throws IOException;
 	
