@@ -29,113 +29,74 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
 
-/**
- * The {@link DefaultManagerFactoryProvider} is an implementation of
- * {@link ManagerFactoryProvider} that expects central databases are named using
- * the format: <br>
- * <code>ibdb_&lt;crop type&gt;_central</code><br>
- * and local databases are named using the format: <br>
- * <code>&lt;crop type&gt;_&lt;project id&gt;_local</code><br>
- * 
- * @author Glenn Marintes
- */
-public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, HttpRequestAware {
-    
-	private Map<Long, SessionFactory> localSessionFactories = new HashMap<Long, SessionFactory>();
+public class DefaultManagerFactoryProvider extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
     
     private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
     
-    private Map<HttpServletRequest, HibernateSessionProvider> localSessionProviders = new HashMap<HttpServletRequest, HibernateSessionProvider>();
+    private Map<HttpServletRequest, HibernateSessionProvider> sessionProviders = new HashMap<HttpServletRequest, HibernateSessionProvider>();
     
-    private String localHost = "localhost";
-
-    private Integer localPort = 13306;
-
-    private String localUsername = "local";
-
-    private String localPassword = "local";
-
-    private int maxCachedLocalSessionFactories = 10;
     private List<Long> projectAccessList = new LinkedList<Long>();
     
     public DefaultManagerFactoryProvider() {
 	}
     
-    public void setLocalHost(String localHost) {
-        this.localHost = localHost;
-    }
-
-    public void setLocalPort(Integer localPort) {
-        this.localPort = localPort;
-    }
-
-    public void setLocalUsername(String localUsername) {
-        this.localUsername = localUsername;
-    }
-
-    public void setLocalPassword(String localPassword) {
-        this.localPassword = localPassword;
-    }
-
-    protected synchronized void closeExcessLocalSessionFactory() {
-        if (projectAccessList.size() - 1 > maxCachedLocalSessionFactories) {
+    protected synchronized void closeExcessSessionFactory() {
+        if (projectAccessList.size() - 1 > maxCachedSessionFactories) {
             return;
         }
         
-        for (int index = projectAccessList.size() - 1; 
-                index >= maxCachedLocalSessionFactories - 1;
-                index--) {
+        for (int index = projectAccessList.size() - 1; index >= maxCachedSessionFactories - 1; index--) {
             Long projectId = projectAccessList.get(index);
             
             // close the session factory for the project
-            SessionFactory sessionFactory = localSessionFactories.get(projectId);
+            SessionFactory sessionFactory = sessionFactoryCache.get(projectId);
             if (sessionFactory != null) {
                 sessionFactory.close();
             }
             
-            // remove the SessionFactory instance from our local session factory cache
-            localSessionFactories.remove(projectId);
+            // remove the SessionFactory instance from our session factory cache
+            sessionFactoryCache.remove(projectId);
             projectAccessList.remove(index);
         }
     }
 
     @Override
     public synchronized ManagerFactory getManagerFactoryForProject(Project project) {
-        SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
+        SessionFactory sessionFactory = sessionFactoryCache.get(project.getProjectId());
         String databaseName = null;
-        if (localSessionFactory != null) {
+        if (sessionFactory != null) {
             projectAccessList.remove(project.getProjectId());
         }
         
         databaseName = project.getDatabaseName();
     	
-        if (localSessionFactory == null || localSessionFactory.isClosed()) {
+        if (sessionFactory == null || sessionFactory.isClosed()) {
             // close any excess cached session factory
-            closeExcessLocalSessionFactory();
+            closeExcessSessionFactory();
             
             DatabaseConnectionParameters params = new DatabaseConnectionParameters(
-                    localHost, String.valueOf(localPort), databaseName, localUsername, localPassword);
+                    dbHost, String.valueOf(dbPort), databaseName, dbUsername, dbPassword);
             try {
-                localSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                localSessionFactories.put(project.getProjectId(), localSessionFactory);
+                sessionFactory = SessionFactoryUtil.openSessionFactory(params);
+                sessionFactoryCache.put(project.getProjectId(), sessionFactory);
             } catch (FileNotFoundException e) {
                 throw new ConfigException("Cannot create a SessionFactory for " + project, e);
             }
         }
         
-        // add this local session factory to the head of the access list
+        // add this session factory to the head of the access list
         projectAccessList.add(0, project.getProjectId());
         
         // get or create the HibernateSessionProvider for the current request
         HttpServletRequest request = CURRENT_REQUEST.get();
-        HibernateSessionProvider localSessionProvider = localSessionProviders.get(request);
-        if (localSessionProvider == null && localSessionFactory != null) {
-            localSessionProvider = new HibernateSessionPerRequestProvider(localSessionFactory);
-            localSessionProviders.put(request, localSessionProvider);
+        HibernateSessionProvider sessionProvider = sessionProviders.get(request);
+        if (sessionProvider == null && sessionFactory != null) {
+            sessionProvider = new HibernateSessionPerRequestProvider(sessionFactory);
+            sessionProviders.put(request, sessionProvider);
         }
         
         ManagerFactory factory = new ManagerFactory();
-        factory.setSessionProvider(localSessionProvider);
+        factory.setSessionProvider(sessionProvider);
         factory.setDatabaseName(databaseName);
         return factory;
     }
@@ -148,38 +109,37 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     
     @Override
     public void onRequestEnded(HttpServletRequest request, HttpServletResponse response) {
-        HibernateSessionProvider localSessionProvider = localSessionProviders.get(request);
-        if (localSessionProvider != null) {
-            localSessionProvider.close();
-            localSessionProviders.remove(request);
+        HibernateSessionProvider sessionProvider = sessionProviders.get(request);
+        if (sessionProvider != null) {
+            sessionProvider.close();
+            sessionProviders.remove(request);
         }
-        
         CURRENT_REQUEST.remove();
     }
 
     @Override
     public synchronized void close() {
-        for (HttpServletRequest request : localSessionProviders.keySet()) {
-            HibernateSessionProvider provider = localSessionProviders.get(request);
+        for (HttpServletRequest request : sessionProviders.keySet()) {
+            HibernateSessionProvider provider = sessionProviders.get(request);
             if (provider != null) {
                 provider.close();
             }
         }
         
-        for (Long projectId : localSessionFactories.keySet()) {
-            SessionFactory factory = localSessionFactories.get(projectId);
+        for (Long projectId : sessionFactoryCache.keySet()) {
+            SessionFactory factory = sessionFactoryCache.get(projectId);
             if (factory != null) {
                 factory.close();
             }
         }
-        localSessionFactories.clear();
-        localSessionProviders.clear();
+        sessionFactoryCache.clear();
+        sessionProviders.clear();
     }
 
-    public void removeProjectFromLocalSession(long projectId) {
-    	if(localSessionFactories!=null && localSessionFactories.containsKey(projectId)) {
-    		localSessionFactories.get(projectId).close();
-    		localSessionFactories.remove(projectId);
+    public void removeProjectFromSessionCache(long projectId) {
+    	if(sessionFactoryCache!=null && sessionFactoryCache.containsKey(projectId)) {
+    		sessionFactoryCache.get(projectId).close();
+    		sessionFactoryCache.remove(projectId);
     	}
     }
 }
