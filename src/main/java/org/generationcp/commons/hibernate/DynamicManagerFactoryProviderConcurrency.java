@@ -12,10 +12,8 @@
 package org.generationcp.commons.hibernate;
 
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,23 +27,12 @@ import org.generationcp.middleware.hibernate.SessionFactoryUtil;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The {@link DynamicManagerFactoryProviderConcurrency} is an implementation of
- * {@link ManagerFactoryProvider} that expects central databases are named using
- * the format: <br>
- * <code>ibdb_&lt;crop type&gt;_central</code><br>
- * and local databases are named using the format: <br>
- * <code>&lt;crop type&gt;_&lt;project id&gt;_local</code><br>
- * 
- * @author Glenn Marintes
- */
-public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryProvider, HttpRequestAware {
+public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
 	
     final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
 
@@ -56,78 +43,30 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
 		this.workbenchDataManager = workbenchDataManager;
 	}
 	
-	private HibernateSessionPerThreadProvider localSessionProvider; 
+	private HibernateSessionPerThreadProvider sessionProvider; 
 	
-    private Map<Long, SessionFactory> localSessionFactories = new HashMap<Long, SessionFactory>();
-    
     private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
     
     private WorkbenchDataManager workbenchDataManager;
     
-    private String localHost = "localhost";
-    private Integer localPort = 13306;
-    private String localUsername = "local";
-    private String localPassword = "local";
-
-    private String centralHost = "localhost";
-    private Integer centralPort = 13306;
-    private String centralUsername = "central";
-    private String centralPassword = "central";
-    
-    private int maxCachedLocalSessionFactories = 10;
-    
     private List<Long> projectAccessList = new LinkedList<Long>();
 
-    public void setLocalHost(String localHost) {
-        this.localHost = localHost;
-    }
-
-    public void setLocalPort(Integer localPort) {
-        this.localPort = localPort;
-    }
-
-    public void setLocalUsername(String localUsername) {
-        this.localUsername = localUsername;
-    }
-
-    public void setLocalPassword(String localPassword) {
-        this.localPassword = localPassword;
-    }
-
-    public void setCentralHost(String centralHost) {
-        this.centralHost = centralHost;
-    }
-
-    public void setCentralPort(Integer centralPort) {
-        this.centralPort = centralPort;
-    }
-
-    public void setCentralUsername(String centralUsername) {
-        this.centralUsername = centralUsername;
-    }
-
-    public void setCentralPassword(String centralPassword) {
-        this.centralPassword = centralPassword;
-    }
-    
-    protected synchronized void closeExcessLocalSessionFactory() {
-        if (projectAccessList.size() - 1 > getMaxCachedLocalSessionFactories()) {
+    protected synchronized void closeExcessSessionFactory() {
+        if (projectAccessList.size() - 1 > getMaxCachedSessionFactories()) {
             return;
         }
         
-        for (int index = projectAccessList.size() - 1; 
-                index >= getMaxCachedLocalSessionFactories() - 1;
-                index--) {
+        for (int index = projectAccessList.size() - 1; index >= getMaxCachedSessionFactories() - 1; index--) {
             Long projectId = projectAccessList.get(index);
             
             // close the session factory for the project
-            SessionFactory sessionFactory = localSessionFactories.get(projectId);
+            SessionFactory sessionFactory = sessionFactoryCache.get(projectId);
             if (sessionFactory != null) {
                 sessionFactory.close();
             }
             
-            // remove the SessionFactory instance from our local session factory cache
-            localSessionFactories.remove(projectId);
+            // remove the SessionFactory instance from our session factory cache
+            sessionFactoryCache.remove(projectId);
             projectAccessList.remove(index);
         }
     }
@@ -136,22 +75,22 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
     	String databaseName = null;    	
     	
     	Project project = ContextUtil.getProjectInContext(workbenchDataManager, CURRENT_REQUEST.get());    	
-        SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());       
-        if (localSessionFactory != null) {
+        SessionFactory sessionFactory = sessionFactoryCache.get(project.getProjectId());       
+        if (sessionFactory != null) {
             projectAccessList.remove(project.getProjectId());
         }
         
-        if (localSessionFactory == null || localSessionFactory.isClosed()) {
+        if (sessionFactory == null || sessionFactory.isClosed()) {
             databaseName = project.getDatabaseName();
             
             // close any excess cached session factory
-            closeExcessLocalSessionFactory();
+            closeExcessSessionFactory();
             
             DatabaseConnectionParameters params = new DatabaseConnectionParameters(
-                    localHost, String.valueOf(localPort), databaseName, localUsername, localPassword);
+                    dbHost, String.valueOf(dbPort), databaseName, dbUsername, dbPassword);
             try {
-                localSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                localSessionFactories.put(project.getProjectId(), localSessionFactory);
+                sessionFactory = SessionFactoryUtil.openSessionFactory(params);
+                sessionFactoryCache.put(project.getProjectId(), sessionFactory);
             }
             catch (FileNotFoundException e) {
                 throw new ConfigException("Cannot create a SessionFactory for " + project, e);
@@ -160,20 +99,20 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
         	databaseName = project.getDatabaseName();
         }
         
-        // add this local session factory to the head of the access list
+        // add this session factory to the head of the access list
         projectAccessList.add(0, project.getProjectId());
         
-        if (localSessionProvider == null && localSessionFactory != null) {
-            localSessionProvider = new HibernateSessionPerThreadProvider(localSessionFactory);
+        if (sessionProvider == null && sessionFactory != null) {
+            sessionProvider = new HibernateSessionPerThreadProvider(sessionFactory);
         } else {
-        	localSessionProvider.setSessionFactory(localSessionFactory);
+        	sessionProvider.setSessionFactory(sessionFactory);
         }
         
         // create a ManagerFactory and set the HibernateSessionProviders
         // we don't need to set the SessionFactories here
         // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
-        factory.setSessionProvider(localSessionProvider);
+        factory.setSessionProvider(sessionProvider);
         factory.setDatabaseName(databaseName);
         
         return factory;
@@ -197,25 +136,15 @@ public class DynamicManagerFactoryProviderConcurrency implements ManagerFactoryP
 
 	@Override
 	public void close() {
-		if (localSessionProvider != null) {
-			localSessionProvider.close();
+		if (sessionProvider != null) {
+			sessionProvider.close();
 		}
 	}
 	
 	protected synchronized void closeAllSessionFactories() {
-		for (Entry<Long, SessionFactory> entry : localSessionFactories.entrySet()){
+		for (Entry<Long, SessionFactory> entry : sessionFactoryCache.entrySet()){
 			entry.getValue().close();
-			localSessionFactories.remove(entry);
+			sessionFactoryCache.remove(entry);
 		}
-    }
-
-	public int getMaxCachedLocalSessionFactories() {
-		return maxCachedLocalSessionFactories;
-	}
-
-	public void setMaxCachedLocalSessionFactories(
-			int maxCachedLocalSessionFactories) {
-		this.maxCachedLocalSessionFactories = maxCachedLocalSessionFactories;
-	}
-   
+    }   
 }
