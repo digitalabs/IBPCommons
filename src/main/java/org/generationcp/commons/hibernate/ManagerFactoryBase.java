@@ -1,6 +1,8 @@
 package org.generationcp.commons.hibernate;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.hibernate.SessionFactory;
@@ -15,6 +17,28 @@ public abstract class ManagerFactoryBase {
     
     protected Map<Long, SessionFactory> sessionFactoryCache = new HashMap<Long, SessionFactory>();
     protected int maxCachedSessionFactories = 10;
+    
+    protected List<Long> projectAccessList = new LinkedList<Long>();
+
+    protected synchronized void closeExcessSessionFactory() {
+        if (projectAccessList.size() - 1 > getMaxCachedSessionFactories()) {
+            return;
+        }
+        
+        for (int index = projectAccessList.size() - 1; index >= getMaxCachedSessionFactories() - 1; index--) {
+            Long projectId = projectAccessList.get(index);
+            
+            // close the session factory for the project
+            SessionFactory sessionFactory = sessionFactoryCache.get(projectId);
+            if (sessionFactory != null) {
+                sessionFactory.close();
+            }
+            
+            // remove the SessionFactory instance from our session factory cache
+            sessionFactoryCache.remove(projectId);
+            projectAccessList.remove(index);
+        }
+    }
     
     public ManagerFactoryBase() {
     	

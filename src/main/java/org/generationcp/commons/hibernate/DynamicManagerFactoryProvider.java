@@ -12,8 +12,6 @@
 package org.generationcp.commons.hibernate;
 
 import java.io.FileNotFoundException;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,30 +41,7 @@ public class DynamicManagerFactoryProvider extends ManagerFactoryBase implements
     
     private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
     
-    private WorkbenchDataManager workbenchDataManager;
-    
-    private List<Long> projectAccessList = new LinkedList<Long>();
-
-    protected synchronized void closeExcessSessionFactory() {
-        if (projectAccessList.size() - 1 > getMaxCachedSessionFactories()) {
-            return;
-        }
-        
-        for (int index = projectAccessList.size() - 1; index >= getMaxCachedSessionFactories() - 1; index--) {
-            Long projectId = projectAccessList.get(index);
-            
-            // close the session factory for the project
-            SessionFactory sessionFactory = sessionFactoryCache.get(projectId);
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
-            
-            // remove the SessionFactory instance from our session factory cache
-            sessionFactoryCache.remove(projectId);
-            projectAccessList.remove(index);
-        }
-    }
-    
+    private WorkbenchDataManager workbenchDataManager;    
   
     public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
     	
