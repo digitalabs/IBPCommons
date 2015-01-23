@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
 	
-    final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
+    private final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
 
 	public DynamicManagerFactoryProviderConcurrency() {
 	}

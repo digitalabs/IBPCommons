@@ -20,6 +20,9 @@ public abstract class ManagerFactoryBase {
     
     protected List<Long> projectAccessList = new LinkedList<Long>();
 
+    public ManagerFactoryBase() {
+    }
+    
     protected synchronized void closeExcessSessionFactory() {
         if (projectAccessList.size() - 1 > getMaxCachedSessionFactories()) {
             return;
@@ -39,11 +42,7 @@ public abstract class ManagerFactoryBase {
             projectAccessList.remove(index);
         }
     }
-    
-    public ManagerFactoryBase() {
-    	
-    }
-	
+
 	public String getDbHost() {
 		return dbHost;
 	}
