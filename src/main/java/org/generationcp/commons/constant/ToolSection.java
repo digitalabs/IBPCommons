@@ -6,5 +6,6 @@ package org.generationcp.commons.constant;
  * For now, this will be used specifically in presets
  */
 public enum ToolSection {
-	FBK_LABEL_PRINTING
+	FBK_LABEL_PRINTING,
+	FBK_CROSS_IMPORT
 }
