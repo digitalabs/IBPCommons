@@ -328,4 +328,15 @@ public abstract class StringUtil{
     public static boolean isEmptyOrWhitespaceOnly(String s) {
         return isEmpty(s) || s.matches("\\A\\s*\\z");
     }
+
+    public static String stringify(Object[] values, String delimiter){
+        StringBuilder sb = new StringBuilder();
+        for (Object value : values){
+            if (sb.length() > 0){
+                sb.append(delimiter);
+            }
+            sb.append(value);
+        }
+        return sb.toString();
+    }
 }

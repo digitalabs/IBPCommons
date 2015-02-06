@@ -94,6 +94,65 @@ public class ExportServiceImplTest {
 		}
 		reader.close();
 	}
+	
+	@Test
+	public void testGenerateCSVFileWithHeader() throws IOException {
+
+		File generatedFile = exportService.generateCSVFile(columnValues, columnsHeaders,
+				testFileName, true);
+
+		CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
+
+		int index = 0;
+		String[] nextLine;
+		while ((nextLine = reader.readNext()) != null) {
+			if (nextLine != null) {
+				// Verifying the read data here
+				String actualData[];
+				if (index == 0) {
+					// get the columns
+					actualData = exportService.getColumnHeaderNames(columnsHeaders);
+				} else {
+					// the actual data
+					actualData = exportService.getColumnValues(columnValues.get(index - 1),
+							columnsHeaders);
+				}
+				Assert.assertEquals(
+						"Should have the same value in the file and the java representation of the string arrays",
+						Arrays.toString(actualData), Arrays.toString(nextLine));
+			}
+			index++;
+		}
+		reader.close();
+	}
+	
+	@Test
+	public void testGenerateCSVFileWithoutHeader() throws IOException {
+
+		File generatedFile = exportService.generateCSVFile(columnValues, columnsHeaders,
+				testFileName, false);
+
+		CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
+
+		int index = 0;
+		String[] nextLine;
+		while ((nextLine = reader.readNext()) != null) {
+			if (nextLine != null) {
+				// Verifying the read data here
+				String actualData[];
+				//we don't inclde the header in the checking
+				// the actual data
+				actualData = exportService.getColumnValues(columnValues.get(index),
+							columnsHeaders);
+				
+				Assert.assertEquals(
+						"Should have the same value in the file and the java representation of the string arrays",
+						Arrays.toString(actualData), Arrays.toString(nextLine));
+			}
+			index++;
+		}
+		reader.close();
+	}
 
 	@Test
 	public void testGetColumnValues() {

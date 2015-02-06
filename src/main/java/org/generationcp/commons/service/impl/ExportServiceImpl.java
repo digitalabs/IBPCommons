@@ -65,12 +65,20 @@ public class ExportServiceImpl implements ExportService{
 	@Override
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
 			List<ExportColumnHeader> exportColumnHeaders, String fileNameFullPath) throws IOException {
+		return generateCSVFile(exportColumnValues, exportColumnHeaders, fileNameFullPath, true);
+	}
+
+	@Override
+	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
+			List<ExportColumnHeader> exportColumnHeaders, String fileNameFullPath,
+			boolean includeHeader) throws IOException {
 		File newFile = new File(fileNameFullPath);
 		CSVWriter writer = new CSVWriter(new FileWriter(newFile), ',', CSVWriter.NO_QUOTE_CHARACTER);
 		// feed in your array (or convert your data to an array)
 		List<String[]> rowValues = new ArrayList<String[]>();
-		
-		rowValues.add(getColumnHeaderNames(exportColumnHeaders));
+		if(includeHeader){
+			rowValues.add(getColumnHeaderNames(exportColumnHeaders));
+		}
 		for(int i = 0 ; i < exportColumnValues.size() ; i++){
 			rowValues.add(getColumnValues(exportColumnValues.get(i), exportColumnHeaders));
 		}
