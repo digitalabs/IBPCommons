@@ -44,6 +44,8 @@ public enum ColumnLabels {
     , TOTAL(TermId.TOTAL_INVENTORY, "TOTAL")
     , UNITS(TermId.UNITS_INVENTORY, "UNITS")
     
+    //GERMPLASM CHECK
+    , ENTRY_TYPE(TermId.ENTRY_TYPE, "CHECK TYPE");
 	;
 	 
 	private TermId termId;
