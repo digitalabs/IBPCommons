@@ -450,7 +450,7 @@ public class MySQLUtil {
         LOG.debug("Process terminated with value "+exitValue);
         if (exitValue != 0) {
             // fail
-            throw new IOException("Could not restore the backup");
+            throw new IOException("Could not run the file:" + sqlFile.getAbsolutePath());
         } else {
             // success
         }
