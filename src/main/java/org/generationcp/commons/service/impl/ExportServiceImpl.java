@@ -527,7 +527,7 @@ public class ExportServiceImpl implements ExportService{
         localIdCell.setCellStyle(styles.get(NUMERIC_STYLE));
     }
 	
-	protected void writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet,
+	public void writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet,
 			int startingRow, GermplasmList germplasmList) {
         int actualRow = startingRow - 1;
         
