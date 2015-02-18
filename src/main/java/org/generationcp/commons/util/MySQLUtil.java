@@ -23,6 +23,8 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.generationcp.commons.exceptions.SQLFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -370,7 +372,7 @@ public class MySQLUtil {
         }
     }
 
-    public void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
+    public void runScriptFromFile(String dbName, File sqlFile) throws SQLFileException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
         if (mysqlPath != null) {
@@ -401,20 +403,26 @@ public class MySQLUtil {
             );
         }
 
-        Process mysqlRestoreProcess = pb.start();
-        String errorOut = readProcessInputAndErrorStream(mysqlRestoreProcess);
+        Process mysqlRestoreProcess;
+		try {
+			mysqlRestoreProcess = pb.start();
+			String errorOut = readProcessInputAndErrorStream(mysqlRestoreProcess);
+
+			int exitValue = mysqlRestoreProcess.waitFor();
+			LOG.debug("Process terminated with value "+exitValue);
+			
+			if (exitValue != 0) {
+				LOG.error(errorOut);
+				throw new IOException(errorOut);
+			}
+		} catch (IOException | InterruptedException e) {
+			throw new SQLFileException(e);
+		}
 
 
-        int exitValue = mysqlRestoreProcess.waitFor();
-        LOG.debug("Process terminated with value "+exitValue);
-
-        if (exitValue != 0) {
-        	LOG.error(errorOut);
-            throw new IOException(errorOut);
-        }
     }
 
-    public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
+    public void runScriptFromFile(File sqlFile) throws SQLFileException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
         if (mysqlPath != null) {
@@ -442,18 +450,20 @@ public class MySQLUtil {
             );
         }
 
-        Process mysqlRestoreProcess = pb.start();
-        readProcessInputAndErrorStream(mysqlRestoreProcess);
-
-
-        int exitValue = mysqlRestoreProcess.waitFor();
-        LOG.debug("Process terminated with value "+exitValue);
-        if (exitValue != 0) {
-            // fail
-            throw new IOException("Could not run the file:" + sqlFile.getAbsolutePath());
-        } else {
-            // success
-        }
+        Process mysqlRestoreProcess;
+		try {
+			mysqlRestoreProcess = pb.start();
+			readProcessInputAndErrorStream(mysqlRestoreProcess);
+			
+			int exitValue = mysqlRestoreProcess.waitFor();
+			LOG.debug("Process terminated with value "+exitValue);
+			if (exitValue != 0) {
+				// fail
+				throw new IOException("Could not run the file:" + sqlFile.getAbsolutePath());
+			}
+		} catch (IOException | InterruptedException e) {
+			throw new SQLFileException(e);
+		}
     }
 
 
@@ -657,35 +667,27 @@ public class MySQLUtil {
         }
         finally {
             if (rs != null) {
-                try {
-                    rs.close();
-                }
-                finally {
-                }
+                rs.close();
             }
             if (stmt != null) {
-                try {
-                    stmt.close();
-                }
-                finally {
-                }
+                stmt.close();
             }
         }
     }
 
 
 
-    public boolean runScriptsInDirectory(String databaseName, File directory) throws Exception {
+    public boolean runScriptsInDirectory(String databaseName, File directory) throws SQLFileException {
         return runScriptsInDirectory(databaseName, directory, true);
     }
 
     public boolean runScriptsInDirectory(String databaseName
-            , File directory, boolean stopOnError) throws Exception {
+            , File directory, boolean stopOnError) throws SQLFileException {
         return runScriptsInDirectory(databaseName, directory, stopOnError, true);
     }    
 
     public boolean runScriptsInDirectory(String databaseName
-            , File directory, boolean stopOnError, boolean logSqlError) throws Exception {
+            , File directory, boolean stopOnError, boolean logSqlError) throws SQLFileException {
         // get the sql files
         File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -701,7 +703,7 @@ public class MySQLUtil {
         for (File sqlFile : sqlFiles) {
             LOG.debug("Running script: "+sqlFile.getAbsolutePath());
            	if (null != databaseName) {
-                runScriptFromFile(databaseName, sqlFile);
+				runScriptFromFile(databaseName, sqlFile);
            	} else {
                 runScriptFromFile(sqlFile);
            	}
@@ -710,7 +712,7 @@ public class MySQLUtil {
         return true;
     }
 
-    public boolean runScriptsInDirectory(File directory) throws Exception {
+    public boolean runScriptsInDirectory(File directory) throws SQLFileException {
         return runScriptsInDirectory(null, directory, true);
     }
 
