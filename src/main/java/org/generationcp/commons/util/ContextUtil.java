@@ -179,7 +179,7 @@ public class ContextUtil {
 		return false;
 	}
 
-	public static ContextInfo getContextInfoFromRequest(HttpServletRequest request) {
+	public static ContextInfo  getContextInfoFromRequest(HttpServletRequest request) {
 		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
 		Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
 		String authToken = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
