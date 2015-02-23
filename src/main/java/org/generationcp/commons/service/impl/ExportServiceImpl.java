@@ -22,6 +22,7 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -243,6 +244,7 @@ public class ExportServiceImpl implements ExportService{
     	Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
     	GermplasmList germplasmList = input.getGermplasmList(); 
     	List<GermplasmListData> listDatas = germplasmList.getListData();
+    	Map<Integer,GermplasmParents> germplasmParentsMap = input.getGermplasmParents();
     	
         createListEntriesHeaderRow(styles, observationSheet, input);
         
@@ -251,32 +253,52 @@ public class ExportServiceImpl implements ExportService{
             HSSFRow listEntry = observationSheet.createRow(i);
             
             int j = 0;
-            if(visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
+            if(visibleColumnMap.containsKey(ColumnLabels.ENTRY_ID.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
             	listEntry.createCell(j).setCellValue(listData.getEntryId());
             	j++;
             }
             
-            if(visibleColumnMap.get(ColumnLabels.GID.getName())){
+            if(visibleColumnMap.containsKey(ColumnLabels.GID.getName()) && visibleColumnMap.get(ColumnLabels.GID.getName())){
             	listEntry.createCell(j).setCellValue(listData.getGid());
             	j++;
             }
             
-            if(visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
+            if(visibleColumnMap.containsKey(ColumnLabels.ENTRY_CODE.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
             	listEntry.createCell(j).setCellValue(listData.getEntryCode());
             	j++;
             }
             
-            if(visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
+            if(visibleColumnMap.containsKey(ColumnLabels.DESIGNATION.getName()) && visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
             	listEntry.createCell(j).setCellValue(listData.getDesignation());
             	j++;
             }
             
-            if(visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
+            if(visibleColumnMap.containsKey(ColumnLabels.PARENTAGE.getName()) && visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
             	listEntry.createCell(j).setCellValue(listData.getGroupName());
             	j++;
             }
             
-            if(visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
+            if(visibleColumnMap.containsKey(ColumnLabels.FEMALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.FEMALE_PARENT.getName())){
+            	listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getFemaleParentName());
+            	j++;
+            }
+            
+            if(visibleColumnMap.containsKey(ColumnLabels.MALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.MALE_PARENT.getName())){
+            	listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getMaleParentName());
+            	j++;
+            }
+            
+            if(visibleColumnMap.containsKey(ColumnLabels.FGID.getName()) && visibleColumnMap.get(ColumnLabels.FGID.getName())){
+            	listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getFgid());
+            	j++;
+            }
+            
+            if(visibleColumnMap.containsKey(ColumnLabels.MGID.getName()) && visibleColumnMap.get(ColumnLabels.MGID.getName())){
+            	listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getMgid());
+            	j++;
+            }
+            
+            if(visibleColumnMap.containsKey(ColumnLabels.SEED_SOURCE.getName()) && visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
             	listEntry.createCell(j).setCellValue(listData.getSeedSource());
             	j++;
             }
@@ -295,42 +317,70 @@ public class ExportServiceImpl implements ExportService{
 		HSSFRow listEntriesHeader = observationSheet.createRow(0);
         
         int columnIndex = 0;
-        if(visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.ENTRY_ID.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
         	Cell entryIdCell = listEntriesHeader.createCell(columnIndex);
             entryIdCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.ENTRY_ID, columnStandardVariableMap));
             entryIdCell.setCellStyle(styles.get(HEADING_STYLE));
             columnIndex++;
         }
         
-        if(visibleColumnMap.get(ColumnLabels.GID.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.GID.getName()) && visibleColumnMap.get(ColumnLabels.GID.getName())){
 	        Cell gidCell = listEntriesHeader.createCell(columnIndex);
 	        gidCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.GID, columnStandardVariableMap));
 	        gidCell.setCellStyle(styles.get(HEADING_STYLE));
 	        columnIndex++;
         }
         
-        if(visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.ENTRY_CODE.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
 	        Cell entryCodeCell = listEntriesHeader.createCell(columnIndex);
 	        entryCodeCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.ENTRY_CODE, columnStandardVariableMap));
 	        entryCodeCell.setCellStyle(styles.get(HEADING_STYLE));
 	        columnIndex++;
         }
         
-        if(visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.DESIGNATION.getName()) && visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
 	        Cell designationCell = listEntriesHeader.createCell(columnIndex);
 	        designationCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.DESIGNATION, columnStandardVariableMap));
 	        designationCell.setCellStyle(styles.get(HEADING_STYLE));
 	        columnIndex++;
         }
         
-        if(visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.PARENTAGE.getName()) && visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
 	        Cell crossCell = listEntriesHeader.createCell(columnIndex);
 	        crossCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.PARENTAGE, columnStandardVariableMap));
 	        crossCell.setCellStyle(styles.get(HEADING_STYLE));
 	        columnIndex++;
         }
         
-        if(visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.FEMALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.FEMALE_PARENT.getName())){
+	        Cell crossCell = listEntriesHeader.createCell(columnIndex);
+	        crossCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.FEMALE_PARENT, columnStandardVariableMap));
+	        crossCell.setCellStyle(styles.get(HEADING_STYLE));
+	        columnIndex++;
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.MALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.MALE_PARENT.getName())){
+	        Cell crossCell = listEntriesHeader.createCell(columnIndex);
+	        crossCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.MALE_PARENT, columnStandardVariableMap));
+	        crossCell.setCellStyle(styles.get(HEADING_STYLE));
+	        columnIndex++;
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.FGID.getName()) && visibleColumnMap.get(ColumnLabels.FGID.getName())){
+	        Cell crossCell = listEntriesHeader.createCell(columnIndex);
+	        crossCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.FGID, columnStandardVariableMap));
+	        crossCell.setCellStyle(styles.get(HEADING_STYLE));
+	        columnIndex++;
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.MGID.getName()) && visibleColumnMap.get(ColumnLabels.MGID.getName())){
+	        Cell crossCell = listEntriesHeader.createCell(columnIndex);
+	        crossCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.MGID, columnStandardVariableMap));
+	        crossCell.setCellStyle(styles.get(HEADING_STYLE));
+	        columnIndex++;
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.SEED_SOURCE.getName()) && visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
 	        Cell sourceCell = listEntriesHeader.createCell(columnIndex);
 	        sourceCell.setCellValue(getTermNameFromStandardVariable(ColumnLabels.SEED_SOURCE, columnStandardVariableMap));
 	        sourceCell.setCellStyle(styles.get(HEADING_STYLE));
@@ -397,7 +447,7 @@ public class ExportServiceImpl implements ExportService{
         spaceCell.setCellValue(NESTED_IN);
         spaceCell.setCellStyle(styles.get(HEADING_STYLE));
         
-        if(visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.ENTRY_ID.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
         	
         	StandardVariable entryNumber = columnStandardVariables.get(ColumnLabels.ENTRY_ID.getTermId().getId());
         	HSSFRow entryIdRow = descriptionSheet.createRow(++actualRow);
@@ -419,7 +469,7 @@ public class ExportServiceImpl implements ExportService{
 	        
         }
         
-        if(visibleColumnMap.get(ColumnLabels.GID.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.GID.getName()) && visibleColumnMap.get(ColumnLabels.GID.getName())){
         	
         	StandardVariable gid = columnStandardVariables.get(ColumnLabels.GID.getTermId().getId());
         	HSSFRow gidRow = descriptionSheet.createRow(++actualRow);
@@ -441,7 +491,7 @@ public class ExportServiceImpl implements ExportService{
             
         }
         
-        if(visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.ENTRY_CODE.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
         	
         	StandardVariable entryCode = columnStandardVariables.get(ColumnLabels.ENTRY_CODE.getTermId().getId());
         	HSSFRow entryCodeRow = descriptionSheet.createRow(++actualRow);
@@ -464,7 +514,7 @@ public class ExportServiceImpl implements ExportService{
             
         }
         
-        if(visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.DESIGNATION.getName()) && visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
         	
         	StandardVariable designation = columnStandardVariables.get(ColumnLabels.DESIGNATION.getTermId().getId());
         	HSSFRow designationRow = descriptionSheet.createRow(++actualRow);
@@ -486,7 +536,7 @@ public class ExportServiceImpl implements ExportService{
             
         }
         
-        if(visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.PARENTAGE.getName()) && visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
         	
         	StandardVariable parentage = columnStandardVariables.get(ColumnLabels.PARENTAGE.getTermId().getId());
         	HSSFRow crossRow = descriptionSheet.createRow(++actualRow);
@@ -507,7 +557,84 @@ public class ExportServiceImpl implements ExportService{
             
         }
         
-        if(visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
+        if(visibleColumnMap.containsKey(ColumnLabels.FEMALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.FEMALE_PARENT.getName())){
+        	
+        	StandardVariable femaleParent = columnStandardVariables.get(ColumnLabels.FEMALE_PARENT.getTermId().getId());
+        	HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
+        	
+        	if (femaleParent!=null){
+        		sourceRow.createCell(0).setCellValue(femaleParent.getName());
+                sourceRow.createCell(1).setCellValue(femaleParent.getDescription());
+        	} else {
+        		sourceRow.createCell(0).setCellValue("FEMALE PARENT");
+                sourceRow.createCell(1).setCellValue("NAME OF FEMALE PARENT");
+        	}
+        	
+        	sourceRow.createCell(2).setCellValue("GERMPLASM ID");
+            sourceRow.createCell(3).setCellValue("DBCV");
+            sourceRow.createCell(4).setCellValue("FEMALE SELECTED");
+            sourceRow.createCell(5).setCellValue("C");
+            sourceRow.createCell(6).setCellValue("");
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.MALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.MALE_PARENT.getName())){
+        	
+        	StandardVariable maleParent = columnStandardVariables.get(ColumnLabels.MALE_PARENT.getTermId().getId());
+        	HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
+        	
+        	if (maleParent!=null){
+        		sourceRow.createCell(0).setCellValue(maleParent.getName());
+                sourceRow.createCell(1).setCellValue(maleParent.getDescription());
+        	} else {
+        		sourceRow.createCell(0).setCellValue("MALE PARENT");
+                sourceRow.createCell(1).setCellValue("NAME OF MALE PARENT");
+        	}
+        	sourceRow.createCell(2).setCellValue("GERMPLASM ID");
+            sourceRow.createCell(3).setCellValue("DBCV");
+            sourceRow.createCell(4).setCellValue("MALE SELECTED");
+            sourceRow.createCell(5).setCellValue("C");
+            sourceRow.createCell(6).setCellValue("");
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.FGID.getName()) && visibleColumnMap.get(ColumnLabels.FGID.getName())){
+        	
+        	StandardVariable fgid = columnStandardVariables.get(ColumnLabels.FGID.getTermId().getId());
+        	HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
+        	
+        	if (fgid!=null){
+        		sourceRow.createCell(0).setCellValue(fgid.getName());
+                sourceRow.createCell(1).setCellValue(fgid.getDescription());
+        	}else{
+        		sourceRow.createCell(0).setCellValue("FGID");
+                sourceRow.createCell(1).setCellValue("GID OF FEMALE PARENT");
+        	}
+            sourceRow.createCell(2).setCellValue("GERMPLASM ID");
+            sourceRow.createCell(3).setCellValue("DBCV");
+            sourceRow.createCell(4).setCellValue("FEMALE SELECTED");
+            sourceRow.createCell(5).setCellValue("C");
+            sourceRow.createCell(6).setCellValue("");
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.MGID.getName()) && visibleColumnMap.get(ColumnLabels.MGID.getName())){
+        	
+        	StandardVariable mgid = columnStandardVariables.get(ColumnLabels.MGID.getTermId().getId());
+        	HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
+        	
+        	if (mgid!=null){
+        		sourceRow.createCell(0).setCellValue(mgid.getName());
+                sourceRow.createCell(1).setCellValue(mgid.getDescription());
+        	}else{
+        		sourceRow.createCell(0).setCellValue("MGID");
+                sourceRow.createCell(1).setCellValue("GID OF MALE PARENT");
+        	}
+            sourceRow.createCell(2).setCellValue("GERMPLASM ID");
+            sourceRow.createCell(3).setCellValue("DBCV");
+            sourceRow.createCell(4).setCellValue("MALE SELECTED");
+            sourceRow.createCell(5).setCellValue("C");
+            sourceRow.createCell(6).setCellValue("");
+        }
+        
+        if(visibleColumnMap.containsKey(ColumnLabels.SEED_SOURCE.getName()) && visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
         	
         	StandardVariable seedSource = columnStandardVariables.get(ColumnLabels.SEED_SOURCE.getTermId().getId());
         	HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);

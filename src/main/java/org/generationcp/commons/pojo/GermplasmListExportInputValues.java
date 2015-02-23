@@ -15,6 +15,7 @@ public class GermplasmListExportInputValues {
 	private Integer currentLocalIbdbUserId; 
 	private Map<String,Boolean> visibleColumnMap;
 	private Map<Integer,StandardVariable> columnStandardVariableMap;
+	private Map<Integer,GermplasmParents> germplasmParents;
 	
 	public GermplasmListExportInputValues() {
 		super();
@@ -78,5 +79,13 @@ public class GermplasmListExportInputValues {
 
 	public void setColumnStandardVariableMap(Map<Integer,StandardVariable> columnStandardVariableMap) {
 		this.columnStandardVariableMap = columnStandardVariableMap;
+	}
+
+	public Map<Integer, GermplasmParents> getGermplasmParents() {
+		return germplasmParents;
+	}
+
+	public void setGermplasmParents(Map<Integer, GermplasmParents> germplasmParents) {
+		this.germplasmParents = germplasmParents;
 	}
 }
