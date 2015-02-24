@@ -77,7 +77,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	
 	@Autowired
 	private Cloner cloner;
-	
+
 	public BreedingViewImportServiceImpl(){
 		
 	}
@@ -130,7 +130,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				}
 
 				Stocks stocks = studyDataManager.getStocksInDataset(getPlotDataSet(studyId).getId());
-				DataSet dataSet = studyDataManager.getDataSet(getPlotDataSet(studyId).getId());
+				DataSet dataSet = getPlotDataSet(studyId);
 				
 				VariableTypeList meansVariatesList = getMeansVariableTypeList();
 				
@@ -264,7 +264,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			Map<String, Map<String, ArrayList<String>>> summaryStatsData = 
 					summaryStatsCSV.getData();
 
-			DataSet trialDataSet = DatasetUtil.getTrialDataSet(studyDataManager, studyId);
+			DataSet trialDataSet = getTrialDataSet(studyId);
 
 			//used in getting the new project properties
 			VariableTypeList variableTypeListVariates = getPlotDataSet(studyId).getVariableTypes().getVariates();
@@ -291,6 +291,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			for (String summaryStatName : summaryStatsList){
 
 				for(VariableType variate : variableTypeListVariates.getVariableTypes()) {
+					
+					if (nameToAliasMap.containsValue(variate.getLocalName())){
 
 						VariableType originalVariableType = null;
 						VariableType summaryStatVariableType = null;	
@@ -357,7 +359,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 							trialDataSet.getVariableTypes()
 							.add(summaryStatVariableType);
 						}
-					
+					}
 				}
 			}
 
@@ -455,7 +457,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				i++;
 			}
 			
-			TrialEnvironments trialEnvironments = studyDataManager.getTrialEnvironmentsInDataset(DatasetUtil.getPlotDataSetId(studyDataManager, studyId));
+			TrialEnvironments trialEnvironments = studyDataManager.getTrialEnvironmentsInDataset(getPlotDataSet(studyId).getId());
 			for (TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()){
 				ndGeolocationIds.put(trialEnv.getVariables()
 						.findByLocalName(outlierCSV.getTrialHeader()).getValue(), trialEnv.getId());
@@ -506,36 +508,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		importOutlierData(file, studyId);
 	}
 	
-	@Override
-	public boolean isValidMeansData(File file){
-		try {
-			new MeansCSV(file, null).validate();
-			return true;
-		} catch (BreedingViewInvalidFormatException e) {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean isValidOutlierData(File file){
-		try {
-			new OutlierCSV(file, null).validate();
-			return true;
-		} catch (BreedingViewInvalidFormatException e) {
-			return false;
-		}
-	}
-
-	@Override
-	public boolean isValidSummaryStatsData(File file){
-		try {
-			new SummaryStatsCSV(file, null).validate();
-			return true;
-		} catch (BreedingViewInvalidFormatException e) {
-			return false;
-		}
-	}
-	
 	protected DataSet getPlotDataSet(int studyId) throws MiddlewareQueryException {
 		if (plotDataSet != null && plotDataSet.getId() == studyId){
 			return plotDataSet;
@@ -543,6 +515,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			plotDataSet = studyDataManager.getDataSet(DatasetUtil.getPlotDataSetId(studyDataManager, studyId));
 		}
 		return plotDataSet;
+	}
+	
+	protected DataSet getTrialDataSet(int studyId) throws MiddlewareQueryException {
+		return DatasetUtil.getTrialDataSet(studyDataManager, studyId);
 	}
 	
 	protected DataSet appendVariableTypesToExistingMeans(
@@ -892,7 +868,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return new VariableTypeList();
 	}
 	
-	private Map<String, String> generateNameToAliasMap(int studyId) throws MiddlewareQueryException{
+	protected Map<String, String> generateNameToAliasMap(int studyId) throws MiddlewareQueryException{
 		
 		if (this.localNameToAliasMap != null){
 			return this.localNameToAliasMap;
@@ -1175,6 +1151,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	    
 	}
 
-	
+	protected void setCloner(Cloner cloner) {
+		this.cloner = cloner;
+	}
 	
 }

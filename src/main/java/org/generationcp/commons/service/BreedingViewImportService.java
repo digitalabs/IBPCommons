@@ -13,8 +13,6 @@ public interface BreedingViewImportService {
 	void importSummaryStatsData(File file, int studyId, Map<String, String> localNameToAliasMap) throws BreedingViewImportException;
 	void importOutlierData(File file, int studyId) throws BreedingViewImportException;
 	void importOutlierData(File file, int studyId, Map<String, String> localNameToAliasMap) throws BreedingViewImportException;
-	boolean isValidMeansData(File file);
-	boolean isValidOutlierData(File file);
-	boolean isValidSummaryStatsData(File file);
+	
 	
 }
