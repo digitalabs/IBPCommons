@@ -11,7 +11,12 @@
  *******************************************************************************/
 package org.generationcp.commons.util;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -19,10 +24,17 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.generationcp.commons.exceptions.SQLFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
@@ -130,8 +142,7 @@ public class MySQLUtil {
         if (mysqlDriver != null) {
             try {
                 Class.forName(mysqlDriver);
-            }
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 throw new SQLException("Cannot connect to database", e);
             }
         }
@@ -146,9 +157,9 @@ public class MySQLUtil {
     public void disconnect() {
         try {
             connection.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             // intentionally empty
+        	LOG.debug("Error closing connection");
         }
     }
 
@@ -169,7 +180,7 @@ public class MySQLUtil {
 
         String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
 
-        ArrayList<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath
+        List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath
                 ,"--complete-insert"
                 ,"--extended-insert"
                 ,"--no-create-db"
@@ -218,8 +229,7 @@ public class MySQLUtil {
 
         try {
             restoreDatabase(connection, databaseName, backupFile,preRestoreTasks);
-        }
-        finally {
+        } finally {
             disconnect();
         }
     }
@@ -245,18 +255,16 @@ public class MySQLUtil {
         executeQuery(connection,"DROP DATABASE IF EXISTS " + databaseName);
 
         // CREATE LOCAL DB INSTANCE
-        if (preRestoreTasks != null) {
-            if (!preRestoreTasks.call()) {
-                throw new Exception("Failure to generate LocalDB");
-            }
+        if (preRestoreTasks != null && !preRestoreTasks.call()) {
+            throw new Exception("Failure to generate LocalDB");
         }
 
         executeQuery(connection, "USE " + databaseName);
         
         // restore the backup
         try {
-        	
-        	dropSchemaVersion(connection, databaseName);//this is needed because the schema_version of the file must be followed
+        	//this is needed because the schema_version of the file must be followed
+        	dropSchemaVersion(connection, databaseName);
         	
             LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
             runScriptFromFile(databaseName, backupFile);
@@ -265,26 +273,25 @@ public class MySQLUtil {
             restoreUsersPersonsAfterRestoreDB(connection, databaseName);
 
 
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // fail restore using the selected backup, reverting to previous DB..
             LOG.error("Error encountered on restore",e);
 
             //GCP-7192 (Workaround) If insert data to listnms script fails and throws an error "Column count doesn't match value count at row 1"
             // try to adjust the table schema so the script will be executed successfully.
-            if (e.getMessage().contains("ERROR 1136 ")) { // ERROR 1136 = Column count doesn't match value count at row 1
+            // ERROR 1136 = Column count doesn't match value count at row 1
+            if (e.getMessage().contains("ERROR 1136 ")) { 
                 try {
                     executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
 
-                    if (preRestoreTasks != null) {
-                        if (!preRestoreTasks.call()) {
-                            throw new Exception("Failure to generate LocalDB");
-                        }
+                    if (preRestoreTasks != null && !preRestoreTasks.call()) {
+                        throw new Exception("Failure to generate LocalDB");
                     }
 
                     executeQuery(connection, "USE " + databaseName);
 
-                    alterListNmsTable(connection, databaseName); // delete the notes field
+                    // delete the notes field
+                    alterListNmsTable(connection, databaseName);
 
                     runScriptFromFile(databaseName, backupFile);
 
@@ -292,15 +299,15 @@ public class MySQLUtil {
                     restoreUsersPersonsAfterRestoreDB(connection, databaseName);
 
                 } catch (Exception e2) {
-                    throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
+                    throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile, e);
                 }
             } else {
-                throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
+                throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile, e);
             }
         }
     }
 
-    private IllegalStateException doRestoreToPreviousBackup(Connection connection, String databaseName,File currentDbBackupFile,String sqlErrorMsg) {
+    private IllegalStateException doRestoreToPreviousBackup(Connection connection, String databaseName, File currentDbBackupFile, Exception e) {
         if(currentDbBackupFile!=null) {
             try {
 
@@ -311,16 +318,15 @@ public class MySQLUtil {
                 executeQuery(connection, "USE " + databaseName);
 
                 runScriptFromFile(databaseName, currentDbBackupFile);
-            }
-            catch (Exception e1) {
+            } catch (Exception e1) {
                 String sorryMessage = "For some reason, the backup file cannot be restored"
                         + " and your original database is now broken. I'm so sorry."
                         + " If you have a backup file of your original database,"
                         + " you can try to restore it.";
-                return new IllegalStateException(sorryMessage);
+                return new IllegalStateException(sorryMessage, e1);
             }
         }
-        return new IllegalStateException("Looks like there are errors in your SQL file. Please use another backup file.");
+        return new IllegalStateException("Looks like there are errors in your SQL file. Please use another backup file.", e);
     }
 
 
@@ -370,7 +376,7 @@ public class MySQLUtil {
         }
     }
 
-    public void runScriptFromFile(String dbName, File sqlFile) throws IOException, InterruptedException {
+    public void runScriptFromFile(String dbName, File sqlFile) throws SQLFileException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
         if (mysqlPath != null) {
@@ -388,8 +394,7 @@ public class MySQLUtil {
                     ,"--execute=source " + sqlFile.getAbsoluteFile()
             );
 
-        }
-        else {
+        } else {
             pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--host=" + mysqlHost
                     ,"--port=" + mysqlPort
@@ -401,20 +406,26 @@ public class MySQLUtil {
             );
         }
 
-        Process mysqlRestoreProcess = pb.start();
-        String errorOut = readProcessInputAndErrorStream(mysqlRestoreProcess);
+        Process mysqlRestoreProcess;
+		try {
+			mysqlRestoreProcess = pb.start();
+			String errorOut = readProcessInputAndErrorStream(mysqlRestoreProcess);
+
+			int exitValue = mysqlRestoreProcess.waitFor();
+			LOG.debug("Process terminated with value "+exitValue);
+			
+			if (exitValue != 0) {
+				LOG.error(errorOut);
+				throw new IOException(errorOut);
+			}
+		} catch (IOException | InterruptedException e) {
+			throw new SQLFileException(e);
+		}
 
 
-        int exitValue = mysqlRestoreProcess.waitFor();
-        LOG.debug("Process terminated with value "+exitValue);
-
-        if (exitValue != 0) {
-        	LOG.error(errorOut);
-            throw new IOException(errorOut);
-        }
     }
 
-    public void runScriptFromFile(File sqlFile) throws IOException, InterruptedException {
+    public void runScriptFromFile(File sqlFile) throws SQLFileException {
         ProcessBuilder pb;
         String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
         if (mysqlPath != null) {
@@ -430,8 +441,7 @@ public class MySQLUtil {
                     ,"--default-character-set=utf8"
                     ,"--execute=source " + sqlFile.getAbsoluteFile()
             );
-        }
-        else {
+        } else {
             pb = new ProcessBuilder(mysqlAbsolutePath
                     ,"--host=" + mysqlHost
                     ,"--port=" + mysqlPort
@@ -442,18 +452,20 @@ public class MySQLUtil {
             );
         }
 
-        Process mysqlRestoreProcess = pb.start();
-        readProcessInputAndErrorStream(mysqlRestoreProcess);
-
-
-        int exitValue = mysqlRestoreProcess.waitFor();
-        LOG.debug("Process terminated with value "+exitValue);
-        if (exitValue != 0) {
-            // fail
-            throw new IOException("Could not restore the backup");
-        } else {
-            // success
-        }
+        Process mysqlRestoreProcess;
+		try {
+			mysqlRestoreProcess = pb.start();
+			readProcessInputAndErrorStream(mysqlRestoreProcess);
+			
+			int exitValue = mysqlRestoreProcess.waitFor();
+			LOG.debug("Process terminated with value "+exitValue);
+			if (exitValue != 0) {
+				// fail
+				throw new IOException("Could not run the file:" + sqlFile.getAbsolutePath());
+			}
+		} catch (IOException | InterruptedException e) {
+			throw new SQLFileException(e);
+		}
     }
 
 
@@ -498,8 +510,7 @@ public class MySQLUtil {
 
         try {
             return upgradeDatabase(connection, databaseName, updateDir);
-        }
-        finally {
+        } finally {
             disconnect();
         }
     }
@@ -527,9 +538,9 @@ public class MySQLUtil {
         // use the target database
         try {
             executeQuery(connection, "USE " + databaseName);
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             // ignore database creation error
+        	LOG.debug("Could not access current DB: " + databaseName);
         }
 
         // check our schema version
@@ -537,9 +548,9 @@ public class MySQLUtil {
         try {
             // get the current version of the database
             currentSchemaVersion = executeForStringResult(connection, "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1");
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             // assume old schema if there is an SQL error
+        	LOG.debug("Could not query value for schema_version");
         }
         LOG.debug("Executing upgradeDatabase from directory "+updateDir.getAbsolutePath());
         LOG.debug("Applying upgrade in database "+databaseName);
@@ -577,7 +588,7 @@ public class MySQLUtil {
             }
             return true;
         } catch(Exception e) {
-        	throw doRestoreToPreviousBackup(connection, databaseName,currentDbBackupFile,e.getMessage());
+        	throw doRestoreToPreviousBackup(connection, databaseName, currentDbBackupFile, e);
     	} finally {
     		LOG.debug("Enabling foreign key checks...");
     		String enableFk = "SET FOREIGN_KEY_CHECKS=1";
@@ -599,12 +610,12 @@ public class MySQLUtil {
 
         String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
 
-        File _customDir = new File(new File(customDir).getAbsolutePath());
-        if (!_customDir.exists() || !_customDir.isDirectory()) {
-            _customDir.mkdirs();
+        File bacKupCustomDir = new File(new File(customDir).getAbsolutePath());
+        if (!bacKupCustomDir.exists() || !bacKupCustomDir.isDirectory()) {
+            bacKupCustomDir.mkdirs();
         }
 
-        return StringUtil.joinIgnoreEmpty(File.separator, _customDir.getAbsolutePath(), name);
+        return StringUtil.joinIgnoreEmpty(File.separator, bacKupCustomDir.getAbsolutePath(), name);
     }
 
     public void executeQuery(Connection connection, String query) throws SQLException {
@@ -612,11 +623,11 @@ public class MySQLUtil {
 
         try {
             stmt.execute(query);
-        }
-        catch (SQLException e) {
+            
+        } catch (SQLException e) {
             throw e;
-        }
-        finally {
+            
+        } finally {
             if (stmt != null) {
                 stmt.close();
             }
@@ -629,11 +640,10 @@ public class MySQLUtil {
         try {
             stmt.executeUpdate(query);
             return true;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
+        	LOG.debug("Error executing query: " + query.toString());
             return false;
-        }
-        finally {
+        } finally {
             if (stmt != null) {
                 stmt.close();
             }
@@ -651,41 +661,31 @@ public class MySQLUtil {
                 return rs.getString(1);
             }
             return null;
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             throw e;
-        }
-        finally {
+        } finally {
             if (rs != null) {
-                try {
-                    rs.close();
-                }
-                finally {
-                }
+                rs.close();
             }
             if (stmt != null) {
-                try {
-                    stmt.close();
-                }
-                finally {
-                }
+                stmt.close();
             }
         }
     }
 
 
 
-    public boolean runScriptsInDirectory(String databaseName, File directory) throws Exception {
+    public boolean runScriptsInDirectory(String databaseName, File directory) throws SQLFileException {
         return runScriptsInDirectory(databaseName, directory, true);
     }
 
     public boolean runScriptsInDirectory(String databaseName
-            , File directory, boolean stopOnError) throws Exception {
+            , File directory, boolean stopOnError) throws SQLFileException {
         return runScriptsInDirectory(databaseName, directory, stopOnError, true);
     }    
 
     public boolean runScriptsInDirectory(String databaseName
-            , File directory, boolean stopOnError, boolean logSqlError) throws Exception {
+            , File directory, boolean stopOnError, boolean logSqlError) throws SQLFileException {
         // get the sql files
         File[] sqlFilesArray = directory.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -701,7 +701,7 @@ public class MySQLUtil {
         for (File sqlFile : sqlFiles) {
             LOG.debug("Running script: "+sqlFile.getAbsolutePath());
            	if (null != databaseName) {
-                runScriptFromFile(databaseName, sqlFile);
+				runScriptFromFile(databaseName, sqlFile);
            	} else {
                 runScriptFromFile(sqlFile);
            	}
@@ -710,7 +710,7 @@ public class MySQLUtil {
         return true;
     }
 
-    public boolean runScriptsInDirectory(File directory) throws Exception {
+    public boolean runScriptsInDirectory(File directory) throws SQLFileException {
         return runScriptsInDirectory(null, directory, true);
     }
 
@@ -721,8 +721,7 @@ public class MySQLUtil {
         try {
             executeQuery(connection, "USE " + databaseName);
             executeQuery(connection, "UPDATE LISTNMS SET LISTUID = "+userId);
-        }
-        finally {
+        } finally {
             disconnect();
         }
     }
@@ -751,7 +750,7 @@ public class MySQLUtil {
         			executeQuery(connection, "USE " + databaseName);
 					runScriptFromFile(databaseName, backupFile);
 				} catch (Exception e1) {
-					LOG.error(e.getMessage(),e);
+					LOG.error(e.getMessage(),e1);
 				}
     		}
     	} catch(Exception e) {

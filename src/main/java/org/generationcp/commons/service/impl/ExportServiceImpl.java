@@ -12,10 +12,7 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
@@ -62,6 +59,7 @@ public class ExportServiceImpl implements ExportService{
 	public static final String LABEL_STYLE = "labelStyle";
 	public static final String HEADING_STYLE = "headingStyle";
 	public static final String NUMERIC_STYLE = "numericStyle";
+	private static final String TEXT_STYLE = "textStyle";
 	
 	@Override
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues,
@@ -237,10 +235,11 @@ public class ExportServiceImpl implements ExportService{
             observationSheet.autoSizeColumn(ctr);
         }
 	}
-	
-	public void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet, 
-    			GermplasmListExportInputValues input) throws GermplasmListExporterException {
-    	
+
+	@Override
+	public void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet,
+			GermplasmListExportInputValues input) throws GermplasmListExporterException {
+
     	Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
     	GermplasmList germplasmList = input.getGermplasmList(); 
     	List<GermplasmListData> listDatas = germplasmList.getListData();
@@ -387,7 +386,7 @@ public class ExportServiceImpl implements ExportService{
 	        columnIndex++;
         }
 	}
-	
+
 	protected String getTermNameFromStandardVariable(ColumnLabels columnLabel, Map<Integer, StandardVariable> columnStandardVariableMap){
 		
 		StandardVariable standardVariable = columnStandardVariableMap.get(columnLabel.getTermId().getId());
@@ -400,7 +399,8 @@ public class ExportServiceImpl implements ExportService{
 		
 	}
 	
-	protected void generateDescriptionSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles,
+	@Override
+	public void generateDescriptionSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 		
 		HSSFSheet descriptionSheet = wb.createSheet("Description");
@@ -741,47 +741,58 @@ public class ExportServiceImpl implements ExportService{
         localIdCell.setCellStyle(styles.get(NUMERIC_STYLE));
     }
 	
-	protected void writeListDetailsSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, 
+	public void writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet,
 			int startingRow, GermplasmList germplasmList) {
         int actualRow = startingRow - 1;
         
-        HSSFRow nameRow = descriptionSheet.createRow(actualRow);
+        Row nameRow = descriptionSheet.createRow(actualRow);
         descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow, actualRow, 1, 7));
         Cell nameLabel = nameRow.createCell(0);
         nameLabel.setCellValue(LIST_NAME); 
         nameLabel.setCellStyle(styles.get(LABEL_STYLE));
-        nameRow.createCell(1).setCellValue(germplasmList.getName());
+        
+		Cell nameVal = nameRow.createCell(1);
+		nameVal.setCellValue(germplasmList.getName());
+		nameVal.setCellStyle(styles.get(TEXT_STYLE));
 
-        HSSFRow titleRow = descriptionSheet.createRow(actualRow + 1); 
+		Row titleRow = descriptionSheet.createRow(actualRow + 1);
         descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow + 1, actualRow + 1, 1, 7));
         Cell titleLabel = titleRow.createCell(0);
         titleLabel.setCellValue(LIST_DESCRIPTION);
         titleLabel.setCellStyle(styles.get(LABEL_STYLE));
-        titleRow.createCell(1).setCellValue(germplasmList.getDescription());
 
-        HSSFRow typeRow = descriptionSheet.createRow(actualRow + 2);
+		Cell titleVal = titleRow.createCell(1);
+		titleVal.setCellValue(germplasmList.getDescription());
+		titleVal.setCellStyle(styles.get(TEXT_STYLE));
+
+		Row typeRow = descriptionSheet.createRow(actualRow + 2);
         descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow + 2, actualRow + 2, 1, 7));
         Cell typeLabel = typeRow.createCell(0);
         typeLabel.setCellValue(LIST_TYPE); 
         typeLabel.setCellStyle(styles.get(LABEL_STYLE));
-        typeRow.createCell(1).setCellValue(germplasmList.getType());
-        
-        HSSFRow dateRow = descriptionSheet.createRow(actualRow + 3);
+
+		Cell typeVal = typeRow.createCell(1);
+		typeVal.setCellValue(germplasmList.getType());
+		typeVal.setCellStyle(styles.get(TEXT_STYLE));
+
+		Row dateRow = descriptionSheet.createRow(actualRow + 3);
         descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow + 3, actualRow + 3, 1, 7));
         Cell dateLabel = dateRow.createCell(0);
         dateLabel.setCellValue(LIST_DATE); 
         dateLabel.setCellStyle(styles.get(LABEL_STYLE));
-        Cell dateCell = dateRow.createCell(1);
+
+		Cell dateCell = dateRow.createCell(1);
         dateCell.setCellValue(germplasmList.getDate());
         dateCell.setCellStyle(styles.get(NUMERIC_STYLE));
     }
-	
-	protected Map<String, CellStyle> createStyles(HSSFWorkbook wb) {
+
+	@Override
+	public Map<String, CellStyle> createStyles(Workbook wb) {
         Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
         
         // set cell style for labels in the description sheet
         CellStyle labelStyle = wb.createCellStyle();
-        labelStyle.setFillForegroundColor(IndexedColors.BROWN.getIndex());
+		labelStyle.setFillForegroundColor(IndexedColors.BROWN.getIndex());
         labelStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
         Font labelFont = wb.createFont();
         labelFont.setColor(IndexedColors.WHITE.getIndex());
@@ -803,8 +814,13 @@ public class ExportServiceImpl implements ExportService{
         CellStyle numericStyle = wb.createCellStyle();
         numericStyle.setAlignment(CellStyle.ALIGN_LEFT);
         styles.put(NUMERIC_STYLE, numericStyle);
-        
-        return styles;
+		
+		CellStyle textStyle = wb.createCellStyle();
+		textStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		textStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		styles.put(TEXT_STYLE,textStyle);
+
+		return styles;
     }
 	
 }
