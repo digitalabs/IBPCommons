@@ -192,7 +192,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				if (meansDataSet == null){
 					//save data
 					//get dataset using new datasetid
-					datasetReference = studyDataManager.addDataSet(studyId, meansVariatesList, datasetValues);
+					datasetReference = studyDataManager.addDataSet(studyId, meansVariatesList, datasetValues, "");
 					meansDataSet = studyDataManager.getDataSet(datasetReference.getId());
 				}
 

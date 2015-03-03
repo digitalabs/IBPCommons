@@ -155,7 +155,8 @@ public class BreedingViewImportServiceImplTest {
 		when(studyDataManager.getDataSet(EXISTING_MEANS_DATASET_ID)).thenReturn(null);
 		when(studyDataManager.getDataSet(NEW_MEANS_DATASET_ID)).thenReturn(createNewMeansDataSet());
 		when(studyDataManager.getStudy(anyInt())).thenReturn(study);
-		when(studyDataManager.addDataSet(anyInt(), (VariableTypeList) anyObject(), (DatasetValues) anyObject())).thenReturn(new DatasetReference(NEW_MEANS_DATASET_ID, EMPTY_VALUE));
+		when(studyDataManager.addDataSet(anyInt(), (VariableTypeList) anyObject(), (DatasetValues) anyObject(), anyString()))
+			.thenReturn(new DatasetReference(NEW_MEANS_DATASET_ID, EMPTY_VALUE));
 		when(studyDataManager.getStocksInDataset(anyInt())).thenReturn(stocks);
 		
 		when(ontologyDataManager.addMethod(anyString(), anyString())).thenReturn(createTerm(LS_MEAN_ID,LS_MEAN));
@@ -186,7 +187,8 @@ public class BreedingViewImportServiceImplTest {
 		when(studyDataManager.getDataSet(MEASUREMENT_DATASET_ID)).thenReturn(createMeasurementDataSet());
 		when(studyDataManager.getDataSet(EXISTING_MEANS_DATASET_ID)).thenReturn(createExistingMeansDataSet());
 		when(studyDataManager.getStudy(anyInt())).thenReturn(study);
-		when(studyDataManager.addDataSet(anyInt(), (VariableTypeList) anyObject(), (DatasetValues) anyObject())).thenReturn(new DatasetReference(NEW_MEANS_DATASET_ID, EMPTY_VALUE));
+		when(studyDataManager.addDataSet(anyInt(), (VariableTypeList) anyObject(), (DatasetValues) anyObject(), anyString()))
+			.thenReturn(new DatasetReference(NEW_MEANS_DATASET_ID, EMPTY_VALUE));
 		when(studyDataManager.getStocksInDataset(anyInt())).thenReturn(stocks);
 		
 		when(ontologyDataManager.addMethod(anyString(), anyString())).thenReturn(createTerm(LS_MEAN_ID, LS_MEAN));
@@ -214,7 +216,8 @@ public class BreedingViewImportServiceImplTest {
 		when(service.getPlotDataSet(STUDY_ID)).thenReturn(measurementDataSet);
 		when(studyDataManager.getDataSet(EXISTING_MEANS_DATASET_ID)).thenReturn(createExistingMeansDataSet());
 		when(studyDataManager.getStudy(anyInt())).thenReturn(study);
-		when(studyDataManager.addDataSet(anyInt(), (VariableTypeList) anyObject(), (DatasetValues) anyObject())).thenReturn(new DatasetReference(NEW_MEANS_DATASET_ID, EMPTY_VALUE));
+		when(studyDataManager.addDataSet(anyInt(), (VariableTypeList) anyObject(), (DatasetValues) anyObject(), anyString()))
+			.thenReturn(new DatasetReference(NEW_MEANS_DATASET_ID, EMPTY_VALUE));
 		when(studyDataManager.getStocksInDataset(anyInt())).thenReturn(stocks);
 		
 		when(ontologyDataManager.addMethod(anyString(), anyString())).thenReturn(createTerm(LS_MEAN_ID, LS_MEAN));
