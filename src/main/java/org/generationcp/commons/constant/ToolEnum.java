@@ -29,7 +29,8 @@ public enum ToolEnum {
 	,FIELDBOOK_WEB("fieldbook_web")
 	,NURSERY_MANAGER_FIELDBOOK_WEB("nursery_manager_fieldbook_web")
 	,TRIAL_MANAGER_FIELDBOOK_WEB("trial_manager_fieldbook_web")
-	,ONTOLOGY_BROWSER_FIELDBOOK_WEB("ontology_browser_fieldbook_web");
+	,ONTOLOGY_BROWSER_FIELDBOOK_WEB("ontology_browser_fieldbook_web")
+	,ONTOLOGY_MANAGER("ontology_manager");
 
 	String toolName;
 
