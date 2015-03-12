@@ -1107,7 +1107,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	        	String environment = nextLine[0].trim();
 	            String trait = null;
 				
-				trait = nameToAliasMapping.get(nextLine[1]).trim();
+				String traitString = nameToAliasMapping.get(nextLine[1]);
+				if (traitString != null){
+					trait = traitString.trim();
+				} 
+				
 				if (trait == null) {
 					trait = nextLine[1].trim();
 				}
