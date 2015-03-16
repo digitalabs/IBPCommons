@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +78,12 @@ public class ExportServiceImpl implements ExportService{
 			List<ExportColumnHeader> exportColumnHeaders, String fileNameFullPath,
 			boolean includeHeader) throws IOException {
 		File newFile = new File(fileNameFullPath);
-		CSVWriter writer = new CSVWriter(new FileWriter(newFile), ',', CSVWriter.NO_QUOTE_CHARACTER);
+		
+		CSVWriter writer = new CSVWriter(new OutputStreamWriter(
+                new FileOutputStream(fileNameFullPath), "UTF-8"),
+                ',', CSVWriter.NO_QUOTE_CHARACTER);
+
+		//CSVWriter writer = new CSVWriter(fw, ',', CSVWriter.NO_QUOTE_CHARACTER);
 		// feed in your array (or convert your data to an array)
 		List<String[]> rowValues = new ArrayList<String[]>();
 		if(includeHeader){
