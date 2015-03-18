@@ -2,7 +2,6 @@ package org.generationcp.commons.service.impl;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -83,7 +82,6 @@ public class ExportServiceImpl implements ExportService{
                 new FileOutputStream(fileNameFullPath), "UTF-8"),
                 ',', CSVWriter.NO_QUOTE_CHARACTER);
 
-		//CSVWriter writer = new CSVWriter(fw, ',', CSVWriter.NO_QUOTE_CHARACTER);
 		// feed in your array (or convert your data to an array)
 		List<String[]> rowValues = new ArrayList<String[]>();
 		if(includeHeader){

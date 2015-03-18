@@ -897,7 +897,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			this.nameToAliasMapping = nameToAliasMapping;
 		}
 
-		public Map<String, ArrayList<String>> csvToMap() throws Exception {
+		public Map<String, ArrayList<String>> csvToMap() throws IOException {
 
 			CSVReader reader = new CSVReader(new FileReader(file));
 			Map<String, ArrayList<String>> csvMap = new LinkedHashMap<String, ArrayList<String>>();
