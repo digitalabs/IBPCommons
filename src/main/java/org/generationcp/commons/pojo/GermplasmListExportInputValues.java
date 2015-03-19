@@ -1,7 +1,9 @@
 package org.generationcp.commons.pojo;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.pojos.GermplasmList;
 
 public class GermplasmListExportInputValues {
@@ -12,6 +14,8 @@ public class GermplasmListExportInputValues {
 	private String exporterName;
 	private Integer currentLocalIbdbUserId; 
 	private Map<String,Boolean> visibleColumnMap;
+	private Map<Integer,StandardVariable> columnStandardVariableMap;
+	private Map<Integer,GermplasmParents> germplasmParents;
 	
 	public GermplasmListExportInputValues() {
 		super();
@@ -63,5 +67,25 @@ public class GermplasmListExportInputValues {
 	
 	public void setVisibleColumnMap(Map<String, Boolean> visibleColumnMap) {
 		this.visibleColumnMap = visibleColumnMap;
+	}
+
+	public Map<Integer,StandardVariable> getColumnStandardVariableMap() {
+		if (columnStandardVariableMap == null){
+			return new HashMap<>();
+		}else{
+			return columnStandardVariableMap;
+		}
+	}
+
+	public void setColumnStandardVariableMap(Map<Integer,StandardVariable> columnStandardVariableMap) {
+		this.columnStandardVariableMap = columnStandardVariableMap;
+	}
+
+	public Map<Integer, GermplasmParents> getGermplasmParents() {
+		return germplasmParents;
+	}
+
+	public void setGermplasmParents(Map<Integer, GermplasmParents> germplasmParents) {
+		this.germplasmParents = germplasmParents;
 	}
 }
