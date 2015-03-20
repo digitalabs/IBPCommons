@@ -14,10 +14,14 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.support.servlet.MiddlewareServletContextListener;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -28,6 +32,9 @@ import java.util.Properties;
  */
 public class DatabaseConnectionFilter implements Filter {
 
+	private final static Logger LOG = LoggerFactory
+				.getLogger(DatabaseConnectionFilter.class);
+
 	public static final String ATTR_MANAGER_FACTORY = "managerFactory";
 	public static final String WORKBENCH_DATA_MANAGER = "workbenchDataManager";
 
@@ -36,17 +43,15 @@ public class DatabaseConnectionFilter implements Filter {
 	private String dbPort;
 	private String dbUsername;
 	private String dbPassword;
-	private HibernateSessionPerThreadProvider sessionProvider;
 	private Map<Long, SessionFactory> sessionFactoryMap;
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		this.filterConfig = filterConfig;
-		String databasePropertyFile =
-				filterConfig.getServletContext().getInitParameter(MiddlewareServletContextListener.PARAM_DATABASE_PROPERTY_FILE);
+
 		Properties props = new Properties();
 		try {
-			props.load(ResourceFinder.locateFile(databasePropertyFile).openStream());
+			props.load(getConfigFileInputStream());
 			dbHost = props.getProperty("workbench.host");
 			dbPort = props.getProperty("workbench.port");
 			dbUsername = props.getProperty("workbench.username");
@@ -58,10 +63,14 @@ public class DatabaseConnectionFilter implements Filter {
 		sessionFactoryMap = new HashMap<>();
 	}
 
-	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
-			FilterChain filterChain) throws IOException, ServletException {
+	protected InputStream getConfigFileInputStream() throws IOException{
+		String databasePropertyFile =
+						filterConfig.getServletContext().getInitParameter(
+								MiddlewareServletContextListener.PARAM_DATABASE_PROPERTY_FILE);
+		return ResourceFinder.locateFile(databasePropertyFile).openStream();
+	}
 
+	protected WorkbenchDataManager constructWorkbenchDataManager() {
 		ServletContext context = filterConfig.getServletContext();
 		SessionFactory workbenchSessionFactory = (SessionFactory) context.getAttribute(
 				MiddlewareServletContextListener.ATTR_WORKBENCH_SESSION_FACTORY);
@@ -69,51 +78,72 @@ public class DatabaseConnectionFilter implements Filter {
 		HibernateSessionProvider sessionProviderForWorkbench = new HibernateSessionPerRequestProvider(
 				workbenchSessionFactory);
 
-		WorkbenchDataManager workbenchDataManager = new WorkbenchDataManagerImpl(
+		return new WorkbenchDataManagerImpl(
 				sessionProviderForWorkbench);
+	}
+
+	protected SessionFactory retrieveCurrentProjectSessionFactory(Project project) throws IOException{
+
+		SessionFactory sessionFactory = sessionFactoryMap.get(project.getProjectId());
+		if (sessionFactory == null) {
+			String databaseName = project.getDatabaseName();
+			DatabaseConnectionParameters params = new DatabaseConnectionParameters(
+					dbHost, dbPort, databaseName, dbUsername, dbPassword);
+
+			sessionFactory = openSessionFactory(params);
+			sessionFactoryMap.put(project.getProjectId(), sessionFactory);
+		}
+
+		return sessionFactory;
+	}
+
+	// wrapper method around static call to ContextUtil to make it simpler to test
+	protected Project getCurrentProject(WorkbenchDataManager workbenchDataManager, ServletRequest servletRequest) throws MiddlewareQueryException{
+		return ContextUtil
+				.getProjectInContext(workbenchDataManager,
+						(HttpServletRequest) servletRequest);
+	}
+
+	// wrapper method around static call to ContextUtil to make it simpler to test
+	protected SessionFactory openSessionFactory(DatabaseConnectionParameters params) throws
+			FileNotFoundException {
+		return SessionFactoryUtil.openSessionFactory(params);
+	}
+
+	@Override
+	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
+			FilterChain filterChain) throws IOException, ServletException {
+
+		WorkbenchDataManager workbenchDataManager = constructWorkbenchDataManager();
 
 		servletRequest.setAttribute(WORKBENCH_DATA_MANAGER, workbenchDataManager);
 		ManagerFactory factory = null;
 
 		try {
-			Project project = ContextUtil
-					.getProjectInContext(workbenchDataManager, (HttpServletRequest) servletRequest);
+			Project project = getCurrentProject(workbenchDataManager, servletRequest);
+			SessionFactory sessionFactory = retrieveCurrentProjectSessionFactory(project);
 
-			SessionFactory sessionFactory = sessionFactoryMap.get(project.getProjectId());
-			String databaseName = project.getDatabaseName();
-			if (sessionFactory == null) {
+			assert sessionFactory != null;
 
-
-				DatabaseConnectionParameters params = new DatabaseConnectionParameters(
-						dbHost, String.valueOf(dbPort), databaseName, dbUsername, dbPassword);
-
-				sessionFactory = SessionFactoryUtil.openSessionFactory(params);
-				sessionFactoryMap.put(project.getProjectId(), sessionFactory);
-			}
-
-			if (sessionProvider == null && sessionFactory != null) {
-				sessionProvider = new HibernateSessionPerThreadProvider(sessionFactory);
-			} else {
-				sessionProvider.setSessionFactory(sessionFactory);
-			}
+			HibernateSessionPerThreadProvider sessionProvider = new HibernateSessionPerThreadProvider(sessionFactory);
 
 			// create a ManagerFactory and set the HibernateSessionProviders
 			// we don't need to set the SessionFactories here
 			// since we want to a Session Per Request
 			factory = new ManagerFactory();
 			factory.setSessionProvider(sessionProvider);
-			factory.setDatabaseName(databaseName);
+			factory.setDatabaseName(project.getDatabaseName());
 
 			servletRequest.setAttribute(ATTR_MANAGER_FACTORY, factory);
 
 			filterChain.doFilter(servletRequest,servletResponse);
 
 		} catch (MiddlewareQueryException e) {
-			e.printStackTrace();
-		}
-
-		if (factory != null) {
-			factory.close();
+			LOG.error(e.getMessage(), e);
+		} finally {
+			if (factory != null) {
+				factory.close();
+			}
 		}
 
 	}
@@ -125,5 +155,33 @@ public class DatabaseConnectionFilter implements Filter {
 				sessionFactory.close();
 			}
 		}
+	}
+
+	public FilterConfig getFilterConfig() {
+		return filterConfig;
+	}
+
+	public String getDbHost() {
+		return dbHost;
+	}
+
+	public String getDbPort() {
+		return dbPort;
+	}
+
+	public String getDbUsername() {
+		return dbUsername;
+	}
+
+	public String getDbPassword() {
+		return dbPassword;
+	}
+
+	public Map<Long, SessionFactory> getSessionFactoryMap() {
+		return sessionFactoryMap;
+	}
+
+	public void setSessionFactoryMap(Map<Long, SessionFactory> sessionFactoryMap) {
+		this.sessionFactoryMap = sessionFactoryMap;
 	}
 }
