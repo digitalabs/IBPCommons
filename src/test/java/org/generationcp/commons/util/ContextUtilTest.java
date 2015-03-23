@@ -36,8 +36,6 @@ public class ContextUtilTest {
 		testProject = new Project();
 		testProject.setProjectId(1L);
 		testProject.setProjectName("Rice Breeding Programme");
-		testProject.setLocalDbName("ibdbv2_rice_local");
-		testProject.setCentralDbName("ibdbv2_rice_central");
 	}
 
 	@Before

@@ -13,257 +13,68 @@ package org.generationcp.commons.hibernate;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.generationcp.commons.util.MySQLUtil;
 import org.generationcp.middleware.exceptions.ConfigException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider;
 import org.generationcp.middleware.hibernate.HibernateSessionProvider;
 import org.generationcp.middleware.hibernate.SessionFactoryUtil;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
 import org.generationcp.middleware.manager.ManagerFactory;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * The {@link DefaultManagerFactoryProvider} is an implementation of
- * {@link ManagerFactoryProvider} that expects central databases are named using
- * the format: <br>
- * <code>ibdb_&lt;crop type&gt;_central</code><br>
- * and local databases are named using the format: <br>
- * <code>&lt;crop type&gt;_&lt;project id&gt;_local</code><br>
- * 
- * @author Glenn Marintes
- */
-public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, HttpRequestAware {
-    private Map<Long, SessionFactory> localSessionFactories = 
-            new HashMap<Long, SessionFactory>();
-    private Map<CropType, SessionFactory> centralSessionFactories = 
-            new HashMap<CropType, SessionFactory>();
+public class DefaultManagerFactoryProvider extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
     
-    private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = 
-            new ThreadLocal<HttpServletRequest>();
+    private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
     
-    private Map<HttpServletRequest, HibernateSessionProvider> localSessionProviders = 
-            new HashMap<HttpServletRequest, HibernateSessionProvider>();
-    private Map<HttpServletRequest, HibernateSessionProvider> centralSessionProviders = 
-            new HashMap<HttpServletRequest, HibernateSessionProvider>();
-    
-	private static final Logger LOG = LoggerFactory.getLogger(DefaultManagerFactoryProvider.class);
-
-    private String localHost = "localhost";
-
-    private Integer localPort = 13306;
-
-    private String localUsername = "local";
-
-    private String localPassword = "local";
-
-    private String centralHost = "localhost";
-
-    private Integer centralPort = 13306;
-
-    private String centralUsername = "central";
-
-    private String centralPassword = "central";
-    
-    private int maxCachedLocalSessionFactories = 10;
-    private List<Long> projectAccessList = new LinkedList<Long>();
-    
-    private WorkbenchDataManager workbenchDataManager;
-    
-    private MySQLUtil mySQLUtil;
+    private Map<HttpServletRequest, HibernateSessionProvider> sessionProviders = new HashMap<HttpServletRequest, HibernateSessionProvider>();
     
     public DefaultManagerFactoryProvider() {
-	}
-    
-    public DefaultManagerFactoryProvider(WorkbenchDataManager workbenchDataManager, MySQLUtil mySQLUtil) {
-    	this.workbenchDataManager = workbenchDataManager;
-    	this.mySQLUtil = mySQLUtil;
-	}
-
-    public void setLocalHost(String localHost) {
-        this.localHost = localHost;
-    }
-
-    public void setLocalPort(Integer localPort) {
-        this.localPort = localPort;
-    }
-
-    public void setLocalUsername(String localUsername) {
-        this.localUsername = localUsername;
-    }
-
-    public void setLocalPassword(String localPassword) {
-        this.localPassword = localPassword;
-    }
-
-    public void setCentralHost(String centralHost) {
-        this.centralHost = centralHost;
-    }
-
-    public void setCentralPort(Integer centralPort) {
-        this.centralPort = centralPort;
-    }
-
-    public void setCentralUsername(String centralUsername) {
-        this.centralUsername = centralUsername;
-    }
-
-    public void setCentralPassword(String centralPassword) {
-        this.centralPassword = centralPassword;
+	
     }
     
-    protected synchronized void closeExcessLocalSessionFactory() {
-        if (projectAccessList.size() - 1 > maxCachedLocalSessionFactories) {
-            return;
-        }
-        
-        for (int index = projectAccessList.size() - 1; 
-                index >= maxCachedLocalSessionFactories - 1;
-                index--) {
-            Long projectId = projectAccessList.get(index);
-            
-            // close the session factory for the project
-            SessionFactory sessionFactory = localSessionFactories.get(projectId);
-            if (sessionFactory != null) {
-                sessionFactory.close();
-            }
-            
-            // remove the SessionFactory instance from our local session factory cache
-            localSessionFactories.remove(projectId);
-            projectAccessList.remove(index);
-        }
-    }
-
     @Override
     public synchronized ManagerFactory getManagerFactoryForProject(Project project) {
-        SessionFactory localSessionFactory = localSessionFactories.get(project.getProjectId());
-        String localDbName = null;
-        String centralDbName = null;
-        if (localSessionFactory != null) {
+        SessionFactory sessionFactory = sessionFactoryCache.get(project.getProjectId());
+        String databaseName = null;
+        if (sessionFactory != null) {
             projectAccessList.remove(project.getProjectId());
         }
         
-        localDbName = project.getCropType().getLocalDatabaseNameWithProject(project);
-        try {
-        	if(mySQLUtil!=null) {
-        		mySQLUtil.restoreDatabaseIfNotExists(
-					localDbName,
-					workbenchDataManager.getWorkbenchSetting().getInstallationDirectory());
-        	}
-		} catch (MiddlewareQueryException e1) {
-			LOG.error("Error: ", e1);
-		}
+        databaseName = project.getDatabaseName();
     	
-        if (localSessionFactory == null || localSessionFactory.isClosed()) {
+        if (sessionFactory == null || sessionFactory.isClosed()) {
             // close any excess cached session factory
-            closeExcessLocalSessionFactory();
+            closeExcessSessionFactory();
             
             DatabaseConnectionParameters params = new DatabaseConnectionParameters(
-                    localHost, String.valueOf(localPort), localDbName, localUsername, localPassword);
+                    dbHost, String.valueOf(dbPort), databaseName, dbUsername, dbPassword);
             try {
-                localSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                localSessionFactories.put(project.getProjectId(), localSessionFactory);
+                sessionFactory = SessionFactoryUtil.openSessionFactory(params);
+                sessionFactoryCache.put(project.getProjectId(), sessionFactory);
             } catch (FileNotFoundException e) {
                 throw new ConfigException("Cannot create a SessionFactory for " + project, e);
             }
         }
         
-        // add this local session factory to the head of the access list
+        // add this session factory to the head of the access list
         projectAccessList.add(0, project.getProjectId());
         
-        // get or create a central session factory
-        centralDbName = project.getCropType().getCentralDbName();
-        
-        SessionFactory centralSessionFactory = centralSessionFactories.get(project.getCropType());
-        if ((centralSessionFactory == null || centralSessionFactory.isClosed()) 
-                && project.getCropType().getCentralDbName() != null) {
-            DatabaseConnectionParameters params = 
-                    new DatabaseConnectionParameters(centralHost, String.valueOf(centralPort), 
-                            centralDbName, centralUsername, centralPassword);
-            try {
-                centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                centralSessionFactories.put(project.getCropType(), centralSessionFactory);
-            }
-            catch (FileNotFoundException e) {
-                throw new ConfigException("Cannot create a SessionFactory for " + project, e);
-            }
-        }
-        
         // get or create the HibernateSessionProvider for the current request
         HttpServletRequest request = CURRENT_REQUEST.get();
-        HibernateSessionProvider localSessionProvider = localSessionProviders.get(request);
-        if (localSessionProvider == null && localSessionFactory != null) {
-            localSessionProvider = new HibernateSessionPerRequestProvider(localSessionFactory);
-            localSessionProviders.put(request, localSessionProvider);
+        HibernateSessionProvider sessionProvider = sessionProviders.get(request);
+        if (sessionProvider == null && sessionFactory != null) {
+            sessionProvider = new HibernateSessionPerRequestProvider(sessionFactory);
+            sessionProviders.put(request, sessionProvider);
         }
         
-        HibernateSessionProvider centralSessionProvider = centralSessionProviders.get(request);
-        if (centralSessionProvider == null && centralSessionFactory != null) {
-            centralSessionProvider = new HibernateSessionPerRequestProvider(centralSessionFactory);
-            centralSessionProviders.put(request, centralSessionProvider);
-        }
-        
-        // create a ManagerFactory and set the HibernateSessionProviders
-        // we don't need to set the SessionFactories here
-        // since we want to a Session Per Request 
         ManagerFactory factory = new ManagerFactory();
-        factory.setSessionProviderForLocal(localSessionProvider);
-        factory.setSessionProviderForCentral(centralSessionProvider);
-        factory.setLocalDatabaseName(localDbName);
-        factory.setCentralDatabaseName(centralDbName);
-        return factory;
-    }
-    
-    @Override
-    public synchronized ManagerFactory getManagerFactoryForCropType(CropType cropType) {
-        String centralDbName = cropType.getCentralDbName();
-        if (centralDbName == null) {
-            return null;
-        }
-        
-        SessionFactory centralSessionFactory = centralSessionFactories.get(cropType);
-        if (centralSessionFactory == null || centralSessionFactory.isClosed()) {
-            DatabaseConnectionParameters params = 
-                    new DatabaseConnectionParameters(centralHost, 
-                            String.valueOf(centralPort), centralDbName, 
-                            centralUsername, centralPassword);
-            
-            try {
-                centralSessionFactory = SessionFactoryUtil.openSessionFactory(params);
-                centralSessionFactories.put(cropType, centralSessionFactory);
-            }
-            catch (FileNotFoundException e) {
-                throw new ConfigException("Cannot create a SessionFactory for " + cropType, e);
-            }
-        }
-        
-        // get or create the HibernateSessionProvider for the current request
-        HttpServletRequest request = CURRENT_REQUEST.get();
-        
-        HibernateSessionProvider centralSessionProvider = centralSessionProviders.get(request);
-        if (centralSessionProvider == null && centralSessionFactory != null) {
-            centralSessionProvider = new HibernateSessionPerRequestProvider(centralSessionFactory);
-            centralSessionProviders.put(request, centralSessionProvider);
-        }
-        
-        // create a ManagerFactory and set the HibernateSessionProviders
-        // we don't need to set the SessionFactories here
-        // since we want to a Session Per Request 
-        ManagerFactory factory = new ManagerFactory();
-        factory.setSessionProviderForCentral(centralSessionProvider);
-        
+        factory.setSessionProvider(sessionProvider);
+        factory.setDatabaseName(databaseName);
         return factory;
     }
     
@@ -275,64 +86,37 @@ public class DefaultManagerFactoryProvider implements ManagerFactoryProvider, Ht
     
     @Override
     public void onRequestEnded(HttpServletRequest request, HttpServletResponse response) {
-        HibernateSessionProvider localSessionProvider = localSessionProviders.get(request);
-        if (localSessionProvider != null) {
-            localSessionProvider.close();
-            localSessionProviders.remove(request);
+        HibernateSessionProvider sessionProvider = sessionProviders.get(request);
+        if (sessionProvider != null) {
+            sessionProvider.close();
+            sessionProviders.remove(request);
         }
-        
-        HibernateSessionProvider centralSessionProvider = centralSessionProviders.get(request);
-        if (centralSessionProvider != null) {
-            centralSessionProvider.close();
-            centralSessionProviders.remove(request);
-        }
-        
         CURRENT_REQUEST.remove();
     }
 
     @Override
     public synchronized void close() {
-        // close the HibernateSessionProviders
-        for (HttpServletRequest request : localSessionProviders.keySet()) {
-            HibernateSessionProvider provider = localSessionProviders.get(request);
+        for (HttpServletRequest request : sessionProviders.keySet()) {
+            HibernateSessionProvider provider = sessionProviders.get(request);
             if (provider != null) {
                 provider.close();
             }
         }
         
-        for (HttpServletRequest request : centralSessionProviders.keySet()) {
-            HibernateSessionProvider provider = centralSessionProviders.get(request);
-            if (provider != null) {
-                provider.close();
-            }
-        }
-        
-        // close the SessionFactories
-        for (Long projectId : localSessionFactories.keySet()) {
-            SessionFactory factory = localSessionFactories.get(projectId);
+        for (Long projectId : sessionFactoryCache.keySet()) {
+            SessionFactory factory = sessionFactoryCache.get(projectId);
             if (factory != null) {
                 factory.close();
             }
         }
-        
-        for (CropType cropType : centralSessionFactories.keySet()) {
-            SessionFactory factory = centralSessionFactories.get(cropType);
-            if (factory != null) {
-                factory.close();
-            }
-        }
-
-        // clear the cache
-        localSessionFactories.clear();
-        centralSessionFactories.clear();
-        localSessionProviders.clear();
-        centralSessionProviders.clear();
+        sessionFactoryCache.clear();
+        sessionProviders.clear();
     }
 
-    public void removeProjectFromLocalSession(long projectId) {
-    	if(localSessionFactories!=null && localSessionFactories.containsKey(projectId)) {
-    		localSessionFactories.get(projectId).close();
-    		localSessionFactories.remove(projectId);
+    public void removeProjectFromSessionCache(long projectId) {
+    	if(sessionFactoryCache!=null && sessionFactoryCache.containsKey(projectId)) {
+    		sessionFactoryCache.get(projectId).close();
+    		sessionFactoryCache.remove(projectId);
     	}
     }
 }
