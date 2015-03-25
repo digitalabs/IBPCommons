@@ -23,7 +23,7 @@ public class WorkbenchAppPathResolver {
 		HttpServletRequest request = requestAttributes.getRequest();
 
 		String paramFormat = !param.isEmpty() ? "?%s" : "";
-		String urlFormat = "%s://%s:%d/%s";
+		String urlFormat = "%s://%s:%d/%s" + paramFormat;
 
 		String scheme = request.getScheme();
 		String serverName = request.getServerName();
