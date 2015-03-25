@@ -105,14 +105,14 @@ public class DatabaseConnectionFilterTest {
 		Project project = mock(Project.class);
 		when(project.getProjectId()).thenReturn((long) 1);
 		when(project.getDatabaseName()).thenReturn(DUMMY_PROJECT_DATABASE_NAME);
-		doReturn(sessionFactory).when(dut).openSessionFactory(any(DatabaseConnectionParameters.class));
+		doReturn(sessionFactory).when(dut).openSessionFactory(any(DatabaseConnectionParameters.class), any(String[].class));
 
-		SessionFactory retrievedFactory = dut.retrieveCurrentProjectSessionFactory(project);
+		SessionFactory retrievedFactory = dut.retrieveCurrentProjectSessionFactory(project, new String[]{});
 
 		assertEquals(sessionFactory, retrievedFactory);
 
 		ArgumentCaptor<DatabaseConnectionParameters> argumentCaptor = ArgumentCaptor.forClass(DatabaseConnectionParameters.class);
-		verify(dut).openSessionFactory(argumentCaptor.capture());
+		verify(dut).openSessionFactory(argumentCaptor.capture(), any(String[].class));
 		assertEquals(DUMMY_PROJECT_DATABASE_NAME, argumentCaptor.getValue().getDbName());
 
 		assertEquals(sessionFactory, dut.getSessionFactoryMap().get(project.getProjectId()));
@@ -130,8 +130,8 @@ public class DatabaseConnectionFilterTest {
 
 		sessionFactoryMap.put(project.getProjectId(), sessionFactory);
 
-		assertEquals(sessionFactory, dut.retrieveCurrentProjectSessionFactory(project));
-		verify(dut, never()).openSessionFactory(any(DatabaseConnectionParameters.class));
+		assertEquals(sessionFactory, dut.retrieveCurrentProjectSessionFactory(eq(project), any(String[].class)));
+		verify(dut, never()).openSessionFactory(any(DatabaseConnectionParameters.class), any(String[].class));
 	}
 
 	@Test

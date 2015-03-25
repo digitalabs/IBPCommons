@@ -37,6 +37,7 @@ public class DatabaseConnectionFilter implements Filter {
 
 	public static final String ATTR_MANAGER_FACTORY = "managerFactory";
 	public static final String WORKBENCH_DATA_MANAGER = "workbenchDataManager";
+	public static final String PARAM_MIDDLEWARE_RESOURCE_FILES = "middleware_additional_resources";
 
 	private FilterConfig filterConfig;
 	private String dbHost;
@@ -82,7 +83,7 @@ public class DatabaseConnectionFilter implements Filter {
 				sessionProviderForWorkbench);
 	}
 
-	protected SessionFactory retrieveCurrentProjectSessionFactory(Project project) throws IOException{
+	protected SessionFactory retrieveCurrentProjectSessionFactory(Project project, String[] additionalResourceFiles) throws IOException{
 
 		SessionFactory sessionFactory = sessionFactoryMap.get(project.getProjectId());
 		if (sessionFactory == null) {
@@ -90,7 +91,7 @@ public class DatabaseConnectionFilter implements Filter {
 			DatabaseConnectionParameters params = new DatabaseConnectionParameters(
 					dbHost, dbPort, databaseName, dbUsername, dbPassword);
 
-			sessionFactory = openSessionFactory(params);
+			sessionFactory = openSessionFactory(params, additionalResourceFiles);
 			sessionFactoryMap.put(project.getProjectId(), sessionFactory);
 		}
 
@@ -105,9 +106,9 @@ public class DatabaseConnectionFilter implements Filter {
 	}
 
 	// wrapper method around static call to ContextUtil to make it simpler to test
-	protected SessionFactory openSessionFactory(DatabaseConnectionParameters params) throws
+	protected SessionFactory openSessionFactory(DatabaseConnectionParameters params, String[] additionalResourceFiles) throws
 			FileNotFoundException {
-		return SessionFactoryUtil.openSessionFactory(params);
+		return SessionFactoryUtil.openSessionFactory(null, params, additionalResourceFiles);
 	}
 
 	@Override
@@ -121,7 +122,16 @@ public class DatabaseConnectionFilter implements Filter {
 
 		try {
 			Project project = getCurrentProject(workbenchDataManager, servletRequest);
-			SessionFactory sessionFactory = retrieveCurrentProjectSessionFactory(project);
+
+			String paramResourceFile = filterConfig.getServletContext().getInitParameter(
+					PARAM_MIDDLEWARE_RESOURCE_FILES);
+
+			String[] additionalResourceFiles = null;
+			if (paramResourceFile != null && (!paramResourceFile.isEmpty())) {
+				additionalResourceFiles = paramResourceFile.split(",");
+			}
+
+			SessionFactory sessionFactory = retrieveCurrentProjectSessionFactory(project, additionalResourceFiles);
 
 			assert sessionFactory != null;
 
