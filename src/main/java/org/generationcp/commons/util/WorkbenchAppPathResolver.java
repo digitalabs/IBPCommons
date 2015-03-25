@@ -22,7 +22,8 @@ public class WorkbenchAppPathResolver {
 				.getRequestAttributes();
 		HttpServletRequest request = requestAttributes.getRequest();
 
-		String urlFormat = "%s://%s:%d/%s" + (!param.isEmpty() ? "?%s" : "");
+		String paramFormat = !param.isEmpty() ? "?%s" : "";
+		String urlFormat = "%s://%s:%d/%s";
 
 		String scheme = request.getScheme();
 		String serverName = request.getServerName();
@@ -30,7 +31,7 @@ public class WorkbenchAppPathResolver {
 
 		param = param.startsWith("?") | param.startsWith("&") ? param.substring(1) : param;
 
-		return String.format(urlFormat, scheme, serverName, port, url,param);
+		return !url.startsWith("http") ? String.format(urlFormat, scheme, serverName, port, url,param) : String.format("%s" + paramFormat,url,param);
 	}
 
 	public static String getWorkbenchAppPath(Tool tool, String idParam)
