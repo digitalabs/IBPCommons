@@ -65,7 +65,7 @@ public class FileDownloadResource extends FileResource{
 	public static String getDownloadFileName(String filename, HttpServletRequest request) {
 		String newFilename = filename;
 	      try{
-	    	  if (request != null && (request.getHeader("User-Agent").indexOf("MSIE") != -1 || request.getHeader("User-Agent").indexOf("Trident") != -1)) {
+	    	  if (request != null && (request.getHeader("User-Agent").indexOf("Chrome") != -1 ||request.getHeader("User-Agent").indexOf("MSIE") != -1 || request.getHeader("User-Agent").indexOf("Trident") != -1)) {
 	              URI uri = new URI(null, null, filename, null);
 	        	  	newFilename = uri.toASCIIString();
 	              return newFilename;
