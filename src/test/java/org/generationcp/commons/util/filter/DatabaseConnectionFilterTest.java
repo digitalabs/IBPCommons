@@ -130,7 +130,7 @@ public class DatabaseConnectionFilterTest {
 
 		sessionFactoryMap.put(project.getProjectId(), sessionFactory);
 
-		assertEquals(sessionFactory, dut.retrieveCurrentProjectSessionFactory(eq(project), any(String[].class)));
+		assertEquals(sessionFactory, dut.retrieveCurrentProjectSessionFactory(project, null));
 		verify(dut, never()).openSessionFactory(any(DatabaseConnectionParameters.class), any(String[].class));
 	}
 
