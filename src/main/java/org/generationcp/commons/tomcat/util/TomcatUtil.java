@@ -16,8 +16,16 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.generationcp.commons.util.Util;
+import org.generationcp.commons.util.WorkbenchAppPathResolver;
+import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TomcatUtil {
+    private final static Logger LOG = LoggerFactory.getLogger(TomcatUtil.class);
+
 
     private String managerUrl;
 
@@ -197,5 +205,38 @@ public class TomcatUtil {
         
         byte[] responseBody = method.getResponseBody();
         return status == HttpStatus.SC_OK ? new String(responseBody) : "";
+    }
+
+    public void deployWebAppIfNecessary(Tool tool) {
+        try {
+            if (Util.isOneOf(tool.getToolType(), ToolType.WEB_WITH_LOGIN, ToolType.WEB)) {
+                LOG.debug("Configuring Webapp" + tool.getToolName());
+
+                String contextPath = TomcatUtil
+                        .getContextPathFromUrl(WorkbenchAppPathResolver.getFullWebAddress(
+                                tool.getPath()));
+                String localWarPath = TomcatUtil
+                        .getLocalWarPathFromUrl(WorkbenchAppPathResolver.getFullWebAddress(
+                                tool.getPath()));
+
+                WebAppStatusInfo statusInfo = this.getWebAppStatus();
+
+                boolean deployed = statusInfo.isDeployed(contextPath);
+                boolean running = statusInfo.isRunning(contextPath);
+
+                if (running) {
+                    return;
+                }
+
+                if (!deployed) {
+                    this.deployLocalWar(contextPath, localWarPath);
+                } else {
+                    this.startWebApp(contextPath);
+                }
+
+            }
+        } catch (IOException e) {
+            LOG.error("cannot deploy " + tool.getToolName(), e);
+        }
     }
 }

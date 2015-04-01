@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
@@ -36,14 +37,6 @@ public class ExportServiceImplTest {
 	private static final int CURRENT_USER_ID = 1;
 	private static final Integer USER_ID = 1;
 	private static final int NO_OF_LIST_ENTRIES = 10;
-	
-    //Columns
-    private static final String ENTRY_ID = "entryId";
-    private static final String GID = "gid";
-    private static final String ENTRY_CODE = "entryCode";
-    private static final String DESIGNATION = "desig";
-    private static final String PARENTAGE = "parentage";
-    private static final String SEED_SOURCE = "seedSource";
 	
 	private ExportServiceImpl exportService;
 	private List<ExportColumnHeader> columnsHeaders;
@@ -272,7 +265,7 @@ public class ExportServiceImplTest {
 		Assert.assertTrue("Expected that the number of visibleColums = " + input.getVisibleColumnMap().size(),
 				visibleColumns == input.getVisibleColumnMap().size());
 		
-		input.getVisibleColumnMap().put(SEED_SOURCE, false);
+		input.getVisibleColumnMap().put(ColumnLabels.SEED_SOURCE.getName(), false);
 		visibleColumns = exportService.getNoOfVisibleColumns(input.getVisibleColumnMap());
 		Assert.assertTrue("Expected that the number of visibleColums = " + (input.getVisibleColumnMap().size() - 1),
 				visibleColumns == (input.getVisibleColumnMap().size() - 1));
@@ -303,28 +296,28 @@ public class ExportServiceImplTest {
         //Assert Header Row
         row = observationSheet.getRow(0);
         
-        if(visibleColumnMap.get(ENTRY_ID)){
-        	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY but didn't.",row.getCell(columnIndex).getStringCellValue(), "ENTRY");
+        if(visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
+        	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY but didn't.",row.getCell(columnIndex).getStringCellValue(), "ENTRY_ID");
         	columnIndex++;
         }
-        if(visibleColumnMap.get(GID)){
+        if(visibleColumnMap.get(ColumnLabels.GID.getName())){
         	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to GID but didn't.",row.getCell(columnIndex).getStringCellValue(), "GID");
         	columnIndex++;
         }
-        if(visibleColumnMap.get(ENTRY_CODE)){
+        if(visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
         	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY CODE but didn't.",row.getCell(columnIndex).getStringCellValue(), "ENTRY CODE");
         	columnIndex++;
         }
-        if(visibleColumnMap.get(DESIGNATION)){
+        if(visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
         	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to DESIGNATION but didn't.",row.getCell(columnIndex).getStringCellValue(), "DESIGNATION");
         	columnIndex++;
         }
-        if(visibleColumnMap.get(PARENTAGE)){
-        	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to CROSS but didn't.",row.getCell(columnIndex).getStringCellValue(), "CROSS");
+        if(visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
+        	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to CROSS but didn't.",row.getCell(columnIndex).getStringCellValue(), "PARENTAGE");
         	columnIndex++;
         }
-        if(visibleColumnMap.get(SEED_SOURCE)){
-        	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to SOURCE but didn't.",row.getCell(columnIndex).getStringCellValue(), "SOURCE");
+        if(visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
+        	Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to SOURCE but didn't.",row.getCell(columnIndex).getStringCellValue(), "SEED SOURCE");
         	columnIndex++;
         }
         
@@ -334,27 +327,27 @@ public class ExportServiceImplTest {
         	row = observationSheet.getRow(rowIndex);
         	
         	columnIndex = 0;
-        	if(visibleColumnMap.get(ENTRY_ID)){
+        	if(visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
         		Assert.assertEquals("Expecting " + getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to " + listData.getEntryId() + " but didn't.", getInteger(row.getCell(columnIndex).getNumericCellValue()), listData.getEntryId());
         		columnIndex++;
         	}
-        	if(visibleColumnMap.get(GID)){
+        	if(visibleColumnMap.get(ColumnLabels.GID.getName())){
         		Assert.assertEquals("Expecting " + getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to " + listData.getEntryId() + " but didn't.", getInteger(row.getCell(columnIndex).getNumericCellValue()), listData.getGid());
         		columnIndex++;
         	}
-        	if(visibleColumnMap.get(ENTRY_CODE)){
+        	if(visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
         		Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getEntryCode() + " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getEntryCode());
         		columnIndex++;
         	}
-        	if(visibleColumnMap.get(DESIGNATION)){
+        	if(visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
         		Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getDesignation() + " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getDesignation());
         		columnIndex++;
         	}
-        	if(visibleColumnMap.get(PARENTAGE)){
+        	if(visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
         		Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getGroupName() + " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getGroupName());
         		columnIndex++;
         	}
-        	if(visibleColumnMap.get(SEED_SOURCE)){
+        	if(visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
         		Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getSeedSource() + " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getSeedSource());
         		columnIndex++;
         	}
@@ -460,7 +453,7 @@ public class ExportServiceImplTest {
         
         
         int rowIndex = 11;
-        if(visibleColumnMap.get(ENTRY_ID)){
+        if(visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())){
         	 row = descriptionSheet.getRow(++rowIndex);
              Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to ENTRY but didn't.",row.getCell(0).getStringCellValue(), "ENTRY");
              Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to The germplasm entry number but didn't.",row.getCell(1).getStringCellValue(), "The germplasm entry number");
@@ -470,7 +463,7 @@ public class ExportServiceImplTest {
              Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.",row.getCell(5).getStringCellValue(), "N");
              Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to '' but didn't.",row.getCell(6).getStringCellValue(), "");
         }
-        if(visibleColumnMap.get(GID)){
+        if(visibleColumnMap.get(ColumnLabels.GID.getName())){
        	 	row = descriptionSheet.getRow(++rowIndex);
             Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to GID but didn't.",row.getCell(0).getStringCellValue(), "GID");
             Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to The GID of the germplasm but didn't.",row.getCell(1).getStringCellValue(), "The GID of the germplasm");
@@ -480,7 +473,7 @@ public class ExportServiceImplTest {
             Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.",row.getCell(5).getStringCellValue(), "N");
             Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to '' but didn't.",row.getCell(6).getStringCellValue(), "");
        }
-       if(visibleColumnMap.get(ENTRY_CODE)){
+       if(visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())){
        	 	row = descriptionSheet.getRow(++rowIndex);
             Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to ENTRY CODE but didn't.",row.getCell(0).getStringCellValue(), "ENTRY CODE");
             Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to Germplasm entry code but didn't.",row.getCell(1).getStringCellValue(), "Germplasm entry code");
@@ -490,7 +483,7 @@ public class ExportServiceImplTest {
             Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.",row.getCell(5).getStringCellValue(), "C");
             Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to '' but didn't.",row.getCell(6).getStringCellValue(), "");
        }
-       if(visibleColumnMap.get(DESIGNATION)){
+       if(visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())){
       	 	row = descriptionSheet.getRow(++rowIndex);
            Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to DESIGNATION but didn't.",row.getCell(0).getStringCellValue(), "DESIGNATION");
            Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to The name of the germplasm but didn't.",row.getCell(1).getStringCellValue(), "The name of the germplasm");
@@ -500,7 +493,7 @@ public class ExportServiceImplTest {
            Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to C but didn't.",row.getCell(5).getStringCellValue(), "C");
            Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to '' but didn't.",row.getCell(6).getStringCellValue(), "");
        }
-       if(visibleColumnMap.get(PARENTAGE)){
+       if(visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())){
      	 	row = descriptionSheet.getRow(++rowIndex);
           Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to CROSS but didn't.",row.getCell(0).getStringCellValue(), "CROSS");
           Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to The pedigree string of the germplasm but didn't.",row.getCell(1).getStringCellValue(), "The pedigree string of the germplasm");
@@ -510,7 +503,7 @@ public class ExportServiceImplTest {
           Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to C but didn't.",row.getCell(5).getStringCellValue(), "C");
           Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to '' but didn't.",row.getCell(6).getStringCellValue(), "");
        }
-       if(visibleColumnMap.get(SEED_SOURCE)){
+       if(visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())){
     	 	row = descriptionSheet.getRow(++rowIndex);
          Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to SOURCE but didn't.",row.getCell(0).getStringCellValue(), "SOURCE");
          Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to The seed source of the germplasm but didn't.",row.getCell(1).getStringCellValue(), "The seed source of the germplasm");
@@ -554,12 +547,12 @@ public class ExportServiceImplTest {
 	private Map<String, Boolean> getVisibleColumnMap() {
 		Map<String, Boolean> visibleColumnMap = new HashMap<String, Boolean>();
 		
-		visibleColumnMap.put(ENTRY_ID, true);
-		visibleColumnMap.put(DESIGNATION, true);
-		visibleColumnMap.put(PARENTAGE, true);
-		visibleColumnMap.put(SEED_SOURCE, true);
-		visibleColumnMap.put(GID, true);
-		visibleColumnMap.put(ENTRY_CODE, true);
+		visibleColumnMap.put(ColumnLabels.ENTRY_ID.getName(), true);
+		visibleColumnMap.put(ColumnLabels.DESIGNATION.getName(), true);
+		visibleColumnMap.put(ColumnLabels.PARENTAGE.getName(), true);
+		visibleColumnMap.put(ColumnLabels.SEED_SOURCE.getName(), true);
+		visibleColumnMap.put(ColumnLabels.GID.getName(), true);
+		visibleColumnMap.put(ColumnLabels.ENTRY_CODE.getName(), true);
 		
 		return visibleColumnMap;
 	}
@@ -584,15 +577,15 @@ public class ExportServiceImplTest {
     		GermplasmListData germplasmListData = new GermplasmListData();
     		germplasmListData.setId(x);
     		germplasmListData.setEntryId(x);
-    		germplasmListData.setDesignation(DESIGNATION + x);
-    		germplasmListData.setGroupName(PARENTAGE + x);
+    		germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
+    		germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
     		ListDataInventory inventoryInfo = new ListDataInventory(x,x);
     		inventoryInfo.setLotCount(1);
     		inventoryInfo.setReservedLotCount(1);
     		inventoryInfo.setActualInventoryLotCount(1);
     		germplasmListData.setInventoryInfo(inventoryInfo);
-    		germplasmListData.setEntryCode(ENTRY_CODE + x);
-    		germplasmListData.setSeedSource(SEED_SOURCE + x);
+    		germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
+    		germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
     		germplasmListData.setGid(x);
     		entries.add(germplasmListData);
     	}
