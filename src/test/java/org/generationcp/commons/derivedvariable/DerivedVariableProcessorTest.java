@@ -13,18 +13,18 @@ import org.junit.Test;
 
 public class DerivedVariableProcessorTest {
 
-	private static final String TERM_1 = "GY_kg_ha__DryWB";
-	private static final String TERM_2 = "EarW_kg__FieldWB";
-	private static final String TERM_3 = "WGN_pct";
-	private static final String UNMODIFIED_TERM_2 = "EarW_kg __FieldWB";
-	private static final String TERM_VALUE_1 = "10";
-	private static final String TERM_VALUE_2 = "5";
-	private static final String TERM_VALUE_3 = "2";
+	private static final String TERM_1 = "GrainWghtg";
+	private static final String TERM_2 = "Moisture";
+	private static final String TERM_3 = "\"PlotSize\"";
+	private static final String UNMODIFIED_TERM_2 = "% Moisture";
+	private static final String TERM_VALUE_1 = "1000";
+	private static final String TERM_VALUE_2 = "12.5";
+	private static final String TERM_VALUE_3 = "10";
 	private static final String TERM_NOT_FOUND = "TermNotFound";
-	private static final String FORMULA = "100*({"+TERM_1+"}/{"+TERM_2+"})";
-	private static final double EXPECTED_FORMULA_RESULT = 200;
-	private static final String FORMULA_2 = "{WGN_pct}*6";
-	private static final int EXPECTED_FORMULA_2_RESULT = 12;
+	private static final String FORMULA = "(\"{"+TERM_1+"}\"/100)*((100-{"+TERM_2+"})/(100-12.5))*(10/{"+TERM_3+"})";
+	private static final String EXPECTED_FORMULA_RESULT = "10";
+	private static final String FORMULA_2 = "{PlotSize}*6.23";
+	private static final String EXPECTED_FORMULA_2_RESULT = "62.3";
 	private DerivedVariableProcessor derivedVariableProcessor;
 	private Map<String,String> terms;
 	private String updatedFormula;
@@ -35,11 +35,11 @@ public class DerivedVariableProcessorTest {
 	}
 	
 	@Test
-	public void testRemoveAllWhiteSpaces() {
-		String term = derivedVariableProcessor.removeAllWhiteSpaces(UNMODIFIED_TERM_2);
+	public void testRemoveAllInvalidCharacters() {
+		String term = derivedVariableProcessor.removeAllInvalidCharacters(UNMODIFIED_TERM_2);
 		assertEquals(UNMODIFIED_TERM_2+" should become "+TERM_2,TERM_2,term);
 		
-		String nullTerm = derivedVariableProcessor.removeAllWhiteSpaces(null);
+		String nullTerm = derivedVariableProcessor.removeAllInvalidCharacters(null);
 		assertEquals(null+" should become "+null,null,nullTerm);
 	}
 	
@@ -143,15 +143,15 @@ public class DerivedVariableProcessorTest {
 					createMeasurementRowTestData());
 		}
 		String result = derivedVariableProcessor.evaluateFormula(updatedFormula,terms);
-		assertTrue("The result of "+updatedFormula+" should be "+EXPECTED_FORMULA_RESULT,
-				EXPECTED_FORMULA_RESULT == Double.parseDouble(result));
+		assertEquals("The result of "+updatedFormula+" should be "+EXPECTED_FORMULA_RESULT+" but got "+result,
+				EXPECTED_FORMULA_RESULT,result);
 	}
 	
 	@Test
 	public void testGetDerivedVariableValue() {
 		String result = derivedVariableProcessor.getDerivedVariableValue(FORMULA_2, 
 				createMeasurementRowTestData());
-		assertTrue("The derived variable value should be " + EXPECTED_FORMULA_2_RESULT,
-				EXPECTED_FORMULA_2_RESULT == Integer.parseInt(result));
+		assertEquals("The derived variable value should be " + EXPECTED_FORMULA_2_RESULT,
+				EXPECTED_FORMULA_2_RESULT,result);
 	}
 }
