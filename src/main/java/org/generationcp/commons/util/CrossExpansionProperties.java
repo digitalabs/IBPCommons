@@ -4,6 +4,7 @@ import javax.annotation.Resource;
 
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.util.CrossExpansionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -11,21 +12,25 @@ import org.springframework.stereotype.Component;
 /**
  * Created by EfficioDaniel on 3/31/2015.
  */
-public class CrossExpansionRule {
+public class CrossExpansionProperties {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(CrossExpansionRule.class);
+	private static final Logger LOG = LoggerFactory.getLogger(CrossExpansionProperties.class);
 	
 	@Resource
 	private ContextUtil contextUtil;
-	
+	private boolean isCimmytUser;
     private int wheatMaxLevel;
     private int wheatNameType;
     private int nonWheatMaxLevel;
     private int nonWheatNameType;
+    
 
+    public CrossExpansionProperties(){
 
-    public CrossExpansionRule(){
-
+    }
+    
+    public CrossExpansionRule getCrossExpansionRule(){
+    	return new CrossExpansionRule(isCimmyWheat(), getMaxLevelStoppageRule(), getNameTypeStoppageRule());
     }
    
     public int getWheatMaxLevel() {
@@ -60,9 +65,9 @@ public class CrossExpansionRule {
         this.nonWheatNameType = nonWheatNameType;
     }
 
-    public boolean isWheat() {
+    public boolean isCimmyWheat() {
     	try {
-			if("Wheat".equalsIgnoreCase(contextUtil.getProjectInContext().getCropType().getCropName())) {
+			if(isCimmytUser() && "Wheat".equalsIgnoreCase(contextUtil.getProjectInContext().getCropType().getCropName())) {
                return true;
 			}
 		} catch (MiddlewareQueryException e) {
@@ -73,7 +78,7 @@ public class CrossExpansionRule {
 
     
     public int getMaxLevelStoppageRule(){
-        if(isWheat()){
+        if(isCimmyWheat()){
             return getWheatMaxLevel();
         }else{
             return getNonWheatMaxLevel();
@@ -81,10 +86,20 @@ public class CrossExpansionRule {
     }
 
     public int getNameTypeStoppageRule(){
-        if(isWheat()){
+        if(isCimmyWheat()){
             return getWheatNameType();
         }else{
             return getNonWheatNameType();
         }
     }
+
+	public boolean isCimmytUser() {
+		return isCimmytUser;
+	}
+
+	public void setCimmytUser(boolean isCimmytUser) {
+		this.isCimmytUser = isCimmytUser;
+	}
+    
+    
 }
