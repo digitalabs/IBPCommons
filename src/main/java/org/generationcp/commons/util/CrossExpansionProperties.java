@@ -20,9 +20,7 @@ public class CrossExpansionProperties {
 	private ContextUtil contextUtil;
 	private boolean isCimmytUser;
     private int wheatMaxLevel;
-    private int wheatNameType;
     private int nonWheatMaxLevel;
-    private int nonWheatNameType;
     
 
     public CrossExpansionProperties(){
@@ -30,7 +28,7 @@ public class CrossExpansionProperties {
     }
     
     public CrossExpansionRule getCrossExpansionRule(){
-    	return new CrossExpansionRule(isCimmyWheat(), getMaxLevelStoppageRule(), getNameTypeStoppageRule());
+    	return new CrossExpansionRule(isCimmyWheat(), getMaxLevelStoppageRule());
     }
    
     public int getWheatMaxLevel() {
@@ -39,15 +37,7 @@ public class CrossExpansionProperties {
 
     public void setWheatMaxLevel(int wheatMaxLevel) {
         this.wheatMaxLevel = wheatMaxLevel;
-    }
-
-    public int getWheatNameType() {
-        return wheatNameType;
-    }
-
-    public void setWheatNameType(int wheatNameType) {
-        this.wheatNameType = wheatNameType;
-    }
+    }   
 
     public int getNonWheatMaxLevel() {
         return nonWheatMaxLevel;
@@ -55,14 +45,6 @@ public class CrossExpansionProperties {
 
     public void setNonWheatMaxLevel(int nonWheatMaxLevel) {
         this.nonWheatMaxLevel = nonWheatMaxLevel;
-    }
-
-    public int getNonWheatNameType() {
-        return nonWheatNameType;
-    }
-
-    public void setNonWheatNameType(int nonWheatNameType) {
-        this.nonWheatNameType = nonWheatNameType;
     }
 
     public boolean isCimmyWheat() {
@@ -82,14 +64,6 @@ public class CrossExpansionProperties {
             return getWheatMaxLevel();
         }else{
             return getNonWheatMaxLevel();
-        }
-    }
-
-    public int getNameTypeStoppageRule(){
-        if(isCimmyWheat()){
-            return getWheatNameType();
-        }else{
-            return getNonWheatNameType();
         }
     }
 
