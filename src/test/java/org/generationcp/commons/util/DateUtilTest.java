@@ -3,6 +3,7 @@ package org.generationcp.commons.util;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.generationcp.commons.exceptions.InvalidDateException;
 import org.junit.Assert;
@@ -14,10 +15,9 @@ public class DateUtilTest {
 	public void testGetCurrentDate(){
 		//input
 		Date currDate = new Date();
-		SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-
+		SimpleDateFormat formatter = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
 		Assert.assertEquals("Expecting the value returned by getCurrentDate() is equal to current date from Date object.",
-				DateUtil.getCurrentDate().toString(), formatter.format(currDate));
+				DateUtil.getCurrentDateAsStringValue(), formatter.format(currDate));
 	}
 	
 	@Test
@@ -25,8 +25,7 @@ public class DateUtilTest {
 		//input
 		Date currDate = new Date();
 		Long currDateInLong = currDate.getTime();
-		SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-		
+		SimpleDateFormat formatter = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
 		Assert.assertEquals("Expecting the value returned by getIBPDate() is equal to current date from Date object in this format yyyyMMdd.", 
 				DateUtil.getIBPDate(currDateInLong).toString(), formatter.format(currDate));
 	}
@@ -45,7 +44,7 @@ public class DateUtilTest {
 		try {
 			outputDate = DateUtil.getIBPDate(year,month,day).toString();
 			
-			SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
+			SimpleDateFormat formatter = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
 			
 			Assert.assertEquals("Expecting the value returned by getIBPDate() is equal to current date from Date object in this format yyyyMMdd.", 
 					outputDate, formatter.format(currDate));
@@ -162,7 +161,7 @@ public class DateUtilTest {
 		Integer year = 1989;
 		Integer month = 9;
 		Integer day = 21;
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = DateUtil.getCalendarInstance();
 		calendar.set(year, month, day);
 		
 		Date date = new Date();
@@ -214,7 +213,7 @@ public class DateUtilTest {
 		Integer year = 2014;
 		Integer month = 9;
 		Integer day = 21;
-		Calendar calendar = Calendar.getInstance();
+		Calendar calendar = DateUtil.getCalendarInstance();
 		calendar.set(year, month, day);
 		
 		Date date = new Date();
