@@ -75,8 +75,8 @@ public class DateUtil {
      * Returns the date in the specified format as String
      * @return date in the specified format as String
      */
-    public static String getDateAsStringValue(Date date, String format){
-    	return Util.getDateAsStringValue(date, format);
+    public static String formatDateAsStringValue(Date date, String format){
+    	return Util.formatDateAsStringValue(date, format);
     }
     
     /**
@@ -84,8 +84,8 @@ public class DateUtil {
      * @return date object
      * @throws ParseException 
      */
-    public static Date getDate(String date, String format) throws ParseException{
-    	return Util.getDate(date, format);
+    public static Date parseDate(String date, String format) throws ParseException{
+    	return Util.parseDate(date, format);
     }
     
     /**
@@ -304,7 +304,7 @@ public class DateUtil {
     	if(date == null){
     		return "";
     	}
-    	return Util.getDateAsStringValue(date,
+    	return Util.formatDateAsStringValue(date,
     			Util.FRONTEND_DATE_FORMAT);
     }
     
