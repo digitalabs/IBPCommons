@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.hibernate.SessionFactory;
 
 
@@ -14,6 +15,7 @@ public abstract class ManagerFactoryBase {
     protected Integer dbPort = 13306;
     protected String  dbUsername = "root";
     protected String  dbPassword = "";
+    protected String  pedigreeProfile = PedigreeFactory.PROFILE_DEFAULT;
     
     protected Map<Long, SessionFactory> sessionFactoryCache = new HashMap<Long, SessionFactory>();
     protected int maxCachedSessionFactories = 10;
@@ -82,4 +84,12 @@ public abstract class ManagerFactoryBase {
 	public void setMaxCachedSessionFactories(int maxCachedSessionFactories) {
 		this.maxCachedSessionFactories = maxCachedSessionFactories;
 	}
+
+	public String getPedigreeProfile() {
+		return pedigreeProfile;
+	}
+
+	public void setPedigreeProfile(String pedigreeProfile) {
+		this.pedigreeProfile = pedigreeProfile;
+	}	
 }
