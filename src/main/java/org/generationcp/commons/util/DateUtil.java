@@ -23,6 +23,10 @@ public class DateUtil {
 	public static final String FRONTEND_DATE_FORMAT_2 = Util.FRONTEND_DATE_FORMAT_2;
 	public static final String FRONTEND_TIMESTAMP_FORMAT = Util.FRONTEND_TIMESTAMP_FORMAT;
 	
+	private DateUtil() {
+		//use a private constructor to hide the implicit public one
+	}
+	
 	/**
      * Returns the current date in format "yyyyMMdd" as Integer
      * @return current date as Integer
@@ -130,29 +134,18 @@ public class DateUtil {
      * @return VaadinMessage Enum that is to be interpreted in specific web application
      */
     public static void validateDate(int year, int month, int day) throws InvalidDateException{
-    	
     	if(!isValidYear(year)){
     		throw new InvalidDateException("Year must be greater than or equal to 1900", VaadinMessage.INVALID_YEAR);
         }
     	if (month < 0 || month > 12) {
     		throw new InvalidDateException("Month out of range", VaadinMessage.ERROR_MONTH_OUT_OF_RANGE);
         }
-        if (month == 2){
-           if (isLeapYear(year)){
-               if (day < 0 || day > 29){
-            	   throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);
-               }
-           } else {
-               if (day < 0 || day > 28){
-            	   throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);
-               }               
-           }
-        } else if (((month == 4 || month == 6 || month == 9 || month == 11) && (day > 30))  || (day < 0 || day > 31)){
-        	throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);                    
+    	if (day < 0 || day > daysInMonth(year, month)){
+           throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);
         }
     }
-    
-    /**
+
+	/**
      * Checks if a given date is valid.
      * 
      * @param year
@@ -161,26 +154,10 @@ public class DateUtil {
      * @return
      */
     public static boolean isValidDate(int year, int month, int day) {
-    	if(!isValidYear(year)){
-    		 return false;
-        }
-    	if (month < 0 || month > 12) {
-    		return false;        
-        }
-        if (month == 2){
-           if (isLeapYear(year)){
-               if (day < 0 || day > 29){
-            	   return false;
-               }
-           } else {
-               if (day < 0 || day > 28){
-            	   return false;
-               }               
-           }
-        } else if (((month == 4 || month == 6 || month == 9 || month == 11) && (day > 30))  || (day < 0 || day > 31)){
-        	return false;                    
-        }
-        return true;
+    	boolean yearOk = isValidYear(year);
+	    boolean monthOk = (month >= 1) && (month <= 12);
+	    boolean dayOk = (day >= 1) && (day <= daysInMonth(year, month));
+	    return yearOk && monthOk && dayOk;
     }
     
     /**
@@ -253,8 +230,7 @@ public class DateUtil {
     public static boolean isValidYear(Integer year){
     	if(year < 1900){
     		return false;
-    	}
-    	else if(year > 9999){
+    	} else if(year > 9999){
     		return false;
     	}
     	return true;
@@ -317,10 +293,9 @@ public class DateUtil {
     			return convertDate(value, FRONTEND_DATE_FORMAT, DATE_AS_NUMBER_FORMAT);
 			} catch (ParseException e) {
 				LOG.error(e.getMessage(),e);
-				value = "";
 			}
     	}
-    	return value;
+    	return "";
     }
     
     public static String convertToUIDateFormat(
@@ -331,10 +306,9 @@ public class DateUtil {
 				return convertDate(value, DATE_AS_NUMBER_FORMAT, FRONTEND_DATE_FORMAT);
 			} catch (ParseException e) {
 				LOG.error(e.getMessage(),e);
-				value = "";
 			}
     	}
-    	return value;
+    	return "";
     }
     
     public static boolean isValidDate(String dateString) {
@@ -354,36 +328,21 @@ public class DateUtil {
 	    int month = (date % 10000) / 100;
 	    int day = date % 100;
 
-	    // leap years calculation not valid before 1581
-	    boolean yearOk = (year >= 1581);
-	    boolean monthOk = (month >= 1) && (month <= 12);
-	    boolean dayOk = (day >= 1) && (day <= daysInMonth(year, month));
-
-	    return (yearOk && monthOk && dayOk);
+	    return isValidDate(year, month, day);
 	}
     
     public static int daysInMonth(int year, int month) {
 	    int daysInMonth;
-	    switch (month) {
-	        case 1: // fall through
-	        case 3: // fall through
-	        case 5: // fall through
-	        case 7: // fall through
-	        case 8: // fall through
-	        case 10: // fall through
-	        case 12:
-	            daysInMonth = 31;
-	            break;
-	        case 2:
-	            if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-	                daysInMonth = 29;
-	            } else {
-	                daysInMonth = 28;
-	            }
-	            break;
-	        default:
-	            // returns 30 even for nonexistant months 
-	            daysInMonth = 30;
+	    if(month == 2) {
+	    	if (isLeapYear(year)) {
+                daysInMonth = 29;
+            } else {
+                daysInMonth = 28;
+            }
+	    } else if (month == 4 || month == 6 || month == 9 || month == 11){
+	    	daysInMonth = 30;
+	    } else {
+	    	daysInMonth = 31;
 	    }
 	    return daysInMonth;
 	}
