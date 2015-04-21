@@ -1,0 +1,625 @@
+From 0b319cacc70d81cea53492f1c6d649ce0bdd8188 Mon Sep 17 00:00:00 2001
+From: Daniel Villafuerte <dannyvonline@gmail.com>
+Date: Tue, 21 Apr 2015 16:30:22 +0800
+Subject: [PATCH] Created service that can be called for generating stock ID
+ prefixes given a breeder identifier, or for populating the inventory ID field
+ of inventorydetail objects about to be saved into the system
+
+Created unit test for new service.
+Created Spring context file for unit test
+ Updated POM to include Spring-based mocking in test dependencies
+
+ BMS-616
+
+ Reviewer : Aldrin Batac
+---
+ pom.xml                                            | 15 +++-
+ .../commons/service/InventoryStockService.java     | 20 +++++
+ .../service/impl/InventoryStockServiceImpl.java    | 67 +++++++++++++++++
+ .../impl/InventoryStockServiceImplTest.java        | 86 ++++++++++++++++++++++
+ .../impl/InventoryStockServiceImplTest-context.xml | 39 ++++++++++
+ 5 files changed, 226 insertions(+), 1 deletion(-)
+ create mode 100644 src/main/java/org/generationcp/commons/service/InventoryStockService.java
+ create mode 100644 src/main/java/org/generationcp/commons/service/impl/InventoryStockServiceImpl.java
+ create mode 100644 src/test/java/org/generationcp/commons/service/impl/InventoryStockServiceImplTest.java
+ create mode 100644 src/test/resources/org/generationcp/commons/service/impl/InventoryStockServiceImplTest-context.xml
+
+diff --git a/pom.xml b/pom.xml
+index 0916b7c..b5fd50b 100644
+--- a/pom.xml
++++ b/pom.xml
+@@ -71,6 +71,12 @@
+ 				</exclusion>
+ 			</exclusions>
+ 		</dependency>
++		<dependency>
++			<groupId>org.springframework</groupId>
++			<artifactId>spring-test</artifactId>
++			<version>${spring.version}</version>
++			<scope>test</scope>
++		</dependency>
+ 
+ 		<!-- Spring Security -->
+ 		<dependency>
+@@ -141,7 +147,14 @@
+ 		<dependency>
+ 			<groupId>junit</groupId>
+ 			<artifactId>junit</artifactId>
+-			<version>4.4</version>
++			<version>4.5</version>
++			<scope>test</scope>
++		</dependency>
++
++		<dependency>
++			<groupId>org.kubek2k</groupId>
++			<artifactId>springockito</artifactId>
++			<version>1.0.8</version>
+ 			<scope>test</scope>
+ 		</dependency>
+ 
+diff --git a/src/main/java/org/generationcp/commons/service/InventoryStockService.java b/src/main/java/org/generationcp/commons/service/InventoryStockService.java
+new file mode 100644
+index 0000000..76afaee
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/service/InventoryStockService.java
+@@ -0,0 +1,20 @@
++package org.generationcp.commons.service;
++
++import org.generationcp.middleware.domain.inventory.InventoryDetails;
++import org.generationcp.middleware.exceptions.MiddlewareException;
++
++import java.util.List;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ */
++
++public interface InventoryStockService {
++	void assignStockIDs(List<InventoryDetails> details) throws MiddlewareException;
++
++	void assignStockIDs(List<InventoryDetails> details,
++			String breederIdentifier, String separator) throws MiddlewareException;
++
++	String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws MiddlewareException;
++}
+diff --git a/src/main/java/org/generationcp/commons/service/impl/InventoryStockServiceImpl.java b/src/main/java/org/generationcp/commons/service/impl/InventoryStockServiceImpl.java
+new file mode 100644
+index 0000000..c618de8
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/service/impl/InventoryStockServiceImpl.java
+@@ -0,0 +1,67 @@
++package org.generationcp.commons.service.impl;
++
++import org.generationcp.commons.ruleengine.RuleException;
++import org.generationcp.commons.ruleengine.RuleFactory;
++import org.generationcp.commons.ruleengine.service.RulesService;
++import org.generationcp.commons.ruleengine.stockid.StockIDGenerationRuleExecutionContext;
++import org.generationcp.commons.service.InventoryStockService;
++import org.generationcp.middleware.domain.inventory.InventoryDetails;
++import org.generationcp.middleware.exceptions.MiddlewareException;
++import org.generationcp.middleware.service.api.InventoryService;
++
++import javax.annotation.Resource;
++import java.util.Arrays;
++import java.util.List;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ * Date: 4/16/2015
++ * Time: 2:51 PM
++ */
++public class InventoryStockServiceImpl implements InventoryStockService {
++
++	@Resource
++	private RulesService rulesService;
++
++	@Resource
++	private RuleFactory ruleFactory;
++
++	@Resource
++	private InventoryService inventoryService;
++
++	@Override public void assignStockIDs(List<InventoryDetails> details)
++			throws MiddlewareException {
++
++		this.assignStockIDs(details, null, null);
++	}
++
++	@Override public void assignStockIDs(List<InventoryDetails> details, String breederIdentifier,
++			String separator)
++			throws MiddlewareException {
++		String stockIDPrefix = calculateNextStockIDPrefix(breederIdentifier, separator);
++
++		for (InventoryDetails detail : details) {
++			detail.setInventoryID(stockIDPrefix + detail.getEntryId());
++		}
++	}
++
++	@Override
++	public String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws
++			MiddlewareException {
++		List<String> sequenceList = Arrays
++				.asList(ruleFactory.getRuleSequenceForNamespace("stockid"));
++		StockIDGenerationRuleExecutionContext context = new StockIDGenerationRuleExecutionContext(
++				sequenceList, inventoryService);
++		context.setBreederIdentifier(breederIdentifier);
++		context.setSeparator(separator);
++
++		try {
++			rulesService.runRules(context);
++			return (String) context.getRuleExecutionOutput();
++
++		} catch (RuleException e) {
++			throw new MiddlewareException(e.getMessage(), e);
++		}
++	}
++}
+\ No newline at end of file
+diff --git a/src/test/java/org/generationcp/commons/service/impl/InventoryStockServiceImplTest.java b/src/test/java/org/generationcp/commons/service/impl/InventoryStockServiceImplTest.java
+new file mode 100644
+index 0000000..5661974
+--- /dev/null
++++ b/src/test/java/org/generationcp/commons/service/impl/InventoryStockServiceImplTest.java
+@@ -0,0 +1,86 @@
++package org.generationcp.commons.service.impl;
++
++import org.generationcp.commons.ruleengine.RuleFactory;
++import org.generationcp.commons.ruleengine.service.RulesService;
++import org.generationcp.commons.ruleengine.stockid.StockIDSeparatorRule;
++import org.generationcp.middleware.domain.inventory.InventoryDetails;
++import org.generationcp.middleware.exceptions.MiddlewareException;
++import org.generationcp.middleware.service.api.InventoryService;
++import org.junit.Before;
++import org.junit.Test;
++import org.junit.runner.RunWith;
++import org.mockito.MockitoAnnotations;
++import org.springframework.test.context.ContextConfiguration;
++import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
++
++import javax.annotation.Resource;
++import java.util.ArrayList;
++import java.util.List;
++
++import static org.junit.Assert.assertEquals;
++import static org.mockito.Mockito.when;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ */
++
++@RunWith(SpringJUnit4ClassRunner.class)
++@ContextConfiguration
++public class InventoryStockServiceImplTest {
++
++	public static final Integer DUMMY_NOTATION_NUMBER = 5;
++	public static final String DUMMY_BREEDER_IDENTIFIER = "DV";
++
++	public static final int DUMMY_DETAIL_COUNT = 5;
++	public static final String EXPECTED_PREFIX = DUMMY_BREEDER_IDENTIFIER + (DUMMY_NOTATION_NUMBER + 1)
++					+ StockIDSeparatorRule.DEFAULT_SEPARATOR;
++
++	@Resource
++	private RulesService rulesService;
++
++	@Resource
++	private RuleFactory ruleFactory;
++
++	@Resource
++	private InventoryService inventoryService;
++
++	@Resource
++	private InventoryStockServiceImpl inventoryStockService;
++
++	@Before
++	public void setUp() {
++		MockitoAnnotations.initMocks(this);
++	}
++
++	@Test
++	public void testCalculateNextStockIDPrefix() throws MiddlewareException{
++		when(inventoryService.getCurrentNotationNumberForBreederIdentifier(DUMMY_BREEDER_IDENTIFIER)).thenReturn(DUMMY_NOTATION_NUMBER);
++
++		String prefix = inventoryStockService.calculateNextStockIDPrefix(DUMMY_BREEDER_IDENTIFIER, null);
++
++		assertEquals(EXPECTED_PREFIX, prefix);
++	}
++
++	@Test
++	public void testAssignStockIDs() throws MiddlewareException {
++		when(inventoryService.getCurrentNotationNumberForBreederIdentifier(DUMMY_BREEDER_IDENTIFIER)).thenReturn(DUMMY_NOTATION_NUMBER);
++
++		// create a dummy inventory detail list
++		List<InventoryDetails> inventoryDetailsList = new ArrayList<>();
++
++		// we only populate the entry ID since it is what's relevant to the logic
++		for (int i = 0; i < DUMMY_DETAIL_COUNT; i++) {
++			InventoryDetails details = new InventoryDetails();
++			details.setEntryId(i + 1);
++			inventoryDetailsList.add(details);
++		}
++
++		inventoryStockService.assignStockIDs(inventoryDetailsList, DUMMY_BREEDER_IDENTIFIER, null);
++
++		for (InventoryDetails details : inventoryDetailsList) {
++			assertEquals(EXPECTED_PREFIX + details.getEntryId(), details.getInventoryID());
++		}
++	}
++
++}
+diff --git a/src/test/resources/org/generationcp/commons/service/impl/InventoryStockServiceImplTest-context.xml b/src/test/resources/org/generationcp/commons/service/impl/InventoryStockServiceImplTest-context.xml
+new file mode 100644
+index 0000000..e468e5f
+--- /dev/null
++++ b/src/test/resources/org/generationcp/commons/service/impl/InventoryStockServiceImplTest-context.xml
+@@ -0,0 +1,39 @@
++<?xml version="1.0" encoding="ISO-8859-1"?>
++
++<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++       xmlns:context="http://www.springframework.org/schema/context"
++       xmlns="http://www.springframework.org/schema/beans"
++       xmlns:mockito="http://www.mockito.org/spring/mockito"
++       xsi:schemaLocation="http://www.springframework.org/schema/beans
++       		http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
++            http://www.springframework.org/schema/context
++            http://www.springframework.org/schema/context/spring-context-3.2.xsd
++            http://www.mockito.org/spring/mockito https://bitbucket.org/kubek2k/springockito/raw/tip/springockito/src/main/resources/spring/mockito.xsd">
++
++    <bean id="ruleFactory" class="org.generationcp.commons.ruleengine.RuleFactory"
++          init-method="init"/>
++
++    <bean class="org.generationcp.commons.ruleengine.RulesPostProcessor">
++            <property name="ruleFactory" ref="ruleFactory"/>
++        </bean>
++
++    <bean id="ruleConfigProvider"
++          class="org.generationcp.commons.ruleengine.provider.PropertyFileRuleConfigurationProvider">
++        <property name="ruleSequenceConfiguration">
++            <map>
++                <entry key="stockid" value="IDENTIFIER,NOTATION,SEPARATOR"/>
++            </map>
++        </property>
++    </bean>
++
++	<bean id="ruleService" class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
++    <!--
++        This component scan automatically registers all implementations of the Rule interface into the Spring context.
++        In conjunction with the RulesPostProcessor above, this automatically populates the map in the RuleFactory
++         -->
++    <context:component-scan base-package="org.generationcp.commons.ruleengine.stockid"/>
++    <bean id="inventoryStockService"
++          class="org.generationcp.commons.service.impl.InventoryStockServiceImpl">
++    </bean>
++    <mockito:mock id="inventoryService" class="org.generationcp.middleware.service.api.InventoryService"/>
++</beans>
+\ No newline at end of file
+-- 
+1.8.3.msysgit.0
+
+From c34ab8231041ad3464be0bb2eb79ee67133eec64 Mon Sep 17 00:00:00 2001
+From: Daniel Villafuerte <dannyvonline@gmail.com>
+Date: Tue, 21 Apr 2015 16:23:25 +0800
+Subject: [PATCH] Rule engine based implementation for stock id generation  -
+ Context object for storing dependencies and rule execution data  - Rule for
+ breeder identifier / notation number / separator  - Created an interface to
+ abstract the possible implementations on how the system will provide the
+ breeder identifier in the stock id generation process
+
+ BMS-616
+
+ Reviewer : Aldrin Batac
+---
+ .../BreederIdentifierGenerationStrategy.java       |  9 +++
+ .../ruleengine/stockid/BreederIdentifierRule.java  | 35 ++++++++++
+ .../StockIDGenerationRuleExecutionContext.java     | 79 ++++++++++++++++++++++
+ .../ruleengine/stockid/StockIDSeparatorRule.java   | 36 ++++++++++
+ .../stockid/StockNotationNumberRule.java           | 40 +++++++++++
+ .../ruleengine/stockid/StockSequenceRule.java      | 33 +++++++++
+ ...ecifiedBreederIdentifierGenerationStrategy.java | 18 +++++
+ 7 files changed, 250 insertions(+)
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierGenerationStrategy.java
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierRule.java
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDGenerationRuleExecutionContext.java
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDSeparatorRule.java
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/StockNotationNumberRule.java
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/StockSequenceRule.java
+ create mode 100644 src/main/java/org/generationcp/commons/ruleengine/stockid/UserSpecifiedBreederIdentifierGenerationStrategy.java
+
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierGenerationStrategy.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierGenerationStrategy.java
+new file mode 100644
+index 0000000..c1f4fb2
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierGenerationStrategy.java
+@@ -0,0 +1,9 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ */
++public interface BreederIdentifierGenerationStrategy {
++	String generateBreederIdentifier();
++}
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierRule.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierRule.java
+new file mode 100644
+index 0000000..7ead102
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/BreederIdentifierRule.java
+@@ -0,0 +1,35 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++import org.generationcp.commons.ruleengine.OrderedRule;
++import org.generationcp.commons.ruleengine.RuleException;
++import org.springframework.stereotype.Component;
++
++import javax.annotation.Resource;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ */
++@Component
++public class BreederIdentifierRule extends OrderedRule<StockIDGenerationRuleExecutionContext>{
++
++	public static final String KEY = "IDENTIFIER";
++
++	@Resource
++	private BreederIdentifierGenerationStrategy generationStrategy;
++
++	@Override public Object runRule(StockIDGenerationRuleExecutionContext context)
++			throws RuleException {
++		if (context.getBreederIdentifier() == null) {
++			context.setBreederIdentifier(generationStrategy.generateBreederIdentifier());
++		}
++
++		context.getStockIDGenerationBuilder().append(context.getBreederIdentifier());
++
++		return context.getBreederIdentifier();
++	}
++
++	@Override public String getKey() {
++		return KEY;
++	}
++}
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDGenerationRuleExecutionContext.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDGenerationRuleExecutionContext.java
+new file mode 100644
+index 0000000..2bfef76
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDGenerationRuleExecutionContext.java
+@@ -0,0 +1,79 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
++import org.generationcp.middleware.service.api.InventoryService;
++
++import java.util.List;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ */
++public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionContext {
++
++	private InventoryService inventoryService;
++	private StringBuilder stockIDGenerationBuilder;
++	private String breederIdentifier;
++	private Integer notationNumber;
++	private String separator;
++	private Long sequenceNumber;
++
++	public StockIDGenerationRuleExecutionContext(List<String> executionOrder) {
++		super(executionOrder);
++	}
++
++	public StockIDGenerationRuleExecutionContext(List<String> executionOrder,
++			InventoryService inventoryService) {
++		super(executionOrder);
++		this.inventoryService = inventoryService;
++		stockIDGenerationBuilder = new StringBuilder();
++	}
++
++	@Override public Object getRuleExecutionOutput() {
++		return stockIDGenerationBuilder.toString();
++	}
++
++	public StringBuilder getStockIDGenerationBuilder() {
++		return stockIDGenerationBuilder;
++	}
++
++	public void setStockIDGenerationBuilder(StringBuilder stockIDGenerationBuilder) {
++		this.stockIDGenerationBuilder = stockIDGenerationBuilder;
++	}
++
++	public String getBreederIdentifier() {
++		return breederIdentifier;
++	}
++
++	public void setBreederIdentifier(String breederIdentifier) {
++		this.breederIdentifier = breederIdentifier;
++	}
++
++	public Integer getNotationNumber() {
++		return notationNumber;
++	}
++
++	public void setNotationNumber(Integer notationNumber) {
++		this.notationNumber = notationNumber;
++	}
++
++	public String getSeparator() {
++		return separator;
++	}
++
++	public void setSeparator(String separator) {
++		this.separator = separator;
++	}
++
++	public Long getSequenceNumber() {
++		return sequenceNumber;
++	}
++
++	public void setSequenceNumber(Long sequenceNumber) {
++		this.sequenceNumber = sequenceNumber;
++	}
++
++	public InventoryService getInventoryService() {
++		return inventoryService;
++	}
++}
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDSeparatorRule.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDSeparatorRule.java
+new file mode 100644
+index 0000000..60da0c2
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockIDSeparatorRule.java
+@@ -0,0 +1,36 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++import org.apache.commons.lang3.StringUtils;
++import org.generationcp.commons.ruleengine.OrderedRule;
++import org.generationcp.commons.ruleengine.RuleException;
++import org.springframework.stereotype.Component;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ * Date: 4/16/2015
++ * Time: 3:42 PM
++ */
++@Component
++public class StockIDSeparatorRule extends OrderedRule<StockIDGenerationRuleExecutionContext>{
++
++	public static final String KEY = "SEPARATOR";
++	public static final String DEFAULT_SEPARATOR = "-";
++
++	@Override public Object runRule(StockIDGenerationRuleExecutionContext context)
++			throws RuleException {
++		String separator = context.getSeparator();
++		if (StringUtils.isEmpty(context.getSeparator() ) ) {
++			separator = DEFAULT_SEPARATOR;
++			context.setSeparator(DEFAULT_SEPARATOR);
++		}
++
++		context.getStockIDGenerationBuilder().append(separator);
++
++		return separator;
++	}
++
++	@Override public String getKey() {
++		return KEY;
++	}
++}
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/StockNotationNumberRule.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockNotationNumberRule.java
+new file mode 100644
+index 0000000..8e1f535
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockNotationNumberRule.java
+@@ -0,0 +1,40 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++import org.generationcp.commons.ruleengine.OrderedRule;
++import org.generationcp.commons.ruleengine.RuleException;
++import org.generationcp.middleware.exceptions.MiddlewareQueryException;
++import org.springframework.stereotype.Component;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ * Date: 4/9/2015
++ * Time: 5:13 PM
++ */
++@Component
++public class StockNotationNumberRule extends OrderedRule<StockIDGenerationRuleExecutionContext>{
++
++	public static final String KEY = "NOTATION";
++
++	@Override public Object runRule(StockIDGenerationRuleExecutionContext context)
++			throws RuleException {
++
++		try {
++			Integer currentNotationNumber = context.getInventoryService()
++					.getCurrentNotationNumberForBreederIdentifier(context.getBreederIdentifier());
++			context.setNotationNumber(currentNotationNumber + 1);
++		} catch (MiddlewareQueryException e) {
++			throw new RuleException(e.getMessage(), e);
++		}
++
++
++		Integer currentNotationNumber = context.getNotationNumber();
++		context.getStockIDGenerationBuilder().append(currentNotationNumber);
++
++		return currentNotationNumber;
++	}
++
++	@Override public String getKey() {
++		return KEY;
++	}
++}
+\ No newline at end of file
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/StockSequenceRule.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockSequenceRule.java
+new file mode 100644
+index 0000000..ddefd11
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/StockSequenceRule.java
+@@ -0,0 +1,33 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++import org.generationcp.commons.ruleengine.OrderedRule;
++import org.generationcp.commons.ruleengine.RuleException;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ * Date: 4/16/2015
++ * Time: 3:30 PM
++ */
++public class StockSequenceRule extends OrderedRule<StockIDGenerationRuleExecutionContext>{
++	public static final String KEY = "SEQUENCE";
++
++	@Override public Object runRule(StockIDGenerationRuleExecutionContext context)
++			throws RuleException {
++		Long currentSequenceNumber = context.getSequenceNumber();
++
++		if (currentSequenceNumber == null) {
++			currentSequenceNumber = 0L;
++		}
++
++		currentSequenceNumber++;
++		context.setSequenceNumber(currentSequenceNumber);
++		context.getStockIDGenerationBuilder().append(currentSequenceNumber);
++
++		return currentSequenceNumber;
++	}
++
++	@Override public String getKey() {
++		return KEY;
++	}
++}
+diff --git a/src/main/java/org/generationcp/commons/ruleengine/stockid/UserSpecifiedBreederIdentifierGenerationStrategy.java b/src/main/java/org/generationcp/commons/ruleengine/stockid/UserSpecifiedBreederIdentifierGenerationStrategy.java
+new file mode 100644
+index 0000000..bb59dfc
+--- /dev/null
++++ b/src/main/java/org/generationcp/commons/ruleengine/stockid/UserSpecifiedBreederIdentifierGenerationStrategy.java
+@@ -0,0 +1,18 @@
++package org.generationcp.commons.ruleengine.stockid;
++
++import org.springframework.stereotype.Component;
++
++/**
++ * Created by IntelliJ IDEA.
++ * User: Daniel Villafuerte
++ * Date: 4/9/2015
++ * Time: 5:32 PM
++ */
++
++@Component
++public class UserSpecifiedBreederIdentifierGenerationStrategy implements BreederIdentifierGenerationStrategy{
++	@Override public String generateBreederIdentifier() {
++		throw new IllegalStateException("User specified breeder identifiers should be set into the RuleExecutionContext "
++				+ "programatically before executing this rule");
++	}
++}
+-- 
+1.8.3.msysgit.0
+
