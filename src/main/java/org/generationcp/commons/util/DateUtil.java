@@ -137,10 +137,10 @@ public class DateUtil {
     	if(!isValidYear(year)){
     		throw new InvalidDateException("Year must be greater than or equal to 1900", VaadinMessage.INVALID_YEAR);
         }
-    	if (month < 0 || month > 12) {
+    	if (month <= 0 || month > 12) {
     		throw new InvalidDateException("Month out of range", VaadinMessage.ERROR_MONTH_OUT_OF_RANGE);
         }
-    	if (day < 0 || day > daysInMonth(year, month)){
+    	if (day <= 0 || day > daysInMonth(year, month)){
            throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);
         }
     }

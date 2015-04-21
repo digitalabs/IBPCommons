@@ -1,23 +1,34 @@
 package org.generationcp.commons.util;
 
+import static org.junit.Assert.*;
+
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 
 import org.generationcp.commons.exceptions.InvalidDateException;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class DateUtilTest {
 	
+	private SimpleDateFormat dateFormat;
+	private Calendar calendar;
+	
+	@Before
+	public void setUp() {
+		dateFormat = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
+		calendar = DateUtil.getCalendarInstance();
+	}
+	
 	@Test
-	public void testGetCurrentDate(){
-		//input
-		Date currDate = new Date();
-		SimpleDateFormat formatter = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
-		Assert.assertEquals("Expecting the value returned by getCurrentDate() is equal to current date from Date object.",
-				DateUtil.getCurrentDateAsStringValue(), formatter.format(currDate));
+	public void testGetCurrentDateAsStringValue(){
+		String dateString = dateFormat.format(calendar.getTime());
+		String actual = DateUtil.getCurrentDateAsStringValue();
+		assertEquals("Expected "+ dateString + " but got "+actual,dateString,actual);
 	}
 	
 	@Test
@@ -73,10 +84,18 @@ public class DateUtilTest {
 		Assert.assertFalse("Expecting a false return from the method isValidDate for invalid year input", 
 				DateUtil.isValidDate(year, month, day));
 		
-		// valid year, valid month, invalid day
+		// valid year, invalid month, invalid day
 		year = 2014;
 		day = 32;
-		Assert.assertFalse("Expecting a false return from the method isValidDate for invalid day input", 
+		month = 0;
+		Assert.assertFalse("Expecting a false return from the method isValidDate for invalid month and day input", 
+				DateUtil.isValidDate(year, month, day));
+		
+		// invalid valid year, valid month, invalid day
+		year = 0;
+		day = 0;
+		month = 13;
+		Assert.assertFalse("Expecting a false return from the method isValidDate for invalid year, month and day input", 
 				DateUtil.isValidDate(year, month, day));
 	}
 	
@@ -102,6 +121,7 @@ public class DateUtilTest {
 				"", errorMessage);
 		
 		//invalid year exception
+		errorMessage = "";
 		year = 1888;
 		try{
 			DateUtil.validateDate(year, month, day);
@@ -115,6 +135,7 @@ public class DateUtilTest {
 		
 		
 		//invalid month exception
+		errorMessage = "";
 		year = 2014;
 		month = 13;
 		try{
@@ -123,23 +144,82 @@ public class DateUtilTest {
 			errorMessage = e.getMessage();
 		}
 		
-		// invalid date due to invalid year
+		// invalid date due to invalid month
 		Assert.assertEquals("Expecting an error message return from the method validateDate for invalid month",
 				"Month out of range", errorMessage);
 		
 		//invalid month exception
+		errorMessage = "";
 		year = 2014;
-		month = 1;
-		day = 32;
+		month = 0;
 		try{
 			DateUtil.validateDate(year, month, day);
 		} catch(InvalidDateException e){
 			errorMessage = e.getMessage();
 		}
 		
-		// invalid date due to invalid year
+		// invalid date due to invalid month
+		Assert.assertEquals("Expecting an error message return from the method validateDate for invalid month",
+				"Month out of range", errorMessage);
+		
+		//invalid day exception
+		errorMessage = "";
+		year = 2014;
+		month = 4;
+		day = 31;
+		try{
+			DateUtil.validateDate(year, month, day);
+		} catch(InvalidDateException e){
+			errorMessage = e.getMessage();
+		}
+		
+		// invalid date due to invalid day
 		Assert.assertEquals("Expecting an error message return from the method validateDate for invalid day",
 				"Day out of range", errorMessage);
+		
+		//invalid day exception
+		errorMessage = "";
+		year = 2014;
+		month = 4;
+		day = 0;
+		try{
+			DateUtil.validateDate(year, month, day);
+		} catch(InvalidDateException e){
+			errorMessage = e.getMessage();
+		}
+		
+		// invalid date due to invalid day
+		Assert.assertEquals("Expecting an error message return from the method validateDate for invalid day",
+				"Day out of range", errorMessage);
+		
+		//invalid day exception for February
+		errorMessage = "";
+		year = 2015;
+		month = 2;
+		day = 29;
+		try{
+			DateUtil.validateDate(year, month, day);
+		} catch(InvalidDateException e){
+			errorMessage = e.getMessage();
+		}
+		
+		// invalid date due to invalid day
+		Assert.assertEquals("Expecting an error message return from the method validateDate for invalid day",
+				"Day out of range", errorMessage);
+		
+		//valid day for February because of leap year
+		errorMessage = "";
+		year = 2016;
+		month = 2;
+		day = 29;
+		try{
+			DateUtil.validateDate(year, month, day);
+		} catch(InvalidDateException e){
+			errorMessage = e.getMessage();
+		}
+		
+		Assert.assertEquals("Expecting no error message return from the method validateDate for valid day for February in a leap year",
+				"", errorMessage);
 	}
 	
 	@Test
@@ -153,6 +233,11 @@ public class DateUtilTest {
 		// year is not a valid leap year
 		year = 2010;
 		Assert.assertFalse("Expecting a false return from the method isLeapYear for valid year input",
+				DateUtil.isLeapYear(year));
+		
+		// year is a valid leap year (divisible by 400)
+		year = 2000;
+		Assert.assertTrue("Expecting a true return from the method isLeapYear for valid year input",
 				DateUtil.isLeapYear(year));
 	}
 	
@@ -252,7 +337,302 @@ public class DateUtilTest {
 		calendar.set(year, month, day);
 		date.setTime(calendar.getTimeInMillis());
 		
-		Assert.assertFalse("Expecting a false return from the method IsValidYear for date with invalid year input",
+		assertFalse("Expecting a false return from the method IsValidYear for date with invalid year input",
 				DateUtil.isValidYear(date));
+	}
+	
+	@Test
+	public void testGetCurrentDateAsIntegerValue() {
+		String dateString = dateFormat.format(calendar.getTime());
+		Integer actual = DateUtil.getCurrentDateAsIntegerValue();
+		assertEquals("Expected "+ dateString + " but got "+actual,Integer.valueOf(dateString),actual);
+	}
+	
+	@Test
+	public void testGetCurrentDateAsLongValue() {
+		String dateString = dateFormat.format(calendar.getTime());
+		Long actual = DateUtil.getCurrentDateAsLongValue();
+		assertEquals("Expected "+ dateString + " but got "+actual,Long.valueOf(dateString),actual);
+	}
+	
+	@Test
+	public void testGetCurrentDate() {
+		Date date = new Date();
+		Date actual = DateUtil.getCurrentDate();
+		assertEquals("Expected "+ date + " but got "+actual,date,actual);
+	}
+	
+	@Test
+	public void testGetCurrentDateAsStringValueInSpecifiedFormat() {
+		String expectedDate = DateUtil.getCurrentDateInUIFormat();
+		String actualDate = DateUtil.getCurrentDateAsStringValue(DateUtil.FRONTEND_DATE_FORMAT);
+		assertEquals("Expected "+ expectedDate + " but got "+actualDate,expectedDate,actualDate);
+	}
+	
+	@Test
+	public void testFormatDateAsStringValue() {
+		Date date = new Date();
+		String actual = DateUtil.formatDateAsStringValue(date, DateUtil.DATE_AS_NUMBER_FORMAT);
+		String expected = dateFormat.format(date);
+		assertEquals("Expected "+ expected + " but got "+actual,expected,actual);
+	}
+	
+	@Test
+	public void testParseDate() {
+		String dateString = "2015-08-18";
+		try {
+			DateUtil.parseDate(dateString, DateUtil.FRONTEND_DATE_FORMAT);
+		} catch (ParseException e) {
+			fail(dateString + " should be parsed successfully but failed");
+		}
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testParseDateFormatMismatched() throws ParseException {
+		String dateString = "2015-08-18";
+		DateUtil.parseDate(dateString, DateUtil.FRONTEND_DATE_FORMAT_2);
+	}
+	
+	@Test
+	public void testGetSimpleDateFormat() {
+		SimpleDateFormat actual = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
+		assertEquals("Expected "+ dateFormat + " but got "+actual,dateFormat,actual);
+		Date currentDate = new Date();
+		String actualDate = actual.format(currentDate);
+		String expectedDate = dateFormat.format(currentDate);
+		assertEquals("Expected "+  expectedDate+ 
+				" but got "+actualDate,expectedDate,actualDate);
+		String dateInCorrectFormat = "20150818";
+		try {
+			actual.parse(dateInCorrectFormat);
+		} catch (ParseException e) {
+			fail(dateInCorrectFormat + " should be parsed successfully but failed");
+		}
+	}
+	
+	@Test(expected = ParseException.class)
+	public void testGetSimpleDateFormatThrowsException() throws ParseException {
+		SimpleDateFormat actual = DateUtil.getSimpleDateFormat(DateUtil.DATE_AS_NUMBER_FORMAT);
+		actual.parse("20151832");
+	}
+	
+	@Test
+	public void testConvertDate() {
+		String oldDate = "20150421";
+		String expectedNewDate = "2015-04-21";
+		try {
+			String actualNewDate = DateUtil.convertDate(oldDate, 
+					DateUtil.DATE_AS_NUMBER_FORMAT, DateUtil.FRONTEND_DATE_FORMAT);
+			assertEquals("Expected "+ expectedNewDate + " but got "+actualNewDate,
+					expectedNewDate,actualNewDate);
+		} catch (ParseException e) {
+			fail(oldDate + " should be parsed successfully but failed");
+		}
+	}
+	
+	@Test
+	public void testGetDateInUIFormat() {
+		Date date = calendar.getTime();
+		SimpleDateFormat uiFormat = DateUtil.getSimpleDateFormat(DateUtil.FRONTEND_DATE_FORMAT);
+		String expectedDate = uiFormat.format(date);
+		String actualDate = DateUtil.getDateInUIFormat(date);
+		assertEquals("Expected "+ expectedDate + " but got "+actualDate,
+				expectedDate,actualDate);
+	}
+	
+	@Test
+	public void testGetDateInUIFormat_Null() {
+		String expectedDate = "";
+		String actualDate = DateUtil.getDateInUIFormat(null);
+		assertEquals("Expected "+ expectedDate + " but got "+actualDate,
+				expectedDate,actualDate);
+	}
+	
+	@Test
+	public void testGetCurrentDateInUIFormat() {
+		Date date = calendar.getTime();
+		SimpleDateFormat uiFormat = DateUtil.getSimpleDateFormat(DateUtil.FRONTEND_DATE_FORMAT);
+		String expectedDate = uiFormat.format(date);
+		String actualDate = DateUtil.getCurrentDateInUIFormat();
+		assertEquals("Expected "+ expectedDate + " but got "+actualDate,
+				expectedDate,actualDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat() {
+		String uiDate = "2015-04-25";
+		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
+		String expectedDBDate = "20150425";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat_WrongFromDateFormat() {
+		String uiDate = "20150630";
+		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
+		String expectedDBDate = "";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat_NullFromDateFormat() {
+		String uiDate = null;
+		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
+		String expectedDBDate = "";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat_EmptyFromDateFormat() {
+		String uiDate = "";
+		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
+		String expectedDBDate = "";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat_WrongDataTypeId() {
+		String uiDate = "2015-07-30";
+		String actualDBDate = DateUtil.convertToDBDateFormat(2, uiDate);
+		String expectedDBDate = "";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat_NullDataTypeId() {
+		String uiDate = "2015-09-30";
+		String actualDBDate = DateUtil.convertToDBDateFormat(null, uiDate);
+		String expectedDBDate = "";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToUIDateFormat() {
+		String dbDate = "20150430";
+		String actualUIDate = DateUtil.convertToUIDateFormat(TermId.DATE_VARIABLE.getId(), dbDate);
+		String expectedUIDate = "2015-04-30";
+		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
+				expectedUIDate,actualUIDate);
+	}
+	
+	@Test
+	public void testConvertToUIDateFormat_WrongFromDateFormat() {
+		String dbDate = "2015-04-30";
+		String actualUIDate = DateUtil.convertToUIDateFormat(TermId.DATE_VARIABLE.getId(), dbDate);
+		String expectedUIDate = "";
+		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
+				expectedUIDate,actualUIDate);
+	}
+	
+	@Test
+	public void testConvertToUIDateFormat_NullFromDateFormat() {
+		String dbDate = null;
+		String actualUIDate = DateUtil.convertToUIDateFormat(TermId.DATE_VARIABLE.getId(), dbDate);
+		String expectedUIDate = "";
+		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
+				expectedUIDate,actualUIDate);
+	}
+	
+	@Test
+	public void testConvertToUIDateFormat_EmptyFromDateFormat() {
+		String dbDate = "";
+		String actualUIDate = DateUtil.convertToUIDateFormat(TermId.DATE_VARIABLE.getId(), dbDate);
+		String expectedUIDate = "";
+		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
+				expectedUIDate,actualUIDate);
+	}
+	
+	@Test
+	public void testConvertToUIDateFormat_WrongDataTypeId() {
+		String dbDate = "20150426";
+		String actualUIDate = DateUtil.convertToUIDateFormat(1, dbDate);
+		String expectedUIDate = "";
+		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
+				expectedUIDate,actualUIDate);
+	}
+	
+	@Test
+	public void testConvertToUIDateFormat_NullDataTypeId() {
+		String dbDate = "20150726";
+		String actualUIDate = DateUtil.convertToUIDateFormat(null, dbDate);
+		String expectedUIDate = "";
+		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
+				expectedUIDate,actualUIDate);
+	}
+	
+	@Test
+	public void testIsValidDateString() {
+		String dateString = "20150422";
+		boolean isValid = DateUtil.isValidDate(dateString);
+		assertTrue(dateString + " should be a valid date",isValid);
+	}
+	
+	@Test
+	public void testIsValidDateString_Null() {
+		String dateString = null;
+		boolean isValid = DateUtil.isValidDate(dateString);
+		assertFalse(dateString + " should not be a valid date",isValid);
+	}
+	
+	@Test
+	public void testIsValidDateString_WrongFormat() {
+		String dateString = "2015-12-21";
+		boolean isValid = DateUtil.isValidDate(dateString);
+		assertFalse(dateString + " should not be a valid date",isValid);
+	}
+	
+	@Test
+	public void testIsValidDateString_NotANumber() {
+		String dateString = "abcdefgh";
+		boolean isValid = DateUtil.isValidDate(dateString);
+		assertFalse(dateString + " should not be a valid date",isValid);
+	}
+	
+	@Test
+	public void testIsValidDateString_Invalid() {
+		String dateString = "20151322";
+		boolean isValid = DateUtil.isValidDate(dateString);
+		assertFalse(dateString + " should not be a valid date",isValid);
+	}
+	
+	@Test
+	public void testDaysInMonth() {
+		int year = 2015;
+		int actualDaysInMonth = 0;
+		int expectedDaysInMonth = 0;
+		for(int month=1;month<=12;month++) {
+			actualDaysInMonth = DateUtil.daysInMonth(year, month);
+			if(month == 2) {
+				expectedDaysInMonth = 28;
+			} else if(month == 4 || month == 6 || month == 9 || month == 11) {
+				expectedDaysInMonth = 30;
+			} else {
+				expectedDaysInMonth = 31;
+			}
+			assertEquals("Expected "+ expectedDaysInMonth + " but got "+actualDaysInMonth,
+					expectedDaysInMonth,actualDaysInMonth);
+		}
+	}
+	
+	@Test
+	public void testDaysInMonthFebLeapYear() {
+		int month = 2;
+		int year = 2016;
+		int actualDaysInMonth = DateUtil.daysInMonth(year, month);
+		int expectedDaysInMonth = 29;
+		assertEquals("Expected "+ expectedDaysInMonth + " but got "+actualDaysInMonth,
+					expectedDaysInMonth,actualDaysInMonth);
+		
+		year = 2100;
+		actualDaysInMonth = DateUtil.daysInMonth(year, month);
+		expectedDaysInMonth = 28;
+		assertEquals("Expected "+ expectedDaysInMonth + " but got "+actualDaysInMonth,
+					expectedDaysInMonth,actualDaysInMonth);
 	}
 }
