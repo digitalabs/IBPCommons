@@ -480,7 +480,7 @@ public class DateUtilTest {
 	public void testConvertToDBDateFormat_NullFromDateFormat() {
 		String uiDate = null;
 		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
-		String expectedDBDate = "";
+		String expectedDBDate = uiDate;
 		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
 				expectedDBDate,actualDBDate);
 	}
@@ -489,7 +489,7 @@ public class DateUtilTest {
 	public void testConvertToDBDateFormat_EmptyFromDateFormat() {
 		String uiDate = "";
 		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
-		String expectedDBDate = "";
+		String expectedDBDate = uiDate;
 		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
 				expectedDBDate,actualDBDate);
 	}
@@ -498,7 +498,7 @@ public class DateUtilTest {
 	public void testConvertToDBDateFormat_WrongDataTypeId() {
 		String uiDate = "2015-07-30";
 		String actualDBDate = DateUtil.convertToDBDateFormat(2, uiDate);
-		String expectedDBDate = "";
+		String expectedDBDate = uiDate;
 		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
 				expectedDBDate,actualDBDate);
 	}
@@ -507,7 +507,7 @@ public class DateUtilTest {
 	public void testConvertToDBDateFormat_NullDataTypeId() {
 		String uiDate = "2015-09-30";
 		String actualDBDate = DateUtil.convertToDBDateFormat(null, uiDate);
-		String expectedDBDate = "";
+		String expectedDBDate = uiDate;
 		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
 				expectedDBDate,actualDBDate);
 	}
@@ -534,7 +534,7 @@ public class DateUtilTest {
 	public void testConvertToUIDateFormat_NullFromDateFormat() {
 		String dbDate = null;
 		String actualUIDate = DateUtil.convertToUIDateFormat(TermId.DATE_VARIABLE.getId(), dbDate);
-		String expectedUIDate = "";
+		String expectedUIDate = dbDate;
 		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
 				expectedUIDate,actualUIDate);
 	}
@@ -543,7 +543,7 @@ public class DateUtilTest {
 	public void testConvertToUIDateFormat_EmptyFromDateFormat() {
 		String dbDate = "";
 		String actualUIDate = DateUtil.convertToUIDateFormat(TermId.DATE_VARIABLE.getId(), dbDate);
-		String expectedUIDate = "";
+		String expectedUIDate = dbDate;
 		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
 				expectedUIDate,actualUIDate);
 	}
@@ -552,7 +552,7 @@ public class DateUtilTest {
 	public void testConvertToUIDateFormat_WrongDataTypeId() {
 		String dbDate = "20150426";
 		String actualUIDate = DateUtil.convertToUIDateFormat(1, dbDate);
-		String expectedUIDate = "";
+		String expectedUIDate = dbDate;
 		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
 				expectedUIDate,actualUIDate);
 	}
@@ -561,7 +561,7 @@ public class DateUtilTest {
 	public void testConvertToUIDateFormat_NullDataTypeId() {
 		String dbDate = "20150726";
 		String actualUIDate = DateUtil.convertToUIDateFormat(null, dbDate);
-		String expectedUIDate = "";
+		String expectedUIDate = dbDate;
 		assertEquals("Expected "+ expectedUIDate + " but got "+actualUIDate,
 				expectedUIDate,actualUIDate);
 	}

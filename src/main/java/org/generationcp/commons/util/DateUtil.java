@@ -287,28 +287,32 @@ public class DateUtil {
     
     public static String convertToDBDateFormat(
     		Integer dataTypeId, String value) {
+    	String returnVal = value;
     	if(dataTypeId != null && dataTypeId == TermId.DATE_VARIABLE.getId() && 
     			value != null && !"".equalsIgnoreCase(value)) {
     		try {
     			return convertDate(value, FRONTEND_DATE_FORMAT, DATE_AS_NUMBER_FORMAT);
 			} catch (ParseException e) {
 				LOG.error(e.getMessage(),e);
+				returnVal = "";
 			}
     	}
-    	return "";
+    	return returnVal;
     }
     
     public static String convertToUIDateFormat(
     		Integer dataTypeId, String value) {
+    	String returnVal = value;
     	if(dataTypeId != null && dataTypeId == TermId.DATE_VARIABLE.getId() && 
     			value != null && !"".equalsIgnoreCase(value)) {
     		try {
 				return convertDate(value, DATE_AS_NUMBER_FORMAT, FRONTEND_DATE_FORMAT);
 			} catch (ParseException e) {
 				LOG.error(e.getMessage(),e);
+				returnVal = "";
 			}
     	}
-    	return "";
+    	return returnVal;
     }
     
     public static boolean isValidDate(String dateString) {

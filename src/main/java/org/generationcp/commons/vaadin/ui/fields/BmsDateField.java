@@ -183,8 +183,7 @@ public class BmsDateField extends DateField {
                 || variables.containsKey(DAY)
                 || variables.containsKey(HOUR)) {
 			returnVal = true;
-		}
-        if(variables.containsKey(MIN)
+		} else if(variables.containsKey(MIN)
                 || variables.containsKey(SEC)
                 || variables.containsKey(MSEC)
                 || variables.containsKey(DATE_STRING)) {
