@@ -530,7 +530,7 @@ td.v-datefield-calendarpanel-nextyear{text-align:left}
 .v-label-light,.white .v-label-light{font-size:11px;line-height:13px;color:#707070}
 .v-label hr,.white .v-label hr{height:2px;overflow:hidden;background:#dcdcdc;color:#dcdcdc;border:0;border-bottom:1px solid #fff}
 .v-sa .v-label hr,.v-ie8 .v-label hr{height:1px}
-.v-table .v-label{line-height:normal}
+.v-table .v-label{line-height:normal;text-overflow: ellipsis;overflow: hidden;}
 .v-orderedlayout-margin-top,.v-horizontallayout-margin-top,.v-verticallayout-margin-top{padding-top:18px}
 .v-orderedlayout-margin-right,.v-horizontallayout-margin-right,.v-verticallayout-margin-right{padding-right:18px}
 .v-orderedlayout-margin-bottom,.v-horizontallayout-margin-bottom,.v-verticallayout-margin-bottom{padding-bottom:18px}
