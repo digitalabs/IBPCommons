@@ -1,10 +1,5 @@
 package org.generationcp.commons.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import org.generationcp.commons.constant.VaadinMessage;
 import org.generationcp.commons.exceptions.InvalidDateException;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -12,6 +7,11 @@ import org.generationcp.middleware.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 @Configurable
 public class DateUtil {
@@ -91,7 +91,18 @@ public class DateUtil {
     public static Date parseDate(String date, String format) throws ParseException{
     	return Util.parseDate(date, format);
     }
-    
+
+    /**
+     * Parses the date given default format
+     *
+     * @param date the date
+     * @return the date
+     * @throws ParseException the parse exception
+     */
+    public static Date parseDate(String date) throws ParseException{
+        return Util.parseDate(date,Util.DATE_AS_NUMBER_FORMAT);
+    }
+
     /**
      * Returns the SimpleDateFormat of the current display locale
      * @return SimpleDateFormat
@@ -268,7 +279,7 @@ public class DateUtil {
      */
     public static String getCurrentDateInUIFormat() {
     	return Util.getCurrentDateAsStringValue(
-    			Util.FRONTEND_DATE_FORMAT);
+                Util.FRONTEND_DATE_FORMAT);
     }
     
     /**
@@ -281,7 +292,7 @@ public class DateUtil {
     		return "";
     	}
     	return Util.formatDateAsStringValue(date,
-    			Util.FRONTEND_DATE_FORMAT);
+                Util.FRONTEND_DATE_FORMAT);
     }
     
     
@@ -334,6 +345,30 @@ public class DateUtil {
 
 	    return isValidDate(year, month, day);
 	}
+
+    public static boolean isValidFieldbookDate(String dateString) {
+        if (dateString == null || dateString.length() != Util.DATE_AS_NUMBER_FORMAT.length()) {
+            return false;
+        }
+
+        int date;
+        try {
+            date = Integer.parseInt(dateString);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        int year = date / 10000;
+        int month = (date % 10000) / 100;
+        int day = date % 100;
+
+        // leap years calculation not valid before 1581
+        boolean yearOk = (year >= 1581);
+        boolean monthOk = (month >= 1) && (month <= 12);
+        boolean dayOk = (day >= 1) && (day <= daysInMonth(year, month));
+
+        return (yearOk && monthOk && dayOk);
+    }
     
     public static int daysInMonth(int year, int month) {
 	    int daysInMonth;
