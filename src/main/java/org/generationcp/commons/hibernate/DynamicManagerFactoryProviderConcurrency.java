@@ -90,7 +90,9 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
         ManagerFactory factory = new ManagerFactory();
         factory.setSessionProvider(sessionProvider);
         factory.setDatabaseName(databaseName);
-        
+        factory.setCropName(project.getCropType().getCropName());
+        factory.setPedigreeProfile(pedigreeProfile);
+                
         return factory;
     }
 
