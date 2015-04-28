@@ -10,11 +10,13 @@ import java.util.List;
  * User: Daniel Villafuerte
  */
 
-public interface InventoryStockService {
+public interface StockService {
 	void assignStockIDs(List<InventoryDetails> details) throws MiddlewareException;
 
 	void assignStockIDs(List<InventoryDetails> details,
 			String breederIdentifier, String separator) throws MiddlewareException;
 
 	String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws MiddlewareException;
+
+
 }

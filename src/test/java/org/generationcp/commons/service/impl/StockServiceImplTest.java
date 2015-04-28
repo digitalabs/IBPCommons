@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
-public class InventoryStockServiceImplTest {
+public class StockServiceImplTest {
 
 	public static final Integer DUMMY_NOTATION_NUMBER = 5;
 	public static final String DUMMY_BREEDER_IDENTIFIER = "DV";
@@ -46,7 +46,7 @@ public class InventoryStockServiceImplTest {
 	private InventoryService inventoryService;
 
 	@Resource
-	private InventoryStockServiceImpl inventoryStockService;
+	private StockServiceImpl inventoryStockService;
 
 	@Before
 	public void setUp() {

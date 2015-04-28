@@ -4,7 +4,7 @@ import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.RuleFactory;
 import org.generationcp.commons.ruleengine.service.RulesService;
 import org.generationcp.commons.ruleengine.stockid.StockIDGenerationRuleExecutionContext;
-import org.generationcp.commons.service.InventoryStockService;
+import org.generationcp.commons.service.StockService;
 import org.generationcp.middleware.domain.inventory.InventoryDetails;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.service.api.InventoryService;
@@ -19,7 +19,7 @@ import java.util.List;
  * Date: 4/16/2015
  * Time: 2:51 PM
  */
-public class InventoryStockServiceImpl implements InventoryStockService {
+public class StockServiceImpl implements StockService {
 
 	@Resource
 	private RulesService rulesService;
@@ -46,6 +46,15 @@ public class InventoryStockServiceImpl implements InventoryStockService {
 		}
 	}
 
+	/**
+	 *
+	 * Returns the stock ID prefix (consisting of breeder identifier plus current notation number) and the configured separator
+	 * e.g., 'DV1-'
+	 * @param breederIdentifier
+	 * @param separator
+	 * @return
+	 * @throws MiddlewareException
+	 */
 	@Override
 	public String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws
 			MiddlewareException {
