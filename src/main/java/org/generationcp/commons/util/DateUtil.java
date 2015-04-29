@@ -183,7 +183,7 @@ public class DateUtil {
 	/**
      * Returns the actual year given a date object
      * 
-     * @param Date object
+     * @param date object
      * @return Integer year
      */
 	public static Integer getYear(Date date){	
@@ -224,7 +224,7 @@ public class DateUtil {
     /***
      * Returns true if year is greater than or equal to 1900
      * 
-     * @param Integer year
+     * @param year Integer year
      * @return boolean
      * */
     public static boolean isValidYear(Integer year){
@@ -239,7 +239,7 @@ public class DateUtil {
     /***
      * Returns true if year is greater than or equal to 1900
      * 
-     * @param Date date
+     * @param date date
      * @return boolean
      * */
     public static boolean isValidYear(Date date){
