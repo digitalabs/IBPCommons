@@ -23,7 +23,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -597,7 +596,7 @@ public class MySQLUtil {
     }
 
     protected String getBackupFilename(String databaseName, String suffix) {
-        DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
+        DateFormat format = DateUtil.getSimpleDateFormat("yyyyMMdd_hhmmss_SSS");
         String timestamp = format.format(new Date());
 
         String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
@@ -605,7 +604,7 @@ public class MySQLUtil {
     }
 
     protected String getBackupFilename(String databaseName, String suffix,String customDir) {
-        DateFormat format = new SimpleDateFormat("yyyyMMdd_hhmmss_SSS");
+        DateFormat format = DateUtil.getSimpleDateFormat("yyyyMMdd_hhmmss_SSS");
         String timestamp = format.format(new Date());
 
         String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
