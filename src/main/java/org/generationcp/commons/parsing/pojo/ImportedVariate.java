@@ -41,6 +41,9 @@ public class ImportedVariate implements Serializable{
     /** The sample level. */
     private String sampleLevel;
 
+    private boolean isSeedStockVariable;
+    private Integer scaleId;
+
     /**
      * Instantiates a new imported variate.
      */
@@ -215,5 +218,22 @@ public class ImportedVariate implements Serializable{
     public void setSampleLevel(String sampleLevel){
         this.sampleLevel = sampleLevel;
     }
-    
+
+
+    public boolean isSeedStockVariable() {
+        return isSeedStockVariable;
+    }
+
+    public void setSeedStockVariable(boolean isSeedStockVariable) {
+        this.isSeedStockVariable = isSeedStockVariable;
+    }
+
+    public Integer getScaleId() {
+        return scaleId;
+    }
+
+    public void setScaleId(Integer scaleId){
+        this.scaleId = scaleId;
+    }
+
 }

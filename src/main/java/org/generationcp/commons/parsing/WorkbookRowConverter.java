@@ -19,13 +19,17 @@ import java.util.Map;
 public abstract class WorkbookRowConverter<T> {
 
 	private Workbook workbook;
-	private int currentIndex;
+	protected int currentIndex;
 	private int targetSheetIndex;
 	private int columnCount;
 	private ParseValidationMap validationMap;
 	private String[] columnLabels;
 
 	public WorkbookRowConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels) {
+		this(workbook, startingIndex, targetSheetIndex, columnCount, columnLabels,true);
+	}
+
+	public WorkbookRowConverter(Workbook workbook, int startingIndex, int targetSheetIndex, int columnCount, String[] columnLabels,boolean strictColumns) {
 		this.workbook = workbook;
 		this.currentIndex = startingIndex;
 		this.targetSheetIndex = targetSheetIndex;
@@ -34,7 +38,7 @@ public abstract class WorkbookRowConverter<T> {
 
 		if (columnLabels == null) {
 			throw new IllegalArgumentException("Column labels must not be null");
-		} else if (columnCount != columnLabels.length) {
+		} else if (columnCount != columnLabels.length && strictColumns) {
 			throw new IllegalArgumentException("There should be a column label for each column to be converted");
 		}
 	}

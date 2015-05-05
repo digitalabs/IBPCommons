@@ -1,14 +1,16 @@
-/*******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- * 
+ * <p/>
  * Generation Challenge Programme (GCP)
- * 
- * 
+ * <p/>
+ * <p/>
  * This software is licensed for use under the terms of the GNU General Public
  * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
  * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
- *******************************************************************************/
+ * <p/>
+ * *****************************************************************************
+ */
 package org.generationcp.commons.parsing.pojo;
 
 import org.apache.poi.ss.usermodel.Workbook;
@@ -25,54 +27,84 @@ import java.util.Set;
  * The Class ImportedGermplasmMainInfo.
  */
 public class ImportedGermplasmMainInfo implements Serializable {
-	
-	/** The Constant serialVersionUID. */
+
+	/**
+	 * The Constant serialVersionUID.
+	 */
 	private static final long serialVersionUID = -3328879715589849561L;
 
-	/** The file. */
+	/**
+	 * The file.
+	 */
 	public File file;
 
-    /** The temp file name. */
-    private String tempFileName;
-    
-    /** The server filename. */
-    private String serverFilename;
-    
-    /** The original filename. */
-    private String originalFilename;
-    
-    /** The list name. */
-    private String listName;
-    
-    /** The list title. */
-    private String listTitle;
-    
-    /** The list type. */
-    private String listType;
-    
-    /** The list date. */
-    private Date listDate;
-    
-    /** The inp. */
-    private InputStream inp;
-    
-    /** The wb. */
-    private Workbook wb;
-    
-    /** The imported germplasm list. */
-    private ImportedGermplasmList importedGermplasmList;
-    
-    /** The file is valid. */
-    private Boolean fileIsValid;
-    
-    /** The error messages. */
-    private Set<String> errorMessages;
-    
-    /** The is advance import type. */
-    private boolean isAdvanceImportType;
-    
-    private Integer listId;
-    
+	/**
+	 * The temp file name.
+	 */
+	private String tempFileName;
+
+	/**
+	 * The server filename.
+	 */
+	private String serverFilename;
+
+	/**
+	 * The original filename.
+	 */
+	private String originalFilename;
+
+	/**
+	 * The list name.
+	 */
+	private String listName;
+
+	/**
+	 * The list title.
+	 */
+	private String listTitle;
+
+	/**
+	 * The list type.
+	 */
+	private String listType;
+
+	/**
+	 * The list date.
+	 */
+	private Date listDate;
+
+	/**
+	 * The inp.
+	 */
+	private InputStream inp;
+
+	/**
+	 * The wb.
+	 */
+	private Workbook wb;
+
+	/**
+	 * The imported germplasm list.
+	 */
+	private ImportedGermplasmList importedGermplasmList;
+
+	/**
+	 * The file is valid.
+	 */
+	private Boolean fileIsValid;
+
+	/**
+	 * The error messages.
+	 */
+	private Set<String> errorMessages;
+
+	/**
+	 * The is advance import type.
+	 */
+	private boolean isAdvanceImportType;
+
+	private Integer listId;
+
 	/**
 	 * Checks if is advance import type.
 	 *
@@ -332,6 +364,5 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	public void setListId(Integer listId) {
 		this.listId = listId;
 	}
-    
-	
+
 }

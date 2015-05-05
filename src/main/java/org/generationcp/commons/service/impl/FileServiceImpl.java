@@ -45,6 +45,11 @@ public class FileServiceImpl implements FileService{
         this.uploadDirectory = uploadDirectory;
     }
 
+    public FileServiceImpl() {
+        this.uploadDirectory = new File(
+                System.getProperty("java.io.tmpdir")).getPath();
+    }
+
     /* (non-Javadoc)
      * @see org.generationcp.commons.service.FileService#saveTemporaryFile(java.io.InputStream)
      */
@@ -109,4 +114,5 @@ public class FileServiceImpl implements FileService{
 		return WorkbookFactory.create(workbookFile);
 
     }
+
 }
