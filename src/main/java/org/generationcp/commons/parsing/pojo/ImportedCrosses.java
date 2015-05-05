@@ -11,9 +11,10 @@
  *******************************************************************************/
 package org.generationcp.commons.parsing.pojo;
 
-import org.generationcp.middleware.pojos.ListDataProject;
-
 import java.io.Serializable;
+import java.util.Set;
+
+import org.generationcp.middleware.pojos.ListDataProject;
 
 /**
  * The Class ImportedCrosses.
@@ -24,7 +25,12 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	 * The Constant serialVersionUID.
 	 */
 	private static final long serialVersionUID = 1L;
-
+	
+	public static final String PLOT_DUPE_PREFIX = "Plot Dupe: ";
+	public static final String PEDIGREE_DUPE_PREFIX = "Pedigree Dupe: ";
+	public static final String PLOT_RECIP_PREFIX = "Plot Recip: ";
+	public static final String PEDIGREE_RECIP_PREFIX = "Pedigree Recip: ";
+	
 	private String notes;
 	private String seedsHarvested;
 	private String crossingDate;
@@ -50,6 +56,16 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	 */
 	private String maleGid;
 
+	private String duplicate;
+
+	private String femalePlotNo;
+	
+	private String malePlotNo;
+	
+	private String duplicatePrefix;
+	
+	private Set<Integer> duplicateEntries;
+	
 	/**
 	 * Instantiates a new imported germplasm.
 	 */
@@ -231,5 +247,61 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 
 	public void setRawBreedingMethod(String rawBreedingMethod) {
 		this.rawBreedingMethod = rawBreedingMethod;
+	}
+
+	public String getDuplicate() {
+		return duplicate;
+	}
+
+	public void setDuplicate(String duplicate) {
+		this.duplicate = duplicate;
+	}
+
+	public String getFemalePlotNo() {
+		return femalePlotNo;
+	}
+
+	public void setFemalePlotNo(String femalePlotNo) {
+		this.femalePlotNo = femalePlotNo;
+	}
+
+	public String getMalePlotNo() {
+		return malePlotNo;
+	}
+
+	public void setMalePlotNo(String malePlotNo) {
+		this.malePlotNo = malePlotNo;
+	}
+	
+	public boolean isPedigreeDupe() {
+		return PEDIGREE_DUPE_PREFIX.equals(duplicatePrefix);
+	}	
+
+	public boolean isPlotDupe() {
+		return PLOT_DUPE_PREFIX.equals(duplicatePrefix);
+	}
+	
+	public boolean isPedigreeRecip() {
+		return PEDIGREE_RECIP_PREFIX.equals(duplicatePrefix);
+	}
+	
+	public boolean isPlotRecip() {
+		return PLOT_RECIP_PREFIX.equals(duplicatePrefix);
+	}
+
+	public Set<Integer> getDuplicateEntries() {
+		return duplicateEntries;
+	}
+
+	public void setDuplicateEntries(Set<Integer> duplicateEntries) {
+		this.duplicateEntries = duplicateEntries;
+	}
+
+	public String getDuplicatePrefix() {
+		return duplicatePrefix;
+	}
+
+	public void setDuplicatePrefix(String duplicatePrefix) {
+		this.duplicatePrefix = duplicatePrefix;
 	}
 }
