@@ -79,4 +79,15 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
     public void addErrorMessages(String errorMsg) {
         errorMessages.add(errorMsg);
     }
+    
+    public boolean hasPlotDuplicate(){
+    	if(importedCrosses != null){
+    		for(ImportedCrosses crosses : importedCrosses){
+    			if(crosses.isPlotDupe()){
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
+    }
 }
