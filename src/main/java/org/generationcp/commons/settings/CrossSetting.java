@@ -19,6 +19,7 @@ public class CrossSetting implements Serializable,PresetSetting {
 	private BreedingMethodSetting breedingMethodSetting;
 	private CrossNameSetting crossNameSetting;
 	private AdditionalDetailsSetting additionalDetailsSetting;
+	private boolean preservePlotDuplicates;
 	
 	public CrossSetting(){
 		
@@ -70,8 +71,16 @@ public class CrossSetting implements Serializable,PresetSetting {
 	public void setAdditionalDetailsSetting(
 			AdditionalDetailsSetting additionalDetailsSetting) {
 		this.additionalDetailsSetting = additionalDetailsSetting;
-	}
+	}		
 	
+	public boolean isPreservePlotDuplicates() {
+		return preservePlotDuplicates;
+	}
+
+	public void setPreservePlotDuplicates(boolean preservePlotDuplicates) {
+		this.preservePlotDuplicates = preservePlotDuplicates;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
