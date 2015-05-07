@@ -11,10 +11,10 @@
  *******************************************************************************/
 package org.generationcp.commons.parsing.pojo;
 
+import org.generationcp.middleware.pojos.ListDataProject;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import org.generationcp.middleware.pojos.ListDataProject;
 
 /**
  * The Class ImportedCrosses.
@@ -100,41 +100,31 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		super(entryId, desig, gid, cross, source, entryCode, check);
 	}
 
-	/**
-	 * Special constructor to create crosses driectly from parsed data
-	 *
-	 * @param femaleListData
-	 * @param maleListData
-	 * @param maleStudyName
-	 * @param rawBreedingMethod
-	 * @param crossingDate
-	 * @param seedsHarvested
-	 * @param notes
-	 * @param entryId
-	 */
 	public ImportedCrosses(ListDataProject femaleListData, ListDataProject maleListData,
-			String femaleStudyName, String maleStudyName, String rawBreedingMethod, String crossingDate,
-			String seedsHarvested, String notes, int entryId) {
+			String femaleStudyName, String maleStudyName, String femalePlotNo,String malePlotNo,int entryId) {
 		this.setFemaleDesig(femaleListData.getDesignation());
 		this.setMaleDesig(maleListData.getDesignation());
 		this.setFemaleGid(femaleListData.getGermplasmId().toString());
 		this.setMaleGid(maleListData.getGermplasmId().toString());
-
+		this.setFemalePlotNo(femalePlotNo);
+		this.setMalePlotNo(malePlotNo);
 		this.setEntryId(entryId);
+
 		//Parentage: "female designation / male designation"
 		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
-		// <Source Female Nursery>: "<female Nursery>:<Source Female Entry ID> / <Male Nursery>:<Source Male Entry ID>"
-		this.setSource(femaleStudyName + ":" + femaleListData.getEntryId() + " / " + maleStudyName + ":" + maleListData
-				.getEntryId());
 
-		this.setEntryCode(String.valueOf(entryId));
+		// <Source Female Nursery>: "<female Nursery>:<Source Female Plot no> / <Male Nursery>:<Source Male Plot no>"
+		this.setSource(
+				femaleStudyName + ":" + femalePlotNo + " / " + maleStudyName + ":" + malePlotNo);
 
-		// the optionals
+	}
+
+
+	public void setOptionalFields(String rawBreedingMethod, String crossingDate, String seedsHarvested, String notes) {
 		this.rawBreedingMethod = rawBreedingMethod;
 		this.crossingDate = crossingDate;
 		this.seedsHarvested = seedsHarvested;
 		this.notes = notes;
-
 	}
 
 	public ImportedCrosses(Integer entryId, String desig, String gid, String cross
