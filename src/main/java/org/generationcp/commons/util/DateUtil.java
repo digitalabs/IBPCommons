@@ -319,7 +319,10 @@ public class DateUtil {
     }
     
     public static boolean isInDBDateFormat(String dateString){
-    	return dateString.matches("((19|20)\\d\\d)(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])")? true : false;
+    	if(dateString != null){
+    		return dateString.matches("((19|20)\\d\\d)(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])")? true : false;
+    	}
+    	return false;
     }
     
     public static String convertToUIDateFormat(
