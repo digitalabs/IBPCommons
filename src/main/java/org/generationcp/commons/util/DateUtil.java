@@ -12,6 +12,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Configurable
 public class DateUtil {
@@ -299,6 +301,11 @@ public class DateUtil {
     public static String convertToDBDateFormat(
     		Integer dataTypeId, String value) {
     	String returnVal = value;
+    	
+    	if(isInDBDateFormat(returnVal)){
+			return returnVal;
+    	}
+    	
     	if(dataTypeId != null && dataTypeId == TermId.DATE_VARIABLE.getId() && 
     			value != null && !"".equalsIgnoreCase(value)) {
     		try {
@@ -309,6 +316,10 @@ public class DateUtil {
 			}
     	}
     	return returnVal;
+    }
+    
+    public static boolean isInDBDateFormat(String dateString){
+    	return dateString.matches("((19|20)\\d\\d)(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])")? true : false;
     }
     
     public static String convertToUIDateFormat(
