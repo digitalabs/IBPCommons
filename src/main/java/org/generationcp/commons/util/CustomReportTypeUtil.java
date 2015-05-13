@@ -21,14 +21,16 @@ public class CustomReportTypeUtil {
 		//do nothing, this is to hide piblic constructor
 	}
 	
-	public static List<CustomReportType> readReportConfiguration(StandardPreset standardPreset){
+	public static List<CustomReportType> readReportConfiguration(StandardPreset standardPreset, String profile){
 		List<CustomReportType> customReportTypes = new ArrayList<CustomReportType>();
 		if(standardPreset != null && standardPreset.getConfiguration() != null){
 			try {
 			  final Unmarshaller parseXML = JAXBContext.newInstance(CustomReportList.class).createUnmarshaller();			
 			  CustomReportList customReportList = (CustomReportList) parseXML
 						.unmarshal(new StringReader(standardPreset.getConfiguration()));
-			  return customReportList.getCustomReportType();
+			  if(customReportList.getProfile() != null && customReportList.getProfile().equalsIgnoreCase(profile)){
+				  return customReportList.getCustomReportType();
+			  }
 			}catch(JAXBException e){
 				LOG.error(e.getMessage(), e);
 			}
