@@ -7,11 +7,13 @@ import org.generationcp.commons.ruleengine.stockid.StockIDGenerationRuleExecutio
 import org.generationcp.commons.service.StockService;
 import org.generationcp.middleware.domain.inventory.InventoryDetails;
 import org.generationcp.middleware.exceptions.MiddlewareException;
+import org.generationcp.middleware.pojos.ListDataProject;
 import org.generationcp.middleware.service.api.InventoryService;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -72,5 +74,13 @@ public class StockServiceImpl implements StockService {
 		} catch (RuleException e) {
 			throw new MiddlewareException(e.getMessage(), e);
 		}
+	}
+
+	@Override
+	public void processBulkSettings(List<ListDataProject> dataProjectList, Map<Integer, InventoryDetails> inventoryDetailsMap,
+									boolean addPedigreeDuplicate, boolean addPlotReciprocal, boolean addPedigreeReciprocal) {
+		List<Integer> processedPedigreeDuplicates;
+		List<Integer> processedPlotReciprocals;
+		List<Integer> processedPedigreeReciprocal;
 	}
 }
