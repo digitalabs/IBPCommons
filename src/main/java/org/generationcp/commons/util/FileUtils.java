@@ -19,7 +19,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class FileUtils {
+	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 	
 	private FileUtils(){
 		//hide public constructor for this utility class
@@ -60,15 +64,13 @@ public class FileUtils {
             }
 
             return baos.toByteArray();
-        }
-        finally {
+        } finally {
             try {
                 if (bis != null) {
                     bis.close();
                 }
-            }
-            catch (IOException e) {
-                // intentionally blank
+            } catch (IOException e) {
+                LOG.debug("Error closing file", e);
             }
         }
     }
@@ -79,15 +81,13 @@ public class FileUtils {
         try {
             fis = new FileOutputStream(file);
             fis.write(contents, 0, contents.length);
-        }
-        finally {
+        } finally {
             try {
                 if (fis != null) {
                     fis.close();
                 }
-            }
-            catch (IOException e) {
-                // intentionally blank
+            } catch (IOException e) {
+                LOG.debug("Error closing file", e);
             }
         }
     }
