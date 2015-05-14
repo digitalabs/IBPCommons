@@ -18,6 +18,9 @@ import java.util.List;
 
 public class Util{
 
+	private Util() {
+		///private constructor
+	}
     /**
      * Get the boolean value of <code>value</code>.
      * 

@@ -27,7 +27,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	public static final String FILE_INVALID = "common.error.invalid.file";
 
-	protected final static String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
+	protected static final String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
 
 	@Resource
 	protected FileService fileService;

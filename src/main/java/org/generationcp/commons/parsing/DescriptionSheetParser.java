@@ -76,7 +76,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		parseDescriptionSheet(doParseDetails,doParseConditions,doParseFactors,doParseConstants,doParseVariates);
 	}
 
-	public void parseDescriptionSheet(boolean doParseDetails,boolean doParseConditions,boolean doParseFactors,boolean doParseConstants,boolean doParseVariates) throws FileParsingException, ParseException {
+	private void parseDescriptionSheet(boolean doParseDetails,boolean doParseConditions,boolean doParseFactors,boolean doParseConstants,boolean doParseVariates) throws FileParsingException, ParseException {
 
 		if (doParseDetails) {
 			parseListDetails();
@@ -310,7 +310,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	}
 
 	protected boolean isVariateHeaderInvalid(int variateHeaderRowNo) {
-		String headers[] = {
+		String[] headers = {
 				DescriptionHeaders.VARIATE.getLabel(),
 				DescriptionHeaders.DESCRIPTION.getLabel(),
 				DescriptionHeaders.PROPERTY.getLabel(),
