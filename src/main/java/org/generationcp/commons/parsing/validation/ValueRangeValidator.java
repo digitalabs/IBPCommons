@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,7 +40,8 @@ public class ValueRangeValidator extends ParsingValidator{
 		}
 	}
 
-	@Override public boolean isParsedValueValid(String value) {
+	@Override 
+	public boolean isParsedValueValid(String value, Map<String,Object> additionalParams) {
 
 		if (StringUtils.isEmpty(value)) {
 			return isSkipIfEmpty();

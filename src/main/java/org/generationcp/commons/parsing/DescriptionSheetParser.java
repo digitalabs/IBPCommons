@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by cyrus on 4/24/15.
@@ -342,7 +343,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	}
 
 	@Override
-	public T parseWorkbook(Workbook workbook)
+	public T parseWorkbook(Workbook workbook, Map<String,Object> addtlParams)
 			throws FileParsingException {
 		try {
 			this.workbook = workbook;

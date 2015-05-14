@@ -1,5 +1,7 @@
 package org.generationcp.commons.parsing.validation;
 
+import java.util.Map;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Daniel Villafuerte
@@ -15,7 +17,7 @@ public abstract class ParsingValidator {
 		this.skipIfEmpty = skipIfEmpty;
 	}
 
-	public abstract boolean isParsedValueValid(String value);
+	public abstract boolean isParsedValueValid(String value, Map<String,Object> additionalParams);
 
 	public void setValidationErrorMessage(String message) {
 		this.message = message;
