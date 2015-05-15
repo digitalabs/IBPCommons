@@ -4,6 +4,7 @@ import org.generationcp.middleware.domain.inventory.InventoryDetails;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.pojos.ListDataProject;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public interface StockService {
 
 	String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws MiddlewareException;
 
-	void processBulkSettings(List<ListDataProject> dataProjectList, Map<Integer, InventoryDetails> inventoryDetailsMap, boolean addPedigreeDuplicate, boolean  addPlotReciprocal, boolean addPedigreeReciprocal);
+	void processBulkSettings(Collection<ListDataProject> dataProjectList, Map<Integer, InventoryDetails> inventoryDetailsMap,
+							 boolean addPedigreeDuplicate, boolean  addPlotReciprocal, boolean addPedigreeReciprocal);
 
 }

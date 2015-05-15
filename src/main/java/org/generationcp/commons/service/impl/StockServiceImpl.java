@@ -12,6 +12,7 @@ import org.generationcp.middleware.service.api.InventoryService;
 
 import javax.annotation.Resource;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -77,10 +78,39 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public void processBulkSettings(List<ListDataProject> dataProjectList, Map<Integer, InventoryDetails> inventoryDetailsMap,
+	public void processBulkSettings(Collection<ListDataProject> dataProjectList, Map<Integer, InventoryDetails> inventoryDetailsMap,
 									boolean addPedigreeDuplicate, boolean addPlotReciprocal, boolean addPedigreeReciprocal) {
-		List<Integer> processedPedigreeDuplicates;
-		List<Integer> processedPlotReciprocals;
-		List<Integer> processedPedigreeReciprocal;
+		for (ListDataProject listDataProject : dataProjectList) {
+			if (addPedigreeDuplicate) {
+				processBulkWith(listDataProject.getEntryId(), listDataProject.parsePedigreeDupeInformation(), inventoryDetailsMap);
+			}
+
+			if (addPlotReciprocal) {
+				processBulkWith(listDataProject.getEntryId(), listDataProject.parsePlotReciprocalInformation(), inventoryDetailsMap);
+			}
+
+			if (addPedigreeReciprocal) {
+				processBulkWith(listDataProject.getEntryId(), listDataProject.parsePedigreeReciprocalInformation(), inventoryDetailsMap);
+			}
+		}
+	}
+
+	protected void processBulkWith(Integer targetEntryID, List<Integer> entryIds, Map<Integer, InventoryDetails> detailMap) {
+		InventoryDetails target = detailMap.get(targetEntryID);
+
+		if (entryIds.size() == 0) {
+			return;
+		}
+
+		target.setBulkCompl("Y");
+
+		for (Integer entryId : entryIds) {
+			InventoryDetails bulkDetail = detailMap.get(entryId);
+			if (bulkDetail == null) {
+				continue;
+			}
+
+			target.addBulkWith(bulkDetail.getInventoryID());
+		}
 	}
 }
