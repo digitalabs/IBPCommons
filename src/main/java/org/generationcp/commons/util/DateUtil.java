@@ -12,8 +12,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Configurable
 public class DateUtil {
@@ -377,11 +375,11 @@ public class DateUtil {
         int day = date % 100;
 
         // leap years calculation not valid before 1581
-        boolean yearOk = (year >= 1581);
+        boolean yearOk = year >= 1581;
         boolean monthOk = (month >= 1) && (month <= 12);
         boolean dayOk = (day >= 1) && (day <= daysInMonth(year, month));
 
-        return (yearOk && monthOk && dayOk);
+        return yearOk && monthOk && dayOk;
     }
     
     public static int daysInMonth(int year, int month) {
