@@ -1,5 +1,6 @@
 package org.generationcp.commons.service;
 
+import org.generationcp.commons.exceptions.StockException;
 import org.generationcp.middleware.domain.inventory.InventoryDetails;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.pojos.ListDataProject;
@@ -24,4 +25,7 @@ public interface StockService {
 	void processBulkSettings(Collection<ListDataProject> dataProjectList, Map<Integer, InventoryDetails> inventoryDetailsMap,
 							 boolean addPedigreeDuplicate, boolean  addPlotReciprocal, boolean addPedigreeReciprocal);
 
+	void verifyIfBulkingForStockListCanProceed(Integer listId,List<InventoryDetails> inventoryDetailsList) throws StockException;
+	
+	void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList) throws MiddlewareException;
 }

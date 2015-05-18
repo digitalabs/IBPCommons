@@ -14,6 +14,10 @@ public class BulkComplValidator extends ParsingValidator {
 	private int bulkComplColumnIndex;
 	private int bulkWithColumnIndex;
 	
+	public BulkComplValidator(boolean skipIfEmpty) {
+		super(true);
+	}
+	
 	public BulkComplValidator(int bulkComplColumnIndex, int bulkWithColumnIndex) {
 		super(true);
 		this.bulkComplColumnIndex = bulkComplColumnIndex;
