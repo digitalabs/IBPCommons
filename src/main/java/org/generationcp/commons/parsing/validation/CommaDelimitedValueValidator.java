@@ -49,11 +49,12 @@ public class CommaDelimitedValueValidator extends ParsingValidator{
 	private boolean convertCommaDelimitedValueToList(
 			String value,List<String> valuesToValidate) {
 		String[] valuesArray = value.split(",");
-		for (String stockId : valuesArray) {
-			if(valuesToValidate.contains(stockId)) {
+		for (String parsedValue : valuesArray) {
+			String trimmedValue = parsedValue.trim();
+			if(valuesToValidate.contains(trimmedValue)) {
 				return false;
 			}
-			valuesToValidate.add(stockId);
+			valuesToValidate.add(trimmedValue);
 		}
 		return true;
 	}

@@ -54,7 +54,7 @@ public class CommaDelimitedValueValidatorTest {
 	public void testIsParsedValueValid_Accepted_Multiple() {
 		List<String> valuesList = createAcceptedValueList();
 		validator = new CommaDelimitedValueValidator(valuesList);
-		assertTrue(validator.isParsedValueValid("SID1-3,SID1-1", null));
+		assertTrue(validator.isParsedValueValid("SID1-3, SID1-1", null));
 	}
 	
 	@Test
