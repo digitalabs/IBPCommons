@@ -4,8 +4,12 @@ public class StockException extends Exception {
 	
 	private static final long serialVersionUID = 3894984850856720932L;
 	
-	private String messageKey;
-	private Object[] messageParameters;
+	private final String messageKey;
+	private final Object[] messageParameters;
+	
+	public StockException() {
+		this(null, new Object[]{});
+	}
 	
 	/**
 	 * Instantiates a new stock exception.
@@ -26,6 +30,7 @@ public class StockException extends Exception {
 	public StockException(String messageKey) {
 		super(messageKey);
 		this.messageKey = messageKey;
+		this.messageParameters = null;
 	}
 
 	/**
@@ -37,21 +42,14 @@ public class StockException extends Exception {
 	public StockException(String messageKey, Throwable cause) {
 		super(messageKey, cause);
 		this.messageKey = messageKey;
+		this.messageParameters = null;
 }
 
 	public String getMessageKey() {
 		return messageKey;
 	}
 
-	public void setMessageKey(String messageKey) {
-		this.messageKey = messageKey;
-	}
-
 	public Object[] getMessageParameters() {
 		return messageParameters;
-	}
-
-	public void setMessageParameters(Object[] messageParameters) {
-		this.messageParameters = messageParameters;
 	}
 }
