@@ -144,6 +144,7 @@ public class StockServiceImpl implements StockService {
 
         target.setBulkCompl("Y");
         processedEntries.add(targetEntryID);
+        List<String> targetInventoryIDs = new ArrayList<>();
         for (Integer parsedId : parsedIDs) {
 
             InventoryDetails bulkDetail = detailMap.get(parsedId);
@@ -153,10 +154,22 @@ public class StockServiceImpl implements StockService {
             }
 
             target.addBulkWith(bulkDetail.getInventoryID());
+            targetInventoryIDs.add(bulkDetail.getInventoryID());
             bulkDetail.addBulkWith(target.getInventoryID());
             processEntry(parsedId, projectMap, strategy, detailMap, processedEntries);
         }
 
+        // this second pass ensures that all of the inventory IDs participating in a bulk with operation is applied to all applicable entries
+        for (Integer parsedID : parsedIDs) {
+            InventoryDetails bulkDetail = detailMap.get(parsedID);
+
+            for (String targetInventoryID : targetInventoryIDs) {
+                if (!bulkDetail.getInventoryID().equals(targetInventoryID)) {
+                    bulkDetail.addBulkWith(targetInventoryID);
+                }
+
+            }
+        }
 
     }
 
