@@ -274,7 +274,7 @@ public class StockServiceImpl implements StockService {
 		String[] stockIDsTobeMergedWith = bulkWith.split(",");
 		for (String stockID : stockIDsTobeMergedWith) {
 			InventoryDetails inventoryDetailsToBeMergedWith = 
-					stockIDInventoryDetailsMap.get(stockID);
+					stockIDInventoryDetailsMap.get(stockID.trim());
 			if(inventoryDetailsToBeMergedWith==null || 
 					!"Y".equals(inventoryDetailsToBeMergedWith.getBulkCompl())) {
 				throw new StockException("bulking.instruction.bulk.compl.invalid.value");
@@ -367,7 +367,7 @@ public class StockServiceImpl implements StockService {
 				Set<Integer> entriesToBeMerged = new TreeSet<Integer>();
 				String[] stockIDs = inventoryDetails.getBulkWith().split(",");
 				for (String stockID : stockIDs) {
-					entriesToBeMerged.add(stockIDEntryMap.get(stockID));
+					entriesToBeMerged.add(stockIDEntryMap.get(stockID.trim()));
 				}
 				entriesToBeMerged.add(stockIDEntryMap.get(
 						inventoryDetails.getInventoryID()));

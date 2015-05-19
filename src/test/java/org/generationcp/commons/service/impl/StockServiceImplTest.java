@@ -26,7 +26,6 @@ import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -239,7 +238,7 @@ public class StockServiceImplTest {
 			}
 			assertEquals(InventoryDetails.BULK_COMPL_COMPLETED,inventoryDetails.getBulkCompl());
 		}
-		for (InventoryDetails inventoryDetails : bulkingDonors) {
+		for (InventoryDetails inventoryDetails : bulkingRecipients) {
 			assertEquals(InventoryDetails.BULK_COMPL_COMPLETED,inventoryDetails.getBulkCompl());
 		}
 	}
