@@ -88,10 +88,7 @@ public class CrossingUtil {
 	            
             //Use same breeding method for all crosses
             if (!methodSetting.isBasedOnStatusOfParentalLines()){
-                Integer breedingMethodSelected = methodSetting.getMethodId();
-                for (Germplasm germplasm : germplasmNameMap.keySet()){
-                    germplasm.setMethodId(breedingMethodSelected);
-                }
+				setBreedingMethodBasedOnMethod(methodSetting.getMethodId(), germplasmNameMap);
             
             // Use CrossingManagerUtil to set breeding method based on parents    
             } else {
@@ -125,7 +122,6 @@ public class CrossingUtil {
                     
 	                    } catch (MiddlewareQueryException e) {
 	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
-	                        e.printStackTrace();
 	                        return false;
 	                    }
                 	}
@@ -135,7 +131,19 @@ public class CrossingUtil {
             return true;
         
 	}
+
+	protected static void setBreedingMethodBasedOnMethod(Integer breedingMethodId, Map<Germplasm, Name> germplasmNameMap) {
+		for (Germplasm germplasm : germplasmNameMap.keySet()){
+
+			// method id retrieved via the input file is prioritized over a method to be applied to all entries
+			if (germplasm.getMethodId() == null || germplasm.getMethodId() == 0) {
+				germplasm.setMethodId(breedingMethodId);
+			}
+
+		}
+	}
 	
 	
 
 }
+
