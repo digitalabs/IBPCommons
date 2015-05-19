@@ -1,5 +1,6 @@
 package org.generationcp.commons.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.generationcp.commons.settings.BreedingMethodSetting;
@@ -7,6 +8,7 @@ import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +137,33 @@ public class CrossingUtil {
             return true;
         
 	}
-	
-	
+	/*
+	 * This is supposed to set the correct name type id to name using the crossing method snametype
+	 * BMS-577
+	 */
+	public static void applyMethodNameType(GermplasmDataManager germplasmDataManager, Map<Germplasm, Name> crossesMap, Integer defautTypeId){            		
+        Map<Integer, Method> methodMap = new HashMap<Integer,Method>();
+        for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
+            Name nameObject = entry.getValue();
+            Germplasm germplasm = entry.getKey();
+            Method method = null;
+            if(methodMap.containsKey(germplasm.getMethodId())){
+            	method = methodMap.get(germplasm.getMethodId());
+            }else{
+            	try {
+					method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
+					methodMap.put(germplasm.getMethodId(), method);
+				} catch (MiddlewareQueryException e) {
+					LOG.error(e.getMessage(), e);
+				}	            	
+            }
+            if(method != null && method.getSnametype() != null){
+            	nameObject.setTypeId(method.getSnametype());	
+            }else{
+            	//we set the default value
+            	nameObject.setTypeId(defautTypeId);
+            }
+        }                
+	}
 
 }
