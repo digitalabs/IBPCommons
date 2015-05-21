@@ -5,6 +5,7 @@ import org.apache.commons.lang.StringUtils;
 import org.generationcp.commons.util.DateUtil;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -28,7 +29,8 @@ public class ValueTypeValidator extends ParsingValidator{
 		setValidationErrorMessage(GENERIC_INVALID_TYPE_MESSAGE);
 	}
 
-	@Override public boolean isParsedValueValid(String value) {
+	@Override
+	public boolean isParsedValueValid(String value, Map<String,Object> additionalParams) {
 
 		if (StringUtils.isEmpty(value) && isSkipIfEmpty()) {
 			return true;

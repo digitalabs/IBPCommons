@@ -7,5 +7,8 @@ package org.generationcp.commons.constant;
  */
 public enum ToolSection {
 	FBK_LABEL_PRINTING,
-	FBK_CROSS_IMPORT
+	FBK_CROSS_IMPORT,
+	FB_LBL_PRINT_CUSTOM_REPORT,
+	FB_NURSE_MGR_CUSTOM_REPORT,
+	FB_TRIAL_MGR_CUSTOM_REPORT,
 }

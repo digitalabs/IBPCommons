@@ -1,5 +1,7 @@
 package org.generationcp.commons.parsing.validation;
 
+import java.util.Map;
+
 /**
  * Created by IntelliJ IDEA.
  * User: Daniel Villafuerte
@@ -15,7 +17,8 @@ public class NonEmptyValidator extends ParsingValidator {
 		setValidationErrorMessage(GENERIC_EMPTY_VALUE_MESSAGE);
 	}
 
-	@Override public boolean isParsedValueValid(String value) {
+	@Override 
+	public boolean isParsedValueValid(String value, Map<String,Object> additionalParams) {
 		return value != null && !value.isEmpty();
 	}
 }

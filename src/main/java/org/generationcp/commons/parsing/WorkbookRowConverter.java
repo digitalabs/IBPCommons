@@ -1,14 +1,16 @@
 package org.generationcp.commons.parsing;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.generationcp.commons.parsing.validation.ParseValidationMap;
-import org.generationcp.commons.parsing.validation.ParsingValidator;
-import org.generationcp.middleware.util.PoiUtil;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.poi.ss.usermodel.Workbook;
+import org.generationcp.commons.parsing.validation.BulkComplValidator;
+import org.generationcp.commons.parsing.validation.ParseValidationMap;
+import org.generationcp.commons.parsing.validation.ParsingValidator;
+import org.generationcp.commons.util.Util;
+import org.generationcp.middleware.util.PoiUtil;
 
 /**
  * Created by IntelliJ IDEA.
@@ -55,15 +57,24 @@ public abstract class WorkbookRowConverter<T> {
 			}
 
 			currentRowValue = new HashMap<>();
+			
+			BulkComplValidator bulkComplValidator = getBulkComplValidator(validationMap,columnCount);
+			String bulkWithValue = null;
 			for (int i = 0; i < columnCount; i++) {
 				String value = getCellStringValue(targetSheetIndex, currentIndex, i);
 
 				if (value == null) {
 					value = "";
 				}
-
-				if (validationMap != null && validationMap.getValidations(i) != null) {
-					applyValidation(value, columnLabels[i], validationMap.getValidations(i));
+				
+				if(bulkComplValidator!=null && bulkComplValidator.getBulkWithColumnIndex()==i) {
+					bulkWithValue = value;
+				}
+				
+				if(bulkComplValidator!=null && bulkComplValidator.getBulkComplColumnIndex()==i) {
+					applyValidation(value, BulkComplValidator.createAdditionalParams(bulkWithValue), columnLabels[i], validationMap.getValidations(i));
+				} else if (validationMap != null && validationMap.getValidations(i) != null) {
+					applyValidation(value, null, columnLabels[i], validationMap.getValidations(i));
 				}
 
 				currentRowValue.put(i, value);
@@ -77,9 +88,22 @@ public abstract class WorkbookRowConverter<T> {
 		return valueList;
 	}
 
-	public void applyValidation(String value, String columnLabel, List<ParsingValidator> validators) throws FileParsingException{
-		for (ParsingValidator validator : validators) {
-			if (!validator.isParsedValueValid(value)) {
+	private BulkComplValidator getBulkComplValidator(ParseValidationMap validatorMap, int columnCount) {
+		if(validatorMap!=null) {
+			for (int i = 0; i < columnCount; i++) {
+				List<ParsingValidator> parsingValidators = validatorMap.getValidations(i);
+				ParsingValidator parsingValidator = Util.getInstance(parsingValidators, BulkComplValidator.class);
+				if(parsingValidator!=null) {
+					return (BulkComplValidator)parsingValidator;
+				}
+			}
+		}
+		return null;
+	}
+
+	public void applyValidation(String value, Map<String,Object> additionalParams, String columnLabel, List<ParsingValidator> parsingValidators) throws FileParsingException{
+		for (ParsingValidator validator : parsingValidators) {
+			if (!validator.isParsedValueValid(value,additionalParams)) {
 				// +1 is added to the current index since index is 0 based
 				throw new FileParsingException(validator.getValidationErrorMessage(), getCurrentIndex() + 1, value, columnLabel);
 			}

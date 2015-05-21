@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA.
@@ -26,24 +27,24 @@ public abstract class AbstractExcelFileParser<T> {
 
 	public static final String FILE_INVALID = "common.error.invalid.file";
 
-	protected final static String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
+	protected static final String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
 
 	@Resource
 	protected FileService fileService;
 
 	@Resource
 	protected MessageSource messageSource;
-
-	public T parseFile(MultipartFile file) throws FileParsingException {
+	
+	public T parseFile(MultipartFile file, Map<String,Object> additionalParams) throws FileParsingException {
 		this.workbook = storeAndRetrieveWorkbook(file);
-		return parseWorkbook(workbook);
+		return parseWorkbook(workbook,additionalParams);
 	}
 
 	public String[] getSupportedFileExtensions() {
 		return EXCEL_FILE_EXTENSIONS;
 	}
 
-	public abstract T parseWorkbook(Workbook workbook) throws FileParsingException;
+	public abstract T parseWorkbook(Workbook workbook, Map<String,Object> additionalParams) throws FileParsingException;
 
 	public Workbook storeAndRetrieveWorkbook(MultipartFile multipartFile)
 			throws FileParsingException {
