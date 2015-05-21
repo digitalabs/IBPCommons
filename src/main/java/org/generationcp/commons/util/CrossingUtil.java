@@ -10,6 +10,8 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.workbench.CropType.CropEnum;
+import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,5 +176,11 @@ public class CrossingUtil {
         }                
 	}
 
+	public static boolean isCimmytWheat(String profile, String crop){
+		  if (profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT) && CropEnum.WHEAT.toString().equalsIgnoreCase(crop)) {
+			  return true;
+		  }
+		  return false;
+	  }
 }
 
