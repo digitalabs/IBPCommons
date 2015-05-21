@@ -33,6 +33,8 @@ public class BulkComplValidator extends ParsingValidator {
 			if(!VALID_VALUE.equals(bulkCompValue)) {
 				return false;
 			}
+		} else if(!StringUtils.isEmpty(bulkWithValue)){
+			return false;
 		}
 		return true;
 	}

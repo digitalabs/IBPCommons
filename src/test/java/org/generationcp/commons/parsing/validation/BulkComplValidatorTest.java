@@ -45,12 +45,12 @@ public class BulkComplValidatorTest {
 	
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_NullValue() {
-		assertTrue(validator.isParsedValueValid(null, "SID1-2"));
+		assertFalse(validator.isParsedValueValid(null, "SID1-2"));
 	}
 	
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_EmptyValue() {
-		assertTrue(validator.isParsedValueValid("", "SID1-2"));
+		assertFalse(validator.isParsedValueValid("", "SID1-2"));
 	}
 	
 	@Test
