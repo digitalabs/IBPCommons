@@ -9,9 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.commons.constant.ColumnLabels;
@@ -152,7 +156,7 @@ public class ExportServiceImpl implements ExportService{
 		HSSFSheet sheet = wb.createSheet(sheetName);
 		
 		int rowIndex = 0;
-		writeColumHeaders(exportColumnHeaders, sheet, rowIndex);
+		writeColumHeaders(exportColumnHeaders, wb, sheet, rowIndex);
 		rowIndex++;
 		
 		rowIndex = writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex);
@@ -182,15 +186,41 @@ public class ExportServiceImpl implements ExportService{
 	}
 
 	protected void writeColumHeaders(List<ExportColumnHeader> exportColumnHeaders, 
-			HSSFSheet sheet, int rowIndex) {
+			HSSFWorkbook xlsBook, HSSFSheet sheet, int rowIndex) {
 		int noOfColumns = exportColumnHeaders.size();
 		HSSFRow header = sheet.createRow(rowIndex);
+		CellStyle greenBg = getHeaderStyle(xlsBook, 51, 153, 102);
+		CellStyle blueBg = getHeaderStyle(xlsBook, 51, 51, 153);				
 		for(int i = 0; i < noOfColumns; i++){
 			ExportColumnHeader columnHeader =  exportColumnHeaders.get(i);
-			header.createCell(i).setCellValue(columnHeader.getName());
+			Cell cell = header.createCell(i);
+			if(columnHeader.getHeaderColor() != null){				
+				if(columnHeader.getHeaderColor().intValue() == ExportColumnHeader.GREEN.intValue()){
+					cell.setCellStyle(greenBg);
+				}else if(columnHeader.getHeaderColor().intValue() == ExportColumnHeader.BLUE.intValue()){
+					cell.setCellStyle(blueBg);
+				}
+			}			
+			cell.setCellValue(columnHeader.getName().toUpperCase());
 		}
 	}
 
+	
+	private CellStyle getHeaderStyle(HSSFWorkbook xlsBook, int c1, int c2, int c3) {
+		HSSFPalette palette = xlsBook.getCustomPalette();
+		HSSFColor color = palette.findSimilarColor(c1, c2, c3);
+		short colorIndex = color.getIndex();
+		
+		HSSFFont whiteFont = xlsBook.createFont();
+		whiteFont.setColor(new HSSFColor.WHITE().getIndex());
+		
+		CellStyle cellStyle = xlsBook.createCellStyle();
+		cellStyle.setFillForegroundColor(colorIndex);
+		cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+		cellStyle.setFont(whiteFont);
+		
+		return cellStyle;
+	}
 	@Override
 	public FileOutputStream generateGermplasmListExcelFile(GermplasmListExportInputValues input) throws GermplasmListExporterException {
 		
