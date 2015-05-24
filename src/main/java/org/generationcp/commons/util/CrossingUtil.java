@@ -1,5 +1,6 @@
 package org.generationcp.commons.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.generationcp.commons.settings.BreedingMethodSetting;
@@ -7,7 +8,10 @@ import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.workbench.CropType.CropEnum;
+import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,10 +92,7 @@ public class CrossingUtil {
 	            
             //Use same breeding method for all crosses
             if (!methodSetting.isBasedOnStatusOfParentalLines()){
-                Integer breedingMethodSelected = methodSetting.getMethodId();
-                for (Germplasm germplasm : germplasmNameMap.keySet()){
-                    germplasm.setMethodId(breedingMethodSelected);
-                }
+				setBreedingMethodBasedOnMethod(methodSetting.getMethodId(), germplasmNameMap);
             
             // Use CrossingManagerUtil to set breeding method based on parents    
             } else {
@@ -125,7 +126,6 @@ public class CrossingUtil {
                     
 	                    } catch (MiddlewareQueryException e) {
 	                        LOG.error(e.toString() + "\n" + e.getStackTrace());
-	                        e.printStackTrace();
 	                        return false;
 	                    }
                 	}
@@ -135,7 +135,52 @@ public class CrossingUtil {
             return true;
         
 	}
-	
-	
 
+	protected static void setBreedingMethodBasedOnMethod(Integer breedingMethodId, Map<Germplasm, Name> germplasmNameMap) {
+		for (Germplasm germplasm : germplasmNameMap.keySet()){
+
+			// method id retrieved via the input file is prioritized over a method to be applied to all entries
+			if (germplasm.getMethodId() == null || germplasm.getMethodId() == 0) {
+				germplasm.setMethodId(breedingMethodId);
+			}
+
+		}
+	}
+	
+	/*
+	 * This is supposed to set the correct name type id to name using the crossing method snametype
+	 * BMS-577
+	 */
+	public static void applyMethodNameType(GermplasmDataManager germplasmDataManager, Map<Germplasm, Name> crossesMap, Integer defautTypeId){            		
+        Map<Integer, Method> methodMap = new HashMap<Integer,Method>();
+        for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()){
+            Name nameObject = entry.getValue();
+            Germplasm germplasm = entry.getKey();
+            Method method = null;
+            if(methodMap.containsKey(germplasm.getMethodId())){
+            	method = methodMap.get(germplasm.getMethodId());
+            }else{
+            	try {
+					method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
+					methodMap.put(germplasm.getMethodId(), method);
+				} catch (MiddlewareQueryException e) {
+					LOG.error(e.getMessage(), e);
+				}	            	
+            }
+            if(method != null && method.getSnametype() != null){
+            	nameObject.setTypeId(method.getSnametype());	
+            }else{
+            	//we set the default value
+            	nameObject.setTypeId(defautTypeId);
+            }
+        }                
+	}
+
+  public static boolean isCimmytWheat(String profile, String crop){
+	  if (profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT) && CropEnum.WHEAT.toString().equalsIgnoreCase(crop)) {
+		  return true;
+	  }
+	  return false;
+  }
 }
+

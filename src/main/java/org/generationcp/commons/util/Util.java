@@ -18,6 +18,9 @@ import java.util.List;
 
 public class Util{
 
+	private Util() {
+		///private constructor
+	}
     /**
      * Get the boolean value of <code>value</code>.
      * 
@@ -115,4 +118,24 @@ public class Util{
 
         return Arrays.asList(objects);
     }
+    
+    public static <E> boolean containsInstance(List<E> list, Class<? extends E> clazz) {
+	    for (E e : list) {
+	        if (clazz.isInstance(e)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
+    
+	public static <E> E getInstance(List<E> list, Class<? extends E> clazz) {
+		if(list!=null) {
+		    for (E e : list) {
+		        if (clazz.isInstance(e)) {
+		            return e;
+		        }
+		    }
+		}
+	    return null;
+	}
 }
