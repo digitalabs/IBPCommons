@@ -14,12 +14,15 @@ package org.generationcp.commons.vaadin.spring;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+
+import java.io.IOException;
 
 /**
  * An implementation of {@link AbstractApplicationServlet} that integrates
@@ -88,5 +91,16 @@ public class SpringApplicationServlet extends AbstractApplicationServlet{
         }
 
         return (Class) bean.getClass();
+    }
+
+    @Override
+    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException,
+            IOException
+    {
+        if (getRequestType(request) == RequestType.UIDL)
+        {
+            request = new ZoomFixForRequestWrapper(request);
+        }
+        super.service(request, response);
     }
 }
