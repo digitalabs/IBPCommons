@@ -297,6 +297,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						VariableType originalVariableType = null;
 						VariableType summaryStatVariableType = null;	
 						Term termSummaryStat = ontologyDataManager.findMethodByName(summaryStatName);
+						Term termIsASummaryStat = ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
 
 						//check if the summary stat trait is already existing
 						String trait = variate.getLocalName();
@@ -317,6 +318,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 											PhenotypicType.VARIATE);
 
 							if (stdVariableId == null){
+								
 								StandardVariable stdVariable = new StandardVariable();
 								stdVariable = cloner.deepClone(summaryStatVariableType.getStandardVariable());
 								stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(),"",""));
@@ -325,6 +327,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 								stdVariable.setId(0);
 								stdVariable.setName(summaryStatVariableType.getLocalName());
 								stdVariable.setMethod(termSummaryStat);
+								
+								if (termIsASummaryStat != null){
+									stdVariable.setIsA(termIsASummaryStat);
+								}
 
 								//check if localname is already used
 								Term existingStdVar = ontologyDataManager
@@ -567,7 +573,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					VariableType meansVariableType = cloner.deepClone(
 							inputDataSet.getVariableTypes().findByLocalName(root));
 					meansVariableType.setLocalName(root + MEANS_SUFFIX);
+					
 					Term termLSMean = ontologyDataManager.findMethodByName(LS_MEAN);
+					Term termTreatmentMean = ontologyDataManager.getTermById(TermId.TREATMENT_MEAN.getId());
+					
 					if(termLSMean == null) {
 						String definitionMeans = meansVariableType.getStandardVariable()
 								.getMethod().getDefinition();
@@ -614,6 +623,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						stdVariable.setId(0);
 						stdVariable.setName(meansVariableType.getLocalName());
 						stdVariable.setMethod(termLSMean);
+						
+						if (termTreatmentMean != null){
+							stdVariable.setIsA(termTreatmentMean);
+						}
+						
 						//check if name is already used
 						Term existingStdVar = ontologyDataManager
 								.findTermByName(stdVariable.getName(), CvId.VARIABLES);
@@ -652,8 +666,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					VariableType unitErrorsVariableType = cloner.deepClone(
 							inputDataSet.getVariableTypes().findByLocalName(root));
 					unitErrorsVariableType.setLocalName(root + UNIT_ERRORS_SUFFIX);
-					Term termErrorEstimate = ontologyDataManager
-							.findMethodByName("ERROR ESTIMATE");
+					
+					Term termErrorEstimate = ontologyDataManager.findMethodByName("ERROR ESTIMATE");
+					Term termSummaryStatistic = ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
+					
 					if(termErrorEstimate == null) {
 						String definitionUErrors = unitErrorsVariableType
 								.getStandardVariable().getMethod().getDefinition();
@@ -701,6 +717,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						stdVariable.setId(0);
 						stdVariable.setName(unitErrorsVariableType.getLocalName());
 						stdVariable.setMethod(termErrorEstimate);
+						
+						if (termSummaryStatistic != null){
+							stdVariable.setIsA(termSummaryStatistic);
+						}
+						
 						//check if name is already used
 						Term existingStdVar = ontologyDataManager
 								.findTermByName(stdVariable.getName(), CvId.VARIABLES);
@@ -749,15 +770,18 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	protected void createMeansVariableType(Integer numOfFactorsAndVariates, String headerName, VariableTypeList allVariatesList,VariableTypeList meansVariateList) throws MiddlewareQueryException {
 		
 		String traitName = "", localName = "", methodName = "";
+		Term isATerm = null;
 		
 		traitName = (headerName != null && headerName.lastIndexOf("_") != -1)
 				? headerName.substring(0, headerName.lastIndexOf("_")) : "";
 		if (headerName.endsWith(MEANS_SUFFIX)){
 			localName = MEANS_SUFFIX;
 			methodName = LS_MEAN;
+			isATerm = ontologyDataManager.getTermById(TermId.TREATMENT_MEAN.getId());
 		} else if (headerName.endsWith(UNIT_ERRORS_SUFFIX)) {
 			localName = UNIT_ERRORS_SUFFIX;
 			methodName = "ERROR ESTIMATE";
+			isATerm = ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
 		} else {
 			return;
 		}
@@ -818,6 +842,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			stdVariable.setId(0);
 			stdVariable.setName(newVariableType.getLocalName());
 			stdVariable.setMethod(termMethod);
+			
+			if (isATerm != null){
+				stdVariable.setIsA(isATerm);
+			}
+			
 			//check if name is already used
 			Term existingStdVar = ontologyDataManager
 					.findTermByName(stdVariable.getName(), CvId.VARIABLES);
