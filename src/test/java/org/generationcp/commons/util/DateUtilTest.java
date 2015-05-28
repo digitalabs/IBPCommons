@@ -469,9 +469,18 @@ public class DateUtilTest {
 	
 	@Test
 	public void testConvertToDBDateFormat_WrongFromDateFormat() {
-		String uiDate = "20150630";
+		String uiDate = "2015/06/30";
 		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
 		String expectedDBDate = "";
+		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
+				expectedDBDate,actualDBDate);
+	}
+	
+	@Test
+	public void testConvertToDBDateFormat_FromDBDateFormat() {
+		String uiDate = "20150630";
+		String actualDBDate = DateUtil.convertToDBDateFormat(TermId.DATE_VARIABLE.getId(), uiDate);
+		String expectedDBDate = "20150630";
 		assertEquals("Expected "+ expectedDBDate + " but got "+actualDBDate,
 				expectedDBDate,actualDBDate);
 	}

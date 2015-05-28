@@ -156,6 +156,7 @@ public class StockServiceImplTest {
 		inventoryDetails.setGid(id);
 		inventoryDetails.setLotGid(id);
 		inventoryDetails.setSourceRecordId(id*10);
+		inventoryDetails.setStockSourceRecordId(id*10);
 		inventoryDetails.setInventoryID(TEST_INVENTORY_ID_ARRAY[id]);
 		inventoryDetails.setDuplicate(TEST_DUPLICATE_ARRAY[id]);
 		if(addBulkWith) {
@@ -317,8 +318,26 @@ public class StockServiceImplTest {
 
 		inventoryStockService.processBulkSettings(testListData, testDetails, false, true, false);
 		for (InventoryDetails inventoryDetails : testDetails.values()) {
-			if (inventoryDetails.getEntryId().equals(1) || inventoryDetails.getEntryId().equals(2) || inventoryDetails.getEntryId().equals(4)) {
-				assertEquals(INVENTORY_ID_PREFIX + 20, inventoryDetails.getBulkWith());
+			if (inventoryDetails.getEntryId().equals(1)) {
+				String expectedBulkWith = INVENTORY_ID_PREFIX + 20 + ", " +
+						INVENTORY_ID_PREFIX + 2 + ", " +
+						INVENTORY_ID_PREFIX + 4;
+				assertEquals(expectedBulkWith, 
+						inventoryDetails.getBulkWith());
+				assertEquals("Y", inventoryDetails.getBulkCompl());
+			} else if (inventoryDetails.getEntryId().equals(2)) {
+				String expectedBulkWith = INVENTORY_ID_PREFIX + 20 + ", " +
+						INVENTORY_ID_PREFIX + 1 + ", " +
+						INVENTORY_ID_PREFIX + 4;
+				assertEquals(expectedBulkWith, 
+						inventoryDetails.getBulkWith());
+				assertEquals("Y", inventoryDetails.getBulkCompl());
+			} else if (inventoryDetails.getEntryId().equals(4)) {
+				String expectedBulkWith = INVENTORY_ID_PREFIX + 20 + ", " +
+						INVENTORY_ID_PREFIX + 1 + ", " +
+						INVENTORY_ID_PREFIX + 2;
+				assertEquals(expectedBulkWith, 
+						inventoryDetails.getBulkWith());
 				assertEquals("Y", inventoryDetails.getBulkCompl());
 			} else if (inventoryDetails.getEntryId().equals(20)) {
 				InventoryDetails dummy = new InventoryDetails();
