@@ -230,7 +230,8 @@ public class ExportServiceImplTest {
 		
 		HSSFRow header = sheet.getRow(0);
 		for(int i = 0; i < columnsHeaders.size(); i++){
-			Assert.assertEquals("Expected that the column headers are placed in order.",columnsHeaders.get(i).getName(), header.getCell(i).getStringCellValue());
+			Assert.assertTrue("Expected that the column headers are placed in order.",
+					columnsHeaders.get(i).getName().equalsIgnoreCase(header.getCell(i).getStringCellValue()));
 		}
 		
 		Assert.assertTrue("Expected to have a total of " + columnValues.size() + " rows excluding the columnHeader.", sheet.getLastRowNum() == columnValues.size());
