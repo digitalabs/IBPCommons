@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.parsing.validation;
 
 import java.util.ArrayList;
@@ -6,7 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
-public class CommaDelimitedValueValidator extends ParsingValidator{
+public class CommaDelimitedValueValidator extends ParsingValidator {
 
 	private List<String> acceptedList;
 	public static final String GENERIC_INVALID_VALUE_MESSAGE = "common.parse.validation.error.unaccepted.value";
@@ -20,43 +21,42 @@ public class CommaDelimitedValueValidator extends ParsingValidator{
 
 		this.acceptedList = acceptedList;
 
-		setValidationErrorMessage(GENERIC_INVALID_VALUE_MESSAGE);
+		this.setValidationErrorMessage(CommaDelimitedValueValidator.GENERIC_INVALID_VALUE_MESSAGE);
 	}
 
-	@Override 
-	public boolean isParsedValueValid(String value, Map<String,Object> additionalParams) {
+	@Override
+	public boolean isParsedValueValid(String value, Map<String, Object> additionalParams) {
 		if (StringUtils.isEmpty(value)) {
-			return isSkipIfEmpty();
-		} else if (acceptedList == null || acceptedList.isEmpty()) {
+			return this.isSkipIfEmpty();
+		} else if (this.acceptedList == null || this.acceptedList.isEmpty()) {
 			return false;
 		} else {
 			List<String> valuesToValidate = new ArrayList<String>();
-			if(!convertCommaDelimitedValueToList(value,valuesToValidate)) {
+			if (!this.convertCommaDelimitedValueToList(value, valuesToValidate)) {
 				return false;
 			}
-			return acceptedList.containsAll(valuesToValidate);
+			return this.acceptedList.containsAll(valuesToValidate);
 		}
 	}
-	
+
 	public List<String> getAcceptedList() {
-		return acceptedList;
+		return this.acceptedList;
 	}
 
 	public void setAcceptedList(List<String> acceptedList) {
 		this.acceptedList = acceptedList;
 	}
 
-	private boolean convertCommaDelimitedValueToList(
-			String value,List<String> valuesToValidate) {
+	private boolean convertCommaDelimitedValueToList(String value, List<String> valuesToValidate) {
 		String[] valuesArray = value.split(",");
 		for (String parsedValue : valuesArray) {
 			String trimmedValue = parsedValue.trim();
-			if(valuesToValidate.contains(trimmedValue)) {
+			if (valuesToValidate.contains(trimmedValue)) {
 				return false;
 			}
 			valuesToValidate.add(trimmedValue);
 		}
 		return true;
 	}
-	
+
 }

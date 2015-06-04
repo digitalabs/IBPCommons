@@ -28,9 +28,9 @@ public class WorkbenchUserDetailsServiceTest {
 
 	@Before
 	public void setUpPerTest() {
-		workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
-		service = new WorkbenchUserDetailsService();
-		service.setWorkbenchDataManager(workbenchDataManager);
+		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		this.service = new WorkbenchUserDetailsService();
+		this.service.setWorkbenchDataManager(this.workbenchDataManager);
 	}
 
 	@Test
@@ -38,33 +38,37 @@ public class WorkbenchUserDetailsServiceTest {
 		try {
 			List<User> matchingUsers = new ArrayList<User>();
 			User testUserWorkbench = new User();
-			testUserWorkbench.setName(TEST_USER);
+			testUserWorkbench.setName(WorkbenchUserDetailsServiceTest.TEST_USER);
 			testUserWorkbench.setPassword("password");
 			UserRole testUserRole = new UserRole(testUserWorkbench, "ADMIN");
 			testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 			matchingUsers.add(testUserWorkbench);
 
-			Mockito.when(workbenchDataManager.getUserByName(TEST_USER, 0, 1, Operation.EQUAL)).thenReturn(matchingUsers);
+			Mockito.when(this.workbenchDataManager.getUserByName(WorkbenchUserDetailsServiceTest.TEST_USER, 0, 1, Operation.EQUAL))
+					.thenReturn(matchingUsers);
 
-			UserDetails userDetails = service.loadUserByUsername(TEST_USER);
+			UserDetails userDetails = this.service.loadUserByUsername(WorkbenchUserDetailsServiceTest.TEST_USER);
 			Assert.assertEquals(testUserWorkbench.getName(), userDetails.getUsername());
 			Assert.assertEquals(testUserWorkbench.getPassword(), userDetails.getPassword());
 			Assert.assertEquals(1, userDetails.getAuthorities().size());
-			Assert.assertTrue(userDetails.getAuthorities().contains(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + testUserRole.getRole())));
-		}  catch (MiddlewareQueryException e) {
+			Assert.assertTrue(userDetails.getAuthorities().contains(
+					new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + testUserRole.getRole())));
+		} catch (MiddlewareQueryException e) {
 			Assert.fail("Unexpected exception: " + e.getMessage());
 		}
 	}
-	
+
 	@Test(expected = UsernameNotFoundException.class)
 	public void testLoadUserByNonExistantUserName() throws MiddlewareQueryException {
-		Mockito.when(workbenchDataManager.getUserByName(TEST_USER, 0, 1, Operation.EQUAL)).thenReturn(Collections.<User>emptyList());
-		service.loadUserByUsername(TEST_USER);
+		Mockito.when(this.workbenchDataManager.getUserByName(WorkbenchUserDetailsServiceTest.TEST_USER, 0, 1, Operation.EQUAL)).thenReturn(
+				Collections.<User>emptyList());
+		this.service.loadUserByUsername(WorkbenchUserDetailsServiceTest.TEST_USER);
 	}
-	
+
 	@Test(expected = AuthenticationServiceException.class)
 	public void testLoadUserDataAccessError() throws MiddlewareQueryException {
-		Mockito.when(workbenchDataManager.getUserByName(TEST_USER, 0, 1, Operation.EQUAL)).thenThrow(new MiddlewareQueryException("Boom!"));
-		service.loadUserByUsername(TEST_USER);
+		Mockito.when(this.workbenchDataManager.getUserByName(WorkbenchUserDetailsServiceTest.TEST_USER, 0, 1, Operation.EQUAL)).thenThrow(
+				new MiddlewareQueryException("Boom!"));
+		this.service.loadUserByUsername(WorkbenchUserDetailsServiceTest.TEST_USER);
 	}
 }

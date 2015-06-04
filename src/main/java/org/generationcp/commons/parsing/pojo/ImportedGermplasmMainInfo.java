@@ -1,19 +1,16 @@
 /**
- * ****************************************************************************
- * Copyright (c) 2013, All Rights Reserved.
+ * **************************************************************************** Copyright (c) 2013, All Rights Reserved.
  * <p/>
  * Generation Challenge Programme (GCP)
  * <p/>
  * <p/>
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * <p/>
  * *****************************************************************************
  */
-package org.generationcp.commons.parsing.pojo;
 
-import org.apache.poi.ss.usermodel.Workbook;
+package org.generationcp.commons.parsing.pojo;
 
 import java.io.File;
 import java.io.InputStream;
@@ -21,10 +18,10 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import org.apache.poi.ss.usermodel.Workbook;
+
 /*
- * Daniel Jao
- * This should hold information when doing import of germplasm list
- * The Class ImportedGermplasmMainInfo.
+ * Daniel Jao This should hold information when doing import of germplasm list The Class ImportedGermplasmMainInfo.
  */
 public class ImportedGermplasmMainInfo implements Serializable {
 
@@ -111,7 +108,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return true, if is advance import type
 	 */
 	public boolean isAdvanceImportType() {
-		return isAdvanceImportType;
+		return this.isAdvanceImportType;
 	}
 
 	/**
@@ -129,7 +126,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the error messages
 	 */
 	public Set<String> getErrorMessages() {
-		return errorMessages;
+		return this.errorMessages;
 	}
 
 	/**
@@ -147,7 +144,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the file
 	 */
 	public File getFile() {
-		return file;
+		return this.file;
 	}
 
 	/**
@@ -165,7 +162,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the temp file name
 	 */
 	public String getTempFileName() {
-		return tempFileName;
+		return this.tempFileName;
 	}
 
 	/**
@@ -183,7 +180,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the original filename
 	 */
 	public String getOriginalFilename() {
-		return originalFilename;
+		return this.originalFilename;
 	}
 
 	/**
@@ -201,7 +198,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the list name
 	 */
 	public String getListName() {
-		return listName;
+		return this.listName;
 	}
 
 	/**
@@ -219,7 +216,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the list title
 	 */
 	public String getListTitle() {
-		return listTitle;
+		return this.listTitle;
 	}
 
 	/**
@@ -237,7 +234,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the list type
 	 */
 	public String getListType() {
-		return listType;
+		return this.listType;
 	}
 
 	/**
@@ -255,7 +252,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the list date
 	 */
 	public Date getListDate() {
-		return listDate;
+		return this.listDate;
 	}
 
 	/**
@@ -273,7 +270,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the inp
 	 */
 	public InputStream getInp() {
-		return inp;
+		return this.inp;
 	}
 
 	/**
@@ -291,7 +288,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the wb
 	 */
 	public Workbook getWb() {
-		return wb;
+		return this.wb;
 	}
 
 	/**
@@ -309,7 +306,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the imported germplasm list
 	 */
 	public ImportedGermplasmList getImportedGermplasmList() {
-		return importedGermplasmList;
+		return this.importedGermplasmList;
 	}
 
 	/**
@@ -327,7 +324,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the file is valid
 	 */
 	public Boolean getFileIsValid() {
-		return fileIsValid;
+		return this.fileIsValid;
 	}
 
 	/**
@@ -345,7 +342,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	 * @return the server filename
 	 */
 	public String getServerFilename() {
-		return serverFilename;
+		return this.serverFilename;
 	}
 
 	/**
@@ -358,7 +355,7 @@ public class ImportedGermplasmMainInfo implements Serializable {
 	}
 
 	public Integer getListId() {
-		return listId;
+		return this.listId;
 	}
 
 	public void setListId(Integer listId) {

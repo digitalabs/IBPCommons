@@ -1,23 +1,21 @@
+
 package org.generationcp.commons.ruleengine;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.generationcp.commons.ruleengine.provider.RuleConfigurationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.generationcp.commons.ruleengine.Rule;
-
-import javax.annotation.Resource;
-
 public class RuleFactory {
-	
+
 	private static Logger LOG = LoggerFactory.getLogger(RuleFactory.class);
 
-    private Map<String, Rule> availableRules;
+	private Map<String, Rule> availableRules;
 
 	private Map<String, String[]> ruleOrder;
 
@@ -25,12 +23,12 @@ public class RuleFactory {
 	private RuleConfigurationProvider configProvider;
 
 	public RuleFactory() {
-		availableRules = new HashMap<>();
-		ruleOrder = new HashMap<>();
+		this.availableRules = new HashMap<>();
+		this.ruleOrder = new HashMap<>();
 	}
 
 	public void init() {
-		this.ruleOrder = configProvider.retrieveRuleSequenceConfiguration();
+		this.ruleOrder = this.configProvider.retrieveRuleSequenceConfiguration();
 	}
 
 	public void setAvailableRules(Map<String, Rule> availableRulesMap) {
@@ -38,7 +36,7 @@ public class RuleFactory {
 	}
 
 	public void addRule(Rule rule) {
-		availableRules.put(rule.getKey(), rule);
+		this.availableRules.put(rule.getKey(), rule);
 	}
 
 	public Rule getRule(String key) {
@@ -46,22 +44,22 @@ public class RuleFactory {
 			return null;
 		}
 
-		return availableRules.get(key);
+		return this.availableRules.get(key);
 	}
 
 	public int getAvailableRuleCount() {
-		return availableRules.size();
+		return this.availableRules.size();
 	}
 
 	public String[] getRuleSequenceForNamespace(String namespace) {
-		if (!ruleOrder.containsKey(namespace)) {
+		if (!this.ruleOrder.containsKey(namespace)) {
 			return null;
 		}
 
-		return ruleOrder.get(namespace);
+		return this.ruleOrder.get(namespace);
 	}
 
 	public Collection<String> getAvailableConfiguredNamespaces() {
-		return ruleOrder.keySet();
+		return this.ruleOrder.keySet();
 	}
 }

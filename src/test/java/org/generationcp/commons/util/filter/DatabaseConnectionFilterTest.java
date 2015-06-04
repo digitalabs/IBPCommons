@@ -1,4 +1,16 @@
+
 package org.generationcp.commons.util.filter;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 import org.generationcp.commons.util.ResourceFinder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -10,28 +22,19 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.support.servlet.MiddlewareServletContextListener;
 import org.hibernate.SessionFactory;
 import org.hibernate.classic.Session;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Matchers;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javax.servlet.*;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
- * Date: 3/20/2015
- * Time: 3:31 PM
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 3/20/2015 Time: 3:31 PM
  */
 
 @RunWith(MockitoJUnitRunner.class)
@@ -52,130 +55,128 @@ public class DatabaseConnectionFilterTest {
 	private ServletResponse response;
 
 	@InjectMocks
-	private DatabaseConnectionFilter dut = spy(new DatabaseConnectionFilter());
+	private final DatabaseConnectionFilter dut = Mockito.spy(new DatabaseConnectionFilter());
 
 	@Before
 	public void setUp() throws Exception {
-		when(config.getServletContext()).thenReturn(context);
+		Mockito.when(this.config.getServletContext()).thenReturn(this.context);
 
 	}
 
 	@Test(expected = ServletException.class)
 	public void testFilterInitializationIOExceptionOccured() throws IOException, ServletException {
-		doThrow(IOException.class).when(dut).getConfigFileInputStream();
+		Mockito.doThrow(IOException.class).when(this.dut).getConfigFileInputStream();
 
-		dut.init(config);
+		this.dut.init(this.config);
 	}
 
 	@Test
 	public void testFilterInitialization() throws IOException, ServletException {
-		doReturn(ResourceFinder.locateFile("test.properties").openStream()).when(dut)
-				.getConfigFileInputStream();
+		Mockito.doReturn(ResourceFinder.locateFile("test.properties").openStream()).when(this.dut).getConfigFileInputStream();
 
-		dut.init(config);
+		this.dut.init(this.config);
 
-		assertNotNull(dut.getDbHost());
-		assertNotNull(dut.getDbPassword());
-		assertNotNull(dut.getDbUsername());
-		assertNotNull(dut.getDbPort());
+		Assert.assertNotNull(this.dut.getDbHost());
+		Assert.assertNotNull(this.dut.getDbPassword());
+		Assert.assertNotNull(this.dut.getDbUsername());
+		Assert.assertNotNull(this.dut.getDbPort());
 	}
 
 	@Test
 	public void testConstructWorkbenchDataManager() {
-		SessionFactory sessionFactory = mock(SessionFactory.class);
-		Session session = mock(Session.class);
-		when(context.getAttribute(
-				MiddlewareServletContextListener.ATTR_WORKBENCH_SESSION_FACTORY))
-				.thenReturn(sessionFactory);
-		when(sessionFactory.openSession()).thenReturn(session);
+		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
+		Session session = Mockito.mock(Session.class);
+		Mockito.when(this.context.getAttribute(MiddlewareServletContextListener.ATTR_WORKBENCH_SESSION_FACTORY)).thenReturn(sessionFactory);
+		Mockito.when(sessionFactory.openSession()).thenReturn(session);
 
-		WorkbenchDataManagerImpl
-				dataManager = (WorkbenchDataManagerImpl) dut.constructWorkbenchDataManager();
+		WorkbenchDataManagerImpl dataManager = (WorkbenchDataManagerImpl) this.dut.constructWorkbenchDataManager();
 
 		Session openedSession = (Session) dataManager.getCurrentSession();
-		assertEquals(session, openedSession);
+		Assert.assertEquals(session, openedSession);
 
 	}
 
 	@Test
-	public void testRetrieveCurrentProjectSessionFactoryNothingInMap() throws
-			IOException {
-		dut.setSessionFactoryMap(new HashMap<Long, SessionFactory>());
-		SessionFactory sessionFactory = mock(SessionFactory.class);
-		Project project = mock(Project.class);
-		when(project.getProjectId()).thenReturn((long) 1);
-		when(project.getDatabaseName()).thenReturn(DUMMY_PROJECT_DATABASE_NAME);
-		doReturn(sessionFactory).when(dut).openSessionFactory(any(DatabaseConnectionParameters.class), any(String[].class));
+	public void testRetrieveCurrentProjectSessionFactoryNothingInMap() throws IOException {
+		this.dut.setSessionFactoryMap(new HashMap<Long, SessionFactory>());
+		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
+		Project project = Mockito.mock(Project.class);
+		Mockito.when(project.getProjectId()).thenReturn((long) 1);
+		Mockito.when(project.getDatabaseName()).thenReturn(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME);
+		Mockito.doReturn(sessionFactory).when(this.dut)
+				.openSessionFactory(Matchers.any(DatabaseConnectionParameters.class), Matchers.any(String[].class));
 
-		SessionFactory retrievedFactory = dut.retrieveCurrentProjectSessionFactory(project, new String[]{});
+		SessionFactory retrievedFactory = this.dut.retrieveCurrentProjectSessionFactory(project, new String[] {});
 
-		assertEquals(sessionFactory, retrievedFactory);
+		Assert.assertEquals(sessionFactory, retrievedFactory);
 
 		ArgumentCaptor<DatabaseConnectionParameters> argumentCaptor = ArgumentCaptor.forClass(DatabaseConnectionParameters.class);
-		verify(dut).openSessionFactory(argumentCaptor.capture(), any(String[].class));
-		assertEquals(DUMMY_PROJECT_DATABASE_NAME, argumentCaptor.getValue().getDbName());
+		Mockito.verify(this.dut).openSessionFactory(argumentCaptor.capture(), Matchers.any(String[].class));
+		Assert.assertEquals(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME, argumentCaptor.getValue().getDbName());
 
-		assertEquals(sessionFactory, dut.getSessionFactoryMap().get(project.getProjectId()));
+		Assert.assertEquals(sessionFactory, this.dut.getSessionFactoryMap().get(project.getProjectId()));
 
 	}
 
 	@Test
 	public void testRetrieveCurrentProjectSessionFactoryAlreadyInMap() throws IOException {
 		Map<Long, SessionFactory> sessionFactoryMap = new HashMap<>();
-		dut.setSessionFactoryMap(sessionFactoryMap);
-		SessionFactory sessionFactory = mock(SessionFactory.class);
-		Project project = mock(Project.class);
-		when(project.getProjectId()).thenReturn((long) 1);
-		when(project.getDatabaseName()).thenReturn(DUMMY_PROJECT_DATABASE_NAME);
+		this.dut.setSessionFactoryMap(sessionFactoryMap);
+		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
+		Project project = Mockito.mock(Project.class);
+		Mockito.when(project.getProjectId()).thenReturn((long) 1);
+		Mockito.when(project.getDatabaseName()).thenReturn(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME);
 
 		sessionFactoryMap.put(project.getProjectId(), sessionFactory);
 
-		assertEquals(sessionFactory, dut.retrieveCurrentProjectSessionFactory(project, null));
-		verify(dut, never()).openSessionFactory(any(DatabaseConnectionParameters.class), any(String[].class));
+		Assert.assertEquals(sessionFactory, this.dut.retrieveCurrentProjectSessionFactory(project, null));
+		Mockito.verify(this.dut, Mockito.never()).openSessionFactory(Matchers.any(DatabaseConnectionParameters.class),
+				Matchers.any(String[].class));
 	}
 
 	@Test
-	public void testDoFilter() throws MiddlewareQueryException, ServletException, IOException{
-		WorkbenchDataManager workbenchDataManager = mock(WorkbenchDataManager.class);
-		Project project = mock(Project.class);
-		when(project.getProjectId()).thenReturn((long) 1);
-		when(project.getDatabaseName()).thenReturn(DUMMY_PROJECT_DATABASE_NAME);
-		doReturn(workbenchDataManager).when(dut).constructWorkbenchDataManager();
-		doReturn(project).when(dut).getCurrentProject(workbenchDataManager, servletRequest);
-		SessionFactory sessionFactory = mock(SessionFactory.class);
+	public void testDoFilter() throws MiddlewareQueryException, ServletException, IOException {
+		WorkbenchDataManager workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		Project project = Mockito.mock(Project.class);
+		Mockito.when(project.getProjectId()).thenReturn((long) 1);
+		Mockito.when(project.getDatabaseName()).thenReturn(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME);
+		Mockito.doReturn(workbenchDataManager).when(this.dut).constructWorkbenchDataManager();
+		Mockito.doReturn(project).when(this.dut).getCurrentProject(workbenchDataManager, this.servletRequest);
+		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
 
 		Map<Long, SessionFactory> sessionFactoryMap = new HashMap<>();
-				dut.setSessionFactoryMap(sessionFactoryMap);
+		this.dut.setSessionFactoryMap(sessionFactoryMap);
 		sessionFactoryMap.put(project.getProjectId(), sessionFactory);
 
-		dut.doFilter(servletRequest, response, mock(FilterChain.class));
+		this.dut.doFilter(this.servletRequest, this.response, Mockito.mock(FilterChain.class));
 
-		verify(servletRequest).setAttribute(DatabaseConnectionFilter.WORKBENCH_DATA_MANAGER, workbenchDataManager);
-		verify(servletRequest).setAttribute(eq(DatabaseConnectionFilter.ATTR_MANAGER_FACTORY), any(ManagerFactory.class));
+		Mockito.verify(this.servletRequest).setAttribute(DatabaseConnectionFilter.WORKBENCH_DATA_MANAGER, workbenchDataManager);
+		Mockito.verify(this.servletRequest).setAttribute(Matchers.eq(DatabaseConnectionFilter.ATTR_MANAGER_FACTORY),
+				Matchers.any(ManagerFactory.class));
 	}
 
 	@Test
 	public void testDestroy() {
-		SessionFactory sessionFactory = mock(SessionFactory.class);
-		when(sessionFactory.isClosed()).thenReturn(false);
+		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
+		Mockito.when(sessionFactory.isClosed()).thenReturn(false);
 		Map<Long, SessionFactory> sessionFactoryMap = new HashMap<>();
-		dut.setSessionFactoryMap(sessionFactoryMap);
+		this.dut.setSessionFactoryMap(sessionFactoryMap);
 		sessionFactoryMap.put((long) 1, sessionFactory);
 
-		dut.destroy();
-		verify(sessionFactory).close();
+		this.dut.destroy();
+		Mockito.verify(sessionFactory).close();
 	}
 
 	@Test
-		public void testDestroyAlreadyClosed() {
-			SessionFactory sessionFactory = mock(SessionFactory.class);
-			when(sessionFactory.isClosed()).thenReturn(true);
-			Map<Long, SessionFactory> sessionFactoryMap = new HashMap<>();
-			dut.setSessionFactoryMap(sessionFactoryMap);
-			sessionFactoryMap.put((long) 1, sessionFactory);
+	public void testDestroyAlreadyClosed() {
+		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
+		Mockito.when(sessionFactory.isClosed()).thenReturn(true);
+		Map<Long, SessionFactory> sessionFactoryMap = new HashMap<>();
+		this.dut.setSessionFactoryMap(sessionFactoryMap);
+		sessionFactoryMap.put((long) 1, sessionFactory);
 
-			dut.destroy();
-			verify(sessionFactory, never()).close();
-		}
+		this.dut.destroy();
+		Mockito.verify(sessionFactory, Mockito.never()).close();
+	}
 
 }

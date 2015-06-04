@@ -1,14 +1,15 @@
+
 package org.generationcp.commons.pojo;
 
 public class GermplasmParents {
+
 	private Integer gid;
 	private String femaleParentName;
 	private String maleParentName;
 	private Integer fgid;
 	private Integer mgid;
-		
-	public GermplasmParents(Integer gid, String femaleParentName,
-			String maleParentName, Integer fgid, Integer mgid) {
+
+	public GermplasmParents(Integer gid, String femaleParentName, String maleParentName, Integer fgid, Integer mgid) {
 		super();
 		this.gid = gid;
 		this.femaleParentName = femaleParentName;
@@ -18,7 +19,7 @@ public class GermplasmParents {
 	}
 
 	public Integer getGid() {
-		return gid;
+		return this.gid;
 	}
 
 	public void setGid(Integer gid) {
@@ -26,7 +27,7 @@ public class GermplasmParents {
 	}
 
 	public String getFemaleParentName() {
-		return femaleParentName;
+		return this.femaleParentName;
 	}
 
 	public void setFemaleParentName(String femaleParentName) {
@@ -34,7 +35,7 @@ public class GermplasmParents {
 	}
 
 	public String getMaleParentName() {
-		return maleParentName;
+		return this.maleParentName;
 	}
 
 	public void setMaleParentName(String maleParentName) {
@@ -42,7 +43,7 @@ public class GermplasmParents {
 	}
 
 	public Integer getFgid() {
-		return fgid;
+		return this.fgid;
 	}
 
 	public void setFgid(Integer fgid) {
@@ -50,10 +51,10 @@ public class GermplasmParents {
 	}
 
 	public Integer getMgid() {
-		return mgid;
+		return this.mgid;
 	}
 
 	public void setMgid(Integer mgid) {
 		this.mgid = mgid;
 	}
-}	
+}

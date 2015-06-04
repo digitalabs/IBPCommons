@@ -1,16 +1,13 @@
-package org.generationcp.commons.ruleengine;
 
-import org.generationcp.commons.ruleengine.OrderedRule;
+package org.generationcp.commons.ruleengine;
 
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
- * Date: 2/18/2015
- * Time: 4:03 PM
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 2/18/2015 Time: 4:03 PM
  */
 public abstract class BranchingRule<T extends OrderedRuleExecutionContext> extends OrderedRule<T> {
+
 	public void prepareContextForBranchingToKey(T context, String targetKey) {
 		List<String> executionOrder = context.getExecutionOrder();
 		int currentExecutionIndex = context.getCurrentExecutionIndex();

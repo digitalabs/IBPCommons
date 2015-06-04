@@ -1,4 +1,10 @@
+
 package org.generationcp.commons.security;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -11,12 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-
-public class BMSPreAuthenticatedUsersRolePopulator
-		implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
+public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
@@ -24,7 +25,7 @@ public class BMSPreAuthenticatedUsersRolePopulator
 	@Override
 	public GrantedAuthoritiesContainer buildDetails(HttpServletRequest request) {
 		try {
-			User user = ContextUtil.getCurrentWorkbenchUser(workbenchDataManager, request);
+			User user = ContextUtil.getCurrentWorkbenchUser(this.workbenchDataManager, request);
 
 			List<GrantedAuthority> role = new ArrayList<>();
 			role.addAll(SecurityUtil.getRolesAsAuthorities(user));
@@ -33,8 +34,7 @@ public class BMSPreAuthenticatedUsersRolePopulator
 
 		} catch (MiddlewareQueryException e) {
 
-			throw new AuthenticationServiceException(
-					"Data access error while resolving Workbench user roles.", e);
+			throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
 		}
 	}
 

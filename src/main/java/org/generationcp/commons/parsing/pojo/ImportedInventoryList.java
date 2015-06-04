@@ -1,12 +1,12 @@
-package org.generationcp.commons.parsing.pojo;
 
-import org.generationcp.middleware.domain.inventory.InventoryDetails;
+package org.generationcp.commons.parsing.pojo;
 
 import java.util.List;
 
+import org.generationcp.middleware.domain.inventory.InventoryDetails;
+
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte
  */
 public class ImportedInventoryList {
 
@@ -19,8 +19,7 @@ public class ImportedInventoryList {
 		this.filename = filename;
 	}
 
-	public ImportedInventoryList(
-			List<InventoryDetails> importedInventoryDetails, String filename) {
+	public ImportedInventoryList(List<InventoryDetails> importedInventoryDetails, String filename) {
 		this.importedInventoryDetails = importedInventoryDetails;
 		this.filename = filename;
 	}
@@ -29,7 +28,7 @@ public class ImportedInventoryList {
 	}
 
 	public List<InventoryDetails> getImportedInventoryDetails() {
-		return importedInventoryDetails;
+		return this.importedInventoryDetails;
 	}
 
 	public void setImportedInventoryDetails(List<InventoryDetails> importedInventoryDetails) {
@@ -37,7 +36,7 @@ public class ImportedInventoryList {
 	}
 
 	public String getFilename() {
-		return filename;
+		return this.filename;
 	}
 
 	public void setFilename(String filename) {

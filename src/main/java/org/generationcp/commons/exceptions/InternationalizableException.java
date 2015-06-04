@@ -1,13 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
 
 package org.generationcp.commons.exceptions;
@@ -21,152 +20,154 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * The Class InternationalizableException.
- * 
- * 
+ *
+ *
  * @author Joyce Avestro
- * 
- * 
+ *
+ *
  */
 @Configurable
-public class InternationalizableException extends RuntimeException 
-    implements InitializingBean, InternationalizableComponent{
+public class InternationalizableException extends RuntimeException implements InitializingBean, InternationalizableComponent {
 
-    private static final long serialVersionUID = 1L;
-    
-    private String caption;
-    
-    private String description;
-    
-    private Object[] descParameters;
+	private static final long serialVersionUID = 1L;
 
-    /** The internationalization code for caption. */
-    private Enum<?> i18nCaption;
-    
-    /** The internationalization code for description. */
-    private Enum<?> i18nDescription;
+	private String caption;
 
-    /** The message source. */
-    @Autowired
-    private SimpleResourceBundleMessageSource messageSource;
+	private String description;
 
-    /**
-     * Instantiates a new InternationalizableException.
-     */
-    public InternationalizableException() {
-    }
+	private Object[] descParameters;
 
-    /**
-     * Instantiates a new InternationalizableException.
-     *
-     * @param e a Throwable object
-     */
-    public InternationalizableException(Throwable e) {
-        super(e);
-    }
+	/** The internationalization code for caption. */
+	private Enum<?> i18nCaption;
 
-    /**
-     * Instantiates a new InternationalizableException
-     *
-     * @param e a Throwable object
-     * @param i18nCaption the internationalization code for caption
-     * @param i18nDescription the internationalization code for description
-     */
-    public InternationalizableException(Throwable e, Enum<?> i18nCaption, Enum<?> i18nDescription) {
-        super(e);
-        this.i18nCaption = i18nCaption;
-        this.i18nDescription = i18nDescription;
-    }
-    
-    public InternationalizableException(Throwable t, Enum<?> i18nCaption
-            , Enum<?> i18nDescription, Object... descParameters) {
-        this(t, i18nCaption, i18nDescription);
-        this.descParameters = descParameters;
-    }
+	/** The internationalization code for description. */
+	private Enum<?> i18nDescription;
 
-    /**
-     * Gets the caption.
-     *
-     * @return the caption
-     */
-    public String getCaption() {
-        return caption;
-    }
+	/** The message source. */
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
-    /**
-     * Sets the caption.
-     *
-     * @param caption the new caption
-     */
-    public void setCaption(String caption) {
-        this.caption = caption;
-    }
+	/**
+	 * Instantiates a new InternationalizableException.
+	 */
+	public InternationalizableException() {
+	}
 
-    /**
-     * Sets the caption using the internationalization code.
-     *
-     * @param code the new caption
-     */
-    public void setCaption(Enum<?> code) {
-        this.caption = messageSource.getMessage(code);
-    }
+	/**
+	 * Instantiates a new InternationalizableException.
+	 *
+	 * @param e a Throwable object
+	 */
+	public InternationalizableException(Throwable e) {
+		super(e);
+	}
 
-    /**
-     * Gets the description.
-     *
-     * @return the description
-     */
-    public String getDescription() {
-        String toReturn = null;
-        if (!StringUtil.isEmpty(description)) {
-            toReturn = "</br>" + description;
-        } 
-        return toReturn;
-    }
+	/**
+	 * Instantiates a new InternationalizableException
+	 *
+	 * @param e a Throwable object
+	 * @param i18nCaption the internationalization code for caption
+	 * @param i18nDescription the internationalization code for description
+	 */
+	public InternationalizableException(Throwable e, Enum<?> i18nCaption, Enum<?> i18nDescription) {
+		super(e);
+		this.i18nCaption = i18nCaption;
+		this.i18nDescription = i18nDescription;
+	}
 
-    /**
-     * Sets the description.
-     *
-     * @param description the new description
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public InternationalizableException(Throwable t, Enum<?> i18nCaption, Enum<?> i18nDescription, Object... descParameters) {
+		this(t, i18nCaption, i18nDescription);
+		this.descParameters = descParameters;
+	}
 
-    /**
-     * Sets the description using the internationalization code.
-     *
-     * @param code the new description
-     */
-    public void setDescription(Enum<?> code) {
-        this.description = messageSource.getMessage(code);
-    }
-    
-    public void setDescription(Enum<?> code, Object... descParameters) {
-        this.description = messageSource.getMessage(code, descParameters);
-    }
+	/**
+	 * Gets the caption.
+	 *
+	 * @return the caption
+	 */
+	public String getCaption() {
+		return this.caption;
+	}
 
-    /* (non-Javadoc)
-     * @see org.generationcp.commons.vaadin.spring.InternationalizableComponent#updateLabels()
-     */
-    @Override
-    public void updateLabels() {
-    }
+	/**
+	 * Sets the caption.
+	 *
+	 * @param caption the new caption
+	 */
+	public void setCaption(String caption) {
+		this.caption = caption;
+	}
 
-    /* (non-Javadoc)
-     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     */
-    @Override
-    public void afterPropertiesSet() throws Exception {         
-        if (i18nCaption != null) {
-            this.caption = messageSource.getMessage(i18nCaption);
-        }
-        if (i18nDescription != null){
-            if (descParameters != null) {
-                this.description = messageSource.getMessage(i18nDescription, descParameters);
-            } else {
-                this.description = messageSource.getMessage(i18nDescription);
-            }
-        }
-    }
+	/**
+	 * Sets the caption using the internationalization code.
+	 *
+	 * @param code the new caption
+	 */
+	public void setCaption(Enum<?> code) {
+		this.caption = this.messageSource.getMessage(code);
+	}
+
+	/**
+	 * Gets the description.
+	 *
+	 * @return the description
+	 */
+	public String getDescription() {
+		String toReturn = null;
+		if (!StringUtil.isEmpty(this.description)) {
+			toReturn = "</br>" + this.description;
+		}
+		return toReturn;
+	}
+
+	/**
+	 * Sets the description.
+	 *
+	 * @param description the new description
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	/**
+	 * Sets the description using the internationalization code.
+	 *
+	 * @param code the new description
+	 */
+	public void setDescription(Enum<?> code) {
+		this.description = this.messageSource.getMessage(code);
+	}
+
+	public void setDescription(Enum<?> code, Object... descParameters) {
+		this.description = this.messageSource.getMessage(code, descParameters);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.generationcp.commons.vaadin.spring.InternationalizableComponent#updateLabels()
+	 */
+	@Override
+	public void updateLabels() {
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
+	 */
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (this.i18nCaption != null) {
+			this.caption = this.messageSource.getMessage(this.i18nCaption);
+		}
+		if (this.i18nDescription != null) {
+			if (this.descParameters != null) {
+				this.description = this.messageSource.getMessage(this.i18nDescription, this.descParameters);
+			} else {
+				this.description = this.messageSource.getMessage(this.i18nDescription);
+			}
+		}
+	}
 
 }

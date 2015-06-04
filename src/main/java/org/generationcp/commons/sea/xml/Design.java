@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
+
 package org.generationcp.commons.sea.xml;
 
 import java.io.Serializable;
@@ -26,61 +26,65 @@ public class Design implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-    private String type;
-	private Replicates  replicates;
+	private String type;
+	private Replicates replicates;
 	private Blocks blocks;
 	private Rows rows;
 	private Columns columns;
 	private Plot plot;
-	
+
 	@XmlAttribute
 	public String getType() {
-		return type;
+		return this.type;
 	}
+
 	public void setType(String type) {
 		this.type = type;
 	}
-	
-	@XmlElement(name ="Replicates")
+
+	@XmlElement(name = "Replicates")
 	public Replicates getReplicates() {
-		return replicates;
+		return this.replicates;
 	}
+
 	public void setReplicates(Replicates replicates) {
 		this.replicates = replicates;
 	}
-	
-	@XmlElement(name ="Blocks")
+
+	@XmlElement(name = "Blocks")
 	public Blocks getBlocks() {
-		return blocks;
+		return this.blocks;
 	}
+
 	public void setBlocks(Blocks blocks) {
 		this.blocks = blocks;
 	}
-	
-	@XmlElement(name ="Rows")
+
+	@XmlElement(name = "Rows")
 	public Rows getRows() {
-		return rows;
+		return this.rows;
 	}
+
 	public void setRows(Rows rows) {
 		this.rows = rows;
 	}
-	
-	@XmlElement(name ="Columns")
+
+	@XmlElement(name = "Columns")
 	public Columns getColumns() {
-		return columns;
+		return this.columns;
 	}
+
 	public void setColumns(Columns columns) {
 		this.columns = columns;
 	}
-	
-	@XmlElement(name ="PlotNo")
+
+	@XmlElement(name = "PlotNo")
 	public Plot getPlot() {
-		return plot;
+		return this.plot;
 	}
+
 	public void setPlot(Plot plot) {
 		this.plot = plot;
 	}
-	
-	
-	
+
 }

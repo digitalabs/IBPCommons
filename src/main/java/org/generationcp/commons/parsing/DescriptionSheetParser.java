@@ -1,21 +1,26 @@
-package org.generationcp.commons.parsing;
 
-import org.apache.poi.ss.usermodel.Workbook;
-import org.generationcp.commons.parsing.pojo.*;
-import org.generationcp.commons.util.DateUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.generationcp.commons.parsing;
 
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.poi.ss.usermodel.Workbook;
+import org.generationcp.commons.parsing.pojo.ImportedCondition;
+import org.generationcp.commons.parsing.pojo.ImportedConstant;
+import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
+import org.generationcp.commons.parsing.pojo.ImportedFactor;
+import org.generationcp.commons.parsing.pojo.ImportedVariate;
+import org.generationcp.commons.util.DateUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Created by cyrus on 4/24/15.
  */
-public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extends
-		AbstractExcelFileParser<T> {
+public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extends AbstractExcelFileParser<T> {
+
 	public static final int DESCRIPTION_SHEET_NO = 0;
 	public static final int CONDITION_ROW_NO = 5;
 	public static final int DESCRIPTION_SHEET_COL_SIZE = 8;
@@ -26,16 +31,8 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	public static final String LIST_TYPE = "LIST TYPE";
 
 	protected enum DescriptionHeaders {
-		CONDITION("CONDITION"),
-		DESCRIPTION("DESCRIPTION"),
-		PROPERTY("PROPERTY"),
-		SCALE("SCALE"),
-		METHOD("METHOD"),
-		DATA_TYPE("DATA TYPE"),
-		VALUE("VALUE"),
-		FACTOR("FACTOR"),
-		CONSTANT("CONSTANT"),
-		VARIATE("VARIATE");
+		CONDITION("CONDITION"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD"), DATA_TYPE("DATA TYPE"), VALUE(
+				"VALUE"), FACTOR("FACTOR"), CONSTANT("CONSTANT"), VARIATE("VARIATE");
 
 		private String label;
 
@@ -44,11 +41,11 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		}
 
 		public String getLabel() {
-			return label;
+			return this.label;
 		}
 
 		public static String[] names() {
-			DescriptionHeaders[] values = values();
+			DescriptionHeaders[] values = DescriptionHeaders.values();
 			String[] names = new String[values.length];
 
 			for (int i = 0; i < values.length; i++) {
@@ -59,208 +56,171 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		}
 	}
 
-
-	private T importedList;
+	private final T importedList;
 
 	private int currentRow = 0;
-	private boolean importFileIsValid = true;
+	private final boolean importFileIsValid = true;
 
 	private boolean doParseDetails, doParseConditions, doParseFactors, doParseConstants, doParseVariates;
 
 	public DescriptionSheetParser(T importedList) {
 		this.importedList = importedList;
-		doParseDetails = doParseConditions = doParseFactors = doParseConstants = doParseVariates = true;
+		this.doParseDetails = this.doParseConditions = this.doParseFactors = this.doParseConstants = this.doParseVariates = true;
 	}
 
 	public void parseDescriptionSheet() throws FileParsingException, ParseException {
-		parseDescriptionSheet(doParseDetails,doParseConditions,doParseFactors,doParseConstants,doParseVariates);
+		this.parseDescriptionSheet(this.doParseDetails, this.doParseConditions, this.doParseFactors, this.doParseConstants,
+				this.doParseVariates);
 	}
 
-	private void parseDescriptionSheet(boolean doParseDetails,boolean doParseConditions,boolean doParseFactors,boolean doParseConstants,boolean doParseVariates) throws FileParsingException, ParseException {
+	private void parseDescriptionSheet(boolean doParseDetails, boolean doParseConditions, boolean doParseFactors, boolean doParseConstants,
+			boolean doParseVariates) throws FileParsingException, ParseException {
 
 		if (doParseDetails) {
-			parseListDetails();
+			this.parseListDetails();
 		}
 
 		if (doParseConditions) {
-			parseConditions();
+			this.parseConditions();
 		}
 
 		if (doParseFactors) {
-			parseFactors();
+			this.parseFactors();
 		}
 
 		if (doParseConstants) {
-			parseConstants();
+			this.parseConstants();
 		}
 
 		if (doParseVariates) {
-			parseVariate();
+			this.parseVariate();
 		}
 	}
 
-
 	protected void parseListDetails() throws FileParsingException, ParseException {
-		String listName = getCellStringValue(DESCRIPTION_SHEET_NO, 0, 1);
-		String listTitle = getCellStringValue(DESCRIPTION_SHEET_NO, 1, 1);
+		String listName = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, 0, 1);
+		String listTitle = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
 
-		String labelId = getCellStringValue(DESCRIPTION_SHEET_NO, 2, 0);
+		String labelId = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, 2, 0);
 
-		int listDateColNo = LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
-		int listTypeColNo = LIST_TYPE.equalsIgnoreCase(labelId) ? 2 : 3;
+		int listDateColNo = DescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
+		int listTypeColNo = DescriptionSheetParser.LIST_TYPE.equalsIgnoreCase(labelId) ? 2 : 3;
 
-		Date listDate = DateUtil.parseDate(
-				getCellStringValue(DESCRIPTION_SHEET_NO, listDateColNo, 1));
-		String listType = getCellStringValue(DESCRIPTION_SHEET_NO, listTypeColNo, 1);
+		Date listDate = DateUtil.parseDate(this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1));
+		String listType = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listTypeColNo, 1);
 
-		if (!TEMPLATE_LIST_TYPE.equalsIgnoreCase(listType)) {
+		if (!DescriptionSheetParser.TEMPLATE_LIST_TYPE.equalsIgnoreCase(listType)) {
 			throw new FileParsingException("Error parsing details : List type is invalid");
 		}
 
-		importedList.setName(listName);
-		importedList.setTitle(listTitle);
-		importedList.setType(listType);
-		importedList.setDate(listDate);
+		this.importedList.setName(listName);
+		this.importedList.setTitle(listTitle);
+		this.importedList.setType(listType);
+		this.importedList.setDate(listDate);
 	}
 
 	protected void parseConditions() {
 		// condition headers start at row = 5 (+ 1 : count starts from 0 )
-		currentRow = CONDITION_ROW_NO;
+		this.currentRow = DescriptionSheetParser.CONDITION_ROW_NO;
 
-		if (!isConditionHeadersInvalid(CONDITION_ROW_NO) && importFileIsValid) {
-			currentRow++;
+		if (!this.isConditionHeadersInvalid(DescriptionSheetParser.CONDITION_ROW_NO) && this.importFileIsValid) {
+			this.currentRow++;
 
-			while (!isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-				this.importedList.addImportedCondition(
-						new ImportedCondition(
-								getCellStringValue(DESCRIPTION_SHEET_NO,
-										currentRow, 0)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 1)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 2)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 3)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 4)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 5)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 6),
-								""
-						)
-				);
+			while (!this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+					DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+				this.importedList.addImportedCondition(new ImportedCondition(this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6), ""));
 
-				currentRow++;
+				this.currentRow++;
 			}
 		}
 
-		while (isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-			currentRow++;
+		while (this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+				DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+			this.currentRow++;
 		}
 	}
 
 	protected void parseFactors() throws FileParsingException {
 
-		if (!isFactorHeadersInvalid(currentRow) && importFileIsValid) {
-			currentRow++;
+		if (!this.isFactorHeadersInvalid(this.currentRow) && this.importFileIsValid) {
+			this.currentRow++;
 
-			while (!isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-				final ImportedFactor factor = new ImportedFactor(
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								0)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								1)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								2)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								3)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								4)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								5)
-						, "");
+			while (!this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+					DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+				final ImportedFactor factor =
+						new ImportedFactor(this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), "");
 
-				importedList.addImportedFactor(factor);
+				this.importedList.addImportedFactor(factor);
 
-				currentRow++;
+				this.currentRow++;
 			}
 
-			currentRow++;
+			this.currentRow++;
 
 		} else {
 			throw new FileParsingException("Error parsing on factors header: Incorrect headers for factors.");
 		}
 
-		while (isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-			currentRow++;
+		while (this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+				DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+			this.currentRow++;
 		}
 	}
 
-	protected void parseConstants() throws FileParsingException{
-		if (!isConstantsHeaderInvalid(currentRow) && importFileIsValid) {
-			currentRow++;
-			while (!isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-				importedList.addImportedConstant(new ImportedConstant(
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								0)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								1)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								2)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								3)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								4)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								5)
-						,
-						getCellStringValue(DESCRIPTION_SHEET_NO, currentRow,
-								6)));
+	protected void parseConstants() throws FileParsingException {
+		if (!this.isConstantsHeaderInvalid(this.currentRow) && this.importFileIsValid) {
+			this.currentRow++;
+			while (!this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+					DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+				this.importedList.addImportedConstant(new ImportedConstant(this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6)));
 
-				currentRow++;
+				this.currentRow++;
 			}
-			currentRow++;
+			this.currentRow++;
 
 		} else {
 			// Incorrect headers for factors.
 			throw new FileParsingException("Error parsing on constants header: Incorrect headers for constants.");
 		}
 
-		while (isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-			currentRow++;
+		while (this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+				DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+			this.currentRow++;
 		}
 	}
 
-	protected void parseVariate() throws FileParsingException{
-		if (!isVariateHeaderInvalid(currentRow) && importFileIsValid) {
-			currentRow++;
-			while (!isRowEmpty(DESCRIPTION_SHEET_NO, currentRow, DESCRIPTION_SHEET_COL_SIZE)) {
-				importedList.addImportedVariate(
-						new ImportedVariate(
-								getCellStringValue(DESCRIPTION_SHEET_NO,
-										currentRow, 0)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 1)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 2)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 3)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 4)
-								, getCellStringValue(DESCRIPTION_SHEET_NO,
-								currentRow, 5)));
-				currentRow++;
+	protected void parseVariate() throws FileParsingException {
+		if (!this.isVariateHeaderInvalid(this.currentRow) && this.importFileIsValid) {
+			this.currentRow++;
+			while (!this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
+					DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
+				this.importedList.addImportedVariate(new ImportedVariate(this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4), this.getCellStringValue(
+						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5)));
+				this.currentRow++;
 			}
 
 		} else {
@@ -269,57 +229,37 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	}
 
 	protected boolean isConditionHeadersInvalid(int conditionHeaderRowNo) {
-		String[] headers = {
-				DescriptionHeaders.CONDITION.getLabel(),
-				DescriptionHeaders.DESCRIPTION.getLabel(),
-				DescriptionHeaders.PROPERTY.getLabel(),
-				DescriptionHeaders.SCALE.getLabel(),
-				DescriptionHeaders.METHOD.getLabel(),
-				DescriptionHeaders.DATA_TYPE.getLabel(),
-				DescriptionHeaders.VALUE.getLabel()
-		};
+		String[] headers =
+				{DescriptionHeaders.CONDITION.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(),
+						DescriptionHeaders.PROPERTY.getLabel(), DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(),
+						DescriptionHeaders.DATA_TYPE.getLabel(), DescriptionHeaders.VALUE.getLabel()};
 
-		return isHeaderInvalid(conditionHeaderRowNo, DESCRIPTION_SHEET_NO, headers);
+		return this.isHeaderInvalid(conditionHeaderRowNo, DescriptionSheetParser.DESCRIPTION_SHEET_NO, headers);
 	}
 
 	protected boolean isFactorHeadersInvalid(int factorHeaderRowNo) {
-		String[] headers = {
-				DescriptionHeaders.FACTOR.getLabel(),
-				DescriptionHeaders.DESCRIPTION.getLabel(),
-				DescriptionHeaders.PROPERTY.getLabel(),
-				DescriptionHeaders.SCALE.getLabel(),
-				DescriptionHeaders.METHOD.getLabel(),
-				DescriptionHeaders.DATA_TYPE.getLabel()
-		};
+		String[] headers =
+				{DescriptionHeaders.FACTOR.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(), DescriptionHeaders.PROPERTY.getLabel(),
+						DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(), DescriptionHeaders.DATA_TYPE.getLabel()};
 
-		return isHeaderInvalid(factorHeaderRowNo,DESCRIPTION_SHEET_NO, headers);
+		return this.isHeaderInvalid(factorHeaderRowNo, DescriptionSheetParser.DESCRIPTION_SHEET_NO, headers);
 	}
 
 	protected boolean isConstantsHeaderInvalid(int constantHeaderRowNo) {
-		String[] headers = {
-				DescriptionHeaders.CONSTANT.getLabel(),
-				DescriptionHeaders.DESCRIPTION.getLabel(),
-				DescriptionHeaders.PROPERTY.getLabel(),
-				DescriptionHeaders.SCALE.getLabel(),
-				DescriptionHeaders.METHOD.getLabel(),
-				DescriptionHeaders.DATA_TYPE.getLabel(),
-				DescriptionHeaders.VALUE.getLabel()
-		};
+		String[] headers =
+				{DescriptionHeaders.CONSTANT.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(), DescriptionHeaders.PROPERTY.getLabel(),
+						DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(), DescriptionHeaders.DATA_TYPE.getLabel(),
+						DescriptionHeaders.VALUE.getLabel()};
 
-		return isHeaderInvalid(constantHeaderRowNo, DESCRIPTION_SHEET_NO,headers);
+		return this.isHeaderInvalid(constantHeaderRowNo, DescriptionSheetParser.DESCRIPTION_SHEET_NO, headers);
 	}
 
 	protected boolean isVariateHeaderInvalid(int variateHeaderRowNo) {
-		String[] headers = {
-				DescriptionHeaders.VARIATE.getLabel(),
-				DescriptionHeaders.DESCRIPTION.getLabel(),
-				DescriptionHeaders.PROPERTY.getLabel(),
-				DescriptionHeaders.SCALE.getLabel(),
-				DescriptionHeaders.METHOD.getLabel(),
-				DescriptionHeaders.DATA_TYPE.getLabel()
-		};
+		String[] headers =
+				{DescriptionHeaders.VARIATE.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(), DescriptionHeaders.PROPERTY.getLabel(),
+						DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(), DescriptionHeaders.DATA_TYPE.getLabel()};
 
-		return isHeaderInvalid(variateHeaderRowNo, DESCRIPTION_SHEET_NO, headers);
+		return this.isHeaderInvalid(variateHeaderRowNo, DescriptionSheetParser.DESCRIPTION_SHEET_NO, headers);
 	}
 
 	public void setDoParseDetails(boolean doParseDetails) {
@@ -343,17 +283,16 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	}
 
 	@Override
-	public T parseWorkbook(Workbook workbook, Map<String,Object> addtlParams)
-			throws FileParsingException {
+	public T parseWorkbook(Workbook workbook, Map<String, Object> addtlParams) throws FileParsingException {
 		try {
 			this.workbook = workbook;
 
 			this.parseDescriptionSheet();
-			return importedList;
+			return this.importedList;
 		} catch (ParseException e) {
-			LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(messageSource.getMessage(FILE_INVALID, new Object[]{}, Locale
-					.getDefault()));
+			DescriptionSheetParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, new Object[] {},
+					Locale.getDefault()));
 		}
 	}
 }

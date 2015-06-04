@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.util;
 
 import java.util.HashMap;
@@ -13,39 +14,40 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-
 public class CrossingUtilTest {
-	private Integer methodId = 99;
-	private Integer defaultTypeId = 5;
+
+	private final Integer methodId = 99;
+	private final Integer defaultTypeId = 5;
 	private GermplasmDataManagerImpl germplasmDataManager;
 	private Map<Germplasm, Name> crossesMap;
 	private Name name;
+
 	@Before
-	public void setUp(){
-		germplasmDataManager = Mockito.spy(new GermplasmDataManagerImpl());
-		crossesMap = new HashMap<Germplasm, Name>();
-		name = new Name();
-		name.setTypeId(defaultTypeId);
+	public void setUp() {
+		this.germplasmDataManager = Mockito.spy(new GermplasmDataManagerImpl());
+		this.crossesMap = new HashMap<Germplasm, Name>();
+		this.name = new Name();
+		this.name.setTypeId(this.defaultTypeId);
 		Germplasm germplasm = new Germplasm();
-		germplasm.setMethodId(methodId);
-		crossesMap.put(germplasm, name);
+		germplasm.setMethodId(this.methodId);
+		this.crossesMap.put(germplasm, this.name);
 	}
-	
+
 	@Test
-	public void testApplyMethodNameTypeIfMethodSnametypeExists() throws Exception{		
+	public void testApplyMethodNameTypeIfMethodSnametypeExists() throws Exception {
 		Method method = new Method();
-		method.setSnametype(88);		
-		Mockito.doReturn(method).when(germplasmDataManager).getMethodByID(methodId);
-		CrossingUtil.applyMethodNameType(germplasmDataManager, crossesMap, defaultTypeId);
-		Assert.assertEquals("Sname type should be the same as the method snametype", method.getSnametype(), name.getTypeId());
+		method.setSnametype(88);
+		Mockito.doReturn(method).when(this.germplasmDataManager).getMethodByID(this.methodId);
+		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.crossesMap, this.defaultTypeId);
+		Assert.assertEquals("Sname type should be the same as the method snametype", method.getSnametype(), this.name.getTypeId());
 	}
-	
+
 	@Test
-	public void testApplyMethodNameTypeIfMethodSnametypeDoesNotExists() throws Exception{
+	public void testApplyMethodNameTypeIfMethodSnametypeDoesNotExists() throws Exception {
 		Method method = new Method();
-		method.setSnametype(null);		
-		Mockito.doReturn(method).when(germplasmDataManager).getMethodByID(methodId);		
-		CrossingUtil.applyMethodNameType(germplasmDataManager, crossesMap, defaultTypeId);
-		Assert.assertEquals("Should use the default name type", defaultTypeId, name.getTypeId());
+		method.setSnametype(null);
+		Mockito.doReturn(method).when(this.germplasmDataManager).getMethodByID(this.methodId);
+		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.crossesMap, this.defaultTypeId);
+		Assert.assertEquals("Should use the default name type", this.defaultTypeId, this.name.getTypeId());
 	}
 }

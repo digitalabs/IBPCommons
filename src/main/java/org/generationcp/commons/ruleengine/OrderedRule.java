@@ -1,20 +1,15 @@
-package org.generationcp.commons.ruleengine;
 
-import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
+package org.generationcp.commons.ruleengine;
 
 import java.util.List;
 
-import org.generationcp.commons.ruleengine.Rule;
-
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
- * Date: 2/13/2015
- * Time: 4:07 PM
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 2/13/2015 Time: 4:07 PM
  */
-public abstract class OrderedRule<T extends OrderedRuleExecutionContext> implements Rule<T>{
+public abstract class OrderedRule<T extends OrderedRuleExecutionContext> implements Rule<T> {
 
-	@Override public String getNextRuleStepKey(T context){
+	@Override
+	public String getNextRuleStepKey(T context) {
 		List<String> sequenceOrder = context.getExecutionOrder();
 		int executionIndex = context.getCurrentExecutionIndex();
 

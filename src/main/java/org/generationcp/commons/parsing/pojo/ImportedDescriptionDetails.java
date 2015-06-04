@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.parsing.pojo;
 
 import java.io.Serializable;
@@ -9,6 +10,11 @@ import java.util.List;
  * Created by cyrus on 4/24/15.
  */
 public class ImportedDescriptionDetails implements Serializable {
+
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 8794499626741010915L;
 
 	/** The filename. */
 	protected String filename;
@@ -35,13 +41,12 @@ public class ImportedDescriptionDetails implements Serializable {
 	protected List<ImportedVariate> importedVariates = new ArrayList<>();;
 
 	/** The imported constants */
-	protected List<ImportedConstant> importedConstants  = new ArrayList<>();;
+	protected List<ImportedConstant> importedConstants = new ArrayList<>();;
 
 	public ImportedDescriptionDetails() {
 	}
 
-	public ImportedDescriptionDetails(String filename, String name, String title, String type,
-			Date date) {
+	public ImportedDescriptionDetails(String filename, String name, String title, String type, Date date) {
 		this.filename = filename;
 		this.name = name;
 		this.title = title;
@@ -51,10 +56,11 @@ public class ImportedDescriptionDetails implements Serializable {
 
 	/**
 	 * Retrieves the list of imported conditions
+	 * 
 	 * @return
 	 */
 	public List<ImportedCondition> getImportedConditions() {
-		return importedConditions;
+		return this.importedConditions;
 	}
 
 	/**
@@ -63,7 +69,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	 * @return the imported factors
 	 */
 	public List<ImportedFactor> getImportedFactors() {
-		return importedFactors;
+		return this.importedFactors;
 	}
 
 	/**
@@ -72,15 +78,15 @@ public class ImportedDescriptionDetails implements Serializable {
 	 * @return the imported variates
 	 */
 	public List<ImportedVariate> getImportedVariates() {
-		return importedVariates;
+		return this.importedVariates;
 	}
 
 	public List<ImportedConstant> getImportedConstants() {
-		return importedConstants;
+		return this.importedConstants;
 	}
 
 	public String getFilename() {
-		return filename;
+		return this.filename;
 	}
 
 	public void setFilename(String filename) {
@@ -88,7 +94,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	}
 
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	public void setName(String name) {
@@ -96,7 +102,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	}
 
 	public String getTitle() {
-		return title;
+		return this.title;
 	}
 
 	public void setTitle(String title) {
@@ -104,7 +110,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	}
 
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 	public void setType(String type) {
@@ -112,7 +118,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	}
 
 	public Date getDate() {
-		return date;
+		return this.date;
 	}
 
 	public void setDate(Date date) {
@@ -124,7 +130,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	 *
 	 * @param importedFactor the imported factor
 	 */
-	public void addImportedFactor(ImportedFactor importedFactor){
+	public void addImportedFactor(ImportedFactor importedFactor) {
 		this.importedFactors.add(importedFactor);
 	}
 
@@ -141,13 +147,12 @@ public class ImportedDescriptionDetails implements Serializable {
 	 *
 	 * @param importedVariate the imported variate
 	 */
-	public void addImportedVariate(ImportedVariate importedVariate){
+	public void addImportedVariate(ImportedVariate importedVariate) {
 		this.importedVariates.add(importedVariate);
 	}
 
 	public int sizeOfObservationHeader() {
-		return this.getImportedFactors().size() + this
-				.getImportedVariates().size();
+		return this.getImportedFactors().size() + this.getImportedVariates().size();
 	}
 
 }

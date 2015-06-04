@@ -1,13 +1,13 @@
+
 package org.generationcp.commons.ruleengine.stockid;
+
+import java.util.List;
 
 import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
 import org.generationcp.middleware.service.api.InventoryService;
 
-import java.util.List;
-
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte
  */
 public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionContext {
 
@@ -22,19 +22,19 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 		super(executionOrder);
 	}
 
-	public StockIDGenerationRuleExecutionContext(List<String> executionOrder,
-			InventoryService inventoryService) {
+	public StockIDGenerationRuleExecutionContext(List<String> executionOrder, InventoryService inventoryService) {
 		super(executionOrder);
 		this.inventoryService = inventoryService;
-		stockIDGenerationBuilder = new StringBuilder();
+		this.stockIDGenerationBuilder = new StringBuilder();
 	}
 
-	@Override public Object getRuleExecutionOutput() {
-		return stockIDGenerationBuilder.toString();
+	@Override
+	public Object getRuleExecutionOutput() {
+		return this.stockIDGenerationBuilder.toString();
 	}
 
 	public StringBuilder getStockIDGenerationBuilder() {
-		return stockIDGenerationBuilder;
+		return this.stockIDGenerationBuilder;
 	}
 
 	public void setStockIDGenerationBuilder(StringBuilder stockIDGenerationBuilder) {
@@ -42,7 +42,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	}
 
 	public String getBreederIdentifier() {
-		return breederIdentifier;
+		return this.breederIdentifier;
 	}
 
 	public void setBreederIdentifier(String breederIdentifier) {
@@ -50,7 +50,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	}
 
 	public Integer getNotationNumber() {
-		return notationNumber;
+		return this.notationNumber;
 	}
 
 	public void setNotationNumber(Integer notationNumber) {
@@ -58,7 +58,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	}
 
 	public String getSeparator() {
-		return separator;
+		return this.separator;
 	}
 
 	public void setSeparator(String separator) {
@@ -66,7 +66,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	}
 
 	public Long getSequenceNumber() {
-		return sequenceNumber;
+		return this.sequenceNumber;
 	}
 
 	public void setSequenceNumber(Long sequenceNumber) {
@@ -74,6 +74,6 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	}
 
 	public InventoryService getInventoryService() {
-		return inventoryService;
+		return this.inventoryService;
 	}
 }

@@ -1,16 +1,15 @@
 /**
- * ****************************************************************************
- * Copyright (c) 2013, All Rights Reserved.
+ * **************************************************************************** Copyright (c) 2013, All Rights Reserved.
  * <p/>
  * Generation Challenge Programme (GCP)
  * <p/>
  * <p/>
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  * <p/>
  * *****************************************************************************
  */
+
 package org.generationcp.commons.parsing.pojo;
 
 import java.io.Serializable;
@@ -69,9 +68,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @param type the type
 	 * @param date the date
 	 */
-	public ImportedGermplasmList(String filename, String name, String title,
-			String type,
-			Date date) {
+	public ImportedGermplasmList(String filename, String name, String title, String type, Date date) {
 		this.filename = filename;
 		this.name = name;
 		this.title = title;
@@ -98,11 +95,9 @@ public class ImportedGermplasmList implements Serializable {
 	 * @param importedVariates the imported variates
 	 * @param importedGermplasms the imported germplasms
 	 */
-	public ImportedGermplasmList(String filename, String name, String title,
-			String type, Date date
-			, List<ImportedCondition> importedConditions, List<ImportedFactor> importedFactors
-			, List<ImportedConstant> importedConstants, List<ImportedVariate> importedVariates
-			, List<ImportedGermplasm> importedGermplasms) {
+	public ImportedGermplasmList(String filename, String name, String title, String type, Date date,
+			List<ImportedCondition> importedConditions, List<ImportedFactor> importedFactors, List<ImportedConstant> importedConstants,
+			List<ImportedVariate> importedVariates, List<ImportedGermplasm> importedGermplasms) {
 		this.filename = filename;
 		this.name = name;
 		this.title = title;
@@ -121,7 +116,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the filename
 	 */
 	public String getFilename() {
-		return filename;
+		return this.filename;
 	}
 
 	/**
@@ -139,7 +134,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the name
 	 */
 	public String getName() {
-		return name;
+		return this.name;
 	}
 
 	/**
@@ -157,7 +152,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the title
 	 */
 	public String getTitle() {
-		return title;
+		return this.title;
 	}
 
 	/**
@@ -175,7 +170,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the type
 	 */
 	public String getType() {
-		return type;
+		return this.type;
 	}
 
 	/**
@@ -193,7 +188,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the date
 	 */
 	public Date getDate() {
-		return date;
+		return this.date;
 	}
 
 	/**
@@ -211,7 +206,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the imported conditions
 	 */
 	public List<ImportedCondition> getImportedConditions() {
-		return importedConditions;
+		return this.importedConditions;
 	}
 
 	/**
@@ -238,7 +233,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the imported factors
 	 */
 	public List<ImportedFactor> getImportedFactors() {
-		return importedFactors;
+		return this.importedFactors;
 	}
 
 	/**
@@ -265,7 +260,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the imported constants
 	 */
 	public List<ImportedConstant> getImportedConstants() {
-		return importedConstants;
+		return this.importedConstants;
 	}
 
 	/**
@@ -292,7 +287,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the imported variates
 	 */
 	public List<ImportedVariate> getImportedVariates() {
-		return importedVariates;
+		return this.importedVariates;
 	}
 
 	/**
@@ -319,7 +314,7 @@ public class ImportedGermplasmList implements Serializable {
 	 * @return the imported germplasms
 	 */
 	public List<ImportedGermplasm> getImportedGermplasms() {
-		return importedGermplasms;
+		return this.importedGermplasms;
 	}
 
 	/**
@@ -341,11 +336,10 @@ public class ImportedGermplasmList implements Serializable {
 	}
 
 	public List<ImportedGermplasm> getOriginalImportedGermplasms() {
-		return originalImportedGermplasms;
+		return this.originalImportedGermplasms;
 	}
 
-	public void setOriginalImportedGermplasms(
-			List<ImportedGermplasm> originalImportedGermplasms) {
+	public void setOriginalImportedGermplasms(List<ImportedGermplasm> originalImportedGermplasms) {
 		this.originalImportedGermplasms = originalImportedGermplasms;
 	}
 

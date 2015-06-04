@@ -1,7 +1,7 @@
+
 package org.generationcp.commons.ruleengine;
 
 public interface Rule<T extends RuleExecutionContext> {
-
 
 	public Object runRule(T context) throws RuleException;
 
