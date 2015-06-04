@@ -1,6 +1,10 @@
+
 package org.generationcp.commons.service.impl;
 
-import org.generationcp.commons.service.CrossNameService;
+import javax.xml.bind.JAXBException;
+
+import junit.framework.Assert;
+
 import org.generationcp.commons.service.SettingsPresetService;
 import org.generationcp.commons.settings.BreedingMethodSetting;
 import org.generationcp.commons.settings.CrossNameSetting;
@@ -8,13 +12,8 @@ import org.generationcp.commons.settings.CrossSetting;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.xml.bind.JAXBException;
-
-import static junit.framework.Assert.*;
-
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte
  */
 
 public class SettingsPresetServiceTest {
@@ -26,46 +25,53 @@ public class SettingsPresetServiceTest {
 	public static final String SETTING_PREFIX = "PRE";
 	public static final String SETTING_SEPARATOR = "-";
 
-
 	@Before
 	public void setup() {
-		dut = new SettingsPresetServiceImpl();
+		this.dut = new SettingsPresetServiceImpl();
 	}
 
 	@Test
 	public void testConvertToXmlPositive() {
-		CrossSetting setting = constructTestSettingObject();
+		CrossSetting setting = this.constructTestSettingObject();
 
 		try {
-			String xml = dut.convertPresetSettingToXml(setting, CrossSetting.class);
+			String xml = this.dut.convertPresetSettingToXml(setting, CrossSetting.class);
 
-			assertTrue("Setting was not properly converted to XML", xml.contains("name=\"" + TEST_SETTING_NAME + "\""));
-			assertTrue("Setting was not properly converted to XML", xml.contains("methodId=\"" + TEST_BREEDING_METHOD_ID + "\""));
-			assertTrue("Setting was not properly converted to XML", xml.contains("prefix=\"" + SETTING_PREFIX + "\""));
-			assertTrue("Setting was not properly converted to XML", xml.contains("separator=\"" + SETTING_SEPARATOR + "\""));
+			Assert.assertTrue("Setting was not properly converted to XML",
+					xml.contains("name=\"" + SettingsPresetServiceTest.TEST_SETTING_NAME + "\""));
+			Assert.assertTrue("Setting was not properly converted to XML",
+					xml.contains("methodId=\"" + SettingsPresetServiceTest.TEST_BREEDING_METHOD_ID + "\""));
+			Assert.assertTrue("Setting was not properly converted to XML",
+					xml.contains("prefix=\"" + SettingsPresetServiceTest.SETTING_PREFIX + "\""));
+			Assert.assertTrue("Setting was not properly converted to XML",
+					xml.contains("separator=\"" + SettingsPresetServiceTest.SETTING_SEPARATOR + "\""));
 		} catch (JAXBException e) {
-			fail(e.getMessage());
+			Assert.fail(e.getMessage());
 		}
 	}
 
 	@Test
 	public void testConvertSettingToObject() {
 
-
 		try {
-			String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossSetting name=\"" + TEST_SETTING_NAME + "\">"
-					+ "<breedingMethodSetting basedOnStatusOfParentalLines=\"false\" methodId=\"" + TEST_BREEDING_METHOD_ID + "\"/>"
-					+ "<crossNameSetting addSpaceBetweenPrefixAndCode=\"false\" addSpaceBetweenSuffixAndCode=\"false\" prefix=\"" + SETTING_PREFIX + "\" separator=\"" + SETTING_SEPARATOR + "\"/>"
-					+ "</crossSetting>";
-			CrossSetting converted = (CrossSetting) dut.convertPresetFromXmlString(xml, CrossSetting.class);
+			String xml =
+					"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><crossSetting name=\""
+							+ SettingsPresetServiceTest.TEST_SETTING_NAME + "\">"
+							+ "<breedingMethodSetting basedOnStatusOfParentalLines=\"false\" methodId=\""
+							+ SettingsPresetServiceTest.TEST_BREEDING_METHOD_ID + "\"/>"
+							+ "<crossNameSetting addSpaceBetweenPrefixAndCode=\"false\" addSpaceBetweenSuffixAndCode=\"false\" prefix=\""
+							+ SettingsPresetServiceTest.SETTING_PREFIX + "\" separator=\"" + SettingsPresetServiceTest.SETTING_SEPARATOR
+							+ "\"/>" + "</crossSetting>";
+			CrossSetting converted = (CrossSetting) this.dut.convertPresetFromXmlString(xml, CrossSetting.class);
 
-			assertEquals("Setting was not properly converted from XML", TEST_SETTING_NAME, converted.getName());
-			assertEquals("Setting was not properly converted from XML", TEST_BREEDING_METHOD_ID,
-					converted.getBreedingMethodSetting().getMethodId());
-			assertEquals("Setting was not properly converted from XML", SETTING_PREFIX,
-					converted.getCrossNameSetting().getPrefix());
-			assertEquals("Setting was not properly converted from XML", SETTING_SEPARATOR,
-								converted.getCrossNameSetting().getSeparator());
+			Assert.assertEquals("Setting was not properly converted from XML", SettingsPresetServiceTest.TEST_SETTING_NAME,
+					converted.getName());
+			Assert.assertEquals("Setting was not properly converted from XML", SettingsPresetServiceTest.TEST_BREEDING_METHOD_ID, converted
+					.getBreedingMethodSetting().getMethodId());
+			Assert.assertEquals("Setting was not properly converted from XML", SettingsPresetServiceTest.SETTING_PREFIX, converted
+					.getCrossNameSetting().getPrefix());
+			Assert.assertEquals("Setting was not properly converted from XML", SettingsPresetServiceTest.SETTING_SEPARATOR, converted
+					.getCrossNameSetting().getSeparator());
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
@@ -74,19 +80,17 @@ public class SettingsPresetServiceTest {
 
 	protected CrossSetting constructTestSettingObject() {
 		CrossSetting setting = new CrossSetting();
-		setting.setName(TEST_SETTING_NAME);
+		setting.setName(SettingsPresetServiceTest.TEST_SETTING_NAME);
 
-		BreedingMethodSetting methodSetting = new BreedingMethodSetting(TEST_BREEDING_METHOD_ID,
-				false);
+		BreedingMethodSetting methodSetting = new BreedingMethodSetting(SettingsPresetServiceTest.TEST_BREEDING_METHOD_ID, false);
 		setting.setBreedingMethodSetting(methodSetting);
 
 		CrossNameSetting nameSetting = new CrossNameSetting();
-		nameSetting.setPrefix(SETTING_PREFIX);
-		nameSetting.setSeparator(SETTING_SEPARATOR);
+		nameSetting.setPrefix(SettingsPresetServiceTest.SETTING_PREFIX);
+		nameSetting.setSeparator(SettingsPresetServiceTest.SETTING_SEPARATOR);
 		setting.setCrossNameSetting(nameSetting);
 
 		return setting;
 	}
-
 
 }

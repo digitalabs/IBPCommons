@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.security;
 
 import java.util.List;
@@ -12,17 +13,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class WorkbenchUserDetailsService implements UserDetailsService {
-	
+
 	private WorkbenchDataManager workbenchDataManager;
-	
+
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
-			List<User> matchingUsers = workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
-			if(matchingUsers != null && !matchingUsers.isEmpty()) {
+			List<User> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
+			if (matchingUsers != null && !matchingUsers.isEmpty()) {
 				User workbenchUser = matchingUsers.get(0);
-				//FIXME Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
-				return new org.springframework.security.core.userdetails.User(workbenchUser.getName(), workbenchUser.getPassword(), 
+				// FIXME Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
+				return new org.springframework.security.core.userdetails.User(workbenchUser.getName(), workbenchUser.getPassword(),
 						SecurityUtil.getRolesAsAuthorities(workbenchUser));
 			}
 			throw new UsernameNotFoundException("Invalid username/password.");
@@ -34,4 +35,4 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
-} 
+}

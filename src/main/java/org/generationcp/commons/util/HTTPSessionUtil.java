@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.util;
 
 import javax.servlet.http.HttpSession;
@@ -6,10 +7,11 @@ import javax.servlet.http.HttpSession;
  * Created by cyrus on 11/24/14.
  */
 public class HTTPSessionUtil {
+
 	/*
-		 * this is being use for caching possible values, mainly use when creating Nursery (like breeding method, other categorical variates),
-		 * we would want to clear this session every time we enter the create screen so we are sure it would get new value in the db
-		 */
+	 * this is being use for caching possible values, mainly use when creating Nursery (like breeding method, other categorical variates),
+	 * we would want to clear this session every time we enter the create screen so we are sure it would get new value in the db
+	 */
 	public static final String POSSIBLE_VALUES_SESSION_NAME = "scopedTarget.possibleValuesCache";
 	/*
 	 * This is the session object being use for advancing a study
@@ -36,12 +38,10 @@ public class HTTPSessionUtil {
 	 */
 	public static final String PAGINATION_LIST_SELECTION_SESSION_NAME = "scopedTarget.paginationListSelection";
 
-
-
-	//this would be use in place for the session.invalidate
-	public void clearSessionData(HttpSession session, String[] attributeNames){
-		if(session != null && attributeNames != null){
-			for(int index = 0 ; index < attributeNames.length ; index++){
+	// this would be use in place for the session.invalidate
+	public void clearSessionData(HttpSession session, String[] attributeNames) {
+		if (session != null && attributeNames != null) {
+			for (int index = 0; index < attributeNames.length; index++) {
 				session.removeAttribute(attributeNames[index]);
 			}
 		}

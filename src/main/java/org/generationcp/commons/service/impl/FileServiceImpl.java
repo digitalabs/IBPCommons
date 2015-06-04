@@ -1,15 +1,20 @@
 /*******************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
+
 package org.generationcp.commons.service.impl;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -21,98 +26,95 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
  * The Class FileServiceImpl.
  */
-public class FileServiceImpl implements FileService{
-    
-    private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
+public class FileServiceImpl implements FileService {
 
-    /** The upload directory. */
-    private String uploadDirectory;
+	private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
 
-    /**
-     * Instantiates a new file service impl.
-     *
-     * @param uploadDirectory the upload directory
-     */
-    public FileServiceImpl(String uploadDirectory) {
-        this.uploadDirectory = uploadDirectory;
-    }
+	/** The upload directory. */
+	private final String uploadDirectory;
 
-    public FileServiceImpl() {
-        this.uploadDirectory = new File(
-                System.getProperty("java.io.tmpdir")).getPath();
-    }
+	/**
+	 * Instantiates a new file service impl.
+	 *
+	 * @param uploadDirectory the upload directory
+	 */
+	public FileServiceImpl(String uploadDirectory) {
+		this.uploadDirectory = uploadDirectory;
+	}
 
-    /* (non-Javadoc)
-     * @see org.generationcp.commons.service.FileService#saveTemporaryFile(java.io.InputStream)
-     */
-    @Override
-    public String saveTemporaryFile(InputStream userFile) throws IOException {
-        String tempFileName = RandomStringUtils.randomAlphanumeric(15);
+	public FileServiceImpl() {
+		this.uploadDirectory = new File(System.getProperty("java.io.tmpdir")).getPath();
+	}
 
-        File file = null;
-        FileOutputStream fos = null;
-        try {
-            file = new File(getFilePath(tempFileName));
-            file.createNewFile();
-            fos = new FileOutputStream(file);
-            int bytes = IOUtils.copy(userFile, fos);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.generationcp.commons.service.FileService#saveTemporaryFile(java.io.InputStream)
+	 */
+	@Override
+	public String saveTemporaryFile(InputStream userFile) throws IOException {
+		String tempFileName = RandomStringUtils.randomAlphanumeric(15);
 
-        } finally {
-            IOUtils.closeQuietly(fos);
-        }
+		File file = null;
+		FileOutputStream fos = null;
+		try {
+			file = new File(this.getFilePath(tempFileName));
+			file.createNewFile();
+			fos = new FileOutputStream(file);
+			int bytes = IOUtils.copy(userFile, fos);
 
-        return tempFileName;
+		} finally {
+			IOUtils.closeQuietly(fos);
+		}
 
-    }
+		return tempFileName;
 
-    /**
-     * Gets the file path.
-     *
-     * @param tempFilename the temp filename
-     * @return the file path
-     */
-    @Override
-    public String getFilePath(String tempFilename) {
-        return uploadDirectory + File.separator + tempFilename;
-    }
+	}
 
-    /* (non-Javadoc)
-     * @see org.generationcp.commons.service.FileService#retrieveFileFromFileName(java.lang.String)
-     */
-    @Override
-    public File retrieveFileFromFileName(String currentFilename) throws IOException {
-        return new File(getFilePath(currentFilename));
+	/**
+	 * Gets the file path.
+	 *
+	 * @param tempFilename the temp filename
+	 * @return the file path
+	 */
+	@Override
+	public String getFilePath(String tempFilename) {
+		return this.uploadDirectory + File.separator + tempFilename;
+	}
 
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.generationcp.commons.service.FileService#retrieveFileFromFileName(java.lang.String)
+	 */
+	@Override
+	public File retrieveFileFromFileName(String currentFilename) throws IOException {
+		return new File(this.getFilePath(currentFilename));
 
-    public void init() {
-        File file = new File(uploadDirectory);
+	}
 
-        if (!file.exists()) {
-            throw new BeanInitializationException(
-                    "Specified upload directory does not exist : "
-                            + uploadDirectory);
-        }
-    }
-	
-	 /* (non-Javadoc)
- 	 * @see org.generationcp.commons.service.FileService#retrieveWorkbook(java.lang.String)
- 	 */
- 	@Override
-    public Workbook retrieveWorkbook(String currentFilename)
-			throws IOException, InvalidFormatException {
-        File workbookFile = new File(getFilePath(currentFilename));
+	public void init() {
+		File file = new File(this.uploadDirectory);
+
+		if (!file.exists()) {
+			throw new BeanInitializationException("Specified upload directory does not exist : " + this.uploadDirectory);
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.generationcp.commons.service.FileService#retrieveWorkbook(java.lang.String)
+	 */
+	@Override
+	public Workbook retrieveWorkbook(String currentFilename) throws IOException, InvalidFormatException {
+		File workbookFile = new File(this.getFilePath(currentFilename));
 
 		return WorkbookFactory.create(workbookFile);
 
-    }
+	}
 
 }

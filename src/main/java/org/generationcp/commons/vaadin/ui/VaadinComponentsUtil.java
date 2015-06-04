@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.vaadin.ui;
 
 import java.util.ArrayDeque;
@@ -11,43 +12,40 @@ import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.Table;
 
 public class VaadinComponentsUtil {
-	
+
 	public static enum VaadinComponentFieldType {
-		CAPTION, TABLE_CONTENT 
-	}
-	
-	private VaadinComponentsUtil() {
-		//private constructor for utility class
+		CAPTION, TABLE_CONTENT
 	}
 
-	public static boolean findComponent(Component root, VaadinComponentFieldType type, 
-			String text, String propertyName) {
+	private VaadinComponentsUtil() {
+		// private constructor for utility class
+	}
+
+	public static boolean findComponent(Component root, VaadinComponentFieldType type, String text, String propertyName) {
 		Deque<Component> stack = new ArrayDeque<Component>();
 		stack.push(root);
 		while (!stack.isEmpty()) {
-		    Component c = stack.pop();
-		    if (c instanceof ComponentContainer) {
-		    	pushComponents(stack,((ComponentContainer) c) 
-		                .getComponentIterator());
-		    } else if(c instanceof Table && type == VaadinComponentFieldType.TABLE_CONTENT
-		    		&& findItemInTable((Table)c,text,propertyName)) {
-		    	return true;
-		    } else if (type == VaadinComponentFieldType.CAPTION && findCaption(c,text)) {
-		    	return true;
-		    }
+			Component c = stack.pop();
+			if (c instanceof ComponentContainer) {
+				VaadinComponentsUtil.pushComponents(stack, ((ComponentContainer) c).getComponentIterator());
+			} else if (c instanceof Table && type == VaadinComponentFieldType.TABLE_CONTENT
+					&& VaadinComponentsUtil.findItemInTable((Table) c, text, propertyName)) {
+				return true;
+			} else if (type == VaadinComponentFieldType.CAPTION && VaadinComponentsUtil.findCaption(c, text)) {
+				return true;
+			}
 		}
 		return false;
 	}
-	
-	private static void pushComponents(Deque<Component> stack,
-			Iterator<Component> componentIterator) {
+
+	private static void pushComponents(Deque<Component> stack, Iterator<Component> componentIterator) {
 		for (Iterator<Component> i = componentIterator; i.hasNext();) {
-            stack.add(i.next());
-        }
+			stack.add(i.next());
+		}
 	}
 
 	private static boolean findCaption(Component c, String text) {
-		if(c.getCaption() != null && c.getCaption().equals(text)) {
+		if (c.getCaption() != null && c.getCaption().equals(text)) {
 			return true;
 		}
 		return false;
@@ -55,15 +53,14 @@ public class VaadinComponentsUtil {
 
 	@SuppressWarnings("rawtypes")
 	private static boolean findItemInTable(Table table, String text, String propertyName) {
-		if(table.getContainerDataSource()==null ||
-    			table.getItemIds()==null) {
+		if (table.getContainerDataSource() == null || table.getItemIds() == null) {
 			return false;
 		}
 		for (Object itemId : table.getItemIds()) {
-			if(table.getItem(itemId) instanceof BeanItem) {
-				BeanItem beanItem = (BeanItem)table.getItem(itemId);
+			if (table.getItem(itemId) instanceof BeanItem) {
+				BeanItem beanItem = (BeanItem) table.getItem(itemId);
 				Property property = beanItem.getItemProperty(propertyName);
-				if(property!=null && text.equals(property.toString())) {
+				if (property != null && text.equals(property.toString())) {
 					return true;
 				}
 			}

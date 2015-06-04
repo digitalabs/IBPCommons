@@ -1,4 +1,10 @@
+
 package org.generationcp.commons.spring.util;
+
+import java.util.Date;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.commons.context.ContextInfo;
@@ -11,16 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.WebUtils;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-
 /**
- * This is the spring bean managed version of some of the methods used in
- * the org.generationcp.commons.util.ContextUtil class
- * User: Daniel Villafuerte
- * Date: 1/20/2015
- * Time: 5:14 PM
+ * This is the spring bean managed version of some of the methods used in the org.generationcp.commons.util.ContextUtil class User: Daniel
+ * Villafuerte Date: 1/20/2015 Time: 5:14 PM
  */
 public class ContextUtil {
 
@@ -37,64 +36,51 @@ public class ContextUtil {
 
 	public String getCurrentProgramUUID() {
 		try {
-			return workbenchDataManager
-					.getProjectById(getContextInfoFromSession().getSelectedProjectId())
-					.getUniqueID();
+			return this.workbenchDataManager.getProjectById(this.getContextInfoFromSession().getSelectedProjectId()).getUniqueID();
 		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
+			ContextUtil.LOG.error(e.getMessage(), e);
 		}
 
 		return "";
 	}
 
 	public ContextInfo getContextInfoFromSession() {
-		return (ContextInfo) WebUtils
-				.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		return (ContextInfo) WebUtils.getSessionAttribute(this.request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
 	}
 
 	public ContextInfo getContextInfoFromRequest() {
-		return org.generationcp.commons.util.ContextUtil.getContextInfoFromRequest(request);
+		return org.generationcp.commons.util.ContextUtil.getContextInfoFromRequest(this.request);
 	}
 
 	public Project getProjectInContext() throws MiddlewareQueryException {
-		return org.generationcp.commons.util.ContextUtil
-				.getProjectInContext(workbenchDataManager, request);
+		return org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
 	}
 
 	public int getCurrentUserLocalId() throws MiddlewareQueryException {
 		ContextInfo contextInfo = this.getContextInfoFromSession();
-		return workbenchDataManager.getLocalIbdbUserId(contextInfo.getloggedInUserId(),
-				contextInfo.getSelectedProjectId());
+		return this.workbenchDataManager.getLocalIbdbUserId(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
 	}
 
 	public int getCurrentWorkbenchUserId() throws MiddlewareQueryException {
-		return org.generationcp.commons.util.ContextUtil
-				.getCurrentWorkbenchUserId(workbenchDataManager, request);
+		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
 	}
 
 	public User getCurrentWorkbenchUser() throws MiddlewareQueryException {
-		return org.generationcp.commons.util.ContextUtil
-				.getCurrentWorkbenchUser(workbenchDataManager, request);
+		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUser(this.workbenchDataManager, this.request);
 	}
 
 	public String getCurrentWorkbenchUsername() throws MiddlewareQueryException {
-		return org.generationcp.commons.util.ContextUtil
-				.getCurrentWorkbenchUsername(workbenchDataManager, request);
+		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUsername(this.workbenchDataManager, this.request);
 	}
 
-	public void logProgramActivity(String activityTitle, String activityDescription)
-			throws MiddlewareQueryException {
+	public void logProgramActivity(String activityTitle, String activityDescription) throws MiddlewareQueryException {
 		Project currentProject = this.getProjectInContext();
 		User currentUser = this.getCurrentWorkbenchUser();
 
-		ProjectActivity projAct = new ProjectActivity(
-				currentProject.getProjectId().intValue(),
-				currentProject,
-				activityTitle,
-				activityDescription,
-				currentUser,
-				new Date());
+		ProjectActivity projAct =
+				new ProjectActivity(currentProject.getProjectId().intValue(), currentProject, activityTitle, activityDescription,
+						currentUser, new Date());
 
-		workbenchDataManager.addProjectActivity(projAct);
+		this.workbenchDataManager.addProjectActivity(projAct);
 	}
 }

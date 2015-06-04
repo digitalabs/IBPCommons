@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.security;
 
 import java.util.ArrayList;
@@ -20,55 +21,61 @@ import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 
-
 public class BMSPreAuthenticatedUsersRolePopulatorTest {
-	
+
 	private static final String TEST_USER = "testUser";
-	private static final String AUTH_TOKEN = Base64.encodeBase64URLSafeString(TEST_USER.getBytes());
+	private static final String AUTH_TOKEN = Base64.encodeBase64URLSafeString(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER
+			.getBytes());
 	private WorkbenchDataManager workbenchDataManager;
 	private BMSPreAuthenticatedUsersRolePopulator rolesPopulator;
-	
+
 	private HttpServletRequest request;
-	
+
 	@Before
 	public void setUpPerTest() {
-		workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
-		rolesPopulator = new BMSPreAuthenticatedUsersRolePopulator();
-		rolesPopulator.setWorkbenchDataManager(workbenchDataManager);
-		request = Mockito.mock(HttpServletRequest.class);
+		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		this.rolesPopulator = new BMSPreAuthenticatedUsersRolePopulator();
+		this.rolesPopulator.setWorkbenchDataManager(this.workbenchDataManager);
+		this.request = Mockito.mock(HttpServletRequest.class);
 	}
-	
+
 	@Test
 	public void testBuildDetails() {
 		try {
-			Mockito.when(request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(AUTH_TOKEN);
-			rolesPopulator.buildDetails(request);
-			
+			Mockito.when(this.request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(
+					BMSPreAuthenticatedUsersRolePopulatorTest.AUTH_TOKEN);
+			this.rolesPopulator.buildDetails(this.request);
+
 			List<User> matchingUsers = new ArrayList<User>();
 			User testUserWorkbench = new User();
-			testUserWorkbench.setName(TEST_USER);
+			testUserWorkbench.setName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER);
 			testUserWorkbench.setPassword("password");
 			UserRole testUserRole = new UserRole(testUserWorkbench, "ADMIN");
 			testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 			matchingUsers.add(testUserWorkbench);
 
-			Mockito.when(workbenchDataManager.getUserByName(TEST_USER, 0, 1, Operation.EQUAL)).thenReturn(matchingUsers);
-			
+			Mockito.when(
+					this.workbenchDataManager.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
+					.thenReturn(matchingUsers);
+
 			PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails roleDetails =
-					(PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) rolesPopulator.buildDetails(request);
+					(PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) this.rolesPopulator.buildDetails(this.request);
 			Assert.assertEquals(testUserWorkbench.getRoles().size(), roleDetails.getGrantedAuthorities().size());
-			Assert.assertEquals(SecurityUtil.ROLE_PREFIX + testUserRole.getRole(), roleDetails.getGrantedAuthorities().get(0).getAuthority());
-			
+			Assert.assertEquals(SecurityUtil.ROLE_PREFIX + testUserRole.getRole(), roleDetails.getGrantedAuthorities().get(0)
+					.getAuthority());
+
 		} catch (MiddlewareQueryException e) {
 			Assert.fail("Unexpected exception: " + e.getMessage());
 		}
 	}
-	
+
 	@Test(expected = AuthenticationServiceException.class)
 	public void testLoadUserDataAccessError() throws MiddlewareQueryException {
-		Mockito.when(request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(AUTH_TOKEN);
-		Mockito.when(workbenchDataManager.getUserByName(TEST_USER, 0, 1, Operation.EQUAL)).thenThrow(new MiddlewareQueryException("Boom!"));
-		rolesPopulator.buildDetails(request);
+		Mockito.when(this.request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(
+				BMSPreAuthenticatedUsersRolePopulatorTest.AUTH_TOKEN);
+		Mockito.when(this.workbenchDataManager.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
+				.thenThrow(new MiddlewareQueryException("Boom!"));
+		this.rolesPopulator.buildDetails(this.request);
 	}
 
 }

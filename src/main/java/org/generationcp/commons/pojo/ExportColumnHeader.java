@@ -1,15 +1,16 @@
+
 package org.generationcp.commons.pojo;
 
 public class ExportColumnHeader {
 
 	public static Integer GREEN = 1;
 	public static Integer BLUE = 2;
-	
+
 	private Integer id;
 	private String name;
 	private boolean isDisplay;
 	private Integer headerColor;
-	
+
 	public ExportColumnHeader() {
 		super();
 	}
@@ -20,7 +21,7 @@ public class ExportColumnHeader {
 		this.name = name;
 		this.isDisplay = isDisplay;
 	}
-	
+
 	public ExportColumnHeader(Integer id, String name, boolean isDisplay, Integer headerColor) {
 		super();
 		this.id = id;
@@ -28,7 +29,7 @@ public class ExportColumnHeader {
 		this.isDisplay = isDisplay;
 		this.headerColor = headerColor;
 	}
-	
+
 	public Integer getId() {
 		return this.id;
 	}
@@ -46,7 +47,7 @@ public class ExportColumnHeader {
 	}
 
 	public boolean isDisplay() {
-		return isDisplay;
+		return this.isDisplay;
 	}
 
 	public void setDisplay(boolean isDisplay) {
@@ -54,12 +55,11 @@ public class ExportColumnHeader {
 	}
 
 	public Integer getHeaderColor() {
-		return headerColor;
+		return this.headerColor;
 	}
 
 	public void setHeaderColor(Integer headerColor) {
 		this.headerColor = headerColor;
 	}
-	
-	
+
 }

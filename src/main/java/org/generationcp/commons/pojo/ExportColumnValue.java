@@ -1,14 +1,16 @@
+
 package org.generationcp.commons.pojo;
 
 public class ExportColumnValue {
+
 	private Integer id;
 	private String value;
-	
+
 	public ExportColumnValue() {
 		super();
-	
+
 	}
-	
+
 	public ExportColumnValue(Integer id, String value) {
 		super();
 		this.id = id;
@@ -16,7 +18,7 @@ public class ExportColumnValue {
 	}
 
 	public Integer getId() {
-		return id;
+		return this.id;
 	}
 
 	public void setId(Integer id) {
@@ -24,12 +26,11 @@ public class ExportColumnValue {
 	}
 
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	
+
 }

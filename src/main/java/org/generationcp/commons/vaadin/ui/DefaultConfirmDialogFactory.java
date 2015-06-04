@@ -1,26 +1,32 @@
 /*******************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
- * This software is licensed for use under the terms of the GNU General Public
- * License (http://bit.ly/8Ztv8M) and the provisions of Part F of the Generation
- * Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
+ *
+ *
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
+ * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
+ *
  *******************************************************************************/
-package org.generationcp.commons.vaadin.ui;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Window.CloseEvent;
-import com.vaadin.ui.themes.Reindeer;
+package org.generationcp.commons.vaadin.ui;
 
 import java.lang.reflect.Method;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import com.vaadin.event.ShortcutAction.KeyCode;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import com.vaadin.ui.Window.CloseEvent;
+import com.vaadin.ui.themes.Reindeer;
 
 /**
  * This is the default implementation for confirmation dialog factory.
@@ -32,218 +38,213 @@ import java.util.Locale;
  * @author Sami Ekblad
  *
  */
-public class DefaultConfirmDialogFactory implements ConfirmDialog.Factory  {
-    /** Generated serial UID. */
-    private static final long serialVersionUID = -5412321247707480466L;
+public class DefaultConfirmDialogFactory implements ConfirmDialog.Factory {
 
-    // System wide defaults
-    protected static final String DEFAULT_CAPTION = "Confirm";
-    protected static final String DEFAULT_MESSAGE = "Are You sure?";
-    protected static final String DEFAULT_OK_CAPTION = "Ok";
-    protected static final String DEFAULT_CANCEL_CAPTION = "Cancel";
+	/** Generated serial UID. */
+	private static final long serialVersionUID = -5412321247707480466L;
 
-    // System wide defaults
-    private static final double MIN_WIDTH = 20d;
-    private static final double MAX_WIDTH = 40d;
-    private static final double MIN_HEIGHT = 1d;
-    private static final double MAX_HEIGHT = 30d;
-    private static final double BUTTON_HEIGHT = 2.5;
+	// System wide defaults
+	protected static final String DEFAULT_CAPTION = "Confirm";
+	protected static final String DEFAULT_MESSAGE = "Are You sure?";
+	protected static final String DEFAULT_OK_CAPTION = "Ok";
+	protected static final String DEFAULT_CANCEL_CAPTION = "Cancel";
 
-    public ConfirmDialog create(final String caption, final String message,
-            final String okCaption, final String cancelCaption) {
+	// System wide defaults
+	private static final double MIN_WIDTH = 20d;
+	private static final double MAX_WIDTH = 40d;
+	private static final double MIN_HEIGHT = 1d;
+	private static final double MAX_HEIGHT = 30d;
+	private static final double BUTTON_HEIGHT = 2.5;
 
-        // Create a confirm dialog
-        final ConfirmDialog confirm = new ConfirmDialog();
-        confirm.setCaption(caption != null ? caption : DEFAULT_CAPTION);
+	@Override
+	public ConfirmDialog create(final String caption, final String message, final String okCaption, final String cancelCaption) {
 
-        // Close listener implementation
-        confirm.addListener(new Window.CloseListener() {
+		// Create a confirm dialog
+		final ConfirmDialog confirm = new ConfirmDialog();
+		confirm.setCaption(caption != null ? caption : DefaultConfirmDialogFactory.DEFAULT_CAPTION);
 
-            private static final long serialVersionUID = 1971800928047045825L;
+		// Close listener implementation
+		confirm.addListener(new Window.CloseListener() {
 
-            public void windowClose(CloseEvent ce) {
+			private static final long serialVersionUID = 1971800928047045825L;
 
-                // Only process if still enabled
-                if (confirm.isEnabled()) {
-                    confirm.setEnabled(false); // avoid double processing
-                    confirm.setConfirmed(false);
-                    if (confirm.getListener() != null) {
-                        confirm.getListener().onClose(confirm);
-                    }
-                }
-            }
-        });
+			@Override
+			public void windowClose(CloseEvent ce) {
 
-        // Create content
-        VerticalLayout c = (VerticalLayout) confirm.getContent();
-        c.setSizeFull();
-        c.setSpacing(true);
+				// Only process if still enabled
+				if (confirm.isEnabled()) {
+					confirm.setEnabled(false); // avoid double processing
+					confirm.setConfirmed(false);
+					if (confirm.getListener() != null) {
+						confirm.getListener().onClose(confirm);
+					}
+				}
+			}
+		});
 
-        // Panel for scrolling lengthty messages.
-        Panel scroll = new Panel(new VerticalLayout());
-        scroll.setScrollable(true);
-        c.addComponent(scroll);
-        scroll.setWidth("100%");
-        scroll.setHeight("100%");
-        scroll.setStyleName(Reindeer.PANEL_LIGHT);
-        c.setExpandRatio(scroll, 1f);
+		// Create content
+		VerticalLayout c = (VerticalLayout) confirm.getContent();
+		c.setSizeFull();
+		c.setSpacing(true);
 
-        // Always HTML, but escape
-        Label text = new Label("", Label.CONTENT_RAW);
-        scroll.addComponent(text);
-        confirm.setMessageLabel(text);
-        confirm.setMessage(message);
+		// Panel for scrolling lengthty messages.
+		Panel scroll = new Panel(new VerticalLayout());
+		scroll.setScrollable(true);
+		c.addComponent(scroll);
+		scroll.setWidth("100%");
+		scroll.setHeight("100%");
+		scroll.setStyleName(Reindeer.PANEL_LIGHT);
+		c.setExpandRatio(scroll, 1f);
 
-        HorizontalLayout buttons = new HorizontalLayout();
-        c.addComponent(buttons);
-        c.setComponentAlignment(buttons,Alignment.MIDDLE_CENTER);
-        buttons.setSpacing(true);
+		// Always HTML, but escape
+		Label text = new Label("", Label.CONTENT_RAW);
+		scroll.addComponent(text);
+		confirm.setMessageLabel(text);
+		confirm.setMessage(message);
 
-        buttons.setHeight(format(BUTTON_HEIGHT) + "em");
+		HorizontalLayout buttons = new HorizontalLayout();
+		c.addComponent(buttons);
+		c.setComponentAlignment(buttons, Alignment.MIDDLE_CENTER);
+		buttons.setSpacing(true);
 
-        Button cancel = null;
-        
-        if (cancelCaption != null) {
-        	cancel = new Button(cancelCaption != null ? cancelCaption
-                    : DEFAULT_CANCEL_CAPTION);
-            cancel.setData(false);
-            cancel.setClickShortcut(KeyCode.ESCAPE, null);
-            buttons.addComponent(cancel);
-            buttons.setComponentAlignment(cancel, Alignment.MIDDLE_RIGHT);
-            confirm.setCancelButton(cancel);
-        }
-        
-        final Button ok = new Button(okCaption != null ? okCaption
-                : DEFAULT_OK_CAPTION);
-        ok.setData(true);
-        ok.setClickShortcut(KeyCode.ENTER, null);
-        ok.setStyleName(Reindeer.BUTTON_DEFAULT);
-        ok.focus();
-        buttons.addComponent(ok);
-        buttons.setComponentAlignment(ok, Alignment.MIDDLE_RIGHT);
-        confirm.setOkButton(ok);
+		buttons.setHeight(this.format(DefaultConfirmDialogFactory.BUTTON_HEIGHT) + "em");
 
-        // layout ok and cancel button
+		Button cancel = null;
 
+		if (cancelCaption != null) {
+			cancel = new Button(cancelCaption != null ? cancelCaption : DefaultConfirmDialogFactory.DEFAULT_CANCEL_CAPTION);
+			cancel.setData(false);
+			cancel.setClickShortcut(KeyCode.ESCAPE, null);
+			buttons.addComponent(cancel);
+			buttons.setComponentAlignment(cancel, Alignment.MIDDLE_RIGHT);
+			confirm.setCancelButton(cancel);
+		}
 
-        // Create a listener for buttons
-        Button.ClickListener cb = new Button.ClickListener() {
-            private static final long serialVersionUID = 3525060915814334881L;
+		final Button ok = new Button(okCaption != null ? okCaption : DefaultConfirmDialogFactory.DEFAULT_OK_CAPTION);
+		ok.setData(true);
+		ok.setClickShortcut(KeyCode.ENTER, null);
+		ok.setStyleName(Reindeer.BUTTON_DEFAULT);
+		ok.focus();
+		buttons.addComponent(ok);
+		buttons.setComponentAlignment(ok, Alignment.MIDDLE_RIGHT);
+		confirm.setOkButton(ok);
 
-            public void buttonClick(ClickEvent event) {
-                // Copy the button date to window for passing through either
-                // "OK" or "CANCEL". Only process id still enabled.
-                if (confirm.isEnabled()) {
-                    confirm.setEnabled(false); // Avoid double processing
+		// layout ok and cancel button
 
-                    confirm.setConfirmed(event.getButton() == ok);
+		// Create a listener for buttons
+		Button.ClickListener cb = new Button.ClickListener() {
 
-                    // We need to cast this way, because of the backward
-                    // compatibility issue in 6.4 series.
-                    Component parent = confirm.getParent();
-                    if (parent instanceof Window) {
-                        try {
-                            Method m = Window.class.getDeclaredMethod(
-                                    "removeWindow", Window.class);
-                            m.invoke(parent, confirm);
-                        } catch (Exception e) {
-                            throw new RuntimeException("Failed to remove confirmation dialog from the parent window.", e);
-                        }
-                    }
+			private static final long serialVersionUID = 3525060915814334881L;
 
-                    // This has to be invoked as the window.close
-                    // event is not fired when removed.
-                    if (confirm.getListener() != null) {
-                        confirm.getListener().onClose(confirm);
-                    }
-                }
+			@Override
+			public void buttonClick(ClickEvent event) {
+				// Copy the button date to window for passing through either
+				// "OK" or "CANCEL". Only process id still enabled.
+				if (confirm.isEnabled()) {
+					confirm.setEnabled(false); // Avoid double processing
 
-            }
+					confirm.setConfirmed(event.getButton() == ok);
 
-        };
-        
-        if (cancel != null) {
-        	cancel.addListener(cb);
-        }
-        ok.addListener(cb);
+					// We need to cast this way, because of the backward
+					// compatibility issue in 6.4 series.
+					Component parent = confirm.getParent();
+					if (parent instanceof Window) {
+						try {
+							Method m = Window.class.getDeclaredMethod("removeWindow", Window.class);
+							m.invoke(parent, confirm);
+						} catch (Exception e) {
+							throw new RuntimeException("Failed to remove confirmation dialog from the parent window.", e);
+						}
+					}
 
-        // Approximate the size of the dialog
-        double[] dim = getDialogDimensions(message,
-                ConfirmDialog.CONTENT_TEXT_WITH_NEWLINES);
-        confirm.setWidth(format(dim[0]) + "em");
-        confirm.setHeight(format(dim[1]) + "em");
-        confirm.setResizable(false);
+					// This has to be invoked as the window.close
+					// event is not fired when removed.
+					if (confirm.getListener() != null) {
+						confirm.getListener().onClose(confirm);
+					}
+				}
 
-        return confirm;
-    }
+			}
 
-    /**
-     * Approximates the dialog dimensions based on its message length.
-     *
-     * @param message
-     *            Message string
-     * @return
-     */
-    protected double[] getDialogDimensions(String message, int style) {
+		};
 
-        // Based on Reindeer style:
-        double chrW = 0.5d;
-        double chrH = 1.5d;
-        double length = chrW * message.length();
-        double rows = Math.ceil(length / MAX_WIDTH);
+		if (cancel != null) {
+			cancel.addListener(cb);
+		}
+		ok.addListener(cb);
 
-        // Estimate extra lines
-        if (style == ConfirmDialog.CONTENT_TEXT_WITH_NEWLINES) {
-            rows += count("\n", message);
-        }        
+		// Approximate the size of the dialog
+		double[] dim = this.getDialogDimensions(message, ConfirmDialog.CONTENT_TEXT_WITH_NEWLINES);
+		confirm.setWidth(this.format(dim[0]) + "em");
+		confirm.setHeight(this.format(dim[1]) + "em");
+		confirm.setResizable(false);
 
-        // Obey maximum size
-        double width = Math.min(MAX_WIDTH, length);
-        double height = Math.ceil(Math.min(MAX_HEIGHT, rows * chrH));
+		return confirm;
+	}
 
-        // Obey the minimum size
-        width = Math.max(width, MIN_WIDTH);
-        height = Math.max(height, MIN_HEIGHT);
+	/**
+	 * Approximates the dialog dimensions based on its message length.
+	 *
+	 * @param message Message string
+	 * @return
+	 */
+	protected double[] getDialogDimensions(String message, int style) {
 
-        // Based on Reindeer style:
-        double btnHeight = 2.5d;
-        double vmargin = 8d;
-        double hmargin = 2d;
+		// Based on Reindeer style:
+		double chrW = 0.5d;
+		double chrH = 1.5d;
+		double length = chrW * message.length();
+		double rows = Math.ceil(length / DefaultConfirmDialogFactory.MAX_WIDTH);
 
-        double[] res = new double[] { width + hmargin,
-                height + btnHeight + vmargin };
+		// Estimate extra lines
+		if (style == ConfirmDialog.CONTENT_TEXT_WITH_NEWLINES) {
+			rows += DefaultConfirmDialogFactory.count("\n", message);
+		}
 
-        return res;
-    }
+		// Obey maximum size
+		double width = Math.min(DefaultConfirmDialogFactory.MAX_WIDTH, length);
+		double height = Math.ceil(Math.min(DefaultConfirmDialogFactory.MAX_HEIGHT, rows * chrH));
 
-    /**
-     * Count the number of needles within a haystack.
-     *
-     * @param needle
-     *            The string to search for.
-     * @param haystack
-     *            The string to process.
-     * @return
-     */
-    private static int count(final String needle, final String haystack) {
-        int count = 0;
-        int pos = -1;
-        while ((pos = haystack.indexOf(needle, pos + 1)) >= 0) {
-            count++;
-        }
-        return count;
-    }
+		// Obey the minimum size
+		width = Math.max(width, DefaultConfirmDialogFactory.MIN_WIDTH);
+		height = Math.max(height, DefaultConfirmDialogFactory.MIN_HEIGHT);
 
-    /**
-     * Format a double single fraction digit.
-     *
-     * @param n
-     * @return
-     */
-    private String format(double n) {
-        NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
-        nf.setMaximumFractionDigits(1);
-        nf.setGroupingUsed(false);
-        return nf.format(n);
-    }
+		// Based on Reindeer style:
+		double btnHeight = 2.5d;
+		double vmargin = 8d;
+		double hmargin = 2d;
+
+		double[] res = new double[] {width + hmargin, height + btnHeight + vmargin};
+
+		return res;
+	}
+
+	/**
+	 * Count the number of needles within a haystack.
+	 *
+	 * @param needle The string to search for.
+	 * @param haystack The string to process.
+	 * @return
+	 */
+	private static int count(final String needle, final String haystack) {
+		int count = 0;
+		int pos = -1;
+		while ((pos = haystack.indexOf(needle, pos + 1)) >= 0) {
+			count++;
+		}
+		return count;
+	}
+
+	/**
+	 * Format a double single fraction digit.
+	 *
+	 * @param n
+	 * @return
+	 */
+	private String format(double n) {
+		NumberFormat nf = NumberFormat.getNumberInstance(Locale.ENGLISH);
+		nf.setMaximumFractionDigits(1);
+		nf.setGroupingUsed(false);
+		return nf.format(n);
+	}
 }

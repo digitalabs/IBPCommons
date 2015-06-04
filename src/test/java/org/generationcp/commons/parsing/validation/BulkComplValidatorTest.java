@@ -1,72 +1,67 @@
-package org.generationcp.commons.parsing.validation;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+package org.generationcp.commons.parsing.validation;
 
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class BulkComplValidatorTest {
 
-	private BulkComplValidator validator = new BulkComplValidator(7,6);
-	
+	private final BulkComplValidator validator = new BulkComplValidator(7, 6);
+
 	@Test
 	public void testIsParsedValueValid_NullValue() {
-		assertTrue(validator.isParsedValueValid(null, 
-				createAdditionalParams(null)));
+		Assert.assertTrue(this.validator.isParsedValueValid(null, this.createAdditionalParams(null)));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_EmptyValue() {
-		assertTrue(validator.isParsedValueValid("", 
-				createAdditionalParams(null)));
+		Assert.assertTrue(this.validator.isParsedValueValid("", this.createAdditionalParams(null)));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_InvalidValue() {
-		assertFalse(validator.isParsedValueValid("wrong", 
-				createAdditionalParams(null)));
+		Assert.assertFalse(this.validator.isParsedValueValid("wrong", this.createAdditionalParams(null)));
 	}
-	
-	private Map<String,Object> createAdditionalParams(String bulkWithValue) {
+
+	private Map<String, Object> createAdditionalParams(String bulkWithValue) {
 		return BulkComplValidator.createAdditionalParams(bulkWithValue);
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_InvalidValue() {
-		assertFalse(validator.isParsedValueValid("any", "SID1-2"));
+		Assert.assertFalse(this.validator.isParsedValueValid("any", "SID1-2"));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_ValidValue() {
-		assertTrue(validator.isParsedValueValid("Y", "SID1-2"));
+		Assert.assertTrue(this.validator.isParsedValueValid("Y", "SID1-2"));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_NullValue() {
-		assertFalse(validator.isParsedValueValid(null, "SID1-2"));
+		Assert.assertFalse(this.validator.isParsedValueValid(null, "SID1-2"));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_EmptyValue() {
-		assertFalse(validator.isParsedValueValid("", "SID1-2"));
+		Assert.assertFalse(this.validator.isParsedValueValid("", "SID1-2"));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_EmptyBulkWithValue_NullValue() {
-		assertTrue(validator.isParsedValueValid(null, ""));
+		Assert.assertTrue(this.validator.isParsedValueValid(null, ""));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_EmptyBulkWithValue_EmptyValue() {
-		assertTrue(validator.isParsedValueValid("", ""));
+		Assert.assertTrue(this.validator.isParsedValueValid("", ""));
 	}
-	
+
 	@Test
 	public void testIsParsedValueValid_EmptyBulkWithValue_WithBulkComplValue() {
-		assertFalse(validator.isParsedValueValid("Y", ""));
+		Assert.assertFalse(this.validator.isParsedValueValid("Y", ""));
 	}
-	
-	
+
 }

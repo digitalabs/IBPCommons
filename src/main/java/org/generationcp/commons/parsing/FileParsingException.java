@@ -1,13 +1,15 @@
+
 package org.generationcp.commons.parsing;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Daniel Villafuerte
- * Date: 2/25/2015
- * Time: 11:04 AM
+ * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 2/25/2015 Time: 11:04 AM
  */
-public class FileParsingException extends Exception{
+public class FileParsingException extends Exception {
 
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -1094438052651480748L;
 	private final String message;
 	private final int errorRowIndex;
 	private final String errorValue;
@@ -21,31 +23,31 @@ public class FileParsingException extends Exception{
 		this(message, 0, null, null);
 	}
 
-	public FileParsingException(String message, int errorRowIndex, String errorValue,
-			String errorColumn) {
+	public FileParsingException(String message, int errorRowIndex, String errorValue, String errorColumn) {
 		this.message = message;
 		this.errorRowIndex = errorRowIndex;
 		this.errorValue = errorValue;
 		this.errorColumn = errorColumn;
 	}
 
-	@Override public String getMessage() {
-		return message;
+	@Override
+	public String getMessage() {
+		return this.message;
 	}
 
 	public int getErrorRowIndex() {
-		return errorRowIndex;
+		return this.errorRowIndex;
 	}
 
 	public String getErrorValue() {
-		return errorValue;
+		return this.errorValue;
 	}
 
 	public String getErrorColumn() {
-		return errorColumn;
+		return this.errorColumn;
 	}
 
 	public Object[] getMessageParameters() {
-		return new Object[] {errorRowIndex, errorColumn, errorValue};
+		return new Object[] {this.errorRowIndex, this.errorColumn, this.errorValue};
 	}
 }
