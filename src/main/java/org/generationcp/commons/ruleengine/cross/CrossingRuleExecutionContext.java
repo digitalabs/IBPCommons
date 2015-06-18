@@ -1,12 +1,11 @@
 package org.generationcp.commons.ruleengine.cross;
 
-import org.generationcp.commons.parsing.pojo.ImportedCrosses;
+import java.util.List;
+
 import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
 import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
-
-import java.util.List;
 
 /**
  * Created by Daniel Villafuerte on 6/6/2015.
