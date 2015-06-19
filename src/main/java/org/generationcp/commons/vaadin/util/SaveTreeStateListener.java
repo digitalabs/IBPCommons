@@ -22,6 +22,7 @@ public class SaveTreeStateListener implements Window.CloseListener {
     private TreeTable sourceTable;
     private Tree sourceTree;
     private String treeType;
+    private String rootItem;
 
     @Autowired
     private ContextUtil contextUtil;
@@ -29,15 +30,17 @@ public class SaveTreeStateListener implements Window.CloseListener {
     @Autowired
     private UserProgramStateDataManager userStateManager;
 
-    public SaveTreeStateListener(TreeTable sourceTable, String treeType) {
+    public SaveTreeStateListener(TreeTable sourceTable, String treeType, String rootItem) {
         this.sourceTable = sourceTable;
         this.treeType = treeType;
+        this.rootItem = rootItem;
     }
 
 
-    public SaveTreeStateListener(Tree sourceTree, String treeType) {
+    public SaveTreeStateListener(Tree sourceTree, String treeType, String rootItem) {
         this.sourceTree = sourceTree;
         this.treeType = treeType;
+        this.rootItem = rootItem;
     }
 
     @Override
@@ -52,33 +55,58 @@ public class SaveTreeStateListener implements Window.CloseListener {
     }
 
     protected List<String> getExpandedIds() {
-        return sourceTable != null ? getTableItemIds() : sourceTree != null ? getTreeItemIds() : null;
+        return sourceTable != null ? getTableItemIds(new TreeTableFunction()) : sourceTree != null ? getTableItemIds(new TreeFunction()) : null;
     }
 
-    protected List<String> getTableItemIds()  {
-        Collection itemIds = sourceTable.getItemIds();
+    protected List<String> getTableItemIds(TableFunction function)  {
 
         List<String> returnVal = new ArrayList<>();
-        for (Object itemId : itemIds) {
-            if (!sourceTable.isCollapsed(itemId)) {
-                returnVal.add(itemId.toString());
-            }
-        }
 
+        recurseSaveOpenNodes(rootItem, function, returnVal);
         return returnVal;
     }
 
-    protected List<String> getTreeItemIds() {
-        Collection itemIds = sourceTree.getItemIds();
-
-        List<String> returnVal = new ArrayList<>();
-        for (Object itemId : itemIds) {
-            if (sourceTree.isExpanded(itemId)) {
-                returnVal.add(itemId.toString());
-            }
+    public void recurseSaveOpenNodes(Object itemId, TableFunction tableFunction, List<String> openNodes) {
+        if (!tableFunction.isExpanded(itemId)) {
+            return;
         }
 
-        return returnVal;
+        openNodes.add(itemId.toString());
+        Collection children = tableFunction.getChildren(itemId);
+        if (children != null && !children.isEmpty()) {
+            for (Object child : children) {
+                recurseSaveOpenNodes(child, tableFunction, openNodes);
+            }
+        }
+    }
+
+    public interface TableFunction  {
+        public boolean isExpanded(Object itemId);
+        public Collection getChildren(Object itemId);
+    }
+
+    class TreeTableFunction implements  TableFunction {
+        @Override
+        public Collection getChildren(Object itemId) {
+            return sourceTable.getChildren(itemId);
+        }
+
+        @Override
+        public boolean isExpanded(Object itemId) {
+            return !sourceTable.isCollapsed(itemId);
+        }
+    }
+
+    class TreeFunction implements TableFunction {
+        @Override
+        public Collection getChildren(Object itemId) {
+            return sourceTree.getChildren(itemId);
+        }
+
+        @Override
+        public boolean isExpanded(Object itemId) {
+            return sourceTree.isExpanded(itemId);
+        }
     }
 
 }
