@@ -40,6 +40,7 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -100,6 +101,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		List<ExperimentValues> experimentValuesList = new ArrayList<>();
 
 		try {
+			
+			DmsProject study = studyDataManager.getProject(studyId);
+			String programUUID = study.getProgramUUID();
+			
 			Map<String, String> nameToAliasMap = this.generateNameToAliasMap(studyId);
 			Map<String, ArrayList<String>> traitsAndMeans = new MeansCSV(file, nameToAliasMap).csvToMap();
 			Map<String, Integer> ndGeolocationIds = new HashMap<String, Integer>();
@@ -117,7 +122,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						meansDataSet = ds.get(0);
 					}
 					if (meansDataSet != null) {
-						meansDataSet = this.appendVariableTypesToExistingMeans(csvHeader, this.getPlotDataSet(studyId), meansDataSet);
+						meansDataSet = this.appendVariableTypesToExistingMeans(csvHeader, 
+								this.getPlotDataSet(studyId), meansDataSet, programUUID);
 						meansDataSetExists = true;
 					}
 				}
@@ -151,13 +157,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 								+ meansVariatesList.getVariates().getVariableTypes().size() + 1;
 
 				for (int i = 2; i < csvHeader.length; i++) {
-					this.createMeansVariableType(numOfFactorsAndVariates, csvHeader[i], allVariatesList, meansVariatesList);
+					this.createMeansVariableType(numOfFactorsAndVariates, csvHeader[i], 
+							allVariatesList, meansVariatesList, programUUID);
 				}
 
 				// please make sure that the study name is unique and does not exist in the db.
 				VariableList variableList = new VariableList();
-				Study study = this.studyDataManager.getStudy(studyId);
-				Variable variable = this.createVariable(TermId.DATASET_NAME.getId(), study.getName() + "-MEANS", 1);
+				Variable variable = this.createVariable(TermId.DATASET_NAME.getId(), study.getName() + "-MEANS", 1, programUUID);
 				meansVariatesList.makeRoom(1);
 				variable.getVariableType().setRank(1);
 				meansVariatesList.add(variable.getVariableType());
@@ -166,14 +172,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				this.updateVariableType(variable.getVariableType(), study.getName() + "-MEANS", "Dataset name (local)");
 				variableList.add(variable);
 
-				variable = this.createVariable(TermId.DATASET_TITLE.getId(), "My Dataset Description", 2);
+				variable = this.createVariable(TermId.DATASET_TITLE.getId(), "My Dataset Description", 2, programUUID);
 				meansVariatesList.makeRoom(1);
 				variable.getVariableType().setRank(1);
 				meansVariatesList.add(variable.getVariableType());
 				this.updateVariableType(variable.getVariableType(), "DATASET_TITLE", "Dataset title (local)");
 				variableList.add(variable);
 
-				variable = this.createVariable(TermId.DATASET_TYPE.getId(), "10070", 3);
+				variable = this.createVariable(TermId.DATASET_TYPE.getId(), "10070", 3, programUUID);
 				meansVariatesList.makeRoom(1);
 				variable.getVariableType().setRank(1);
 				meansVariatesList.add(variable.getVariableType());
@@ -246,7 +252,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	public void importSummaryStatsData(File file, int studyId) throws BreedingViewImportException {
 
 		try {
-
+			
 			Map<String, String> nameToAliasMap = this.generateNameToAliasMap(studyId);
 			SummaryStatsCSV summaryStatsCSV = new SummaryStatsCSV(file, nameToAliasMap);
 
@@ -328,8 +334,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 								summaryStatVariableType.setStandardVariable(stdVariable);
 								BreedingViewImportServiceImpl.LOG.info("added standard variable "
 										+ summaryStatVariableType.getStandardVariable().getName());
-							} else {
-								StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId);
+							} else {							
+								StandardVariable stdVar = this.ontologyDataManager.
+										getStandardVariable(stdVariableId,
+												studyDataManager.getProject(studyId).getProgramUUID());
 								if (stdVar.getEnumerations() != null) {
 									for (Enumeration enumeration : stdVar.getEnumerations()) {
 										this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -494,7 +502,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.importOutlierData(file, studyId);
 	}
 
-	protected DataSet getPlotDataSet(int studyId) throws MiddlewareQueryException {
+	protected DataSet getPlotDataSet(int studyId) throws MiddlewareException {
 		if (this.plotDataSet != null && this.plotDataSet.getId() == studyId) {
 			return this.plotDataSet;
 		} else {
@@ -503,12 +511,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return this.plotDataSet;
 	}
 
-	protected DataSet getTrialDataSet(int studyId) throws MiddlewareQueryException {
+	protected DataSet getTrialDataSet(int studyId) throws MiddlewareException {
 		return DatasetUtil.getTrialDataSet(this.studyDataManager, studyId);
 	}
 
-	protected DataSet appendVariableTypesToExistingMeans(String[] csvHeader, DataSet inputDataSet, DataSet meansDataSet)
-			throws MiddlewareQueryException {
+	protected DataSet appendVariableTypesToExistingMeans(String[] csvHeader, 
+			DataSet inputDataSet, DataSet meansDataSet, String programUUID)
+			throws MiddlewareException {
 
 		List<Integer> numericTypes = new ArrayList<Integer>();
 		numericTypes.add(TermId.NUMERIC_VARIABLE.getId());
@@ -604,11 +613,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 							// rename
 							stdVariable.setName(stdVariable.getName() + "_1");
 						}
-						this.ontologyDataManager.addStandardVariable(stdVariable);
+						this.ontologyDataManager.addStandardVariable(stdVariable,programUUID);
 						meansVariableType.setStandardVariable(stdVariable);
 						standardVariableIdTracker.add(stdVariable.getId());
 					} else {
-						StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId);
+						StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId,programUUID);
 						if (stdVar.getEnumerations() != null) {
 							for (Enumeration enumeration : stdVar.getEnumerations()) {
 								this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -684,11 +693,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 							// rename
 							stdVariable.setName(stdVariable.getName() + "_1");
 						}
-						this.ontologyDataManager.addStandardVariable(stdVariable);
+						this.ontologyDataManager.addStandardVariable(stdVariable,programUUID);
 						unitErrorsVariableType.setStandardVariable(stdVariable);
 						standardVariableIdTracker.add(stdVariable.getId());
 					} else {
-						StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId);
+						StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId,programUUID);
 						if (stdVar.getEnumerations() != null) {
 							for (Enumeration enumeration : stdVar.getEnumerations()) {
 								this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -719,7 +728,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	protected void createMeansVariableType(Integer numOfFactorsAndVariates, String headerName, VariableTypeList allVariatesList,
-			VariableTypeList meansVariateList) throws MiddlewareQueryException {
+			VariableTypeList meansVariateList, String programUUID) throws MiddlewareException {
 
 		String traitName = "", localName = "", methodName = "";
 		Term isATerm = null;
@@ -794,11 +803,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						// rename
 				stdVariable.setName(stdVariable.getName() + "_1");
 					}
-					this.ontologyDataManager.addStandardVariable(stdVariable);
+					this.ontologyDataManager.addStandardVariable(stdVariable,programUUID);
 					newVariableType.setStandardVariable(stdVariable);
 
 				} else {
-					StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId);
+					StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(
+							stdVariableId, programUUID);
 			if (stdVar.getEnumerations() != null) {
 				for (Enumeration enumeration : stdVar.getEnumerations()) {
 					this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -815,8 +825,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	}
 
-	protected Variable createVariable(int termId, String value, int rank) throws MiddlewareQueryException {
-		StandardVariable stVar = this.ontologyDataManager.getStandardVariable(termId);
+	protected Variable createVariable(int termId, String value, int rank, String programUUID) throws MiddlewareException {
+		StandardVariable stVar = this.ontologyDataManager.getStandardVariable(termId,programUUID);
 
 		VariableType vtype = new VariableType();
 		vtype.setStandardVariable(stVar);
@@ -836,7 +846,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return new VariableTypeList();
 	}
 
-	protected Map<String, String> generateNameToAliasMap(int studyId) throws MiddlewareQueryException {
+	protected Map<String, String> generateNameToAliasMap(int studyId) throws MiddlewareException {
 
 		if (this.localNameToAliasMap != null) {
 			return this.localNameToAliasMap;
