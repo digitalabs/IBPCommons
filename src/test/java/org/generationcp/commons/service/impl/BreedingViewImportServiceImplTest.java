@@ -52,6 +52,8 @@ public class BreedingViewImportServiceImplTest {
 	private static final int DATASET_TITLE_STANDARD_VAR_ID = 8155;
 	private static final int DATASET_STANDARD_VAR_ID = 8160;
 	private static final int STUDY_STANDARD_VAR_ID = 8150;
+	
+	private static final String PROGRAM_UUID = "12345678";
 
 	private final String EMPTY_VALUE = "";
 
@@ -165,9 +167,9 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
 						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8150)).thenReturn(studyStdVar);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8155)).thenReturn(titleStdVar);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8160)).thenReturn(dataSetStdVar);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(8150,PROGRAM_UUID)).thenReturn(studyStdVar);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(8155,PROGRAM_UUID)).thenReturn(titleStdVar);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(8160,PROGRAM_UUID)).thenReturn(dataSetStdVar);
 
 		Mockito.when(this.stocks.findOnlyOneByLocalName(Matchers.anyString(), Matchers.anyString())).thenReturn(Mockito.mock(Stock.class));
 		Mockito.when(this.stocks.findOnlyOneByLocalName(Matchers.anyString(), Matchers.anyString()).getId()).thenReturn(1);
@@ -199,14 +201,14 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
-		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt())).thenReturn(Mockito.mock(StandardVariable.class));
+		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(),Matchers.anyString())).thenReturn(Mockito.mock(StandardVariable.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
 		Mockito.verify(this.service).appendVariableTypesToExistingMeans((String[]) Matchers.anyObject(), Matchers.any(DataSet.class),
-				Matchers.any(DataSet.class));
+				Matchers.any(DataSet.class),Matchers.anyString());
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
@@ -236,14 +238,14 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
 						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt())).thenReturn(Mockito.mock(StandardVariable.class));
+		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(),Matchers.anyString())).thenReturn(Mockito.mock(StandardVariable.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
 		Mockito.verify(this.service).appendVariableTypesToExistingMeans((String[]) Matchers.anyObject(), Matchers.any(DataSet.class),
-				Matchers.any(DataSet.class));
+				Matchers.any(DataSet.class),Matchers.anyString());
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
