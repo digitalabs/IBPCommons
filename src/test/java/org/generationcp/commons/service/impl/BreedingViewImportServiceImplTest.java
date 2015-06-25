@@ -391,7 +391,6 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setProperty(property);
 		variateStandardVar.setScale(scale);
 		variateStandardVar.setMethod(method);
-		variateStandardVar.setStoredIn(storedIn);
 		variateStandardVar.setDataType(dataType);
 		variateStandardVar.setName(localName);
 		variate.setLocalName(localName);
@@ -430,7 +429,6 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setProperty(property);
 		variateStandardVar.setScale(scale);
 		variateStandardVar.setMethod(method);
-		variateStandardVar.setStoredIn(storedIn);
 		variateStandardVar.setDataType(dataType);
 		variate.setLocalName(localName);
 		variate.setStandardVariable(variateStandardVar);
@@ -442,9 +440,7 @@ public class BreedingViewImportServiceImplTest {
 
 		VariableType factor = new VariableType();
 		StandardVariable factorStandardVar = new StandardVariable();
-		Term storedInLoc = new Term();
-		storedInLoc.setId(TermId.LOCATION_ID.getId());
-		factorStandardVar.setStoredIn(storedInLoc);
+		factorStandardVar.setId(TermId.LOCATION_ID.getId());
 		factorStandardVar.setPhenotypicType(PhenotypicType.TRIAL_ENVIRONMENT);
 		factorStandardVar.setName(localName);
 		factor.setLocalName(localName);
@@ -457,10 +453,7 @@ public class BreedingViewImportServiceImplTest {
 		VariableType factor = new VariableType();
 		StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setPhenotypicType(PhenotypicType.GERMPLASM);
-
-		Term storedIn = new Term();
-		storedIn.setId(TermId.GERMPLASM_ENTRY_STORAGE.getId());
-
+		
 		Term dataType = new Term();
 		dataType.setId(TermId.NUMERIC_DBID_VARIABLE.getId());
 
@@ -480,7 +473,6 @@ public class BreedingViewImportServiceImplTest {
 		factorStandardVar.setProperty(property);
 		factorStandardVar.setScale(scale);
 		factorStandardVar.setMethod(method);
-		factorStandardVar.setStoredIn(storedIn);
 		factorStandardVar.setDataType(dataType);
 		factor.setLocalName(localName);
 		factor.setStandardVariable(factorStandardVar);
