@@ -1054,7 +1054,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		public String getTrialHeader() throws IOException {
 
-			return this.nameToAliasMapping.get(this.getHeader().get(0));
+			String actualLocalName = this.nameToAliasMapping.get(this.getHeader().get(0));
+			if (actualLocalName == null){
+				actualLocalName = this.getHeader().get(0);
+			}
+			return actualLocalName;
 		}
 
 		public Map<String, Map<String, ArrayList<String>>> getData() throws IOException {
