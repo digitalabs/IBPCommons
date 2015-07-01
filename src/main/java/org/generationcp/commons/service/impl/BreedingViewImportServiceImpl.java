@@ -1,42 +1,15 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import au.com.bytecode.opencsv.CSVReader;
+import com.rits.cloning.Cloner;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.exceptions.BreedingViewInvalidFormatException;
 import org.generationcp.commons.hibernate.ManagerFactoryProvider;
 import org.generationcp.commons.service.BreedingViewImportService;
 import org.generationcp.commons.util.DatasetUtil;
-import org.generationcp.middleware.domain.dms.DataSet;
-import org.generationcp.middleware.domain.dms.DataSetType;
-import org.generationcp.middleware.domain.dms.DatasetReference;
-import org.generationcp.middleware.domain.dms.DatasetValues;
+import org.generationcp.middleware.domain.dms.*;
 import org.generationcp.middleware.domain.dms.Enumeration;
-import org.generationcp.middleware.domain.dms.ExperimentType;
-import org.generationcp.middleware.domain.dms.ExperimentValues;
-import org.generationcp.middleware.domain.dms.PhenotypicType;
-import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.domain.dms.Stock;
-import org.generationcp.middleware.domain.dms.Stocks;
-import org.generationcp.middleware.domain.dms.Study;
-import org.generationcp.middleware.domain.dms.TrialEnvironment;
-import org.generationcp.middleware.domain.dms.TrialEnvironments;
-import org.generationcp.middleware.domain.dms.Variable;
-import org.generationcp.middleware.domain.dms.VariableList;
-import org.generationcp.middleware.domain.dms.VariableType;
-import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -53,9 +26,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import au.com.bytecode.opencsv.CSVReader;
-
-import com.rits.cloning.Cloner;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 @Configurable
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
@@ -141,7 +116,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 				// Get only the trial environment and germplasm factors
 
-				for (VariableType factorFromDataSet : dataSet.getVariableTypes().getFactors().getVariableTypes()) {
+				for (DMSVariableType factorFromDataSet : dataSet.getVariableTypes().getFactors().getVariableTypes()) {
 					if (factorFromDataSet.getStandardVariable().getPhenotypicType() == PhenotypicType.TRIAL_ENVIRONMENT
 							|| factorFromDataSet.getStandardVariable().getPhenotypicType() == PhenotypicType.GERMPLASM) {
 						meansVariatesList.makeRoom(1);
@@ -283,12 +258,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			for (String summaryStatName : summaryStatsList) {
 
-				for (VariableType variate : variableTypeListVariates.getVariableTypes()) {
+				for (DMSVariableType variate : variableTypeListVariates.getVariableTypes()) {
 
 					if (nameToAliasMap.containsValue(variate.getLocalName())) {
 
-						VariableType originalVariableType = null;
-						VariableType summaryStatVariableType = null;
+						DMSVariableType originalVariableType = null;
+						DMSVariableType summaryStatVariableType = null;
 						Term termSummaryStat = this.ontologyDataManager.findMethodByName(summaryStatName);
 						Term termIsASummaryStat = this.ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
 
@@ -369,7 +344,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			for (String summaryStatName : summaryStatsList) {
 
-				VariableType summaryStatVariableType = null;
+				DMSVariableType summaryStatVariableType = null;
 
 				for (String env : environments) {
 
@@ -542,7 +517,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			}
 		}
 
-		for (VariableType var : meansDataSet.getVariableTypes().getVariates().getVariableTypes()) {
+		for (DMSVariableType var : meansDataSet.getVariableTypes().getVariates().getVariableTypes()) {
 			standardVariableIdTracker.add(var.getStandardVariable().getId());
 			if (!var.getStandardVariable().getMethod().getName().equalsIgnoreCase(BreedingViewImportServiceImpl.ERROR_ESTIMATE)) {
 				meansDataSetVariateNames.add(var.getLocalName().trim());
@@ -558,7 +533,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				String root = variateName.substring(0, variateName.lastIndexOf("_"));
 				if (!"".equals(root)) {
 
-					VariableType meansVariableType = this.cloner.deepClone(inputDataSet.getVariableTypes().findByLocalName(root));
+					DMSVariableType meansVariableType = this.cloner.deepClone(inputDataSet.getVariableTypes().findByLocalName(root));
 					meansVariableType.setLocalName(root + BreedingViewImportServiceImpl.MEANS_SUFFIX);
 
 					Term termLSMean = this.ontologyDataManager.findMethodByName(BreedingViewImportServiceImpl.LS_MEAN);
@@ -639,7 +614,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 					stdVariableId = null;
 					// Unit Errors
-					VariableType unitErrorsVariableType = this.cloner.deepClone(inputDataSet.getVariableTypes().findByLocalName(root));
+					DMSVariableType unitErrorsVariableType = this.cloner.deepClone(inputDataSet.getVariableTypes().findByLocalName(root));
 					unitErrorsVariableType.setLocalName(root + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX);
 
 					Term termErrorEstimate = this.ontologyDataManager.findMethodByName("ERROR ESTIMATE");
@@ -746,8 +721,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					return;
 				}
 
-		VariableType originalVariableType = null;
-				VariableType newVariableType = null;
+		DMSVariableType originalVariableType = null;
+		DMSVariableType newVariableType = null;
 
 		originalVariableType = allVariatesList.findByLocalName(traitName);
 				newVariableType = this.cloner.deepClone(originalVariableType);
@@ -765,7 +740,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						.getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId(), PhenotypicType.VARIATE);
 
 		// check if the stdVariableId already exists in the variableTypeList
-				for (VariableType vt : meansVariateList.getVariableTypes()) {
+		for (DMSVariableType vt : meansVariateList.getVariableTypes()) {
 					if (stdVariableId != null && vt.getStandardVariable().getId() == stdVariableId.intValue()) {
 
 				termMethod = this.ontologyDataManager.findMethodByName(methodName + " (" + traitName + ")");
@@ -828,7 +803,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	protected Variable createVariable(int termId, String value, int rank, String programUUID) throws MiddlewareException {
 		StandardVariable stVar = this.ontologyDataManager.getStandardVariable(termId,programUUID);
 
-		VariableType vtype = new VariableType();
+		DMSVariableType vtype = new DMSVariableType();
 		vtype.setStandardVariable(stVar);
 		vtype.setRank(rank);
 		Variable var = new Variable();
@@ -837,7 +812,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return var;
 	}
 
-	protected void updateVariableType(VariableType type, String name, String description) {
+	protected void updateVariableType(DMSVariableType type, String name, String description) {
 		type.setLocalName(name);
 		type.setLocalDescription(description);
 	}
@@ -851,12 +826,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		if (this.localNameToAliasMap != null) {
 			return this.localNameToAliasMap;
 		} else {
-			List<VariableType> variateList = this.getPlotDataSet(studyId).getVariableTypes().getVariableTypes();
+			List<DMSVariableType> variateList = this.getPlotDataSet(studyId).getVariableTypes().getVariableTypes();
 
 			Map<String, String> nameAliasMap = new HashMap<>();
 
-			for (Iterator<VariableType> i = variateList.iterator(); i.hasNext();) {
-				VariableType k = i.next();
+			for (Iterator<DMSVariableType> i = variateList.iterator(); i.hasNext(); ) {
+				DMSVariableType k = i.next();
 				String nameSanitized = k.getLocalName().replaceAll(BreedingViewImportServiceImpl.REGEX_VALID_BREEDING_VIEW_CHARACTERS, "_");
 				nameAliasMap.put(nameSanitized, k.getLocalName());
 			}

@@ -1,29 +1,8 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.generationcp.middleware.domain.dms.DataSet;
-import org.generationcp.middleware.domain.dms.DataSetType;
-import org.generationcp.middleware.domain.dms.DatasetReference;
-import org.generationcp.middleware.domain.dms.DatasetValues;
-import org.generationcp.middleware.domain.dms.ExperimentType;
-import org.generationcp.middleware.domain.dms.LocationDto;
-import org.generationcp.middleware.domain.dms.PhenotypicType;
-import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.domain.dms.Stock;
-import org.generationcp.middleware.domain.dms.Stocks;
-import org.generationcp.middleware.domain.dms.Study;
-import org.generationcp.middleware.domain.dms.TrialEnvironment;
-import org.generationcp.middleware.domain.dms.TrialEnvironments;
-import org.generationcp.middleware.domain.dms.Variable;
-import org.generationcp.middleware.domain.dms.VariableList;
-import org.generationcp.middleware.domain.dms.VariableType;
-import org.generationcp.middleware.domain.dms.VariableTypeList;
+import com.rits.cloning.Cloner;
+import org.generationcp.middleware.domain.dms.*;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
@@ -32,13 +11,13 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
-import com.rits.cloning.Cloner;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BreedingViewImportServiceImplTest {
 
@@ -60,9 +39,9 @@ public class BreedingViewImportServiceImplTest {
 	private final String LS_MEAN = "LS MEAN";
 	private final int LS_MEAN_ID = 97393;
 
-	List<VariableType> factorVariableTypes = new ArrayList<VariableType>();
-	List<VariableType> variateVariableTypes = new ArrayList<VariableType>();
-	List<VariableType> meansVariateVariableTypes = new ArrayList<VariableType>();
+	List<DMSVariableType> factorVariableTypes = new ArrayList<DMSVariableType>();
+	List<DMSVariableType> variateVariableTypes = new ArrayList<DMSVariableType>();
+	List<DMSVariableType> meansVariateVariableTypes = new ArrayList<DMSVariableType>();
 
 	Map<String, String> localNameToAliasMapping;
 
@@ -300,10 +279,10 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.variateVariableTypes) {
+		for (DMSVariableType variate : this.variateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -318,10 +297,10 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.variateVariableTypes) {
+		for (DMSVariableType variate : this.variateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -336,10 +315,10 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.meansVariateVariableTypes) {
+		for (DMSVariableType variate : this.meansVariateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -354,18 +333,18 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.meansVariateVariableTypes) {
+		for (DMSVariableType variate : this.meansVariateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
 		return dataSet;
 	}
 
-	private VariableType createVariateVariableType(String localName) {
-		VariableType variate = new VariableType();
+	private DMSVariableType createVariateVariableType(String localName) {
+		DMSVariableType variate = new DMSVariableType();
 		StandardVariable variateStandardVar = new StandardVariable();
 		variateStandardVar.setPhenotypicType(PhenotypicType.VARIATE);
 
@@ -399,8 +378,8 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private VariableType createVariateVariableType(String localName, String propertyName, String scaleName, String methodName) {
-		VariableType variate = new VariableType();
+	private DMSVariableType createVariateVariableType(String localName, String propertyName, String scaleName, String methodName) {
+		DMSVariableType variate = new DMSVariableType();
 		StandardVariable variateStandardVar = new StandardVariable();
 		variateStandardVar.setPhenotypicType(PhenotypicType.VARIATE);
 
@@ -436,9 +415,9 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private VariableType createTrialEnvironmentVariableType(String localName) {
+	private DMSVariableType createTrialEnvironmentVariableType(String localName) {
 
-		VariableType factor = new VariableType();
+		DMSVariableType factor = new DMSVariableType();
 		StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setId(TermId.LOCATION_ID.getId());
 		factorStandardVar.setPhenotypicType(PhenotypicType.TRIAL_ENVIRONMENT);
@@ -449,8 +428,8 @@ public class BreedingViewImportServiceImplTest {
 		return factor;
 	}
 
-	private VariableType createGermplasmFactorVariableType(String localName) {
-		VariableType factor = new VariableType();
+	private DMSVariableType createGermplasmFactorVariableType(String localName) {
+		DMSVariableType factor = new DMSVariableType();
 		StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setPhenotypicType(PhenotypicType.GERMPLASM);
 		
@@ -503,15 +482,15 @@ public class BreedingViewImportServiceImplTest {
 	}
 
 	private void addVariables(VariableList list) {
-		for (VariableType f : this.factorVariableTypes) {
+		for (DMSVariableType f : this.factorVariableTypes) {
 			list.add(this.createVariable(f));
 		}
-		for (VariableType v : this.variateVariableTypes) {
+		for (DMSVariableType v : this.variateVariableTypes) {
 			list.add(this.createVariable(v));
 		}
 	}
 
-	private Variable createVariable(VariableType variableType) {
+	private Variable createVariable(DMSVariableType variableType) {
 		Variable v = new Variable();
 		if (variableType.getLocalName().equals("TRIAL_INSTANCE")) {
 			v.setValue("1");
