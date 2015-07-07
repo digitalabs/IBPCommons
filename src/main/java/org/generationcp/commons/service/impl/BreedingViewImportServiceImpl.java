@@ -138,7 +138,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 				// please make sure that the study name is unique and does not exist in the db.
 				VariableList variableList = new VariableList();
-				Variable variable = this.createVariable(TermId.DATASET_NAME.getId(), study.getName() + "-MEANS", 1, programUUID);
+				Variable variable = this.createVariable(TermId.DATASET_NAME.getId(), study.getName() + "-MEANS", 1, programUUID, PhenotypicType.DATASET);
 				meansVariatesList.makeRoom(1);
 				variable.getVariableType().setRank(1);
 				meansVariatesList.add(variable.getVariableType());
@@ -147,14 +147,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				this.updateVariableType(variable.getVariableType(), study.getName() + "-MEANS", "Dataset name (local)");
 				variableList.add(variable);
 
-				variable = this.createVariable(TermId.DATASET_TITLE.getId(), "My Dataset Description", 2, programUUID);
+				variable = this.createVariable(TermId.DATASET_TITLE.getId(), "My Dataset Description", 2, programUUID, PhenotypicType.DATASET);
 				meansVariatesList.makeRoom(1);
 				variable.getVariableType().setRank(1);
 				meansVariatesList.add(variable.getVariableType());
 				this.updateVariableType(variable.getVariableType(), "DATASET_TITLE", "Dataset title (local)");
 				variableList.add(variable);
 
-				variable = this.createVariable(TermId.DATASET_TYPE.getId(), "10070", 3, programUUID);
+				variable = this.createVariable(TermId.DATASET_TYPE.getId(), "10070", 3, programUUID, PhenotypicType.DATASET);
 				meansVariatesList.makeRoom(1);
 				variable.getVariableType().setRank(1);
 				meansVariatesList.add(variable.getVariableType());
@@ -293,6 +293,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 								stdVariable.setId(0);
 								stdVariable.setName(summaryStatVariableType.getLocalName());
 								stdVariable.setMethod(termSummaryStat);
+								stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
 
 								if (termIsASummaryStat != null) {
 									stdVariable.setIsA(termIsASummaryStat);
@@ -313,6 +314,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 								StandardVariable stdVar = this.ontologyDataManager.
 										getStandardVariable(stdVariableId,
 												studyDataManager.getProject(studyId).getProgramUUID());
+								stdVar.setPhenotypicType(PhenotypicType.VARIATE);
+								
 								if (stdVar.getEnumerations() != null) {
 									for (Enumeration enumeration : stdVar.getEnumerations()) {
 										this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -577,6 +580,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						stdVariable.setId(0);
 						stdVariable.setName(meansVariableType.getLocalName());
 						stdVariable.setMethod(termLSMean);
+						stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
 
 						if (termTreatmentMean != null) {
 							stdVariable.setIsA(termTreatmentMean);
@@ -593,6 +597,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						standardVariableIdTracker.add(stdVariable.getId());
 					} else {
 						StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId,programUUID);
+						stdVar.setPhenotypicType(PhenotypicType.VARIATE);
 						if (stdVar.getEnumerations() != null) {
 							for (Enumeration enumeration : stdVar.getEnumerations()) {
 								this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -657,7 +662,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						stdVariable.setId(0);
 						stdVariable.setName(unitErrorsVariableType.getLocalName());
 						stdVariable.setMethod(termErrorEstimate);
-
+						stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
 						if (termSummaryStatistic != null) {
 							stdVariable.setIsA(termSummaryStatistic);
 						}
@@ -673,6 +678,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						standardVariableIdTracker.add(stdVariable.getId());
 					} else {
 						StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId,programUUID);
+						stdVar.setPhenotypicType(PhenotypicType.VARIATE);
+						
 						if (stdVar.getEnumerations() != null) {
 							for (Enumeration enumeration : stdVar.getEnumerations()) {
 								this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -767,6 +774,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					stdVariable.setId(0);
 					stdVariable.setName(newVariableType.getLocalName());
 					stdVariable.setMethod(termMethod);
+					stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
 
 			if (isATerm != null) {
 						stdVariable.setIsA(isATerm);
@@ -784,6 +792,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				} else {
 					StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(
 							stdVariableId, programUUID);
+					stdVar.setPhenotypicType(PhenotypicType.VARIATE);
 			if (stdVar.getEnumerations() != null) {
 				for (Enumeration enumeration : stdVar.getEnumerations()) {
 					this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -800,12 +809,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	}
 
-	protected Variable createVariable(int termId, String value, int rank, String programUUID) throws MiddlewareException {
+	protected Variable createVariable(int termId, String value, int rank, String programUUID, PhenotypicType phenotypicType) throws MiddlewareException {
 		StandardVariable stVar = this.ontologyDataManager.getStandardVariable(termId,programUUID);
-
+		stVar.setPhenotypicType(phenotypicType);
+		
 		DMSVariableType vtype = new DMSVariableType();
 		vtype.setStandardVariable(stVar);
 		vtype.setRank(rank);
+		vtype.setRole(phenotypicType);
 		Variable var = new Variable();
 		var.setValue(value);
 		var.setVariableType(vtype);
