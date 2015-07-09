@@ -144,8 +144,8 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
 		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
+						Matchers.anyInt())).thenReturn(null);
 		Mockito.when(this.ontologyDataManager.getStandardVariable(8150,PROGRAM_UUID)).thenReturn(studyStdVar);
 		Mockito.when(this.ontologyDataManager.getStandardVariable(8155,PROGRAM_UUID)).thenReturn(titleStdVar);
 		Mockito.when(this.ontologyDataManager.getStandardVariable(8160,PROGRAM_UUID)).thenReturn(dataSetStdVar);
@@ -215,8 +215,8 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
 		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
+						Matchers.anyInt())).thenReturn(null);
 		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(),Matchers.anyString())).thenReturn(Mockito.mock(StandardVariable.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
@@ -256,8 +256,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.when(this.ontologyDataManager.findMethodByName(Matchers.anyString())).thenReturn(this.createTerm(888, "DUMMYTERM"));
 		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
+						Matchers.anyInt())).thenReturn(null);
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummary.csv").toURI());
 		this.service.importSummaryStatsData(file, this.STUDY_ID);

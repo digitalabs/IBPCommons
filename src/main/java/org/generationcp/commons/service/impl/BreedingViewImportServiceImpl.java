@@ -279,9 +279,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 							summaryStatVariableType.setLocalName(localName);
 
 							Integer stdVariableId =
-									this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(summaryStatVariableType
+									this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(summaryStatVariableType
 											.getStandardVariable().getProperty().getId(), summaryStatVariableType.getStandardVariable()
-											.getScale().getId(), termSummaryStat.getId(), PhenotypicType.VARIATE);
+											.getScale().getId(), termSummaryStat.getId());
 
 							if (stdVariableId == null) {
 
@@ -548,9 +548,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					}
 
 					Integer stdVariableId =
-							this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(meansVariableType.getStandardVariable()
-									.getProperty().getId(), meansVariableType.getStandardVariable().getScale().getId(), termLSMean.getId(),
-									PhenotypicType.VARIATE);
+							this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(meansVariableType.getStandardVariable()
+									.getProperty().getId(), meansVariableType.getStandardVariable().getScale().getId(), termLSMean.getId());
 
 					// check if the stdVariableId already exists in the standardVariableIdTracker
 					for (Integer vt : standardVariableIdTracker) {
@@ -564,9 +563,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 							}
 
 							stdVariableId =
-									this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(meansVariableType
+									this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(meansVariableType
 											.getStandardVariable().getProperty().getId(), meansVariableType.getStandardVariable()
-											.getScale().getId(), termLSMean.getId(), PhenotypicType.VARIATE);
+											.getScale().getId(), termLSMean.getId());
 							break;
 						}
 					}
@@ -631,9 +630,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					}
 
 					stdVariableId =
-							this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(unitErrorsVariableType
+							this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(unitErrorsVariableType
 									.getStandardVariable().getProperty().getId(), unitErrorsVariableType.getStandardVariable().getScale()
-									.getId(), termErrorEstimate.getId(), PhenotypicType.VARIATE);
+									.getId(), termErrorEstimate.getId());
 
 					// check if the stdVariableId already exists in the variableTypeList
 					for (Integer vt : standardVariableIdTracker) {
@@ -646,9 +645,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 							}
 
 							stdVariableId =
-									this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(unitErrorsVariableType
+									this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(unitErrorsVariableType
 											.getStandardVariable().getProperty().getId(), unitErrorsVariableType.getStandardVariable()
-											.getScale().getId(), termErrorEstimate.getId(), PhenotypicType.VARIATE);
+											.getScale().getId(), termErrorEstimate.getId());
 							break;
 						}
 					}
@@ -743,8 +742,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				}
 
 				Integer stdVariableId =
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(newVariableType.getStandardVariable().getProperty()
-						.getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId(), PhenotypicType.VARIATE);
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(newVariableType.getStandardVariable().getProperty()
+						.getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId());
 
 		// check if the stdVariableId already exists in the variableTypeList
 		for (DMSVariableType vt : meansVariateList.getVariableTypes()) {
@@ -758,9 +757,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						}
 
 						stdVariableId =
-						this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(newVariableType.getStandardVariable()
-								.getProperty().getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId(),
-								PhenotypicType.VARIATE);
+						this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(newVariableType.getStandardVariable()
+								.getProperty().getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId());
 						break;
 					}
 				}
