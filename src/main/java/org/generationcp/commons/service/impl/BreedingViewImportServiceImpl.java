@@ -541,9 +541,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		}
 
-		if (meansDataSetVariateNames.size() < inputDataSetVariateNames.size()) {
-
-			inputDataSetVariateNames.removeAll(meansDataSetVariateNames);
+		// only process the new traits that were not part of the previous analysis
+		inputDataSetVariateNames.removeAll(meansDataSetVariateNames);
 
 			for (String variateName : inputDataSetVariateNames) {
 				String root = variateName.substring(0, variateName.lastIndexOf("_"));
@@ -712,9 +711,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			}
 
 			return this.studyDataManager.getDataSet(meansDataSet.getId());
-		}
 
-		return meansDataSet;
 
 	}
 
