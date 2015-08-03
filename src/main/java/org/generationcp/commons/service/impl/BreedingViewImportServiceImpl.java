@@ -725,80 +725,80 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		Term isATerm = null;
 
 		traitName = headerName != null && headerName.lastIndexOf("_") != -1 ? headerName.substring(0, headerName.lastIndexOf("_")) : "";
-				if (headerName.endsWith(BreedingViewImportServiceImpl.MEANS_SUFFIX)) {
-					localName = BreedingViewImportServiceImpl.MEANS_SUFFIX;
-					methodName = BreedingViewImportServiceImpl.LS_MEAN;
-					isATerm = this.ontologyDataManager.getTermById(TermId.TREATMENT_MEAN.getId());
-				} else if (headerName.endsWith(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX)) {
-					localName = BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX;
-					methodName = "ERROR ESTIMATE";
-					isATerm = this.ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
-				} else {
-					return;
-				}
+		if (headerName.endsWith(BreedingViewImportServiceImpl.MEANS_SUFFIX)) {
+			localName = BreedingViewImportServiceImpl.MEANS_SUFFIX;
+			methodName = BreedingViewImportServiceImpl.LS_MEAN;
+			isATerm = this.ontologyDataManager.getTermById(TermId.TREATMENT_MEAN.getId());
+		} else if (headerName.endsWith(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX)) {
+			localName = BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX;
+			methodName = "ERROR ESTIMATE";
+			isATerm = this.ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
+		} else {
+			return;
+		}
 
 		VariableType originalVariableType = null;
-				VariableType newVariableType = null;
+		VariableType newVariableType = null;
 
 		originalVariableType = allVariatesList.findByLocalName(traitName);
-				newVariableType = this.cloner.deepClone(originalVariableType);
+		newVariableType = this.cloner.deepClone(originalVariableType);
 
 		newVariableType.setLocalName(traitName + localName);
 
 		Term termMethod = this.ontologyDataManager.findMethodByName(methodName);
-				if (termMethod == null) {
-					String definitionMeans = newVariableType.getStandardVariable().getMethod().getDefinition();
-					termMethod = this.ontologyDataManager.addMethod(methodName, definitionMeans);
-				}
+		if (termMethod == null) {
+			String definitionMeans = newVariableType.getStandardVariable().getMethod().getDefinition();
+			termMethod = this.ontologyDataManager.addMethod(methodName, definitionMeans);
+		}
 
-				Integer stdVariableId =
+		Integer stdVariableId =
 				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(newVariableType.getStandardVariable().getProperty()
 						.getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId(), PhenotypicType.VARIATE);
 
 		// check if the stdVariableId already exists in the variableTypeList
-				for (VariableType vt : meansVariateList.getVariableTypes()) {
-					if (stdVariableId != null && vt.getStandardVariable().getId() == stdVariableId.intValue()) {
+		for (VariableType vt : meansVariateList.getVariableTypes()) {
+			if (stdVariableId != null && vt.getStandardVariable().getId() == stdVariableId.intValue()) {
 
 				termMethod = this.ontologyDataManager.findMethodByName(methodName + " (" + traitName + ")");
 
 				if (termMethod == null) {
-							String definitionMeans = newVariableType.getStandardVariable().getMethod().getDefinition();
-							termMethod = this.ontologyDataManager.addMethod(methodName + " (" + traitName + ")", definitionMeans);
-						}
+					String definitionMeans = newVariableType.getStandardVariable().getMethod().getDefinition();
+					termMethod = this.ontologyDataManager.addMethod(methodName + " (" + traitName + ")", definitionMeans);
+				}
 
-						stdVariableId =
+				stdVariableId =
 						this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(newVariableType.getStandardVariable()
 								.getProperty().getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId(),
 								PhenotypicType.VARIATE);
-						break;
-					}
-				}
+				break;
+			}
+		}
 
 		if (stdVariableId == null) {
-					StandardVariable stdVariable = new StandardVariable();
-					stdVariable = this.cloner.deepClone(newVariableType.getStandardVariable());
-					stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(), "", ""));
-					stdVariable.setEnumerations(null);
-					stdVariable.setConstraints(null);
-					stdVariable.setId(0);
-					stdVariable.setName(newVariableType.getLocalName());
-					stdVariable.setMethod(termMethod);
+			StandardVariable stdVariable = new StandardVariable();
+			stdVariable = this.cloner.deepClone(newVariableType.getStandardVariable());
+			stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(), "", ""));
+			stdVariable.setEnumerations(null);
+			stdVariable.setConstraints(null);
+			stdVariable.setId(0);
+			stdVariable.setName(newVariableType.getLocalName());
+			stdVariable.setMethod(termMethod);
 
 			if (isATerm != null) {
-						stdVariable.setIsA(isATerm);
-					}
+				stdVariable.setIsA(isATerm);
+			}
 
 			// check if name is already used
-					Term existingStdVar = this.ontologyDataManager.findTermByName(stdVariable.getName(), CvId.VARIABLES);
-					if (existingStdVar != null) {
-						// rename
+			Term existingStdVar = this.ontologyDataManager.findTermByName(stdVariable.getName(), CvId.VARIABLES);
+			if (existingStdVar != null) {
+				// rename
 				stdVariable.setName(stdVariable.getName() + "_1");
-					}
-					this.ontologyDataManager.addStandardVariable(stdVariable);
-					newVariableType.setStandardVariable(stdVariable);
+			}
+			this.ontologyDataManager.addStandardVariable(stdVariable);
+			newVariableType.setStandardVariable(stdVariable);
 
-				} else {
-					StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId);
+		} else {
+			StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId);
 			if (stdVar.getEnumerations() != null) {
 				for (Enumeration enumeration : stdVar.getEnumerations()) {
 					this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
@@ -806,12 +806,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			}
 			stdVar.setEnumerations(null);
 			this.ontologyDataManager.deleteStandardVariableLocalConstraints(stdVariableId);
-					newVariableType.setStandardVariable(stdVar);
-				}
+			newVariableType.setStandardVariable(stdVar);
+		}
 
-				meansVariateList.makeRoom(numOfFactorsAndVariates);
-				newVariableType.setRank(numOfFactorsAndVariates);
-				meansVariateList.add(newVariableType);
+		meansVariateList.makeRoom(numOfFactorsAndVariates);
+		newVariableType.setRank(numOfFactorsAndVariates);
+		meansVariateList.add(newVariableType);
 
 	}
 
@@ -1010,11 +1010,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		public void validate() throws BreedingViewInvalidFormatException {
 
 			CSVReader reader;
-			String[] header = new String[] {};
-
 			try {
 				reader = new CSVReader(new FileReader(this.file));
-				header = reader.readNext();
+				reader.readNext();
 				reader.close();
 			} catch (Exception e) {
 				throw new BreedingViewInvalidFormatException("A problem occurred while reading the Outlier data file", e);
@@ -1055,7 +1053,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		public String getTrialHeader() throws IOException {
 
 			String actualLocalName = this.nameToAliasMapping.get(this.getHeader().get(0));
-			if (actualLocalName == null){
+			if (actualLocalName == null) {
 				actualLocalName = this.getHeader().get(0);
 			}
 			return actualLocalName;
