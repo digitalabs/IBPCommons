@@ -821,34 +821,65 @@ public class ExportServiceImpl implements ExportService {
 	public Map<String, CellStyle> createStyles(Workbook wb) {
 		Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
 
-		// set cell style for labels in the description sheet
-		CellStyle labelStyle = wb.createCellStyle();
-		labelStyle.setFillForegroundColor(IndexedColors.BROWN.getIndex());
-		labelStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.LIGHT_ORANGE, 253, 233, 217);
+		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.VIOLET, 228, 223, 236);
+		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.OLIVE_GREEN, 235, 241, 222);
+		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.BLUE, 197, 217, 241);
+		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.AQUA, 218, 238, 243);
+		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.GREY_50_PERCENT, 192, 192, 192);
+
+		// default style for all cells in a sheet
+		CellStyle sheetStyle = this.createStyle(wb);
+		sheetStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
+		styles.put(ExportServiceImpl.SHEET_STYLE, sheetStyle);
+
+		// cell style for labels in the description sheet
+		CellStyle labelStyle = this.createStyleWithBorder(wb);
+		labelStyle.setFillForegroundColor(IndexedColors.LIGHT_ORANGE.getIndex());
 		Font labelFont = wb.createFont();
-		labelFont.setColor(IndexedColors.WHITE.getIndex());
+		labelFont.setColor(IndexedColors.BLACK.getIndex());
 		labelFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		labelStyle.setFont(labelFont);
 		styles.put(ExportServiceImpl.LABEL_STYLE, labelStyle);
 
-		// set cell style for headings in the description sheet
-		CellStyle headingStyle = wb.createCellStyle();
-		headingStyle.setFillForegroundColor(IndexedColors.SEA_GREEN.getIndex());
-		headingStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		// cell style for CONDITION labels
+		CellStyle conditionStyle = this.createStyleWithBorder(wb);
+		conditionStyle.setFillForegroundColor(IndexedColors.VIOLET.getIndex());
+		styles.put(ExportServiceImpl.LABEL_STYLE_CONDITION, conditionStyle);
+
+		// cell style for FACTOR labels
+		CellStyle factorStyle = this.createStyleWithBorder(wb);
+		factorStyle.setFillForegroundColor(IndexedColors.OLIVE_GREEN.getIndex());
+		styles.put(ExportServiceImpl.LABEL_STYLE_FACTOR, factorStyle);
+
+		// cell style for INVENTORY labels
+		CellStyle inventoryStyle = this.createStyleWithBorder(wb);
+		inventoryStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
+		styles.put(ExportServiceImpl.LABEL_STYLE_INVENTORY, inventoryStyle);
+
+		// cell style for VARIATE labels
+		CellStyle variateStyle = this.createStyleWithBorder(wb);
+		variateStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+		styles.put(ExportServiceImpl.LABEL_STYLE_VARIATE, variateStyle);
+
+		// cell style for headings in the description sheet
+		CellStyle headingStyle = this.createStyleWithBorder(wb);
 		Font headingFont = wb.createFont();
-		headingFont.setColor(IndexedColors.WHITE.getIndex());
 		headingFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		headingStyle.setFont(headingFont);
+		headingStyle.setAlignment(CellStyle.ALIGN_CENTER);
+		headingStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
 		styles.put(ExportServiceImpl.HEADING_STYLE, headingStyle);
 
-		// set cell style for numeric values (left alignment)
-		CellStyle numericStyle = wb.createCellStyle();
+		// cell style for numeric values (left alignment)
+		CellStyle numericStyle = this.createStyleWithBorder(wb);
 		numericStyle.setAlignment(CellStyle.ALIGN_LEFT);
+		numericStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
 		styles.put(ExportServiceImpl.NUMERIC_STYLE, numericStyle);
 
-		CellStyle textStyle = wb.createCellStyle();
+		// cell style for text
+		CellStyle textStyle = this.createStyleWithBorder(wb);
 		textStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-		textStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
 		styles.put(ExportServiceImpl.TEXT_STYLE, textStyle);
 
 		return styles;
