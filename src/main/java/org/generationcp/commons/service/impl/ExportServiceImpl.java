@@ -854,4 +854,69 @@ public class ExportServiceImpl implements ExportService {
 		return styles;
 	}
 
+	private Cell createCell(int column, HSSFRow row, CellStyle cellStyle, String value) {
+		HSSFCell cell = row.createCell(column);
+		cell.setCellStyle(cellStyle);
+		cell.setCellValue(value);
+		return cell;
+	}
+
+	private Cell createCellRange(Sheet sheet, int start, int end, HSSFRow row, CellStyle cellStyle, String value) {
+
+		for (int x = start; x <= end; x++) {
+			HSSFCell cell = row.createCell(x);
+			cell.setCellStyle(cellStyle);
+		}
+
+		sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), start, end));
+
+		HSSFCell cell = row.getCell(start);
+		cell.setCellValue(value);
+
+		return cell;
+	}
+
+	private CellStyle createStyle(Workbook wb) {
+		CellStyle cellStyle = wb.createCellStyle();
+		cellStyle.setAlignment(CellStyle.ALIGN_LEFT);
+		cellStyle.setVerticalAlignment(CellStyle.VERTICAL_CENTER);
+		cellStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		cellStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+		return cellStyle;
+	}
+
+	private CellStyle createStyleWithBorder(Workbook wb) {
+		CellStyle cellStyle = this.createStyle(wb);
+		cellStyle.setBorderTop(CellStyle.BORDER_THIN);
+		cellStyle.setBorderBottom(CellStyle.BORDER_THIN);
+		cellStyle.setBorderLeft(CellStyle.BORDER_THIN);
+		cellStyle.setBorderRight(CellStyle.BORDER_THIN);
+		return cellStyle;
+	}
+
+	private void setCustomColorAtIndex(HSSFWorkbook wb, IndexedColors indexedColor, int red, int green, int blue) {
+
+		HSSFPalette customPalette = wb.getCustomPalette();
+		customPalette.setColorAtIndex(indexedColor.index, (byte) red, (byte) green, (byte) blue);
+
+	}
+
+	private void fillSheetWithCellStyle(CellStyle cellStyle, HSSFSheet sheet) {
+
+		int lastColumnIndex = 0;
+		for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+			if (sheet.getRow(i) != null) {
+				short lastCell = sheet.getRow(i).getLastCellNum();
+				if (lastCell > lastColumnIndex) {
+					lastColumnIndex = lastCell;
+				}
+			}
+		}
+
+		for (int i = 0; i <= lastColumnIndex; i++) {
+			sheet.setDefaultColumnStyle(i, cellStyle);
+		}
+
+	}
+
 }
