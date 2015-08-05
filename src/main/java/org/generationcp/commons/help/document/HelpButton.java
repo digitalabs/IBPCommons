@@ -5,7 +5,6 @@ import java.net.URL;
 
 import javax.annotation.Resource;
 
-import org.generationcp.commons.vaadin.util.MessageNotifier;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -45,12 +44,12 @@ public class HelpButton extends Button {
 				Window currentWindow = event.getComponent().getWindow();
 				ExternalResource tutorialLink = HelpButton.this.getTutorialLink(link, currentWindow, hasInternetConnection);
 
-				if (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(HelpButton.this.workbenchDataManager)) {
+				String installationDirectory = HelpDocumentUtil.getInstallationDirectory(HelpButton.this.workbenchDataManager);
+				if (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
 					event.getComponent().getWindow().open(tutorialLink, " _BLANK");
 				} else {
-					MessageNotifier
-							.showWarning(currentWindow, "Documents is not installed!",
-									"Please download and install a mirror of the BMS documentation so that you can access it without being connected to the internet. ");
+					HelpWindow helpWindow = new HelpWindow(HelpButton.this.workbenchDataManager);
+					event.getComponent().getParent().getWindow().addWindow(helpWindow);
 				}
 			}
 

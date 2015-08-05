@@ -32,8 +32,7 @@ public class HelpDocumentUtil {
 		}
 	}
 
-	public static boolean isDocumentsFolderFound(WorkbenchDataManager workbenchDataManager) {
-		String installationDirectory = getInstallationDirectory(workbenchDataManager);
+	public static boolean isDocumentsFolderFound(String installationDirectory) {
 		String docsDirectory = installationDirectory + File.separator + "Documents" + File.separator;
 		File docsDirectoryFile = new File(docsDirectory);
 		if (docsDirectoryFile.exists() && docsDirectoryFile.isDirectory()) {
