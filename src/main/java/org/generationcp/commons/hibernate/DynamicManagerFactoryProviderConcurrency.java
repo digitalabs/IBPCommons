@@ -11,85 +11,53 @@
 
 package org.generationcp.commons.hibernate;
 
-import java.io.FileNotFoundException;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.generationcp.commons.util.ContextUtil;
-import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerThreadProvider;
-import org.generationcp.middleware.hibernate.SessionFactoryUtil;
-import org.generationcp.middleware.manager.DatabaseConnectionParameters;
+import org.generationcp.middleware.hibernate.XADataSources;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.orm.hibernate3.HibernateTransactionManager;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
+public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase implements ManagerFactoryProvider  {
 
 	private final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
 
+	protected Map<Long, String> cropNameCache = new HashMap<Long, String>();
+	
 	public DynamicManagerFactoryProviderConcurrency() {
+	
 	}
 
 	public DynamicManagerFactoryProviderConcurrency(WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 
-	private HibernateSessionPerThreadProvider sessionProvider;
-
-	private final static ThreadLocal<HttpServletRequest> CURRENT_REQUEST = new ThreadLocal<HttpServletRequest>();
-
 	private WorkbenchDataManager workbenchDataManager;
+	
+	@Autowired 
+	private ApplicationContext applicationContext;
 
 	public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
-		String databaseName = null;
 
-		Project project =
-				ContextUtil.getProjectInContext(this.workbenchDataManager, DynamicManagerFactoryProviderConcurrency.CURRENT_REQUEST.get());
-		SessionFactory sessionFactory = this.sessionFactoryCache.get(project.getProjectId());
-		if (sessionFactory != null) {
-			this.projectAccessList.remove(project.getProjectId());
-		}
+		final Project project = getCropProject();
+		
+		String databaseName = project.getDatabaseName();
 
-		if (sessionFactory == null || sessionFactory.isClosed()) {
-			databaseName = project.getDatabaseName();
-
-			// close any excess cached session factory
-			this.closeExcessSessionFactory();
-
-			DatabaseConnectionParameters params =
-					new DatabaseConnectionParameters(this.dbHost, String.valueOf(this.dbPort), databaseName, this.dbUsername,
-							this.dbPassword);
-			try {
-				sessionFactory = SessionFactoryUtil.openSessionFactory(params);
-				this.sessionFactoryCache.put(project.getProjectId(), sessionFactory);
-			} catch (FileNotFoundException e) {
-				throw new ConfigException("Cannot create a SessionFactory for " + project, e);
-			}
-		} else {
-			databaseName = project.getDatabaseName();
-		}
-
-		// add this session factory to the head of the access list
-		this.projectAccessList.add(0, project.getProjectId());
-
-		if (this.sessionProvider == null && sessionFactory != null) {
-			this.sessionProvider = new HibernateSessionPerThreadProvider(sessionFactory);
-		} else {
-			this.sessionProvider.setSessionFactory(sessionFactory);
-		}
-
-		// create a ManagerFactory and set the HibernateSessionProviders
-		// we don't need to set the SessionFactories here
-		// since we want to a Session Per Request
+		SessionFactory applicableCropSessionFactory = (SessionFactory) applicationContext.getBean(XADataSources.computeSessionFactoryName(databaseName));
 		ManagerFactory factory = new ManagerFactory();
-		factory.setSessionProvider(this.sessionProvider);
+
+		factory.setSessionProvider(new HibernateSessionPerThreadProvider(applicableCropSessionFactory));
 		factory.setDatabaseName(databaseName);
 		factory.setCropName(project.getCropType().getCropName());
 		factory.setPedigreeProfile(this.pedigreeProfile);
@@ -97,32 +65,22 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 		return factory;
 	}
 
-	@Override
-	public void onRequestStarted(HttpServletRequest request, HttpServletResponse response) {
-		DynamicManagerFactoryProviderConcurrency.CURRENT_REQUEST.set(request);
-	}
-
-	@Override
-	public void onRequestEnded(HttpServletRequest request, HttpServletResponse response) {
-		DynamicManagerFactoryProviderConcurrency.CURRENT_REQUEST.remove();
+	private Project getCropProject() throws MiddlewareQueryException {
+		return ContextUtil.getProjectInContext(this.workbenchDataManager,
+				((ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes())
+						.getRequest());
 	}
 
 	@Override
 	public ManagerFactory getManagerFactoryForProject(Project project) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void close() {
-		if (this.sessionProvider != null) {
-			this.sessionProvider.close();
-		}
+		// TODO Auto-generated method stub
+		
 	}
 
-	protected synchronized void closeAllSessionFactories() {
-		for (Entry<Long, SessionFactory> entry : this.sessionFactoryCache.entrySet()) {
-			entry.getValue().close();
-			this.sessionFactoryCache.remove(entry);
-		}
-	}
 }
