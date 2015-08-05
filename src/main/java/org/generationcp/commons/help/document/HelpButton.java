@@ -28,7 +28,7 @@ public class HelpButton extends Button {
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
 
-	public HelpButton(final HELP_MODULE link, String description) {
+	public HelpButton(final HelpModule link, String description) {
 		super();
 		this.setHtmlContentAllowed(true);
 		this.setCaption(ICON);
@@ -60,14 +60,14 @@ public class HelpButton extends Button {
 		});
 	}
 
-	private String getOfflineLink(final HELP_MODULE link, Window currentWindow) {
+	String getOfflineLink(final HelpModule link, Window currentWindow) {
 		URL currentURL = currentWindow.getURL();
 		String host = currentURL.getHost();
 		Integer port = currentURL.getPort();
 		return "http://" + host + ":" + port + "/" + link.getOffLineLink();
 	}
 
-	public ExternalResource getTutorialLink(final HELP_MODULE link, Window currentWindow, boolean hasInternetConnection) {
+	ExternalResource getTutorialLink(final HelpModule link, Window currentWindow, boolean hasInternetConnection) {
 		ExternalResource tutorialLink = null;
 		if (hasInternetConnection) {
 			tutorialLink = new ExternalResource(link.getOnLineLink());
@@ -77,4 +77,13 @@ public class HelpButton extends Button {
 		}
 		return tutorialLink;
 	}
+
+	public void setTomcatUtil(TomcatUtil tomcatUtil) {
+		this.tomcatUtil = tomcatUtil;
+	}
+
+	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
+
 }

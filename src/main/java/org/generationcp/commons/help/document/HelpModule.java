@@ -1,7 +1,7 @@
 package org.generationcp.commons.help.document;
 
 
-public enum HELP_MODULE {
+public enum HelpModule {
 
 	LOGIN_AND_USER_CREATION("www.integratedbreeding.net/158/training/launch-bms"),
 	DASHBOARD("www.integratedbreeding.net/73/training/bms-user-manual/manual-page-1"),
@@ -34,7 +34,7 @@ public enum HELP_MODULE {
 	
 	private String link;
 	
-	HELP_MODULE(String link){
+	HelpModule(String link){
 		this.link = link;
 	}
 	
