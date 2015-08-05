@@ -5,6 +5,7 @@ import java.net.URL;
 
 import javax.annotation.Resource;
 
+import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -20,6 +21,9 @@ public class HelpButton extends Button {
 
 	private static final String ICON =
 			"<span class='bms-fa-question-circle' style='position: relative; left: 20px; top:10px; color: #5A5A5A;font-size: 20px; font-weight: bold;'></span>";
+
+	@Resource
+	private TomcatUtil tomcatUtil;
 
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
@@ -48,7 +52,7 @@ public class HelpButton extends Button {
 				if (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
 					event.getComponent().getWindow().open(tutorialLink, " _BLANK");
 				} else {
-					HelpWindow helpWindow = new HelpWindow(HelpButton.this.workbenchDataManager);
+					HelpWindow helpWindow = new HelpWindow(HelpButton.this.workbenchDataManager, HelpButton.this.tomcatUtil);
 					event.getComponent().getParent().getWindow().addWindow(helpWindow);
 				}
 			}

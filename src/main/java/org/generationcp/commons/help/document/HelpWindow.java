@@ -16,7 +16,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.ExternalResource;
@@ -44,12 +43,12 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 
 	private WorkbenchDataManager workbenchDataManager;
 
-	@Autowired
 	private TomcatUtil tomcatUtil;
 
-	public HelpWindow(WorkbenchDataManager workbenchDataManager) {
+	public HelpWindow(WorkbenchDataManager workbenchDataManager, TomcatUtil tomcatUtil) {
 		super();
 		this.workbenchDataManager = workbenchDataManager;
+		this.tomcatUtil = tomcatUtil;
 		this.initializeLayout();
 	}
 
