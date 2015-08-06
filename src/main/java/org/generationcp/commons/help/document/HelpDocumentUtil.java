@@ -54,4 +54,19 @@ public class HelpDocumentUtil {
 		}
 		return installationDirectory;
 	}
+
+	public static String getOnLineLink(String link) {
+		return "https://".concat(link);
+	}
+
+	public static String getOffLineLink(URL currentURL, String link) {
+		StringBuilder offlineLink = new StringBuilder();
+		offlineLink.append("BMS_HTML/");
+		offlineLink.append(link);
+		offlineLink.append(".html");
+
+		String host = currentURL.getHost();
+		Integer port = currentURL.getPort();
+		return "http://" + host + ":" + port + "/" + offlineLink.toString();
+	}
 }
