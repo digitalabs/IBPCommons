@@ -21,6 +21,11 @@ public class HelpDocumentUtil {
 	}
 
 	public static boolean isIBPDomainReachable(String onlineLink) {
+
+		if (onlineLink.length() == 0) {
+			return false;
+		}
+
 		try {
 			final URL url = new URL(onlineLink);
 			final URLConnection conn = url.openConnection();
@@ -56,17 +61,26 @@ public class HelpDocumentUtil {
 	}
 
 	public static String getOnLineLink(String link) {
-		return "https://".concat(link);
+		String onlineLink = "";
+		if (!link.isEmpty()) {
+			onlineLink = "https://".concat(link);
+		}
+
+		return onlineLink;
 	}
 
 	public static String getOffLineLink(URL currentURL, String link) {
-		StringBuilder offlineLink = new StringBuilder();
-		offlineLink.append("BMS_HTML/");
-		offlineLink.append(link);
-		offlineLink.append(".html");
+		String offlineLink = "";
+		if (!link.isEmpty()) {
+			StringBuilder offlineLinkBuilder = new StringBuilder();
+			offlineLinkBuilder.append("BMS_HTML/");
+			offlineLinkBuilder.append(link);
+			offlineLinkBuilder.append(".html");
 
-		String host = currentURL.getHost();
-		Integer port = currentURL.getPort();
-		return "http://" + host + ":" + port + "/" + offlineLink.toString();
+			String host = currentURL.getHost();
+			Integer port = currentURL.getPort();
+			offlineLink = "http://" + host + ":" + port + "/" + offlineLinkBuilder.toString();
+		}
+		return offlineLink;
 	}
 }

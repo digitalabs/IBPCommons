@@ -35,15 +35,16 @@ public class HelpButtonClickListener implements Button.ClickListener {
 
 	@Override
 	public void buttonClick(ClickEvent event) {
-		boolean hasInternetConnection = HelpDocumentUtil.isIBPDomainReachable(this.getOnlineLink(this.link));
+		String propertyLink = this.helpProperties.getProperty(this.link.getPropertyName());
 
+		boolean hasInternetConnection = HelpDocumentUtil.isIBPDomainReachable(this.getOnlineLink(this.link));
 		Window currentWindow = event.getComponent().getWindow();
 		ExternalResource tutorialLink = this.getTutorialLink(this.link, currentWindow, hasInternetConnection);
 
 		String installationDirectory = HelpDocumentUtil.getInstallationDirectory(this.workbenchDataManager);
-		if (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
+		if (!propertyLink.isEmpty() && (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory))) {
 			event.getComponent().getWindow().open(tutorialLink, " _BLANK");
-		} else {
+		} else if (!hasInternetConnection && !HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
 			HelpWindow helpWindow = new HelpWindow(this.workbenchDataManager, this.tomcatUtil);
 			event.getComponent().getParent().getWindow().addWindow(helpWindow);
 		}

@@ -17,6 +17,11 @@ public class HelpDocumentUtilTest {
 	private static final String INSTALLATION_PATH = "C:\\BMS 4";
 
 	@Test
+	public void testIsIBPDomainReachable_ReturnsFalseForEmptyURL() {
+		Assert.assertFalse("Expecting to return false for empty url.", HelpDocumentUtil.isIBPDomainReachable(""));
+	}
+
+	@Test
 	public void testIsIBPDomainReachable_ReturnsFalseForInvalidURL() {
 		Assert.assertFalse("Expecting to return false for malformed url.", HelpDocumentUtil.isIBPDomainReachable("google.com"));
 	}
@@ -58,14 +63,27 @@ public class HelpDocumentUtilTest {
 	}
 
 	@Test
-	public void testGetOnLineLink() {
+	public void testGetOnLineLink_ReturnsAnEmptyStringForEmptyLink() {
+		Assert.assertTrue("Expecting to return an empty link for empty url but didn't.",
+				"".equalsIgnoreCase(HelpDocumentUtil.getOnLineLink("")));
+	}
+
+	@Test
+	public void testGetOnLineLink_ForValidURL() {
 		String link = "www.google.com";
 		Assert.assertTrue("Expecting to return a link with https:// but didn't.",
 				HelpDocumentUtil.getOnLineLink(link).startsWith("https://"));
 	}
 
 	@Test
-	public void testGetOffLineLink() throws MalformedURLException {
+	public void testGetOffLineLink_ReturnsAnEmptyStringForEmptyLink() throws MalformedURLException {
+		URL currentURL = new URL("https:\\localhost:8080\\www.google.com");
+		String offlineLink = HelpDocumentUtil.getOffLineLink(currentURL, "");
+		Assert.assertTrue("Expecting to return an empty link for empty url but didn't.", "".equalsIgnoreCase(offlineLink));
+	}
+
+	@Test
+	public void testGetOffLineLink_ForValidURL() throws MalformedURLException {
 		URL currentURL = new URL("https:\\localhost:8080\\www.google.com");
 		String link = "www.google.com";
 		String offlineLink = HelpDocumentUtil.getOffLineLink(currentURL, link);
