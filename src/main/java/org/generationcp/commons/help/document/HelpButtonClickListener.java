@@ -8,7 +8,9 @@ import javax.annotation.Resource;
 
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
@@ -26,6 +28,9 @@ public class HelpButtonClickListener implements Button.ClickListener {
 	private WorkbenchDataManager workbenchDataManager;
 	@Resource
 	private Properties helpProperties;
+	@Autowired
+	@Qualifier("workbenchProperties")
+	private Properties workbenchProperties;
 
 	private HelpModule link;
 
@@ -45,7 +50,7 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		if (!propertyLink.isEmpty() && (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory))) {
 			event.getComponent().getWindow().open(tutorialLink, " _BLANK");
 		} else if (!hasInternetConnection && !HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
-			HelpWindow helpWindow = new HelpWindow(this.workbenchDataManager, this.tomcatUtil);
+			HelpWindow helpWindow = new HelpWindow(this.workbenchDataManager, this.tomcatUtil, this.workbenchProperties);
 			event.getComponent().getParent().getWindow().addWindow(helpWindow);
 		}
 	}

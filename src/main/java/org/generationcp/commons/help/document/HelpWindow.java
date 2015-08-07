@@ -4,6 +4,7 @@ package org.generationcp.commons.help.document;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -44,11 +45,13 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 	private WorkbenchDataManager workbenchDataManager;
 
 	private TomcatUtil tomcatUtil;
+	private Properties workbenchProperties;
 
-	public HelpWindow(WorkbenchDataManager workbenchDataManager, TomcatUtil tomcatUtil) {
+	public HelpWindow(WorkbenchDataManager workbenchDataManager, TomcatUtil tomcatUtil, Properties workbenchProperties) {
 		super();
 		this.workbenchDataManager = workbenchDataManager;
 		this.tomcatUtil = tomcatUtil;
+		this.workbenchProperties = workbenchProperties;
 		this.initializeLayout();
 	}
 
@@ -62,8 +65,7 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 
 		this.rootLayout = this.getContent();
 
-		// Label version = new Label(this.workbenchProperties.getProperty("workbench.version", ""));
-		Label version = new Label("4.0.x");
+		Label version = new Label(this.workbenchProperties.getProperty("workbench.version", ""));
 		version.setStyleName("gcp-version");
 		this.rootLayout.addComponent(version);
 
