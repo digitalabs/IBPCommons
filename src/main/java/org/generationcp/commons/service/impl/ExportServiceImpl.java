@@ -2,13 +2,17 @@
 package org.generationcp.commons.service.impl;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.annotation.Resource;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -17,6 +21,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -31,6 +36,7 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
+import org.generationcp.commons.service.FileService;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
@@ -79,11 +85,17 @@ public class ExportServiceImpl implements ExportService {
 	public static final String LABEL_STYLE_FACTOR = "labelStyleFactor";
 	public static final String LABEL_STYLE_INVENTORY = "labelStyleInventory";
 	public static final String LABEL_STYLE_VARIATE = "labelStyleVariate";
-	private static final String HEADING_STYLE_FACTOR = "headingStyleFactor";
-	private static final String HEADIING_STYLE_INVENTORY = "headingStyleInventory";
-	private static final String HEADING_STYLE_VARIATE = "headingStyleVariate";
-	private static final String SHEET_STYLE = "sheetStyle";
-	private static final String TEXT_HIGHLIGHT_STYLE_FACTOR = "textHightlightFactor";
+	public static final String HEADING_STYLE_FACTOR = "headingStyleFactor";
+	public static final String HEADIING_STYLE_INVENTORY = "headingStyleInventory";
+	public static final String HEADING_STYLE_VARIATE = "headingStyleVariate";
+	public static final String SHEET_STYLE = "sheetStyle";
+	public static final String TEXT_HIGHLIGHT_STYLE_FACTOR = "textHightlightFactor";
+	public static final String COLUMN_HIGHLIGHT_STYLE_FACTOR = "columnHighlightFactor";
+
+	@Resource
+	private FileService fileService;
+
+	private File templateFile;
 
 	@Override
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues, List<ExportColumnHeader> exportColumnHeaders,
@@ -238,7 +250,13 @@ public class ExportServiceImpl implements ExportService {
 	public FileOutputStream generateGermplasmListExcelFile(GermplasmListExportInputValues input) throws GermplasmListExporterException {
 
 		// create workbook
-		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFWorkbook wb;
+		try {
+			wb = (HSSFWorkbook) this.retrieveTemplate();
+		} catch (InvalidFormatException | IOException e) {
+			ExportServiceImpl.LOG.error(e.getMessage(), e);
+			throw new GermplasmListExporterException();
+		}
 
 		Map<String, CellStyle> sheetStyles = this.createStyles(wb);
 
@@ -1050,6 +1068,25 @@ public class ExportServiceImpl implements ExportService {
 		sheet.setColumnWidth(5, 15 * 256 + 200);
 		sheet.setColumnWidth(6, 15 * 256 + 200);
 		sheet.setColumnWidth(7, 55 * 256 + 200);
+	}
+
+	public Workbook retrieveTemplate() throws IOException, InvalidFormatException {
+		try (InputStream is = new FileInputStream(this.templateFile)) {
+			String tempFile = this.fileService.saveTemporaryFile(is);
+
+			return this.fileService.retrieveWorkbook(tempFile);
+		}
+	}
+
+	public void setTemplateFile(File templateFile) {
+		this.templateFile = templateFile;
+	}
+
+	private String getColumnNamesTermId(ColumnLabels columnLabel) {
+		if (columnLabel.getTermId() != null) {
+			return String.valueOf(columnLabel.getTermId().getId());
+		}
+		return "";
 	}
 
 }
