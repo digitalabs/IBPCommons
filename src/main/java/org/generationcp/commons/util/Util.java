@@ -52,6 +52,8 @@ public class Util {
 		for (Object tmp : objs) {
 			if (obj.equals(tmp)) {
 				return true;
+			} else if (obj instanceof String && obj.toString().equalsIgnoreCase(tmp.toString())) {
+				return true;
 			}
 		}
 

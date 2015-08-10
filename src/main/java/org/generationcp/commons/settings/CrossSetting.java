@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
-@XmlRootElement
+@XmlRootElement(name = "CrossingManagerSetting")
 public class CrossSetting implements Serializable, PresetSetting {
 
 	public static final String CROSSING_MANAGER_TOOL_NAME = "crossing_manager";
