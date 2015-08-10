@@ -38,8 +38,9 @@ import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -306,68 +307,91 @@ public class ExportServiceImpl implements ExportService {
 			throws GermplasmListExporterException {
 
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
-		GermplasmList germplasmList = input.getGermplasmList();
-		List<GermplasmListData> listDatas = germplasmList.getListData();
+		Map<Integer, StandardVariable> inventoryStandardVariableMap = input.getInventoryStandardVariableMap();
+		input.getGermplasmList();
+		List<? extends GermplasmExportSource> listData = input.getListData();
 		Map<Integer, GermplasmParents> germplasmParentsMap = input.getGermplasmParents();
 
 		this.createListEntriesHeaderRow(styles, observationSheet, input);
 
 		int i = 1;
-		for (GermplasmListData listData : listDatas) {
+		for (GermplasmExportSource data : listData) {
 			HSSFRow listEntry = observationSheet.createRow(i);
 
 			int j = 0;
-			if (visibleColumnMap.containsKey(ColumnLabels.ENTRY_ID.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())) {
-				listEntry.createCell(j).setCellValue(listData.getEntryId());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
+				listEntry.createCell(j).setCellValue(data.getEntryId());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.GID.getName()) && visibleColumnMap.get(ColumnLabels.GID.getName())) {
-				listEntry.createCell(j).setCellValue(listData.getGid());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GID))) {
+				listEntry.createCell(j).setCellValue(data.getGermplasmId());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.ENTRY_CODE.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())) {
-				listEntry.createCell(j).setCellValue(listData.getEntryCode());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
+				listEntry.createCell(j).setCellValue(data.getEntryCode());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.DESIGNATION.getName())
-					&& visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())) {
-				listEntry.createCell(j).setCellValue(listData.getDesignation());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))) {
+				listEntry.createCell(j).setCellValue(data.getDesignation());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.PARENTAGE.getName()) && visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())) {
-				listEntry.createCell(j).setCellValue(listData.getGroupName());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))) {
+				listEntry.createCell(j).setCellValue(data.getGroupName());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.FEMALE_PARENT.getName())
-					&& visibleColumnMap.get(ColumnLabels.FEMALE_PARENT.getName())) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getFemaleParentName());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))) {
+				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getFemaleParentName());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.MALE_PARENT.getName())
-					&& visibleColumnMap.get(ColumnLabels.MALE_PARENT.getName())) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getMaleParentName());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))) {
+				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getMaleParentName());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.FGID.getName()) && visibleColumnMap.get(ColumnLabels.FGID.getName())) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getFgid());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
+				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getFgid());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.MGID.getName()) && visibleColumnMap.get(ColumnLabels.MGID.getName())) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(listData.getGid()).getMgid());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
+				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getMgid());
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(ColumnLabels.SEED_SOURCE.getName())
-					&& visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())) {
-				listEntry.createCell(j).setCellValue(listData.getSeedSource());
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
+				listEntry.createCell(j).setCellValue(data.getSeedSource());
+				j++;
+			}
+
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
+				listEntry.createCell(j).setCellValue(data.getCheckTypeDescription());
+				j++;
+			}
+
+			if (inventoryStandardVariableMap.containsKey(8269)) {
+				listEntry.createCell(j).setCellValue(data.getStockIDs());
+				j++;
+			}
+
+			if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
+				listEntry.createCell(j).setCellValue(data.getSeedAmount());
 				j++;
 			}
 
@@ -380,82 +404,115 @@ public class ExportServiceImpl implements ExportService {
 
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
 		Map<Integer, StandardVariable> columnStandardVariableMap = input.getColumnStandardVariableMap();
+		Map<Integer, StandardVariable> inventoryStandardVariableMap = input.getInventoryStandardVariableMap();
 		HSSFRow listEntriesHeader = observationSheet.createRow(0);
 		listEntriesHeader.setHeightInPoints(18);
 
 		int columnIndex = 0;
-		if (visibleColumnMap.containsKey(ColumnLabels.ENTRY_ID.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
 			Cell entryIdCell = listEntriesHeader.createCell(columnIndex);
 			entryIdCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.ENTRY_ID, columnStandardVariableMap));
 			entryIdCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.GID.getName()) && visibleColumnMap.get(ColumnLabels.GID.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GID))) {
 			Cell gidCell = listEntriesHeader.createCell(columnIndex);
 			gidCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.GID, columnStandardVariableMap));
 			gidCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.ENTRY_CODE.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
 			Cell entryCodeCell = listEntriesHeader.createCell(columnIndex);
 			entryCodeCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.ENTRY_CODE, columnStandardVariableMap));
 			entryCodeCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.DESIGNATION.getName()) && visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))) {
 			Cell designationCell = listEntriesHeader.createCell(columnIndex);
 			designationCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.DESIGNATION, columnStandardVariableMap));
 			designationCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.PARENTAGE.getName()) && visibleColumnMap.get(ColumnLabels.PARENTAGE.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.PARENTAGE, columnStandardVariableMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.FEMALE_PARENT.getName())
-				&& visibleColumnMap.get(ColumnLabels.FEMALE_PARENT.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.FEMALE_PARENT, columnStandardVariableMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.MALE_PARENT.getName()) && visibleColumnMap.get(ColumnLabels.MALE_PARENT.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.MALE_PARENT, columnStandardVariableMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.FGID.getName()) && visibleColumnMap.get(ColumnLabels.FGID.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.FGID, columnStandardVariableMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.MGID.getName()) && visibleColumnMap.get(ColumnLabels.MGID.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.MGID, columnStandardVariableMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.SEED_SOURCE.getName()) && visibleColumnMap.get(ColumnLabels.SEED_SOURCE.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
 			Cell sourceCell = listEntriesHeader.createCell(columnIndex);
 			sourceCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.SEED_SOURCE, columnStandardVariableMap));
 			sourceCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
+			Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.ENTRY_TYPE, columnStandardVariableMap));
+			entryTypeCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (inventoryStandardVariableMap.containsKey(8269)) {
+			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
+			stockIDCell.setCellValue(input.getInventoryStandardVariableMap().get(8269).getName());
+			stockIDCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			columnIndex++;
+		}
+
+		if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
+			Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
+			seedAmountCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName());
+			seedAmountCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			columnIndex++;
+		}
+
 	}
 
 	protected String getTermNameFromStandardVariable(ColumnLabels columnLabel, Map<Integer, StandardVariable> columnStandardVariableMap) {
@@ -519,7 +576,8 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, factorDetailsHeader, headingStyle, "");
 		this.createCell(7, factorDetailsHeader, headingStyle, ExportServiceImpl.COMMENTS);
 
-		if (visibleColumnMap.containsKey(ColumnLabels.ENTRY_ID.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_ID.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
 
 			StandardVariable entryNumber = columnStandardVariables.get(ColumnLabels.ENTRY_ID.getTermId().getId());
 			HSSFRow entryIdRow = descriptionSheet.createRow(++actualRow);
@@ -528,21 +586,14 @@ public class ExportServiceImpl implements ExportService {
 
 				this.writeStandardVariableToRow(entryIdRow, labelStyleFactor, styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR),
 						entryNumber);
+				this.createCell(7, entryIdRow, textStyle, "Sequence number - mandatory");
 
-			} else {
-
-				this.createCell(0, entryIdRow, labelStyleFactor, "ENTRY");
-				this.createCell(1, entryIdRow, textStyle, "The germplasm entry number");
-				this.createCell(2, entryIdRow, textStyle, "GERMPLASM ENTRY");
-				this.createCell(3, entryIdRow, textStyle, "NUMBER");
-				this.createCell(4, entryIdRow, textStyle, "ENUMERATED");
-				this.createCell(5, entryIdRow, textStyle, "N");
-				this.createCell(6, entryIdRow, textStyle, "");
 			}
 
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.GID.getName()) && visibleColumnMap.get(ColumnLabels.GID.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GID))) {
 
 			StandardVariable gid = columnStandardVariables.get(ColumnLabels.GID.getTermId().getId());
 			HSSFRow gidRow = descriptionSheet.createRow(++actualRow);
@@ -550,20 +601,14 @@ public class ExportServiceImpl implements ExportService {
 			if (gid != null) {
 
 				this.writeStandardVariableToRow(gidRow, labelStyleFactor, textStyle, gid);
+				this.createCell(7, gidRow, textStyle, "GID value if known (or leave blank)");
 
-			} else {
-				this.createCell(0, gidRow, labelStyleFactor, "GID");
-				this.createCell(1, gidRow, textStyle, "The GID of the germplasm");
-				this.createCell(2, gidRow, textStyle, "GERMPLASM ID");
-				this.createCell(3, gidRow, textStyle, "DBID");
-				this.createCell(4, gidRow, textStyle, ExportServiceImpl.ASSIGNED);
-				this.createCell(5, gidRow, textStyle, "N");
-				this.createCell(6, gidRow, textStyle, "");
 			}
 
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.ENTRY_CODE.getName()) && visibleColumnMap.get(ColumnLabels.ENTRY_CODE.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
 
 			StandardVariable entryCode = columnStandardVariables.get(ColumnLabels.ENTRY_CODE.getTermId().getId());
 			HSSFRow entryCodeRow = descriptionSheet.createRow(++actualRow);
@@ -571,20 +616,14 @@ public class ExportServiceImpl implements ExportService {
 			if (entryCode != null) {
 
 				this.writeStandardVariableToRow(entryCodeRow, labelStyleFactor, textStyle, entryCode);
+				this.createCell(7, entryCodeRow, textStyle, "Text giving a local entry code - optional");
 
-			} else {
-				this.createCell(0, entryCodeRow, labelStyleFactor, "ENTRY CODE");
-				this.createCell(1, entryCodeRow, textStyle, "Germplasm entry code");
-				this.createCell(2, entryCodeRow, textStyle, "GERMPLASM ENTRY");
-				this.createCell(3, entryCodeRow, textStyle, "CODE");
-				this.createCell(4, entryCodeRow, textStyle, ExportServiceImpl.ASSIGNED);
-				this.createCell(5, entryCodeRow, textStyle, "C");
-				this.createCell(6, entryCodeRow, textStyle, "");
 			}
 
 		}
 
-		if (visibleColumnMap.containsKey(ColumnLabels.DESIGNATION.getName()) && visibleColumnMap.get(ColumnLabels.DESIGNATION.getName())) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))) {
 
 			StandardVariable designation = columnStandardVariables.get(ColumnLabels.DESIGNATION.getTermId().getId());
 			HSSFRow designationRow = descriptionSheet.createRow(++actualRow);
@@ -593,15 +632,8 @@ public class ExportServiceImpl implements ExportService {
 
 				this.writeStandardVariableToRow(designationRow, labelStyleFactor,
 						styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR), designation);
+				this.createCell(7, designationRow, textStyle, "Germplasm name - mandatory");
 
-			} else {
-				this.createCell(0, designationRow, labelStyleFactor, "DESIGNATION");
-				this.createCell(1, designationRow, textStyle, "The name of the germplasm");
-				this.createCell(2, designationRow, textStyle, "GERMPLASM ID");
-				this.createCell(3, designationRow, textStyle, "DBCV");
-				this.createCell(4, designationRow, textStyle, ExportServiceImpl.ASSIGNED);
-				this.createCell(5, designationRow, textStyle, "C");
-				this.createCell(6, designationRow, textStyle, "");
 			}
 
 		}

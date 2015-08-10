@@ -1,10 +1,13 @@
 
 package org.generationcp.commons.pojo;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 
 public class GermplasmListExportInputValues {
@@ -19,6 +22,7 @@ public class GermplasmListExportInputValues {
 	private Map<Integer, StandardVariable> inventoryStandardVariableMap;
 	private Map<Integer, StandardVariable> variateStandardVariableMap;
 	private Map<Integer, GermplasmParents> germplasmParents;
+	private List<? extends GermplasmExportSource> listData;
 
 	public GermplasmListExportInputValues() {
 		super();
@@ -116,5 +120,16 @@ public class GermplasmListExportInputValues {
 
 	public void setVariateStandardVariableMap(Map<Integer, StandardVariable> variateStandardVariableMap) {
 		this.variateStandardVariableMap = variateStandardVariableMap;
+	}
+
+	public List<? extends GermplasmExportSource> getListData() {
+		if (this.listData == null) {
+			return new ArrayList<>();
+		}
+		return this.listData;
+	}
+
+	public void setListData(List<? extends GermplasmExportSource> listData) {
+		this.listData = listData;
 	}
 }
