@@ -201,4 +201,11 @@ public class ContextUtil {
 
 	}
 
+	public static void setContextInfo(HttpServletRequest request, Integer userId, Long projectId, String authToken) {
+
+			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
+					new ContextInfo(userId, projectId,
+							authToken));
+	}
+
 }
