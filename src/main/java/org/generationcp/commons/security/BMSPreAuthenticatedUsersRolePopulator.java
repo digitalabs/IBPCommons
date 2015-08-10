@@ -16,26 +16,42 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
 
 	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
+	@Autowired
+	private PlatformTransactionManager transactionManager;
+
 	@Override
-	public GrantedAuthoritiesContainer buildDetails(HttpServletRequest request) {
-		try {
-			User user = ContextUtil.getCurrentWorkbenchUser(this.workbenchDataManager, request);
+	public GrantedAuthoritiesContainer buildDetails(final HttpServletRequest request) {
+		TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
 
-			List<GrantedAuthority> role = new ArrayList<>();
-			role.addAll(SecurityUtil.getRolesAsAuthorities(user));
+		return transactionTemplate.execute(new TransactionCallback<PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails>() {
 
-			return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, role);
+			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(TransactionStatus status) {
+				try {
+					User user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.workbenchDataManager, request);
 
-		} catch (MiddlewareQueryException e) {
+					List<GrantedAuthority> role = new ArrayList<>();
+					role.addAll(SecurityUtil.getRolesAsAuthorities(user));
 
-			throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
-		}
+					return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, role);
+
+				} catch (MiddlewareQueryException e) {
+
+					throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
+				}
+			}
+
+		});
+
 	}
 
 	void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {

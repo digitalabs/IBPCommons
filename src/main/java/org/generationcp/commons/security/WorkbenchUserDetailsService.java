@@ -11,12 +11,14 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 public class WorkbenchUserDetailsService implements UserDetailsService {
 
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
 			List<User> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
