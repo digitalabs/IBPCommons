@@ -13,6 +13,7 @@ import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +99,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	}
 
 	protected void parseListDetails() throws FileParsingException, ParseException {
+		Date listDate;
 		String listName = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, 0, 1);
 		String listTitle = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
 
@@ -106,7 +108,12 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		int listDateColNo = DescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
 		int listTypeColNo = DescriptionSheetParser.LIST_TYPE.equalsIgnoreCase(labelId) ? 2 : 3;
 
-		Date listDate = DateUtil.parseDate(this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1));
+		String listDateNotParsed = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
+		if (StringUtil.isEmpty(listDateNotParsed)) {
+			listDate = DateUtil.getCurrentDate();
+		} else {
+			listDate = DateUtil.parseDate(listDateNotParsed);
+		}
 		String listType = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listTypeColNo, 1);
 
 		if (!DescriptionSheetParser.TEMPLATE_LIST_TYPE.equalsIgnoreCase(listType)) {
@@ -184,14 +191,14 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 			this.currentRow++;
 			while (!this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
 					DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
-				this.importedList.addImportedConstant(new ImportedConstant(this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0), this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1), this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2), this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3), this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4), this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), this.getCellStringValue(
-						DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6)));
+				this.importedList.addImportedConstant(
+						new ImportedConstant(this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5),
+								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6)));
 
 				this.currentRow++;
 			}
@@ -280,6 +287,10 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 
 	public void setDoParseVariates(boolean doParseVariates) {
 		this.doParseVariates = doParseVariates;
+	}
+
+	public T getImportedList() {
+		return importedList;
 	}
 
 	@Override
