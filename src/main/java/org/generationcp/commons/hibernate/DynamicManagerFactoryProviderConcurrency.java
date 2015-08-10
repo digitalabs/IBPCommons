@@ -52,17 +52,17 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 
 		final Project project = getCropProject();
 		
-		String databaseName = project.getDatabaseName();
+		final String databaseName = project.getDatabaseName();
 
-		SessionFactory applicableCropSessionFactory = (SessionFactory) applicationContext.getBean(XADataSources.computeSessionFactoryName(databaseName));
-		ManagerFactory factory = new ManagerFactory();
+		final SessionFactory applicableCropSessionFactory = (SessionFactory) applicationContext.getBean(XADataSources.computeSessionFactoryName(databaseName));
 
+		final ManagerFactory factory = new ManagerFactory();
 		factory.setSessionProvider(new HibernateSessionPerThreadProvider(applicableCropSessionFactory));
 		factory.setDatabaseName(databaseName);
 		factory.setCropName(project.getCropType().getCropName());
 		factory.setPedigreeProfile(this.pedigreeProfile);
-
 		return factory;
+
 	}
 
 	private Project getCropProject() throws MiddlewareQueryException {
