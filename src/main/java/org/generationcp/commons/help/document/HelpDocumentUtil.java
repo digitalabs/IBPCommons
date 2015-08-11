@@ -21,6 +21,11 @@ public class HelpDocumentUtil {
 	}
 
 	public static boolean isIBPDomainReachable(String onlineLink) {
+
+		if (onlineLink.length() == 0) {
+			return false;
+		}
+
 		try {
 			final URL url = new URL(onlineLink);
 			final URLConnection conn = url.openConnection();
@@ -32,8 +37,7 @@ public class HelpDocumentUtil {
 		}
 	}
 
-	public static boolean isDocumentsFolderFound(WorkbenchDataManager workbenchDataManager) {
-		String installationDirectory = getInstallationDirectory(workbenchDataManager);
+	public static boolean isDocumentsFolderFound(String installationDirectory) {
 		String docsDirectory = installationDirectory + File.separator + "Documents" + File.separator;
 		File docsDirectoryFile = new File(docsDirectory);
 		if (docsDirectoryFile.exists() && docsDirectoryFile.isDirectory()) {
@@ -54,5 +58,29 @@ public class HelpDocumentUtil {
 			installationDirectory = setting.getInstallationDirectory();
 		}
 		return installationDirectory;
+	}
+
+	public static String getOnLineLink(String link) {
+		String onlineLink = "";
+		if (!link.isEmpty()) {
+			onlineLink = "https://".concat(link);
+		}
+
+		return onlineLink;
+	}
+
+	public static String getOffLineLink(URL currentURL, String link) {
+		String offlineLink = "";
+		if (!link.isEmpty()) {
+			StringBuilder offlineLinkBuilder = new StringBuilder();
+			offlineLinkBuilder.append("BMS_HTML/");
+			offlineLinkBuilder.append(link);
+			offlineLinkBuilder.append(".html");
+
+			String host = currentURL.getHost();
+			Integer port = currentURL.getPort();
+			offlineLink = "http://" + host + ":" + port + "/" + offlineLinkBuilder.toString();
+		}
+		return offlineLink;
 	}
 }

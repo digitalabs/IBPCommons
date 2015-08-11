@@ -16,6 +16,8 @@ public class GermplasmListExportInputValues {
 	private Integer currentLocalIbdbUserId;
 	private Map<String, Boolean> visibleColumnMap;
 	private Map<Integer, StandardVariable> columnStandardVariableMap;
+	private Map<Integer, StandardVariable> inventoryStandardVariableMap;
+	private Map<Integer, StandardVariable> variateStandardVariableMap;
 	private Map<Integer, GermplasmParents> germplasmParents;
 
 	public GermplasmListExportInputValues() {
@@ -88,5 +90,31 @@ public class GermplasmListExportInputValues {
 
 	public void setGermplasmParents(Map<Integer, GermplasmParents> germplasmParents) {
 		this.germplasmParents = germplasmParents;
+	}
+
+	public Map<Integer, StandardVariable> getInventoryStandardVariableMap() {
+
+		if (this.inventoryStandardVariableMap == null) {
+			return new HashMap<>();
+		}
+
+		return this.inventoryStandardVariableMap;
+	}
+
+	public void setInventoryStandardVariableMap(Map<Integer, StandardVariable> inventoryStandardVariableMap) {
+		this.inventoryStandardVariableMap = inventoryStandardVariableMap;
+	}
+
+	public Map<Integer, StandardVariable> getVariateStandardVariableMap() {
+
+		if (this.variateStandardVariableMap == null) {
+			return new HashMap<>();
+		}
+
+		return this.variateStandardVariableMap;
+	}
+
+	public void setVariateStandardVariableMap(Map<Integer, StandardVariable> variateStandardVariableMap) {
+		this.variateStandardVariableMap = variateStandardVariableMap;
 	}
 }
