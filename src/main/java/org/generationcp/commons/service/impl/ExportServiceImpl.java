@@ -539,24 +539,24 @@ public class ExportServiceImpl implements ExportService {
 		descriptionSheet.setDefaultRowHeightInPoints(18);
 		descriptionSheet.setZoom(10, 8);
 
-		this.writeListDetailsSection(sheetStyles, descriptionSheet, 1, input.getGermplasmList());
+		int nextRow = 1;
 
-		this.writeListConditionSection(sheetStyles, descriptionSheet, 6, input);
+		nextRow = this.writeListDetailsSection(sheetStyles, descriptionSheet, nextRow, input.getGermplasmList());
 
-		this.writeListFactorSection(sheetStyles, descriptionSheet, 12, input);
+		nextRow = this.writeListConditionSection(sheetStyles, descriptionSheet, nextRow + 2, input);
 
-		int nextStartingRow = 12 + input.getColumnStandardVariableMap().size() + 2;
-		this.writeListInventorySection(sheetStyles, descriptionSheet, nextStartingRow, input);
+		nextRow = this.writeListFactorSection(sheetStyles, descriptionSheet, nextRow + 2, input);
 
-		nextStartingRow = nextStartingRow + input.getInventoryStandardVariableMap().size() + 2;
-		this.writeListVariateSection(sheetStyles, descriptionSheet, nextStartingRow, input);
+		nextRow = this.writeListInventorySection(sheetStyles, descriptionSheet, nextRow + 2, input);
+
+		this.writeListVariateSection(sheetStyles, descriptionSheet, nextRow + 2, input);
 
 		this.fillSheetWithCellStyle(sheetStyles.get(ExportServiceImpl.SHEET_STYLE), descriptionSheet);
 		this.setDescriptionColumnsWidth(descriptionSheet);
 
 	}
 
-	public void writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
+	public int writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) {
 
 		CellStyle headingStyle = styles.get(ExportServiceImpl.HEADING_STYLE);
@@ -746,9 +746,25 @@ public class ExportServiceImpl implements ExportService {
 
 			}
 		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
+
+			StandardVariable entryType = columnStandardVariables.get(ColumnLabels.ENTRY_TYPE.getTermId().getId());
+			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
+
+			if (entryType != null) {
+
+				this.writeStandardVariableToRow(sourceRow, labelStyleFactor, textStyle, entryType);
+				this.createCell(7, sourceRow, textStyle, "");
+
+			}
+		}
+
+		return actualRow;
 	}
 
-	public void writeListConditionSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
+	public int writeListConditionSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 
 		CellStyle headingStyle = styles.get(ExportServiceImpl.HEADING_STYLE);
@@ -774,7 +790,7 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, conditionDetailsHeading, headingStyle, ExportServiceImpl.VALUE);
 		this.createCell(7, conditionDetailsHeading, headingStyle, ExportServiceImpl.COMMENTS);
 
-		HSSFRow listUserRow = descriptionSheet.createRow(actualRow + 1);
+		HSSFRow listUserRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listUserRow, labelStyleCondition, "LIST USER");
 		this.createCell(1, listUserRow, textStyle, "PERSON WHO MADE THE LIST");
 		this.createCell(2, listUserRow, textStyle, ExportServiceImpl.PERSON);
@@ -784,7 +800,7 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, listUserRow, textStyle, ownerName.trim());
 		this.createCell(7, listUserRow, textStyle, "See valid user names and IDs on Codes sheet (or leave blank)");
 
-		HSSFRow listUserIdRow = descriptionSheet.createRow(actualRow + 2);
+		HSSFRow listUserIdRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listUserIdRow, labelStyleCondition, "LIST USER ID");
 		this.createCell(1, listUserIdRow, textStyle, "ID OF LIST OWNER");
 		this.createCell(2, listUserIdRow, textStyle, ExportServiceImpl.PERSON);
@@ -794,7 +810,7 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, listUserIdRow, textStyle, String.valueOf(germplasmList.getUserId()));
 		this.createCell(7, listUserIdRow, textStyle, "");
 
-		HSSFRow listExporterRow = descriptionSheet.createRow(actualRow + 3);
+		HSSFRow listExporterRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listExporterRow, labelStyleCondition, "LIST EXPORTER");
 		this.createCell(1, listExporterRow, textStyle, "PERSON EXPORTING THE LIST");
 		this.createCell(2, listExporterRow, textStyle, ExportServiceImpl.PERSON);
@@ -804,7 +820,7 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, listExporterRow, textStyle, exporterName.trim());
 		this.createCell(7, listExporterRow, textStyle, "");
 
-		HSSFRow listExporterIdRow = descriptionSheet.createRow(actualRow + 4);
+		HSSFRow listExporterIdRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listExporterIdRow, labelStyleCondition, "LIST EXPORTER ID");
 		this.createCell(1, listExporterIdRow, textStyle, "ID OF LIST EXPORTER");
 		this.createCell(2, listExporterIdRow, textStyle, ExportServiceImpl.PERSON);
@@ -814,10 +830,12 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, listExporterIdRow, textStyle, String.valueOf(currentLocalIbdbUserId));
 		this.createCell(7, listExporterIdRow, textStyle, "");
 
-		descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow + 1, actualRow + 4, 7, 7));
+		descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow - 4, actualRow, 7, 7));
+
+		return ++actualRow;
 	}
 
-	public void writeListInventorySection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
+	public int writeListInventorySection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 
 		CellStyle labelStyleInventory = styles.get(ExportServiceImpl.LABEL_STYLE_INVENTORY);
@@ -851,7 +869,10 @@ public class ExportServiceImpl implements ExportService {
 				}
 
 			}
+
 		}
+
+		return actualRow;
 	}
 
 	public void writeListVariateSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
@@ -885,7 +906,7 @@ public class ExportServiceImpl implements ExportService {
 		}
 	}
 
-	public void writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet, int startingRow, GermplasmList germplasmList) {
+	public int writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet, int startingRow, GermplasmList germplasmList) {
 		int actualRow = startingRow - 1;
 
 		CellStyle labelStyle = styles.get(ExportServiceImpl.LABEL_STYLE);
@@ -896,21 +917,22 @@ public class ExportServiceImpl implements ExportService {
 		this.createCellRange(descriptionSheet, 1, 2, nameRow, textStyle, germplasmList.getName());
 		this.createCellRange(descriptionSheet, 3, 6, nameRow, textStyle, "Enter a list name here, or add it when saving in the BMS");
 
-		HSSFRow titleRow = (HSSFRow) descriptionSheet.createRow(actualRow + 1);
+		HSSFRow titleRow = (HSSFRow) descriptionSheet.createRow(++actualRow);
 		this.createCell(0, titleRow, labelStyle, ExportServiceImpl.LIST_DESCRIPTION);
 		this.createCellRange(descriptionSheet, 1, 2, titleRow, textStyle, germplasmList.getDescription());
 		this.createCellRange(descriptionSheet, 3, 6, titleRow, textStyle, "Enter a list description here, or add it when saving in the BMS");
 
-		HSSFRow typeRow = (HSSFRow) descriptionSheet.createRow(actualRow + 2);
+		HSSFRow typeRow = (HSSFRow) descriptionSheet.createRow(++actualRow);
 		this.createCell(0, typeRow, labelStyle, ExportServiceImpl.LIST_TYPE);
 		this.createCellRange(descriptionSheet, 1, 2, typeRow, textStyle, germplasmList.getType());
 		this.createCellRange(descriptionSheet, 3, 6, typeRow, textStyle, "Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank");
 
-		HSSFRow dateRow = (HSSFRow) descriptionSheet.createRow(actualRow + 3);
+		HSSFRow dateRow = (HSSFRow) descriptionSheet.createRow(++actualRow);
 		this.createCell(0, dateRow, labelStyle, ExportServiceImpl.LIST_DATE);
 		this.createCellRange(descriptionSheet, 1, 2, dateRow, textStyle, String.valueOf(germplasmList.getDate()));
 		this.createCellRange(descriptionSheet, 3, 6, dateRow, textStyle, "See valid list types on Codes sheet for more options");
 
+		return ++actualRow;
 	}
 
 	protected void writeStandardVariableToRow(HSSFRow hssfRow, CellStyle labelStyleFactor, CellStyle textStyle,
@@ -977,7 +999,7 @@ public class ExportServiceImpl implements ExportService {
 
 		// cell style to highlight the Entry No and Designation for Column
 		CellStyle highlightColumnStyle = this.createStyle(wb);
-		highlightFactorStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+		highlightColumnStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
 		styles.put(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR, highlightColumnStyle);
 
 		// cell style for INVENTORY labels
