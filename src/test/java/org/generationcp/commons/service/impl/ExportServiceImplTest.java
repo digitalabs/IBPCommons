@@ -630,7 +630,7 @@ public class ExportServiceImplTest {
 
 		Map<Integer, StandardVariable> standardVariableMap = new LinkedHashMap<>();
 
-		standardVariableMap.put(TermId.STOCK_ID.getId(), this.createStandardVariable(TermId.STOCK_ID.getId(), "stockID",
+		standardVariableMap.put(TermId.STOCKID.getId(), this.createStandardVariable(TermId.STOCKID.getId(), "stockID",
 				"ID of an inventory deposit", "Germplasm stock id", "DBCV", "Assigned", "Character variable"));
 		standardVariableMap.put(TermId.SEED_AMOUNT_G.getId(), this.createStandardVariable(TermId.SEED_AMOUNT_G.getId(), "SEED_AMOUNT_g",
 				"Seed inventory amount deposited or withdrawn (g)", "Inventory amount", "g", "Weighed", "Numeric variable"));

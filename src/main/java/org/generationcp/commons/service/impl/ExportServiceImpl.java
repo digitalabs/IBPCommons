@@ -387,7 +387,7 @@ public class ExportServiceImpl implements ExportService {
 				j++;
 			}
 
-			if (inventoryStandardVariableMap.containsKey(8269)) {
+			if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 				listEntry.createCell(j).setCellValue(data.getStockIDs());
 				j++;
 			}
@@ -501,9 +501,9 @@ public class ExportServiceImpl implements ExportService {
 			columnIndex++;
 		}
 
-		if (inventoryStandardVariableMap.containsKey(8269)) {
+		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
-			stockIDCell.setCellValue(input.getInventoryStandardVariableMap().get(8269).getName());
+			stockIDCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.STOCKID.getId()).getName());
 			stockIDCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
 			columnIndex++;
 		}
@@ -860,7 +860,7 @@ public class ExportServiceImpl implements ExportService {
 				HSSFRow row = descriptionSheet.createRow(++actualRow);
 				this.writeStandardVariableToRow(row, labelStyleInventory, textStyle, stdVar);
 
-				if (stdVar.getId() == 8269) {
+				if (stdVar.getId() == TermId.STOCKID.getId()) {
 					this.createCell(7, row, textStyle, "Existing StockID value if known (or leave blank)");
 				} else if (stdVar.getId() == TermId.SEED_AMOUNT_G.getId()) {
 					this.createCell(7, row, textStyle, "Weight of seed lot in grams - optional; see Codes sheet for more options");
