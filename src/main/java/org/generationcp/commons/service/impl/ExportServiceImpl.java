@@ -830,7 +830,7 @@ public class ExportServiceImpl implements ExportService {
 		this.createCell(6, listExporterIdRow, textStyle, String.valueOf(currentLocalIbdbUserId));
 		this.createCell(7, listExporterIdRow, textStyle, "");
 
-		descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow - 4, actualRow, 7, 7));
+		descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow - 3, actualRow, 7, 7));
 
 		return ++actualRow;
 	}
