@@ -407,6 +407,7 @@ public class ExportServiceImpl implements ExportService {
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
 		Map<Integer, StandardVariable> columnStandardVariableMap = input.getColumnStandardVariableMap();
 		Map<Integer, StandardVariable> inventoryStandardVariableMap = input.getInventoryStandardVariableMap();
+		Map<Integer, StandardVariable> variateStandardVariableMap = input.getVariateStandardVariableMap();
 		HSSFRow listEntriesHeader = observationSheet.createRow(0);
 		listEntriesHeader.setHeightInPoints(18);
 
@@ -503,15 +504,22 @@ public class ExportServiceImpl implements ExportService {
 
 		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
-			stockIDCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.STOCKID.getId()).getName());
+			stockIDCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
 			stockIDCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
 			columnIndex++;
 		}
 
 		if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
 			Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
-			seedAmountCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName());
+			seedAmountCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
 			seedAmountCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			columnIndex++;
+		}
+
+		if (variateStandardVariableMap.containsKey(TermId.NOTES.getId())) {
+			Cell notesCell = listEntriesHeader.createCell(columnIndex);
+			notesCell.setCellValue(variateStandardVariableMap.get(TermId.NOTES.getId()).getName().toUpperCase());
+			notesCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
 			columnIndex++;
 		}
 
@@ -522,9 +530,9 @@ public class ExportServiceImpl implements ExportService {
 		StandardVariable standardVariable = columnStandardVariableMap.get(columnLabel.getTermId().getId());
 
 		if (standardVariable != null && !standardVariable.getName().isEmpty()) {
-			return standardVariable.getName();
+			return standardVariable.getName().toUpperCase();
 		} else {
-			return columnLabel.getName();
+			return columnLabel.getName().toUpperCase();
 		}
 
 	}
