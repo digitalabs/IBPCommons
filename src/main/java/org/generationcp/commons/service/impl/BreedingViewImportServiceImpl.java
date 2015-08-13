@@ -87,12 +87,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.ontologyDataManager = ontologyDataManager;
 	}
 
-	public BreedingViewImportServiceImpl(Project project, ManagerFactoryProvider managerFactoryProvider) {
-		ManagerFactory managerFactory = managerFactoryProvider.getManagerFactoryForProject(project);
-		this.studyDataManager = managerFactory.getNewStudyDataManager();
-		this.ontologyDataManager = managerFactory.getNewOntologyDataManager();
-	}
-
 	@Override
 	public void importMeansData(File file, int studyId) throws BreedingViewImportException {
 

@@ -51,9 +51,8 @@ public class ContextFilter implements Filter {
 					Cookie selectedProjectIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
 					Cookie authTokenCookie = WebUtils.getCookie(request, ContextConstants.PARAM_AUTH_TOKEN);
 					if (userIdCookie != null && selectedProjectIdCookie != null) {
-						WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
-								new ContextInfo(Integer.valueOf(userIdCookie.getValue()), Long.valueOf(selectedProjectIdCookie.getValue()),
-										authTokenCookie.getValue()));
+						ContextUtil.setContextInfo(request, Integer.valueOf(userIdCookie.getValue()),
+								Long.valueOf(selectedProjectIdCookie.getValue()), authTokenCookie.getValue());
 					}
 				}
 			}
@@ -61,6 +60,8 @@ public class ContextFilter implements Filter {
 
 		chain.doFilter(request, response);
 	}
+
+
 
 	@Override
 	public void destroy() {

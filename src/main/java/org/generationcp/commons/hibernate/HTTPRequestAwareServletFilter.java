@@ -41,7 +41,7 @@ public class HTTPRequestAwareServletFilter implements Filter {
 	}
 
 	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException,
+	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException,
 			ServletException {
 
 		HttpServletRequest req = (HttpServletRequest) servletRequest;
@@ -56,8 +56,10 @@ public class HTTPRequestAwareServletFilter implements Filter {
 			synchronized (this) {
 				HttpRequestAwareUtil.onRequestStart(SpringAppContextProvider.getApplicationContext(), req, resp);
 			}
+			
 
 			filterChain.doFilter(servletRequest, servletResponse);
+
 
 			HTTPRequestAwareServletFilter.LOG.trace("Request ended @ " + requestUri);
 

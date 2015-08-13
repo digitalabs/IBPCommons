@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.util;
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.Cookie;
@@ -22,11 +23,22 @@ import org.springframework.web.util.WebUtils;
 public class ContextUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
+	
+	private static HashMap<Long, Project> projects = new HashMap<Long, Project>();
 
 	public static Project getProjectInContext(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
 			throws MiddlewareQueryException {
 
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		
+		
+		if(contextInfo != null) {
+			Long selectedProjectId = contextInfo.getSelectedProjectId();
+			if(selectedProjectId !=null && projects.containsKey(selectedProjectId)) {
+				return projects.get(selectedProjectId);
+			}
+		}
+		
 		Project project = null;
 		boolean resolvedFromSessionContext = false;
 
@@ -40,6 +52,7 @@ public class ContextUtil {
 		if (project != null) {
 			ContextUtil.LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId() + ". Resolved "
 					+ (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
+			projects.put(project.getProjectId(), project);
 			return project;
 		}
 
@@ -186,6 +199,13 @@ public class ContextUtil {
 
 		return new ContextInfo(userId, selectedProjectId, null != authToken ? authToken : "");
 
+	}
+
+	public static void setContextInfo(HttpServletRequest request, Integer userId, Long projectId, String authToken) {
+
+			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
+					new ContextInfo(userId, projectId,
+							authToken));
 	}
 
 }

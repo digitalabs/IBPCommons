@@ -25,6 +25,7 @@
 		<middleware.version>4.1.0.SNAPSHOT</middleware.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
+		<atomikos.version>3.9.3</atomikos.version>
 	</properties>
 
 	<dependencies>
@@ -239,7 +240,6 @@
 			<version>4.5</version>
 			<scope>test</scope>
 		</dependency>
-
 		<dependency>
 			<groupId>org.kubek2k</groupId>
 			<artifactId>springockito</artifactId>
@@ -280,6 +280,27 @@
 			<version>2.2.4.Final</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jta</artifactId>
+			<version>${atomikos.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-jdbc</artifactId>
+			<version>${atomikos.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atomikos</groupId>
+			<artifactId>transactions-hibernate3</artifactId>
+			<version>${atomikos.version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>hibernate</artifactId>
+					<groupId>org.hibernate</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 	</dependencies>
 
 	<scm>
