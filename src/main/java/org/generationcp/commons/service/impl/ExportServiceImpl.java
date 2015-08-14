@@ -917,30 +917,30 @@ public class ExportServiceImpl implements ExportService {
 	public int writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet, int startingRow, GermplasmList germplasmList) {
 		int actualRow = startingRow - 1;
 
+		this.writeListDetailsRow(descriptionSheet, styles, actualRow, ExportServiceImpl.LIST_NAME, germplasmList.getName(),
+				"Enter a list name here, or add it when saving in the BMS");
+
+		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, ExportServiceImpl.LIST_DESCRIPTION, germplasmList.getDescription(),
+				"Enter a list description here, or add it when saving in the BMS");
+
+		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, ExportServiceImpl.LIST_TYPE,
+				germplasmList.getType(), "See valid list types on Codes sheet for more options");
+
+		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, ExportServiceImpl.LIST_DATE, String.valueOf(
+				germplasmList.getDate()), "Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank");
+
+		return ++actualRow;
+	}
+
+	public void writeListDetailsRow(Sheet descriptionSheet, Map<String, CellStyle> styles, int rowNumber, String labelName, String text,
+			String defaultText) {
 		CellStyle labelStyle = styles.get(ExportServiceImpl.LABEL_STYLE);
 		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
 
-		HSSFRow nameRow = (HSSFRow) descriptionSheet.createRow(actualRow);
-		this.createCell(0, nameRow, labelStyle, ExportServiceImpl.LIST_NAME);
-		this.createCellRange(descriptionSheet, 1, 2, nameRow, textStyle, germplasmList.getName());
-		this.createCellRange(descriptionSheet, 3, 6, nameRow, textStyle, "Enter a list name here, or add it when saving in the BMS");
-
-		HSSFRow titleRow = (HSSFRow) descriptionSheet.createRow(++actualRow);
-		this.createCell(0, titleRow, labelStyle, ExportServiceImpl.LIST_DESCRIPTION);
-		this.createCellRange(descriptionSheet, 1, 2, titleRow, textStyle, germplasmList.getDescription());
-		this.createCellRange(descriptionSheet, 3, 6, titleRow, textStyle, "Enter a list description here, or add it when saving in the BMS");
-
-		HSSFRow typeRow = (HSSFRow) descriptionSheet.createRow(++actualRow);
-		this.createCell(0, typeRow, labelStyle, ExportServiceImpl.LIST_TYPE);
-		this.createCellRange(descriptionSheet, 1, 2, typeRow, textStyle, germplasmList.getType());
-		this.createCellRange(descriptionSheet, 3, 6, typeRow, textStyle, "Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank");
-
-		HSSFRow dateRow = (HSSFRow) descriptionSheet.createRow(++actualRow);
-		this.createCell(0, dateRow, labelStyle, ExportServiceImpl.LIST_DATE);
-		this.createCellRange(descriptionSheet, 1, 2, dateRow, textStyle, String.valueOf(germplasmList.getDate()));
-		this.createCellRange(descriptionSheet, 3, 6, dateRow, textStyle, "See valid list types on Codes sheet for more options");
-
-		return ++actualRow;
+		HSSFRow row = (HSSFRow) descriptionSheet.createRow(rowNumber);
+		this.createCell(0, row, labelStyle, labelName);
+		this.createCellRange(descriptionSheet, 1, 2, row, textStyle, text);
+		this.createCellRange(descriptionSheet, 3, 6, row, textStyle, defaultText);
 	}
 
 	protected void writeStandardVariableToRow(HSSFRow hssfRow, CellStyle labelStyleFactor, CellStyle textStyle,
