@@ -932,7 +932,7 @@ public class ExportServiceImpl implements ExportService {
 		return ++actualRow;
 	}
 
-	public void writeListDetailsRow(Sheet descriptionSheet, Map<String, CellStyle> styles, int rowNumber, String labelName, String text,
+	protected void writeListDetailsRow(Sheet descriptionSheet, Map<String, CellStyle> styles, int rowNumber, String labelName, String text,
 			String defaultText) {
 		CellStyle labelStyle = styles.get(ExportServiceImpl.LABEL_STYLE);
 		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
