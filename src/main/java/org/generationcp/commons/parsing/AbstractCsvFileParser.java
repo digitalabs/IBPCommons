@@ -40,9 +40,16 @@ public abstract class AbstractCsvFileParser<T> {
 	public T parseFile(MultipartFile file) throws FileParsingException {
 		this.csvFile = this.storeAndRetrieveFile(file);
 
-		Map<Integer, List<String>> csvMap = new HashMap<>();
+		return this.parseFile(this.csvFile.getAbsolutePath());
+	}
 
+	public T parseFile(String absoluteFilename) throws FileParsingException {
 		try {
+			this.csvFile = new File(absoluteFilename);
+
+			Map<Integer, List<String>> csvMap = new HashMap<>();
+
+
 			CSVReader reader = new CSVReader(new FileReader(this.csvFile));
 
 			String nextLine[];
@@ -53,11 +60,11 @@ public abstract class AbstractCsvFileParser<T> {
 
 			reader.close();
 
+
+			return this.parseCsvMap(csvMap);
 		} catch (IOException e) {
 			throw new FileParsingException(this.messageSource.getMessage("common.error.invalid.file", null, Locale.ENGLISH));
 		}
-
-		return this.parseCsvMap(csvMap);
 	}
 
 	public abstract T parseCsvMap(Map<Integer, List<String>> csvMap) throws FileParsingException;
