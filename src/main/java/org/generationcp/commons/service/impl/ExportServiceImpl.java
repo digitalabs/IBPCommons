@@ -2,7 +2,6 @@
 package org.generationcp.commons.service.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +40,7 @@ import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.generationcp.middleware.util.ResourceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +96,7 @@ public class ExportServiceImpl implements ExportService {
 	@Resource
 	private FileService fileService;
 
-	private File templateFile;
+	private String templateFile;
 
 	@Override
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues, List<ExportColumnHeader> exportColumnHeaders,
@@ -1140,14 +1140,15 @@ public class ExportServiceImpl implements ExportService {
 	}
 
 	public Workbook retrieveTemplate() throws IOException, InvalidFormatException {
-		try (InputStream is = new FileInputStream(this.templateFile)) {
+
+		try (InputStream is = ResourceFinder.locateFile(this.templateFile).openStream()) {
 			String tempFile = this.fileService.saveTemporaryFile(is);
 
 			return this.fileService.retrieveWorkbook(tempFile);
 		}
 	}
 
-	public void setTemplateFile(File templateFile) {
+	public void setTemplateFile(String templateFile) {
 		this.templateFile = templateFile;
 	}
 
