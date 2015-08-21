@@ -64,7 +64,8 @@ public class StockServiceImplTest {
 			StockServiceImplTest.PLOT_DUPE_PREFIX + StockServiceImplTest.TEST_INVENTORY_ID + StockServiceImplTest.COMMA
 					+ StockServiceImplTest.TEST_INVENTORY_ID_3,
 			StockServiceImplTest.PLOT_DUPE_PREFIX + StockServiceImplTest.TEST_INVENTORY_ID + StockServiceImplTest.COMMA
-					+ StockServiceImplTest.TEST_INVENTORY_ID_2, null, null};
+					+ StockServiceImplTest.TEST_INVENTORY_ID_2,
+			null, null};
 	private static final Integer TEST_LIST_ID = 17;
 
 	@Resource
@@ -305,21 +306,18 @@ public class StockServiceImplTest {
 		this.inventoryStockService.processBulkSettings(testListData, testDetails, false, true, false);
 		for (InventoryDetails inventoryDetails : testDetails.values()) {
 			if (inventoryDetails.getEntryId().equals(1)) {
-				String expectedBulkWith =
-						StockServiceImplTest.INVENTORY_ID_PREFIX + 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 2 + ", "
-								+ StockServiceImplTest.INVENTORY_ID_PREFIX + 4;
+				String expectedBulkWith = StockServiceImplTest.INVENTORY_ID_PREFIX + 2 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX
+						+ 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 4;
 				Assert.assertEquals(expectedBulkWith, inventoryDetails.getBulkWith());
 				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
 			} else if (inventoryDetails.getEntryId().equals(2)) {
-				String expectedBulkWith =
-						StockServiceImplTest.INVENTORY_ID_PREFIX + 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 1 + ", "
-								+ StockServiceImplTest.INVENTORY_ID_PREFIX + 4;
+				String expectedBulkWith = StockServiceImplTest.INVENTORY_ID_PREFIX + 1 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX
+						+ 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 4;
 				Assert.assertEquals(expectedBulkWith, inventoryDetails.getBulkWith());
 				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
 			} else if (inventoryDetails.getEntryId().equals(4)) {
-				String expectedBulkWith =
-						StockServiceImplTest.INVENTORY_ID_PREFIX + 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 1 + ", "
-								+ StockServiceImplTest.INVENTORY_ID_PREFIX + 2;
+				String expectedBulkWith = StockServiceImplTest.INVENTORY_ID_PREFIX + 1 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 2
+						+ ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 20;
 				Assert.assertEquals(expectedBulkWith, inventoryDetails.getBulkWith());
 				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
 			} else if (inventoryDetails.getEntryId().equals(20)) {
