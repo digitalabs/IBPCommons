@@ -52,13 +52,13 @@ public class StockServiceImpl implements StockService {
 	private InventoryDataManager inventoryDataManager;
 
 	@Override
-	public void assignStockIDs(List<InventoryDetails> details) throws MiddlewareException {
+	public void assignStockIDs(List<InventoryDetails> details) {
 
 		this.assignStockIDs(details, null, null);
 	}
 
 	@Override
-	public void assignStockIDs(List<InventoryDetails> details, String breederIdentifier, String separator) throws MiddlewareException {
+	public void assignStockIDs(List<InventoryDetails> details, String breederIdentifier, String separator) {
 		String stockIDPrefix = this.calculateNextStockIDPrefix(breederIdentifier, separator);
 
 		for (InventoryDetails detail : details) {
@@ -75,7 +75,7 @@ public class StockServiceImpl implements StockService {
 	 * @throws MiddlewareException
 	 */
 	@Override
-	public String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws MiddlewareException {
+	public String calculateNextStockIDPrefix(String breederIdentifier, String separator) {
 		List<String> sequenceList = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace("stockid"));
 		StockIDGenerationRuleExecutionContext context = new StockIDGenerationRuleExecutionContext(sequenceList, this.inventoryService);
 		context.setBreederIdentifier(breederIdentifier);
@@ -303,7 +303,7 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList) throws MiddlewareException {
+	public void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList) {
 		Map<String, Integer> stockIDEntryMap = new HashMap<String, Integer>();
 		Map<Integer, InventoryDetails> entryInventoryDetailsMap = new HashMap<Integer, InventoryDetails>();
 		this.buildMapsOfInventoryDetails(inventoryDetailsList, stockIDEntryMap, entryInventoryDetailsMap);
@@ -315,8 +315,7 @@ public class StockServiceImpl implements StockService {
 		this.saveChangesInBulkingProcess(bulkingDonors, bulkingRecipients);
 	}
 
-	protected void saveChangesInBulkingProcess(List<InventoryDetails> bulkingDonors, List<InventoryDetails> bulkingRecipients)
-			throws MiddlewareQueryException {
+	protected void saveChangesInBulkingProcess(List<InventoryDetails> bulkingDonors, List<InventoryDetails> bulkingRecipients) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		List<Lot> lots = new ArrayList<Lot>();
 		if (bulkingDonors != null && bulkingRecipients != null) {
@@ -328,7 +327,7 @@ public class StockServiceImpl implements StockService {
 	}
 
 	private void collectBulkedInventoryAsLotAndTransaction(List<InventoryDetails> inventoryDetailsList, boolean isDonor,
-			List<Transaction> transactions, List<Lot> lots) throws MiddlewareQueryException {
+			List<Transaction> transactions, List<Lot> lots) {
 		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
 			Transaction transaction = this.getTransactionById(inventoryDetails.getTrnId());
 			if (isDonor) {
@@ -352,7 +351,7 @@ public class StockServiceImpl implements StockService {
 
 	protected void retrieveBulkingDonorsAndRecipients(List<InventoryDetails> inventoryDetailsList, Map<String, Integer> stockIDEntryMap,
 			Map<Integer, InventoryDetails> entryInventoryDetailsMap, List<InventoryDetails> bulkingDonors,
-			List<InventoryDetails> bulkingRecipients) throws MiddlewareException {
+			List<InventoryDetails> bulkingRecipients) {
 		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
 			if (InventoryDetails.BULK_COMPL_Y.equals(inventoryDetails.getBulkCompl())) {
 				Set<Integer> entriesToBeMerged = new TreeSet<Integer>();
@@ -377,11 +376,11 @@ public class StockServiceImpl implements StockService {
 		}
 	}
 
-	private Transaction getTransactionById(Integer trnId) throws MiddlewareQueryException {
+	private Transaction getTransactionById(Integer trnId) {
 		return this.inventoryDataManager.getTransactionById(trnId);
 	}
 
-	private Lot getLotById(Integer lotId) throws MiddlewareQueryException {
+	private Lot getLotById(Integer lotId) {
 		return this.inventoryDataManager.getLotById(lotId);
 	}
 }
