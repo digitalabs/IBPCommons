@@ -130,11 +130,12 @@ public class StockServiceImpl implements StockService {
 			}, inventoryDetailsMap);
 		}
 
+		this.ensureBulkWithIsConsistentInAllParticipants(inventoryDetailsMap);
+
 	}
 
 	protected void processBulkWith(Map<Integer, ListDataProject> projectMap, RetrieveParseIDStrategy strategy,
-			Map<Integer, InventoryDetails> detailMap) {
-		List<Integer> processedEntries = new ArrayList<>();
+			Map<Integer, InventoryDetails> detailsMap) {
 
 		for (ListDataProject project : projectMap.values()) {
 			List<Integer> parsedIDs = strategy.retrieveParsedIDsForProcessing(project);
@@ -143,25 +144,19 @@ public class StockServiceImpl implements StockService {
 				continue;
 			}
 
-			this.processEntry(project.getEntryId(), projectMap, strategy, detailMap, processedEntries);
+			this.processEntry(project.getEntryId(), projectMap, strategy, detailsMap);
 		}
 
 	}
 
 	protected void processEntry(Integer targetEntryID, Map<Integer, ListDataProject> projectMap, RetrieveParseIDStrategy strategy,
-			Map<Integer, InventoryDetails> detailMap, List<Integer> processedEntries) {
-
-		if (processedEntries.contains(targetEntryID)) {
-			return;
-		}
+			Map<Integer, InventoryDetails> detailMap) {
 
 		List<Integer> parsedIDs = strategy.retrieveParsedIDsForProcessing(projectMap.get(targetEntryID));
 
 		InventoryDetails target = detailMap.get(targetEntryID);
 
 		target.setBulkCompl("Y");
-		processedEntries.add(targetEntryID);
-		List<String> targetInventoryIDs = new ArrayList<>();
 		for (Integer parsedId : parsedIDs) {
 
 			InventoryDetails bulkDetail = detailMap.get(parsedId);
@@ -171,24 +166,53 @@ public class StockServiceImpl implements StockService {
 			}
 
 			target.addBulkWith(bulkDetail.getInventoryID());
-			targetInventoryIDs.add(bulkDetail.getInventoryID());
 			bulkDetail.addBulkWith(target.getInventoryID());
-			this.processEntry(parsedId, projectMap, strategy, detailMap, processedEntries);
 		}
 
-		// this second pass ensures that all of the inventory IDs participating in a bulk with operation is applied to all applicable
-		// entries
-		for (Integer parsedID : parsedIDs) {
-			InventoryDetails bulkDetail = detailMap.get(parsedID);
+	}
 
-			for (String targetInventoryID : targetInventoryIDs) {
-				if (!bulkDetail.getInventoryID().equals(targetInventoryID)) {
-					bulkDetail.addBulkWith(targetInventoryID);
+	protected void ensureBulkWithIsConsistentInAllParticipants(Map<Integer, InventoryDetails> entryNoInventoryDetailsMap) {
+
+		Map<String, InventoryDetails> inventoryIDInventoryDetailsMap = new HashMap<>();
+		for (InventoryDetails inventoryDetails : entryNoInventoryDetailsMap.values()) {
+			inventoryIDInventoryDetailsMap.put(inventoryDetails.getInventoryID(), inventoryDetails);
+		}
+
+		List<String> processedStockIds = new ArrayList<>();
+		for (InventoryDetails target : entryNoInventoryDetailsMap.values()) {
+			if (target.getBulkWith() != null && !processedStockIds.contains(target.getInventoryID())) {
+				Set<String> stockIdsToBulkTogether = this.getAllStockIdsToBulkTogether(target, inventoryIDInventoryDetailsMap);
+				processedStockIds.addAll(processedStockIds);
+				for (String stockId : stockIdsToBulkTogether) {
+					InventoryDetails inventory = inventoryIDInventoryDetailsMap.get(stockId);
+					inventory.setBulkWith(null);
+					inventory.setBulkCompl("Y");
+					this.setBulkWithOfInventory(inventory, stockIdsToBulkTogether);
 				}
-
 			}
 		}
+	}
 
+	private void setBulkWithOfInventory(InventoryDetails inventory, Set<String> stockIdsToBulkTogether) {
+		for (String stockIdToBulkWith : stockIdsToBulkTogether) {
+			if (!inventory.getInventoryID().equals(stockIdToBulkWith)) {
+				inventory.addBulkWith(stockIdToBulkWith);
+			}
+		}
+	}
+
+	private Set<String> getAllStockIdsToBulkTogether(InventoryDetails target,
+			Map<String, InventoryDetails> inventoryIDInventoryDetailsMap) {
+		Set<String> stockIdsToBulkTogether = new TreeSet<>();
+		stockIdsToBulkTogether.add(target.getInventoryID());
+		for (String stockId : target.getBulkWithStockIds()) {
+			stockIdsToBulkTogether.add(stockId);
+			InventoryDetails inventoryCoBulkWith = inventoryIDInventoryDetailsMap.get(stockId);
+			for (String bulkWithOfCoBulkWith : inventoryCoBulkWith.getBulkWithStockIds()) {
+				stockIdsToBulkTogether.add(bulkWithOfCoBulkWith);
+			}
+		}
+		return stockIdsToBulkTogether;
 	}
 
 	interface RetrieveParseIDStrategy {
