@@ -49,9 +49,9 @@ public class ContextUtilTest {
 
 	@Test
 	public void testGetProjectInContextResolvesFromSessionContext() throws MiddlewareQueryException {
-		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(new ContextInfo(1, 1L));
+		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(new ContextInfo(1, 2L));
 		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
-		Mockito.when(this.workbenchDataManager.getProjectById(1L)).thenReturn(ContextUtilTest.testProject);
+		Mockito.when(this.workbenchDataManager.getProjectById(2L)).thenReturn(ContextUtilTest.testProject);
 
 		Assert.assertNotNull(ContextUtil.getProjectInContext(this.workbenchDataManager, this.request));
 		Mockito.verify(this.workbenchDataManager).getProjectById(Matchers.anyLong());
