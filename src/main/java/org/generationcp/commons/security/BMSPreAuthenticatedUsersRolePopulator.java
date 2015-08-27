@@ -57,4 +57,8 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 	void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
+
+	void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 }

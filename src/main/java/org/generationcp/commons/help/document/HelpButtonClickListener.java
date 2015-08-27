@@ -86,4 +86,7 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		this.helpProperties = helpProperties;
 	}
 
+	protected void setWorkbenchProperties(Properties workbenchProperties) {
+		this.workbenchProperties = workbenchProperties;
+	}
 }

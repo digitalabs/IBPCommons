@@ -52,13 +52,13 @@ public class StockServiceImpl implements StockService {
 	private InventoryDataManager inventoryDataManager;
 
 	@Override
-	public void assignStockIDs(List<InventoryDetails> details) throws MiddlewareException {
+	public void assignStockIDs(List<InventoryDetails> details) {
 
 		this.assignStockIDs(details, null, null);
 	}
 
 	@Override
-	public void assignStockIDs(List<InventoryDetails> details, String breederIdentifier, String separator) throws MiddlewareException {
+	public void assignStockIDs(List<InventoryDetails> details, String breederIdentifier, String separator) {
 		String stockIDPrefix = this.calculateNextStockIDPrefix(breederIdentifier, separator);
 
 		for (InventoryDetails detail : details) {
@@ -75,7 +75,7 @@ public class StockServiceImpl implements StockService {
 	 * @throws MiddlewareException
 	 */
 	@Override
-	public String calculateNextStockIDPrefix(String breederIdentifier, String separator) throws MiddlewareException {
+	public String calculateNextStockIDPrefix(String breederIdentifier, String separator) {
 		List<String> sequenceList = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace("stockid"));
 		StockIDGenerationRuleExecutionContext context = new StockIDGenerationRuleExecutionContext(sequenceList, this.inventoryService);
 		context.setBreederIdentifier(breederIdentifier);
@@ -130,11 +130,12 @@ public class StockServiceImpl implements StockService {
 			}, inventoryDetailsMap);
 		}
 
+		this.ensureBulkWithIsConsistentInAllParticipants(inventoryDetailsMap);
+
 	}
 
 	protected void processBulkWith(Map<Integer, ListDataProject> projectMap, RetrieveParseIDStrategy strategy,
-			Map<Integer, InventoryDetails> detailMap) {
-		List<Integer> processedEntries = new ArrayList<>();
+			Map<Integer, InventoryDetails> detailsMap) {
 
 		for (ListDataProject project : projectMap.values()) {
 			List<Integer> parsedIDs = strategy.retrieveParsedIDsForProcessing(project);
@@ -143,25 +144,19 @@ public class StockServiceImpl implements StockService {
 				continue;
 			}
 
-			this.processEntry(project.getEntryId(), projectMap, strategy, detailMap, processedEntries);
+			this.processEntry(project.getEntryId(), projectMap, strategy, detailsMap);
 		}
 
 	}
 
 	protected void processEntry(Integer targetEntryID, Map<Integer, ListDataProject> projectMap, RetrieveParseIDStrategy strategy,
-			Map<Integer, InventoryDetails> detailMap, List<Integer> processedEntries) {
-
-		if (processedEntries.contains(targetEntryID)) {
-			return;
-		}
+			Map<Integer, InventoryDetails> detailMap) {
 
 		List<Integer> parsedIDs = strategy.retrieveParsedIDsForProcessing(projectMap.get(targetEntryID));
 
 		InventoryDetails target = detailMap.get(targetEntryID);
 
 		target.setBulkCompl("Y");
-		processedEntries.add(targetEntryID);
-		List<String> targetInventoryIDs = new ArrayList<>();
 		for (Integer parsedId : parsedIDs) {
 
 			InventoryDetails bulkDetail = detailMap.get(parsedId);
@@ -171,24 +166,53 @@ public class StockServiceImpl implements StockService {
 			}
 
 			target.addBulkWith(bulkDetail.getInventoryID());
-			targetInventoryIDs.add(bulkDetail.getInventoryID());
 			bulkDetail.addBulkWith(target.getInventoryID());
-			this.processEntry(parsedId, projectMap, strategy, detailMap, processedEntries);
 		}
 
-		// this second pass ensures that all of the inventory IDs participating in a bulk with operation is applied to all applicable
-		// entries
-		for (Integer parsedID : parsedIDs) {
-			InventoryDetails bulkDetail = detailMap.get(parsedID);
+	}
 
-			for (String targetInventoryID : targetInventoryIDs) {
-				if (!bulkDetail.getInventoryID().equals(targetInventoryID)) {
-					bulkDetail.addBulkWith(targetInventoryID);
+	protected void ensureBulkWithIsConsistentInAllParticipants(Map<Integer, InventoryDetails> entryNoInventoryDetailsMap) {
+
+		Map<String, InventoryDetails> inventoryIDInventoryDetailsMap = new HashMap<>();
+		for (InventoryDetails inventoryDetails : entryNoInventoryDetailsMap.values()) {
+			inventoryIDInventoryDetailsMap.put(inventoryDetails.getInventoryID(), inventoryDetails);
+		}
+
+		List<String> processedStockIds = new ArrayList<>();
+		for (InventoryDetails target : entryNoInventoryDetailsMap.values()) {
+			if (target.getBulkWith() != null && !processedStockIds.contains(target.getInventoryID())) {
+				Set<String> stockIdsToBulkTogether = this.getAllStockIdsToBulkTogether(target, inventoryIDInventoryDetailsMap);
+				processedStockIds.addAll(processedStockIds);
+				for (String stockId : stockIdsToBulkTogether) {
+					InventoryDetails inventory = inventoryIDInventoryDetailsMap.get(stockId);
+					inventory.setBulkWith(null);
+					inventory.setBulkCompl("Y");
+					this.setBulkWithOfInventory(inventory, stockIdsToBulkTogether);
 				}
-
 			}
 		}
+	}
 
+	private void setBulkWithOfInventory(InventoryDetails inventory, Set<String> stockIdsToBulkTogether) {
+		for (String stockIdToBulkWith : stockIdsToBulkTogether) {
+			if (!inventory.getInventoryID().equals(stockIdToBulkWith)) {
+				inventory.addBulkWith(stockIdToBulkWith);
+			}
+		}
+	}
+
+	private Set<String> getAllStockIdsToBulkTogether(InventoryDetails target,
+			Map<String, InventoryDetails> inventoryIDInventoryDetailsMap) {
+		Set<String> stockIdsToBulkTogether = new TreeSet<>();
+		stockIdsToBulkTogether.add(target.getInventoryID());
+		for (String stockId : target.getBulkWithStockIds()) {
+			stockIdsToBulkTogether.add(stockId);
+			InventoryDetails inventoryCoBulkWith = inventoryIDInventoryDetailsMap.get(stockId);
+			for (String bulkWithOfCoBulkWith : inventoryCoBulkWith.getBulkWithStockIds()) {
+				stockIdsToBulkTogether.add(bulkWithOfCoBulkWith);
+			}
+		}
+		return stockIdsToBulkTogether;
 	}
 
 	interface RetrieveParseIDStrategy {
@@ -279,7 +303,7 @@ public class StockServiceImpl implements StockService {
 	}
 
 	@Override
-	public void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList) throws MiddlewareException {
+	public void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList) {
 		Map<String, Integer> stockIDEntryMap = new HashMap<String, Integer>();
 		Map<Integer, InventoryDetails> entryInventoryDetailsMap = new HashMap<Integer, InventoryDetails>();
 		this.buildMapsOfInventoryDetails(inventoryDetailsList, stockIDEntryMap, entryInventoryDetailsMap);
@@ -291,8 +315,7 @@ public class StockServiceImpl implements StockService {
 		this.saveChangesInBulkingProcess(bulkingDonors, bulkingRecipients);
 	}
 
-	protected void saveChangesInBulkingProcess(List<InventoryDetails> bulkingDonors, List<InventoryDetails> bulkingRecipients)
-			throws MiddlewareQueryException {
+	protected void saveChangesInBulkingProcess(List<InventoryDetails> bulkingDonors, List<InventoryDetails> bulkingRecipients) {
 		List<Transaction> transactions = new ArrayList<Transaction>();
 		List<Lot> lots = new ArrayList<Lot>();
 		if (bulkingDonors != null && bulkingRecipients != null) {
@@ -304,7 +327,7 @@ public class StockServiceImpl implements StockService {
 	}
 
 	private void collectBulkedInventoryAsLotAndTransaction(List<InventoryDetails> inventoryDetailsList, boolean isDonor,
-			List<Transaction> transactions, List<Lot> lots) throws MiddlewareQueryException {
+			List<Transaction> transactions, List<Lot> lots) {
 		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
 			Transaction transaction = this.getTransactionById(inventoryDetails.getTrnId());
 			if (isDonor) {
@@ -328,7 +351,7 @@ public class StockServiceImpl implements StockService {
 
 	protected void retrieveBulkingDonorsAndRecipients(List<InventoryDetails> inventoryDetailsList, Map<String, Integer> stockIDEntryMap,
 			Map<Integer, InventoryDetails> entryInventoryDetailsMap, List<InventoryDetails> bulkingDonors,
-			List<InventoryDetails> bulkingRecipients) throws MiddlewareException {
+			List<InventoryDetails> bulkingRecipients) {
 		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
 			if (InventoryDetails.BULK_COMPL_Y.equals(inventoryDetails.getBulkCompl())) {
 				Set<Integer> entriesToBeMerged = new TreeSet<Integer>();
@@ -353,11 +376,11 @@ public class StockServiceImpl implements StockService {
 		}
 	}
 
-	private Transaction getTransactionById(Integer trnId) throws MiddlewareQueryException {
+	private Transaction getTransactionById(Integer trnId) {
 		return this.inventoryDataManager.getTransactionById(trnId);
 	}
 
-	private Lot getLotById(Integer lotId) throws MiddlewareQueryException {
+	private Lot getLotById(Integer lotId) {
 		return this.inventoryDataManager.getLotById(lotId);
 	}
 }

@@ -60,11 +60,12 @@ public class StockServiceImplTest {
 	public static final String PLOT_DUPE_PREFIX = "Plot Dupe: ";
 	public static final String[] TEST_DUPLICATE_ARRAY = {
 			StockServiceImplTest.PLOT_DUPE_PREFIX + StockServiceImplTest.TEST_INVENTORY_ID_2 + StockServiceImplTest.COMMA
-					+ StockServiceImplTest.TEST_INVENTORY_ID_3,
+			+ StockServiceImplTest.TEST_INVENTORY_ID_3,
 			StockServiceImplTest.PLOT_DUPE_PREFIX + StockServiceImplTest.TEST_INVENTORY_ID + StockServiceImplTest.COMMA
-					+ StockServiceImplTest.TEST_INVENTORY_ID_3,
+			+ StockServiceImplTest.TEST_INVENTORY_ID_3,
 			StockServiceImplTest.PLOT_DUPE_PREFIX + StockServiceImplTest.TEST_INVENTORY_ID + StockServiceImplTest.COMMA
-					+ StockServiceImplTest.TEST_INVENTORY_ID_2, null, null};
+			+ StockServiceImplTest.TEST_INVENTORY_ID_2,
+			null, null};
 	private static final Integer TEST_LIST_ID = 17;
 
 	@Resource
@@ -86,13 +87,13 @@ public class StockServiceImplTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		Mockito.doReturn(this.createStockIdsTestData()).when(this.inventoryDataManager)
-				.getStockIdsByListDataProjectListId(StockServiceImplTest.TEST_LIST_ID);
+		.getStockIdsByListDataProjectListId(StockServiceImplTest.TEST_LIST_ID);
 	}
 
 	@Test
 	public void testCalculateNextStockIDPrefix() throws MiddlewareException {
 		Mockito.when(this.inventoryService.getCurrentNotationNumberForBreederIdentifier(StockServiceImplTest.DUMMY_BREEDER_IDENTIFIER))
-				.thenReturn(StockServiceImplTest.DUMMY_NOTATION_NUMBER);
+		.thenReturn(StockServiceImplTest.DUMMY_NOTATION_NUMBER);
 
 		String prefix = this.inventoryStockService.calculateNextStockIDPrefix(StockServiceImplTest.DUMMY_BREEDER_IDENTIFIER, null);
 
@@ -102,7 +103,7 @@ public class StockServiceImplTest {
 	@Test
 	public void testAssignStockIDs() throws MiddlewareException {
 		Mockito.when(this.inventoryService.getCurrentNotationNumberForBreederIdentifier(StockServiceImplTest.DUMMY_BREEDER_IDENTIFIER))
-				.thenReturn(StockServiceImplTest.DUMMY_NOTATION_NUMBER);
+		.thenReturn(StockServiceImplTest.DUMMY_NOTATION_NUMBER);
 
 		// create a dummy inventory detail list
 		List<InventoryDetails> inventoryDetailsList = new ArrayList<>();
@@ -304,28 +305,13 @@ public class StockServiceImplTest {
 
 		this.inventoryStockService.processBulkSettings(testListData, testDetails, false, true, false);
 		for (InventoryDetails inventoryDetails : testDetails.values()) {
-			if (inventoryDetails.getEntryId().equals(1)) {
-				String expectedBulkWith =
-						StockServiceImplTest.INVENTORY_ID_PREFIX + 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 2 + ", "
-								+ StockServiceImplTest.INVENTORY_ID_PREFIX + 4;
-				Assert.assertEquals(expectedBulkWith, inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			} else if (inventoryDetails.getEntryId().equals(2)) {
-				String expectedBulkWith =
-						StockServiceImplTest.INVENTORY_ID_PREFIX + 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 1 + ", "
-								+ StockServiceImplTest.INVENTORY_ID_PREFIX + 4;
-				Assert.assertEquals(expectedBulkWith, inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			} else if (inventoryDetails.getEntryId().equals(4)) {
-				String expectedBulkWith =
-						StockServiceImplTest.INVENTORY_ID_PREFIX + 20 + ", " + StockServiceImplTest.INVENTORY_ID_PREFIX + 1 + ", "
-								+ StockServiceImplTest.INVENTORY_ID_PREFIX + 2;
-				Assert.assertEquals(expectedBulkWith, inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			} else if (inventoryDetails.getEntryId().equals(20)) {
+			if (inventoryDetails.getEntryId().equals(1) || inventoryDetails.getEntryId().equals(2)
+					|| inventoryDetails.getEntryId().equals(4) || inventoryDetails.getEntryId().equals(20)) {
 				InventoryDetails dummy = new InventoryDetails();
+				dummy.setInventoryID(inventoryDetails.getInventoryID());
 				dummy.addBulkWith(testDetails.get(1).getInventoryID());
 				dummy.addBulkWith(testDetails.get(2).getInventoryID());
+				dummy.addBulkWith(testDetails.get(20).getInventoryID());
 				dummy.addBulkWith(testDetails.get(4).getInventoryID());
 				Assert.assertEquals(dummy.getBulkWith(), inventoryDetails.getBulkWith());
 				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
@@ -392,6 +378,11 @@ public class StockServiceImplTest {
 		dataProjectList.add(ldp);
 
 		ldp = new ListDataProject();
+		ldp.setEntryId(13);
+		ldp.setDuplicate(ListDataProject.PLOT_RECIP + ": 9");
+		dataProjectList.add(ldp);
+
+		ldp = new ListDataProject();
 		ldp.setEntryId(20);
 		ldp.setDuplicate(ListDataProject.PLOT_RECIP + ": 1,2,4");
 		dataProjectList.add(ldp);
@@ -413,6 +404,7 @@ public class StockServiceImplTest {
 		this.addInventoryDetailTestData(9, detailMap);
 		this.addInventoryDetailTestData(10, detailMap);
 		this.addInventoryDetailTestData(11, detailMap);
+		this.addInventoryDetailTestData(13, detailMap);
 		this.addInventoryDetailTestData(20, detailMap);
 
 		return detailMap;
@@ -425,4 +417,33 @@ public class StockServiceImplTest {
 		detailMap.put(entryId, details);
 	}
 
+	@Test
+	public void testProcessBulkWithEntriesBothPedigreeDupeAndPlotRecip() {
+		List<ListDataProject> testListData = this.createTestListDataProjectForBulking();
+		Map<Integer, InventoryDetails> testDetails = this.createInventoryDetailsTestData();
+
+		this.inventoryStockService.processBulkSettings(testListData, testDetails, true, true, false);
+		for (InventoryDetails inventoryDetails : testDetails.values()) {
+			if (inventoryDetails.getEntryId().equals(1) || inventoryDetails.getEntryId().equals(2)
+					|| inventoryDetails.getEntryId().equals(4) || inventoryDetails.getEntryId().equals(20)) {
+				InventoryDetails dummy = new InventoryDetails();
+				dummy.setInventoryID(inventoryDetails.getInventoryID());
+				dummy.addBulkWith(testDetails.get(1).getInventoryID());
+				dummy.addBulkWith(testDetails.get(2).getInventoryID());
+				dummy.addBulkWith(testDetails.get(20).getInventoryID());
+				dummy.addBulkWith(testDetails.get(4).getInventoryID());
+				Assert.assertEquals(dummy.getBulkWith(), inventoryDetails.getBulkWith());
+				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
+			} else if (inventoryDetails.getEntryId().equals(9) || inventoryDetails.getEntryId().equals(10)
+					|| inventoryDetails.getEntryId().equals(13)) {
+				InventoryDetails dummy = new InventoryDetails();
+				dummy.setInventoryID(inventoryDetails.getInventoryID());
+				dummy.addBulkWith(testDetails.get(10).getInventoryID());
+				dummy.addBulkWith(testDetails.get(13).getInventoryID());
+				dummy.addBulkWith(testDetails.get(9).getInventoryID());
+				Assert.assertEquals(dummy.getBulkWith(), inventoryDetails.getBulkWith());
+				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
+			}
+		}
+	}
 }

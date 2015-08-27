@@ -20,23 +20,29 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
+import org.springframework.transaction.PlatformTransactionManager;
 
 public class BMSPreAuthenticatedUsersRolePopulatorTest {
 
 	private static final String TEST_USER = "testUser";
 	private static final String AUTH_TOKEN = Base64.encodeBase64URLSafeString(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER
 			.getBytes());
+
 	private WorkbenchDataManager workbenchDataManager;
+	private PlatformTransactionManager transactionManager;
 	private BMSPreAuthenticatedUsersRolePopulator rolesPopulator;
 
 	private HttpServletRequest request;
 
 	@Before
 	public void setUpPerTest() {
+		this.request = Mockito.mock(HttpServletRequest.class);
 		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		this.transactionManager = Mockito.mock(PlatformTransactionManager.class);
+
 		this.rolesPopulator = new BMSPreAuthenticatedUsersRolePopulator();
 		this.rolesPopulator.setWorkbenchDataManager(this.workbenchDataManager);
-		this.request = Mockito.mock(HttpServletRequest.class);
+		this.rolesPopulator.setTransactionManager(this.transactionManager);
 	}
 
 	@Test
