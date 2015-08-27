@@ -342,13 +342,6 @@ public class DateUtilTest {
 	}
 
 	@Test
-	public void testGetCurrentDate() {
-		Date date = new Date();
-		Date actual = DateUtil.getCurrentDate();
-		Assert.assertEquals("Expected " + date + " but got " + actual, date, actual);
-	}
-
-	@Test
 	public void testGetCurrentDateAsStringValueInSpecifiedFormat() {
 		String expectedDate = DateUtil.getCurrentDateInUIFormat();
 		String actualDate = DateUtil.getCurrentDateAsStringValue(DateUtil.FRONTEND_DATE_FORMAT);
