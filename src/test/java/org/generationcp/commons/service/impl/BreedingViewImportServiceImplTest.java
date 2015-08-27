@@ -87,6 +87,9 @@ public class BreedingViewImportServiceImplTest {
 	private Study study;
 
 	@Mock
+	private DmsProject dmsProject;
+
+	@Mock
 	private DataSet newMeansDataSet;
 
 	Map<String, ArrayList<String>> meansInput;
@@ -101,6 +104,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.doReturn(this.STUDY_ID).when(this.study).getId();
 		Mockito.doReturn(this.STUDY_NAME).when(this.study).getName();
+
+		Mockito.doReturn(PROGRAM_UUID).when(this.dmsProject).getProgramUUID();
 
 		this.localNameToAliasMapping = new HashMap<>();
 		this.localNameToAliasMapping.put("TRIAL_INSTANCE", "TRIAL_INSTANCE");
@@ -156,6 +161,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.studyDataManager.getDataSet(this.EXISTING_MEANS_DATASET_ID)).thenReturn(null);
 		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
 		Mockito.when(this.studyDataManager.getStudy(Matchers.anyInt())).thenReturn(this.study);
+		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
