@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
 import org.generationcp.middleware.domain.dms.DatasetReference;
@@ -22,7 +23,6 @@ import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.domain.dms.Variable;
 import org.generationcp.middleware.domain.dms.VariableList;
-import org.generationcp.middleware.domain.dms.VariableType;
 import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -53,14 +53,16 @@ public class BreedingViewImportServiceImplTest {
 	private static final int DATASET_STANDARD_VAR_ID = 8160;
 	private static final int STUDY_STANDARD_VAR_ID = 8150;
 
+	private static final String PROGRAM_UUID = "12345678";
+
 	private final String EMPTY_VALUE = "";
 
 	private final String LS_MEAN = "LS MEAN";
 	private final int LS_MEAN_ID = 97393;
 
-	List<VariableType> factorVariableTypes = new ArrayList<VariableType>();
-	List<VariableType> variateVariableTypes = new ArrayList<VariableType>();
-	List<VariableType> meansVariateVariableTypes = new ArrayList<VariableType>();
+	List<DMSVariableType> factorVariableTypes = new ArrayList<DMSVariableType>();
+	List<DMSVariableType> variateVariableTypes = new ArrayList<DMSVariableType>();
+	List<DMSVariableType> meansVariateVariableTypes = new ArrayList<DMSVariableType>();
 
 	Map<String, String> localNameToAliasMapping;
 
@@ -85,6 +87,9 @@ public class BreedingViewImportServiceImplTest {
 	private Study study;
 
 	@Mock
+	private DmsProject dmsProject;
+
+	@Mock
 	private DataSet newMeansDataSet;
 
 	Map<String, ArrayList<String>> meansInput;
@@ -99,6 +104,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.doReturn(this.STUDY_ID).when(this.study).getId();
 		Mockito.doReturn(this.STUDY_NAME).when(this.study).getName();
+
+		Mockito.doReturn(PROGRAM_UUID).when(this.dmsProject).getProgramUUID();
 
 		this.localNameToAliasMapping = new HashMap<>();
 		this.localNameToAliasMapping.put("TRIAL_INSTANCE", "TRIAL_INSTANCE");
@@ -154,20 +161,21 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.studyDataManager.getDataSet(this.EXISTING_MEANS_DATASET_ID)).thenReturn(null);
 		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
 		Mockito.when(this.studyDataManager.getStudy(Matchers.anyInt())).thenReturn(this.study);
+		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
 		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8150)).thenReturn(studyStdVar);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8155)).thenReturn(titleStdVar);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8160)).thenReturn(dataSetStdVar);
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
+						Matchers.anyInt())).thenReturn(null);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(8150, PROGRAM_UUID)).thenReturn(studyStdVar);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(8155, PROGRAM_UUID)).thenReturn(titleStdVar);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(8160, PROGRAM_UUID)).thenReturn(dataSetStdVar);
 
 		Mockito.when(this.stocks.findOnlyOneByLocalName(Matchers.anyString(), Matchers.anyString())).thenReturn(Mockito.mock(Stock.class));
 		Mockito.when(this.stocks.findOnlyOneByLocalName(Matchers.anyString(), Matchers.anyString()).getId()).thenReturn(1);
@@ -194,19 +202,20 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
-		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt())).thenReturn(Mockito.mock(StandardVariable.class));
+		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
+				Mockito.mock(StandardVariable.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
 		Mockito.verify(this.service).appendVariableTypesToExistingMeans((String[]) Matchers.anyObject(), Matchers.any(DataSet.class),
-				Matchers.any(DataSet.class));
+				Matchers.any(DataSet.class), Matchers.anyString());
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
@@ -228,22 +237,23 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
 		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt())).thenReturn(Mockito.mock(StandardVariable.class));
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
+						Matchers.anyInt())).thenReturn(null);
+		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
+				Mockito.mock(StandardVariable.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
 		Mockito.verify(this.service).appendVariableTypesToExistingMeans((String[]) Matchers.anyObject(), Matchers.any(DataSet.class),
-				Matchers.any(DataSet.class));
+				Matchers.any(DataSet.class), Matchers.anyString());
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
@@ -275,8 +285,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.when(this.ontologyDataManager.findMethodByName(Matchers.anyString())).thenReturn(this.createTerm(888, "DUMMYTERM"));
 		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyScaleMethodRole(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt(), (PhenotypicType) Matchers.anyObject())).thenReturn(null);
+				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
+						Matchers.anyInt())).thenReturn(null);
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummary.csv").toURI());
 		this.service.importSummaryStatsData(file, this.STUDY_ID);
@@ -298,10 +308,10 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.variateVariableTypes) {
+		for (DMSVariableType variate : this.variateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -316,10 +326,10 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.variateVariableTypes) {
+		for (DMSVariableType variate : this.variateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -334,10 +344,10 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.meansVariateVariableTypes) {
+		for (DMSVariableType variate : this.meansVariateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -352,18 +362,18 @@ public class BreedingViewImportServiceImplTest {
 		VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (VariableType factor : this.factorVariableTypes) {
+		for (DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (VariableType variate : this.meansVariateVariableTypes) {
+		for (DMSVariableType variate : this.meansVariateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
 		return dataSet;
 	}
 
-	private VariableType createVariateVariableType(String localName) {
-		VariableType variate = new VariableType();
+	private DMSVariableType createVariateVariableType(String localName) {
+		DMSVariableType variate = new DMSVariableType();
 		StandardVariable variateStandardVar = new StandardVariable();
 		variateStandardVar.setPhenotypicType(PhenotypicType.VARIATE);
 
@@ -389,7 +399,6 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setProperty(property);
 		variateStandardVar.setScale(scale);
 		variateStandardVar.setMethod(method);
-		variateStandardVar.setStoredIn(storedIn);
 		variateStandardVar.setDataType(dataType);
 		variateStandardVar.setName(localName);
 		variate.setLocalName(localName);
@@ -398,8 +407,8 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private VariableType createVariateVariableType(String localName, String propertyName, String scaleName, String methodName) {
-		VariableType variate = new VariableType();
+	private DMSVariableType createVariateVariableType(String localName, String propertyName, String scaleName, String methodName) {
+		DMSVariableType variate = new DMSVariableType();
 		StandardVariable variateStandardVar = new StandardVariable();
 		variateStandardVar.setPhenotypicType(PhenotypicType.VARIATE);
 
@@ -428,7 +437,6 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setProperty(property);
 		variateStandardVar.setScale(scale);
 		variateStandardVar.setMethod(method);
-		variateStandardVar.setStoredIn(storedIn);
 		variateStandardVar.setDataType(dataType);
 		variate.setLocalName(localName);
 		variate.setStandardVariable(variateStandardVar);
@@ -436,13 +444,11 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private VariableType createTrialEnvironmentVariableType(String localName) {
+	private DMSVariableType createTrialEnvironmentVariableType(String localName) {
 
-		VariableType factor = new VariableType();
+		DMSVariableType factor = new DMSVariableType();
 		StandardVariable factorStandardVar = new StandardVariable();
-		Term storedInLoc = new Term();
-		storedInLoc.setId(TermId.LOCATION_ID.getId());
-		factorStandardVar.setStoredIn(storedInLoc);
+		factorStandardVar.setId(TermId.LOCATION_ID.getId());
 		factorStandardVar.setPhenotypicType(PhenotypicType.TRIAL_ENVIRONMENT);
 		factorStandardVar.setName(localName);
 		factor.setLocalName(localName);
@@ -451,13 +457,10 @@ public class BreedingViewImportServiceImplTest {
 		return factor;
 	}
 
-	private VariableType createGermplasmFactorVariableType(String localName) {
-		VariableType factor = new VariableType();
+	private DMSVariableType createGermplasmFactorVariableType(String localName) {
+		DMSVariableType factor = new DMSVariableType();
 		StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setPhenotypicType(PhenotypicType.GERMPLASM);
-
-		Term storedIn = new Term();
-		storedIn.setId(TermId.GERMPLASM_ENTRY_STORAGE.getId());
 
 		Term dataType = new Term();
 		dataType.setId(TermId.NUMERIC_DBID_VARIABLE.getId());
@@ -478,7 +481,6 @@ public class BreedingViewImportServiceImplTest {
 		factorStandardVar.setProperty(property);
 		factorStandardVar.setScale(scale);
 		factorStandardVar.setMethod(method);
-		factorStandardVar.setStoredIn(storedIn);
 		factorStandardVar.setDataType(dataType);
 		factor.setLocalName(localName);
 		factor.setStandardVariable(factorStandardVar);
@@ -509,15 +511,15 @@ public class BreedingViewImportServiceImplTest {
 	}
 
 	private void addVariables(VariableList list) {
-		for (VariableType f : this.factorVariableTypes) {
+		for (DMSVariableType f : this.factorVariableTypes) {
 			list.add(this.createVariable(f));
 		}
-		for (VariableType v : this.variateVariableTypes) {
+		for (DMSVariableType v : this.variateVariableTypes) {
 			list.add(this.createVariable(v));
 		}
 	}
 
-	private Variable createVariable(VariableType variableType) {
+	private Variable createVariable(DMSVariableType variableType) {
 		Variable v = new Variable();
 		if (variableType.getLocalName().equals("TRIAL_INSTANCE")) {
 			v.setValue("1");

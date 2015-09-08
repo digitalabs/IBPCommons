@@ -13,7 +13,7 @@ public enum ToolEnum {
 			"germplasm_headtohead"), MAIN_HEAD_TO_HEAD_BROWSER("germplasm_mainheadtohead"), DATASET_IMPORTER("dataset_importer"), QUERY_FOR_ADAPTED_GERMPLASM(
 			"query_for_adapted_germplasm"), TRAIT_DONOR_QUERY("trait_donor_query"), FIELDBOOK_WEB("fieldbook_web"), NURSERY_MANAGER_FIELDBOOK_WEB(
 			"nursery_manager_fieldbook_web"), TRIAL_MANAGER_FIELDBOOK_WEB("trial_manager_fieldbook_web"), ONTOLOGY_BROWSER_FIELDBOOK_WEB(
-			"ontology_browser_fieldbook_web"), MIGRATOR("migrator");
+			"ontology_browser_fieldbook_web"), MIGRATOR("migrator"), ONTOLOGY_MANAGER("ontology_manager");
 
 	String toolName;
 
