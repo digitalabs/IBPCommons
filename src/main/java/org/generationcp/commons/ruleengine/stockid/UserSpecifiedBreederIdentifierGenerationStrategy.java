@@ -4,7 +4,11 @@ package org.generationcp.commons.ruleengine.stockid;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/9/2015 Time: 5:32 PM
+ * This class serves as an implementation of the BreederIdentifierGenerationStrategy that assumes that the value of the breeder identifier
+ * is supplied by the user prior to the execution of the stock ID generation process instead of a system generated value.
+ * 
+ * The IllegalStateException thrown by the class enforces this assumption; at this point, the rule execution context should already have a
+ * value for breeder identifier and hence does not need to call the implementation.
  */
 
 @Component
