@@ -21,8 +21,6 @@ public class CrossNameServiceImpl implements CrossNameService {
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
-	private CrossNameSetting setting;
-
 	private Integer nextNumberInSequence = 1;
 
 	/**
@@ -34,10 +32,9 @@ public class CrossNameServiceImpl implements CrossNameService {
 	 */
 	@Override
 	public String getNextNameInSequence(CrossNameSetting setting) throws MiddlewareQueryException {
-		this.setting = setting;
 		this.nextNumberInSequence = this.getNextNumberInSequence(setting);
 
-		return this.buildNextNameInSequence(this.nextNumberInSequence);
+		return this.buildNextNameInSequence(this.nextNumberInSequence, setting);
 	}
 
 	/**
@@ -49,8 +46,7 @@ public class CrossNameServiceImpl implements CrossNameService {
 	 */
 	@Override
 	public Integer getNextNumberInSequence(CrossNameSetting setting) throws MiddlewareQueryException {
-		this.setting = setting;
-		String lastPrefixUsed = this.buildPrefixString();
+		String lastPrefixUsed = this.buildPrefixString(setting);
 		this.nextNumberInSequence = 1;
 
 		Integer startNumber = setting.getStartNumber();
@@ -66,37 +62,37 @@ public class CrossNameServiceImpl implements CrossNameService {
 
 	}
 
-	private String buildPrefixString() {
-		String prefix = this.setting.getPrefix().trim();
-		if (this.setting.isAddSpaceBetweenPrefixAndCode()) {
+	String buildPrefixString(CrossNameSetting setting) {
+		String prefix = setting.getPrefix().trim();
+		if (setting.isAddSpaceBetweenPrefixAndCode()) {
 			return prefix + " ";
 		}
 		return prefix;
 	}
 
-	private String buildSuffixString() {
-		String suffix = this.setting.getSuffix().trim();
-		if (this.setting.isAddSpaceBetweenSuffixAndCode()) {
+	String buildSuffixString(CrossNameSetting setting) {
+		String suffix = setting.getSuffix().trim();
+		if (setting.isAddSpaceBetweenSuffixAndCode()) {
 			return " " + suffix;
 		}
 		return suffix;
 	}
 
 	@Override
-	public String buildNextNameInSequence(Integer number) {
+	public String buildNextNameInSequence(Integer number, CrossNameSetting setting) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(this.buildPrefixString());
-		sb.append(this.getNumberWithLeadingZeroesAsString(number));
-		if (!StringUtils.isEmpty(this.setting.getSuffix())) {
-			sb.append(this.buildSuffixString());
+		sb.append(this.buildPrefixString(setting));
+		sb.append(this.getNumberWithLeadingZeroesAsString(number, setting));
+		if (!StringUtils.isEmpty(setting.getSuffix())) {
+			sb.append(this.buildSuffixString(setting));
 		}
 		return sb.toString();
 	}
 
-	private String getNumberWithLeadingZeroesAsString(Integer number) {
+	String getNumberWithLeadingZeroesAsString(Integer number, CrossNameSetting setting) {
 		StringBuilder sb = new StringBuilder();
 		String numberString = number.toString();
-		Integer numOfDigits = this.setting.getNumOfDigits();
+		Integer numOfDigits = setting.getNumOfDigits();
 
 		if (numOfDigits != null && numOfDigits > 0) {
 			int numOfZerosNeeded = numOfDigits - numberString.length();
@@ -110,5 +106,4 @@ public class CrossNameServiceImpl implements CrossNameService {
 		sb.append(number);
 		return sb.toString();
 	}
-
 }

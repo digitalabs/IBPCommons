@@ -13,5 +13,5 @@ public interface CrossNameService {
 
 	Integer getNextNumberInSequence(CrossNameSetting setting) throws MiddlewareQueryException;
 
-	String buildNextNameInSequence(Integer number);
+	String buildNextNameInSequence(Integer number, CrossNameSetting setting);
 }
