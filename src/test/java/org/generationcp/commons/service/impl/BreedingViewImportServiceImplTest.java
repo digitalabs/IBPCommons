@@ -209,6 +209,8 @@ public class BreedingViewImportServiceImplTest {
 				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
 		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
 				Mockito.mock(StandardVariable.class));
+		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
+
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
@@ -247,6 +249,8 @@ public class BreedingViewImportServiceImplTest {
 						Matchers.anyInt())).thenReturn(null);
 		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
 				Mockito.mock(StandardVariable.class));
+		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
+
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
 
@@ -403,6 +407,7 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setName(localName);
 		variate.setLocalName(localName);
 		variate.setStandardVariable(variateStandardVar);
+		variate.setRole(PhenotypicType.VARIATE);
 
 		return variate;
 	}
