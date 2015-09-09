@@ -19,7 +19,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	private Long sequenceNumber;
 
 	public StockIDGenerationRuleExecutionContext(List<String> executionOrder) {
-		super(executionOrder);
+		this(executionOrder, null);
 	}
 
 	public StockIDGenerationRuleExecutionContext(List<String> executionOrder, InventoryService inventoryService) {
