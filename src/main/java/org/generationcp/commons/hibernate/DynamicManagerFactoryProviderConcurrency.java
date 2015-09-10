@@ -17,7 +17,7 @@ import java.util.Map;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerThreadProvider;
-import org.generationcp.middleware.hibernate.XADataSources;
+import org.generationcp.middleware.hibernate.XADatasourceUtilities;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.orm.hibernate3.HibernateTransactionManager;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase implements ManagerFactoryProvider  {
@@ -34,27 +33,28 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 	private final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
 
 	protected Map<Long, String> cropNameCache = new HashMap<Long, String>();
-	
+
 	public DynamicManagerFactoryProviderConcurrency() {
-	
+
 	}
 
-	public DynamicManagerFactoryProviderConcurrency(WorkbenchDataManager workbenchDataManager) {
+	public DynamicManagerFactoryProviderConcurrency(final WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 
 	private WorkbenchDataManager workbenchDataManager;
-	
-	@Autowired 
+
+	@Autowired
 	private ApplicationContext applicationContext;
 
 	public synchronized ManagerFactory createInstance() throws MiddlewareQueryException {
 
-		final Project project = getCropProject();
-		
+		final Project project = this.getCropProject();
+
 		final String databaseName = project.getDatabaseName();
 
-		final SessionFactory applicableCropSessionFactory = (SessionFactory) applicationContext.getBean(XADataSources.computeSessionFactoryName(databaseName));
+		final SessionFactory applicableCropSessionFactory =
+				(SessionFactory) this.applicationContext.getBean(XADatasourceUtilities.computeSessionFactoryName(databaseName));
 
 		final ManagerFactory factory = new ManagerFactory();
 		factory.setSessionProvider(new HibernateSessionPerThreadProvider(applicableCropSessionFactory));
@@ -68,11 +68,11 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 	private Project getCropProject() throws MiddlewareQueryException {
 		return ContextUtil.getProjectInContext(this.workbenchDataManager,
 				((ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes())
-						.getRequest());
+				.getRequest());
 	}
 
 	@Override
-	public ManagerFactory getManagerFactoryForProject(Project project) {
+	public ManagerFactory getManagerFactoryForProject(final Project project) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -80,7 +80,7 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
