@@ -2,8 +2,8 @@
 package org.generationcp.commons.ruleengine.stockid;
 
 import junit.framework.Assert;
+
 import org.generationcp.commons.ruleengine.RuleException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,7 +11,7 @@ import org.mockito.Mockito;
 
 public class StockNotationNumberRuleTest {
 
-	public static final int TEST_NOTATION_NUMBER = 3;
+	private static final int TEST_NOTATION_NUMBER = 3;
 
 	private StockNotationNumberRule unitUnderTest;
 	private StockIDGenerationRuleExecutionContext ruleContext;

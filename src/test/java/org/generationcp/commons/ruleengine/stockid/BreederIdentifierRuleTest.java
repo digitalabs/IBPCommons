@@ -11,10 +11,12 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.ArrayList;
+
 @RunWith(MockitoJUnitRunner.class)
 public class BreederIdentifierRuleTest {
 
-	public static final String TEST_BREEDER_IDENTIFIER = "DV";
+	private static final String TEST_BREEDER_IDENTIFIER = "DV";
 
 	@Mock
 	private BreederIdentifierGenerationStrategy generationStrategy;
@@ -25,7 +27,7 @@ public class BreederIdentifierRuleTest {
 
 	@Before
 	public void setUp() {
-		ruleContext = new StockIDGenerationRuleExecutionContext(null);
+		ruleContext = new StockIDGenerationRuleExecutionContext(new ArrayList<String>());
 	}
 
 	@Test

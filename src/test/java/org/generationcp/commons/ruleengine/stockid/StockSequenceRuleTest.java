@@ -5,6 +5,8 @@ import org.generationcp.commons.ruleengine.RuleException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.Assert.*;
 
 public class StockSequenceRuleTest {
@@ -17,7 +19,7 @@ public class StockSequenceRuleTest {
 	@Before
 	public void setUp() {
 		unitUnderTest = new StockSequenceRule();
-		ruleContext = new StockIDGenerationRuleExecutionContext(null);
+		ruleContext = new StockIDGenerationRuleExecutionContext(new ArrayList<String>());
 	}
 
 	@Test

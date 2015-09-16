@@ -6,9 +6,11 @@ import org.generationcp.commons.ruleengine.RuleException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 public class StockIDSeparatorRuleTest {
 
-	public static final String TEST_SEPARATOR = "|";
+	private static final String TEST_SEPARATOR = "|";
 
 	private StockIDSeparatorRule unitUnderTest;
 	private StockIDGenerationRuleExecutionContext ruleContext;
@@ -16,7 +18,7 @@ public class StockIDSeparatorRuleTest {
 	@Before
 	public void setUp() {
 		unitUnderTest = new StockIDSeparatorRule();
-		ruleContext = new StockIDGenerationRuleExecutionContext(null);
+		ruleContext = new StockIDGenerationRuleExecutionContext(new ArrayList<String>());
 	}
 
 	@Test
