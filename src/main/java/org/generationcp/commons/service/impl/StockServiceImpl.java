@@ -31,10 +31,12 @@ import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/16/2015 Time: 2:51 PM
  */
+@Transactional
 public class StockServiceImpl implements StockService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StockServiceImpl.class);
