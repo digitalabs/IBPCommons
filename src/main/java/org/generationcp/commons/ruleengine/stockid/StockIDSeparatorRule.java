@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockIDSeparatorRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
-	public static final String KEY = "SEPARATOR";
+	static final String KEY = "SEPARATOR";
 	public static final String DEFAULT_SEPARATOR = "-";
 
 	@Override

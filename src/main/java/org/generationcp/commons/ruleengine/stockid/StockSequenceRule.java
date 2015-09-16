@@ -9,7 +9,7 @@ import org.generationcp.commons.ruleengine.RuleException;
  */
 public class StockSequenceRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
-	public static final String KEY = "SEQUENCE";
+	static final String KEY = "SEQUENCE";
 
 	@Override
 	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {

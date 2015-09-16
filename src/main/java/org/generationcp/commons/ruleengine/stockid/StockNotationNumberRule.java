@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StockNotationNumberRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
-	public static final String KEY = "NOTATION";
+	static final String KEY = "NOTATION";
 
 	@Override
 	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
