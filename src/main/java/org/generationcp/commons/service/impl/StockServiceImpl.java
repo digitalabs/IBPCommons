@@ -31,10 +31,13 @@ import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.InventoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/16/2015 Time: 2:51 PM
+ * This class is used for providing stock-related functionalities such as assigning stock IDs, processing bulk settings and bulking
+ * duplicates and reciprocals
  */
+@Transactional
 public class StockServiceImpl implements StockService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(StockServiceImpl.class);
@@ -201,8 +204,7 @@ public class StockServiceImpl implements StockService {
 		}
 	}
 
-	private Set<String> getAllStockIdsToBulkTogether(InventoryDetails target,
-			Map<String, InventoryDetails> inventoryIDInventoryDetailsMap) {
+	private Set<String> getAllStockIdsToBulkTogether(InventoryDetails target, Map<String, InventoryDetails> inventoryIDInventoryDetailsMap) {
 		Set<String> stockIdsToBulkTogether = new TreeSet<>();
 		stockIdsToBulkTogether.add(target.getInventoryID());
 		for (String stockId : target.getBulkWithStockIds()) {
