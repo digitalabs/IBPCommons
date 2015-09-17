@@ -34,7 +34,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/16/2015 Time: 2:51 PM
+ * This class is used for providing stock-related functionalities such as assigning stock IDs, processing bulk settings and bulking
+ * duplicates and reciprocals
  */
 @Transactional
 public class StockServiceImpl implements StockService {
