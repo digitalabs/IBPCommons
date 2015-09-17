@@ -12,18 +12,16 @@ public class StockSequenceRule extends OrderedRule<StockIDGenerationRuleExecutio
 	static final String KEY = "SEQUENCE";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
-		Long currentSequenceNumber = context.getSequenceNumber();
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
+		final Long currentSequenceNumber = context.getSequenceNumber() == null ? 0L : context.getSequenceNumber();
 
-		if (currentSequenceNumber == null) {
-			currentSequenceNumber = 0L;
-		}
+		final Long nextSequenceNumber = currentSequenceNumber + 1;
 
-		currentSequenceNumber++;
-		context.setSequenceNumber(currentSequenceNumber);
-		context.getStockIDGenerationBuilder().append(currentSequenceNumber);
 
-		return currentSequenceNumber;
+		context.setSequenceNumber(nextSequenceNumber);
+		context.getStockIDGenerationBuilder().append(nextSequenceNumber);
+
+		return nextSequenceNumber;
 	}
 
 	@Override

@@ -15,17 +15,17 @@ public class StockNotationNumberRule extends OrderedRule<StockIDGenerationRuleEx
 	static final String KEY = "NOTATION";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
 
 		try {
-			Integer currentNotationNumber =
-					context.getInventoryService().getCurrentNotationNumberForBreederIdentifier(context.getBreederIdentifier());
-			context.setNotationNumber(currentNotationNumber + 1);
+			final Integer notationNumber =
+					context.getInventoryService().getCurrentNotationNumberForBreederIdentifier(context.getBreederIdentifier()) + 1;
+			context.setNotationNumber(notationNumber);
 		} catch (MiddlewareQueryException e) {
 			throw new RuleException(e.getMessage(), e);
 		}
 
-		Integer currentNotationNumber = context.getNotationNumber();
+		final Integer currentNotationNumber = context.getNotationNumber();
 		context.getStockIDGenerationBuilder().append(currentNotationNumber);
 
 		return currentNotationNumber;

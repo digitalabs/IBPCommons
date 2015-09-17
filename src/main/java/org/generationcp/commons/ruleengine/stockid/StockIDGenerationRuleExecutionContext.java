@@ -18,11 +18,11 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	private String separator;
 	private Long sequenceNumber;
 
-	public StockIDGenerationRuleExecutionContext(List<String> executionOrder) {
+	public StockIDGenerationRuleExecutionContext(final List<String> executionOrder) {
 		this(executionOrder, null);
 	}
 
-	public StockIDGenerationRuleExecutionContext(List<String> executionOrder, InventoryService inventoryService) {
+	public StockIDGenerationRuleExecutionContext(final List<String> executionOrder, final InventoryService inventoryService) {
 		super(executionOrder);
 		this.inventoryService = inventoryService;
 		this.stockIDGenerationBuilder = new StringBuilder();
@@ -37,7 +37,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 		return this.stockIDGenerationBuilder;
 	}
 
-	public void setStockIDGenerationBuilder(StringBuilder stockIDGenerationBuilder) {
+	public void setStockIDGenerationBuilder(final StringBuilder stockIDGenerationBuilder) {
 		this.stockIDGenerationBuilder = stockIDGenerationBuilder;
 	}
 
@@ -45,7 +45,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 		return this.breederIdentifier;
 	}
 
-	public void setBreederIdentifier(String breederIdentifier) {
+	public void setBreederIdentifier(final String breederIdentifier) {
 		this.breederIdentifier = breederIdentifier;
 	}
 

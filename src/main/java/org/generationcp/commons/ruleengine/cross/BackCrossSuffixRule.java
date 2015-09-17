@@ -24,9 +24,9 @@ public class BackCrossSuffixRule extends ProcessCodeOrderedRule<CrossingRuleExec
 	}
 
 	@Override
-	public Object runRule(CrossingRuleExecutionContext context) throws RuleException {
+	public Object runRule(final CrossingRuleExecutionContext context) throws RuleException {
 		try {
-			int computation = context.getPedigreeDataManager().calculateRecurrentParent(context.getMaleGid(), context.getFemaleGid());
+			final int computation = context.getPedigreeDataManager().calculateRecurrentParent(context.getMaleGid(), context.getFemaleGid());
 
 			String output = context.getCurrentCrossName() == null ? "" : context.getCurrentCrossName();
 			if (PedigreeDataManager.FEMALE_RECURRENT == computation) {

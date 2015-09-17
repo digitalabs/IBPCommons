@@ -16,7 +16,7 @@ public class BreederIdentifierRule extends OrderedRule<StockIDGenerationRuleExec
 	static final String KEY = "IDENTIFIER";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
 		if (context.getBreederIdentifier() == null) {
 			throw new IllegalStateException("User must have supplied breeder identifier at this point");
 		}

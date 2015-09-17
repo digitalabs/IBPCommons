@@ -16,12 +16,10 @@ public class StockIDSeparatorRule extends OrderedRule<StockIDGenerationRuleExecu
 	public static final String DEFAULT_SEPARATOR = "-";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
-		String separator = context.getSeparator();
-		if (StringUtils.isEmpty(context.getSeparator())) {
-			separator = StockIDSeparatorRule.DEFAULT_SEPARATOR;
-			context.setSeparator(StockIDSeparatorRule.DEFAULT_SEPARATOR);
-		}
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
+		final String separator =
+				StringUtils.isEmpty(context.getSeparator()) ? StockIDSeparatorRule.DEFAULT_SEPARATOR : context.getSeparator();
+		context.setSeparator(separator);
 
 		context.getStockIDGenerationBuilder().append(separator);
 
