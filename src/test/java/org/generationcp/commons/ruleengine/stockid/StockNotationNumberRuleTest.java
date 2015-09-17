@@ -32,7 +32,7 @@ public class StockNotationNumberRuleTest {
 
 		unitUnderTest.runRule(ruleContext);
 		Assert.assertEquals("Unable to output the incremented value of the current notation number for input", new Integer(
-				TEST_NOTATION_NUMBER + 1), ruleContext.getRuleExecutionOutput());
+				TEST_NOTATION_NUMBER + 1).toString(), ruleContext.getRuleExecutionOutput());
 	}
 
 	@Test
