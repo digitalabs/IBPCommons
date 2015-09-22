@@ -7,7 +7,8 @@ import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
 import org.generationcp.middleware.service.api.InventoryService;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte
+ * An object that serves to provide a common context between rules that interact together for the purpose of stock ID generation. This
+ * allows the preservation / storage of state between rule executions.
  */
 public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionContext {
 

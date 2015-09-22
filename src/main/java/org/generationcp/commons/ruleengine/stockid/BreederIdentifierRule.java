@@ -1,14 +1,12 @@
 
 package org.generationcp.commons.ruleengine.stockid;
 
-import javax.annotation.Resource;
-
 import org.generationcp.commons.ruleengine.OrderedRule;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte
+ * A rule implementation that defines the logic for processing breeder identifiers within the context of generation of stock IDs
  */
 @Component
 public class BreederIdentifierRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {

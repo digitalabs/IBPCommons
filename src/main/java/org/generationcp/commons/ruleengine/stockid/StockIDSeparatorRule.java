@@ -7,7 +7,7 @@ import org.generationcp.commons.ruleengine.RuleException;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/16/2015 Time: 3:42 PM
+ * A rule implementation that defines the logic for processing separators within the context of generation of stock IDs
  */
 @Component
 public class StockIDSeparatorRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {

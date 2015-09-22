@@ -5,7 +5,7 @@ import org.generationcp.commons.ruleengine.OrderedRule;
 import org.generationcp.commons.ruleengine.RuleException;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/16/2015 Time: 3:30 PM
+ * A rule implementation that defines the logic for processing sequence numbers within the context of generation of stock IDs
  */
 public class StockSequenceRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
@@ -16,7 +16,6 @@ public class StockSequenceRule extends OrderedRule<StockIDGenerationRuleExecutio
 		final Long currentSequenceNumber = context.getSequenceNumber() == null ? 0L : context.getSequenceNumber();
 
 		final Long nextSequenceNumber = currentSequenceNumber + 1;
-
 
 		context.setSequenceNumber(nextSequenceNumber);
 		context.getStockIDGenerationBuilder().append(nextSequenceNumber);

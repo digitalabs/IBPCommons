@@ -7,7 +7,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/9/2015 Time: 5:13 PM
+ * A rule implementation that defines the logic for processing stock notation within the context of generation of stock IDs
  */
 @Component
 public class StockNotationNumberRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
