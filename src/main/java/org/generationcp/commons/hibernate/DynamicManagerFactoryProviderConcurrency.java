@@ -68,7 +68,7 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 	private Project getCropProject() throws MiddlewareQueryException {
 		return ContextUtil.getProjectInContext(this.workbenchDataManager,
 				((ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes())
-						.getRequest());
+				.getRequest());
 	}
 
 	@Override

@@ -211,6 +211,7 @@ public class BreedingViewImportServiceImplTest {
 				Mockito.mock(StandardVariable.class));
 		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
 
+
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
@@ -249,6 +250,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
 				Mockito.mock(StandardVariable.class));
 		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
+
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
 
