@@ -1,11 +1,13 @@
 
 package org.generationcp.commons.util;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.Assert;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
@@ -19,18 +21,18 @@ public class CrossingUtilTest {
 	private final Integer methodId = 99;
 	private final Integer defaultTypeId = 5;
 	private GermplasmDataManagerImpl germplasmDataManager;
-	private Map<Germplasm, Name> crossesMap;
+	private List<Pair<Germplasm, Name>> germplasmPairs;
 	private Name name;
 
 	@Before
 	public void setUp() {
 		this.germplasmDataManager = Mockito.spy(new GermplasmDataManagerImpl());
-		this.crossesMap = new HashMap<Germplasm, Name>();
+		germplasmPairs = new ArrayList<>();
 		this.name = new Name();
 		this.name.setTypeId(this.defaultTypeId);
 		Germplasm germplasm = new Germplasm();
 		germplasm.setMethodId(this.methodId);
-		this.crossesMap.put(germplasm, this.name);
+		germplasmPairs.add(new ImmutablePair<Germplasm, Name>(germplasm, name));
 	}
 
 	@Test
@@ -38,7 +40,7 @@ public class CrossingUtilTest {
 		Method method = new Method();
 		method.setSnametype(88);
 		Mockito.doReturn(method).when(this.germplasmDataManager).getMethodByID(this.methodId);
-		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.crossesMap, this.defaultTypeId);
+		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.germplasmPairs, this.defaultTypeId);
 		Assert.assertEquals("Sname type should be the same as the method snametype", method.getSnametype(), this.name.getTypeId());
 	}
 
@@ -47,7 +49,7 @@ public class CrossingUtilTest {
 		Method method = new Method();
 		method.setSnametype(null);
 		Mockito.doReturn(method).when(this.germplasmDataManager).getMethodByID(this.methodId);
-		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.crossesMap, this.defaultTypeId);
+		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.germplasmPairs, this.defaultTypeId);
 		Assert.assertEquals("Should use the default name type", this.defaultTypeId, this.name.getTypeId());
 	}
 }
