@@ -5,25 +5,22 @@ import org.generationcp.commons.ruleengine.OrderedRule;
 import org.generationcp.commons.ruleengine.RuleException;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/16/2015 Time: 3:30 PM
+ * A rule implementation that defines the logic for processing sequence numbers within the context of generation of stock IDs
  */
 public class StockSequenceRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
-	public static final String KEY = "SEQUENCE";
+	static final String KEY = "SEQUENCE";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
-		Long currentSequenceNumber = context.getSequenceNumber();
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
+		final Long currentSequenceNumber = context.getSequenceNumber() == null ? 0L : context.getSequenceNumber();
 
-		if (currentSequenceNumber == null) {
-			currentSequenceNumber = 0L;
-		}
+		final Long nextSequenceNumber = currentSequenceNumber + 1;
 
-		currentSequenceNumber++;
-		context.setSequenceNumber(currentSequenceNumber);
-		context.getStockIDGenerationBuilder().append(currentSequenceNumber);
+		context.setSequenceNumber(nextSequenceNumber);
+		context.getStockIDGenerationBuilder().append(nextSequenceNumber);
 
-		return currentSequenceNumber;
+		return nextSequenceNumber;
 	}
 
 	@Override
