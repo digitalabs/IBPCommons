@@ -32,11 +32,9 @@ import org.generationcp.commons.breedingview.xml.Rows;
 import org.generationcp.commons.breedingview.xml.Trait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore
-public class TestBreedingViewProjectXml {
+public class BreedingViewProjectXmlTest {
 
 	private static BreedingViewProject project;
 
@@ -102,11 +100,11 @@ public class TestBreedingViewProjectXml {
 		projectType.setEnvname("Field Trial");
 		projectType.setType("field trial");
 
-		TestBreedingViewProjectXml.project = new BreedingViewProject();
-		TestBreedingViewProjectXml.project.setName("MAT50");
-		TestBreedingViewProjectXml.project.setVersion("1.01");
-		TestBreedingViewProjectXml.project.setType(projectType);
-		TestBreedingViewProjectXml.project.setPhenotypic(phenotypic);
+		BreedingViewProjectXmlTest.project = new BreedingViewProject();
+		BreedingViewProjectXmlTest.project.setName("MAT50");
+		BreedingViewProjectXmlTest.project.setVersion("1.01");
+		BreedingViewProjectXmlTest.project.setType(projectType);
+		BreedingViewProjectXmlTest.project.setPhenotypic(phenotypic);
 	}
 
 	@Test
@@ -114,7 +112,7 @@ public class TestBreedingViewProjectXml {
 		JAXBContext context = JAXBContext.newInstance(BreedingViewProject.class);
 		Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		marshaller.marshal(TestBreedingViewProjectXml.project, System.out);
+		marshaller.marshal(BreedingViewProjectXmlTest.project, System.out);
 	}
 
 	@AfterClass

@@ -7,25 +7,25 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 4/9/2015 Time: 5:13 PM
+ * A rule implementation that defines the logic for processing stock notation within the context of generation of stock IDs
  */
 @Component
 public class StockNotationNumberRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
-	public static final String KEY = "NOTATION";
+	static final String KEY = "NOTATION";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
 
 		try {
-			Integer currentNotationNumber =
-					context.getInventoryService().getCurrentNotationNumberForBreederIdentifier(context.getBreederIdentifier());
-			context.setNotationNumber(currentNotationNumber + 1);
+			final Integer notationNumber =
+					context.getInventoryService().getCurrentNotationNumberForBreederIdentifier(context.getBreederIdentifier()) + 1;
+			context.setNotationNumber(notationNumber);
 		} catch (MiddlewareQueryException e) {
 			throw new RuleException(e.getMessage(), e);
 		}
 
-		Integer currentNotationNumber = context.getNotationNumber();
+		final Integer currentNotationNumber = context.getNotationNumber();
 		context.getStockIDGenerationBuilder().append(currentNotationNumber);
 
 		return currentNotationNumber;

@@ -5,7 +5,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 2/13/2015 Time: 4:56 PM
+ * Spring utility class that allows Rule objects managed by the Spring IoC container to be automatically registered into the RuleFactory
+ * object
  */
 public class RulesPostProcessor implements BeanPostProcessor {
 

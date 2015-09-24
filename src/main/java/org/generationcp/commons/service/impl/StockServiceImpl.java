@@ -204,8 +204,7 @@ public class StockServiceImpl implements StockService {
 		}
 	}
 
-	private Set<String> getAllStockIdsToBulkTogether(InventoryDetails target,
-			Map<String, InventoryDetails> inventoryIDInventoryDetailsMap) {
+	private Set<String> getAllStockIdsToBulkTogether(InventoryDetails target, Map<String, InventoryDetails> inventoryIDInventoryDetailsMap) {
 		Set<String> stockIdsToBulkTogether = new TreeSet<>();
 		stockIdsToBulkTogether.add(target.getInventoryID());
 		for (String stockId : target.getBulkWithStockIds()) {

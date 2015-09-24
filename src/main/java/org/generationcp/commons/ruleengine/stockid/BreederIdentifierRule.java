@@ -1,27 +1,22 @@
 
 package org.generationcp.commons.ruleengine.stockid;
 
-import javax.annotation.Resource;
-
 import org.generationcp.commons.ruleengine.OrderedRule;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.springframework.stereotype.Component;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte
+ * A rule implementation that defines the logic for processing breeder identifiers within the context of generation of stock IDs
  */
 @Component
 public class BreederIdentifierRule extends OrderedRule<StockIDGenerationRuleExecutionContext> {
 
-	public static final String KEY = "IDENTIFIER";
-
-	@Resource
-	private BreederIdentifierGenerationStrategy generationStrategy;
+	static final String KEY = "IDENTIFIER";
 
 	@Override
-	public Object runRule(StockIDGenerationRuleExecutionContext context) throws RuleException {
+	public Object runRule(final StockIDGenerationRuleExecutionContext context) throws RuleException {
 		if (context.getBreederIdentifier() == null) {
-			context.setBreederIdentifier(this.generationStrategy.generateBreederIdentifier());
+			throw new IllegalStateException("User must have supplied breeder identifier at this point");
 		}
 
 		context.getStockIDGenerationBuilder().append(context.getBreederIdentifier());

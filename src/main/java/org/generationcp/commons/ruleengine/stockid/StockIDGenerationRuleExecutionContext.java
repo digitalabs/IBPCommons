@@ -7,7 +7,8 @@ import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
 import org.generationcp.middleware.service.api.InventoryService;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte
+ * An object that serves to provide a common context between rules that interact together for the purpose of stock ID generation. This
+ * allows the preservation / storage of state between rule executions.
  */
 public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionContext {
 
@@ -18,11 +19,11 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 	private String separator;
 	private Long sequenceNumber;
 
-	public StockIDGenerationRuleExecutionContext(List<String> executionOrder) {
-		super(executionOrder);
+	public StockIDGenerationRuleExecutionContext(final List<String> executionOrder) {
+		this(executionOrder, null);
 	}
 
-	public StockIDGenerationRuleExecutionContext(List<String> executionOrder, InventoryService inventoryService) {
+	public StockIDGenerationRuleExecutionContext(final List<String> executionOrder, final InventoryService inventoryService) {
 		super(executionOrder);
 		this.inventoryService = inventoryService;
 		this.stockIDGenerationBuilder = new StringBuilder();
@@ -37,7 +38,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 		return this.stockIDGenerationBuilder;
 	}
 
-	public void setStockIDGenerationBuilder(StringBuilder stockIDGenerationBuilder) {
+	public void setStockIDGenerationBuilder(final StringBuilder stockIDGenerationBuilder) {
 		this.stockIDGenerationBuilder = stockIDGenerationBuilder;
 	}
 
@@ -45,7 +46,7 @@ public class StockIDGenerationRuleExecutionContext extends OrderedRuleExecutionC
 		return this.breederIdentifier;
 	}
 
-	public void setBreederIdentifier(String breederIdentifier) {
+	public void setBreederIdentifier(final String breederIdentifier) {
 		this.breederIdentifier = breederIdentifier;
 	}
 
