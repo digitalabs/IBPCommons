@@ -332,4 +332,17 @@ public abstract class StringUtil {
 		}
 		return sb.toString();
 	}
+
+	/**
+	 * Returns true if a given string can either be an Integer or a Double
+	 * 
+	 * @param any string
+	 * @return true/false
+	 */
+	public static boolean isNumeric(final String value) {
+		if (value != null) {
+			return value.matches("[-+]?\\d*\\.?\\d+");
+		}
+		return false;
+	}
 }
