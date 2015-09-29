@@ -29,6 +29,7 @@ public class WorkbenchAppPathResolver {
 		String serverName = request.getServerName();
 		int port = request.getServerPort();
 
+		url = '/' == url.charAt(0) ? url.substring(1) : url;
 		param = param.startsWith("?") | param.startsWith("&") ? param.substring(1) : param;
 
 		return !url.startsWith("http") ? String.format(urlFormat, scheme, serverName, port, url, param) : String.format("%s" + paramFormat,
