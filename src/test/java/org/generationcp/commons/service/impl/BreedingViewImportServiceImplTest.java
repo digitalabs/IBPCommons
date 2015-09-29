@@ -165,7 +165,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
@@ -202,7 +202,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
@@ -239,7 +239,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(

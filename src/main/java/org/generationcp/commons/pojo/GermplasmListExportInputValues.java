@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.domain.oms.Term;
+import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 
@@ -18,9 +19,9 @@ public class GermplasmListExportInputValues {
 	private String exporterName;
 	private Integer currentLocalIbdbUserId;
 	private Map<String, Boolean> visibleColumnMap;
-	private Map<Integer, StandardVariable> columnStandardVariableMap;
-	private Map<Integer, StandardVariable> inventoryStandardVariableMap;
-	private Map<Integer, StandardVariable> variateStandardVariableMap;
+	private Map<Integer, Term> columnTermMap;
+	private Map<Integer, Variable> inventoryVariableMap;
+	private Map<Integer, Variable> variateVariableMap;
 	private Map<Integer, GermplasmParents> germplasmParents;
 	private List<? extends GermplasmExportSource> listData;
 
@@ -76,16 +77,16 @@ public class GermplasmListExportInputValues {
 		this.visibleColumnMap = visibleColumnMap;
 	}
 
-	public Map<Integer, StandardVariable> getColumnStandardVariableMap() {
-		if (this.columnStandardVariableMap == null) {
+	public Map<Integer, Term> getColumnTermMap() {
+		if (this.columnTermMap == null) {
 			return new HashMap<>();
 		} else {
-			return this.columnStandardVariableMap;
+			return this.columnTermMap;
 		}
 	}
 
-	public void setColumnStandardVariableMap(Map<Integer, StandardVariable> columnStandardVariableMap) {
-		this.columnStandardVariableMap = columnStandardVariableMap;
+	public void setColumnTermMap(Map<Integer, Term> columnTermMap) {
+		this.columnTermMap = columnTermMap;
 	}
 
 	public Map<Integer, GermplasmParents> getGermplasmParents() {
@@ -96,30 +97,30 @@ public class GermplasmListExportInputValues {
 		this.germplasmParents = germplasmParents;
 	}
 
-	public Map<Integer, StandardVariable> getInventoryStandardVariableMap() {
+	public Map<Integer, Variable> getInventoryVariableMap() {
 
-		if (this.inventoryStandardVariableMap == null) {
+		if (this.inventoryVariableMap == null) {
 			return new HashMap<>();
 		}
 
-		return this.inventoryStandardVariableMap;
+		return this.inventoryVariableMap;
 	}
 
-	public void setInventoryStandardVariableMap(Map<Integer, StandardVariable> inventoryStandardVariableMap) {
-		this.inventoryStandardVariableMap = inventoryStandardVariableMap;
+	public void setInventoryVariableMap(Map<Integer, Variable> inventoryStandardVariableMap) {
+		this.inventoryVariableMap = inventoryStandardVariableMap;
 	}
 
-	public Map<Integer, StandardVariable> getVariateStandardVariableMap() {
+	public Map<Integer, Variable> getVariateVariableMap() {
 
-		if (this.variateStandardVariableMap == null) {
+		if (this.variateVariableMap == null) {
 			return new HashMap<>();
 		}
 
-		return this.variateStandardVariableMap;
+		return this.variateVariableMap;
 	}
 
-	public void setVariateStandardVariableMap(Map<Integer, StandardVariable> variateStandardVariableMap) {
-		this.variateStandardVariableMap = variateStandardVariableMap;
+	public void setVariateVariableMap(Map<Integer, Variable> variateStandardVariableMap) {
+		this.variateVariableMap = variateStandardVariableMap;
 	}
 
 	public List<? extends GermplasmExportSource> getListData() {

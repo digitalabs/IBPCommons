@@ -4,7 +4,8 @@ package org.generationcp.commons.ruleengine;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 2/18/2015 Time: 4:03 PM
+ * An abstract class used for defining rules that branch out from the pre-defined sequence. Provides an method that is used to ensure that
+ * context state is properly maintained even when branching out from the sequence.
  */
 public abstract class BranchingRule<T extends OrderedRuleExecutionContext> extends OrderedRule<T> {
 

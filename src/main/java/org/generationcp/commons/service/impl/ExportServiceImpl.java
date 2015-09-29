@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.annotation.Resource;
 
@@ -36,8 +37,10 @@ import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.service.ExportService;
 import org.generationcp.commons.service.FileService;
-import org.generationcp.middleware.domain.dms.StandardVariable;
+import org.generationcp.middleware.domain.oms.CvId;
+import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.util.ResourceFinder;
@@ -309,7 +312,7 @@ public class ExportServiceImpl implements ExportService {
 			throws GermplasmListExporterException {
 
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
-		Map<Integer, StandardVariable> inventoryStandardVariableMap = input.getInventoryStandardVariableMap();
+		Map<Integer, Variable> inventoryStandardVariableMap = input.getInventoryVariableMap();
 		input.getGermplasmList();
 		List<? extends GermplasmExportSource> listData = input.getListData();
 		Map<Integer, GermplasmParents> germplasmParentsMap = input.getGermplasmParents();
@@ -405,9 +408,9 @@ public class ExportServiceImpl implements ExportService {
 	public void createListEntriesHeaderRow(Map<String, CellStyle> styles, HSSFSheet observationSheet, GermplasmListExportInputValues input) {
 
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
-		Map<Integer, StandardVariable> columnStandardVariableMap = input.getColumnStandardVariableMap();
-		Map<Integer, StandardVariable> inventoryStandardVariableMap = input.getInventoryStandardVariableMap();
-		Map<Integer, StandardVariable> variateStandardVariableMap = input.getVariateStandardVariableMap();
+		Map<Integer, Term> columnTermMap = input.getColumnTermMap();
+		Map<Integer, Variable> inventoryStandardVariableMap = input.getInventoryVariableMap();
+		Map<Integer, Variable> variateStandardVariableMap = input.getVariateVariableMap();
 		HSSFRow listEntriesHeader = observationSheet.createRow(0);
 		listEntriesHeader.setHeightInPoints(18);
 
@@ -415,7 +418,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
 			Cell entryIdCell = listEntriesHeader.createCell(columnIndex);
-			entryIdCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.ENTRY_ID, columnStandardVariableMap));
+			entryIdCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_ID, columnTermMap));
 			entryIdCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
@@ -424,7 +427,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GID))) {
 			Cell gidCell = listEntriesHeader.createCell(columnIndex);
-			gidCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.GID, columnStandardVariableMap));
+			gidCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GID, columnTermMap));
 			gidCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -432,7 +435,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
 			Cell entryCodeCell = listEntriesHeader.createCell(columnIndex);
-			entryCodeCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.ENTRY_CODE, columnStandardVariableMap));
+			entryCodeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_CODE, columnTermMap));
 			entryCodeCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -440,7 +443,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))) {
 			Cell designationCell = listEntriesHeader.createCell(columnIndex);
-			designationCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.DESIGNATION, columnStandardVariableMap));
+			designationCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.DESIGNATION, columnTermMap));
 			designationCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
@@ -449,7 +452,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.PARENTAGE, columnStandardVariableMap));
+			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.PARENTAGE, columnTermMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -457,7 +460,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.FEMALE_PARENT, columnStandardVariableMap));
+			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.FEMALE_PARENT, columnTermMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -465,7 +468,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.MALE_PARENT, columnStandardVariableMap));
+			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.MALE_PARENT, columnTermMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -473,7 +476,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.FGID, columnStandardVariableMap));
+			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.FGID, columnTermMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -481,7 +484,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.MGID, columnStandardVariableMap));
+			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.MGID, columnTermMap));
 			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -489,7 +492,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
 			Cell sourceCell = listEntriesHeader.createCell(columnIndex);
-			sourceCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.SEED_SOURCE, columnStandardVariableMap));
+			sourceCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.SEED_SOURCE, columnTermMap));
 			sourceCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
@@ -497,21 +500,21 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
 			Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
-			entryTypeCell.setCellValue(this.getTermNameFromStandardVariable(ColumnLabels.ENTRY_TYPE, columnStandardVariableMap));
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_TYPE, columnTermMap));
 			entryTypeCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
 		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
-			stockIDCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
+			stockIDCell.setCellValue(input.getInventoryVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
 			stockIDCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
 			columnIndex++;
 		}
 
 		if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
 			Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
-			seedAmountCell.setCellValue(input.getInventoryStandardVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
+			seedAmountCell.setCellValue(input.getInventoryVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
 			seedAmountCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
 			columnIndex++;
 		}
@@ -525,12 +528,12 @@ public class ExportServiceImpl implements ExportService {
 
 	}
 
-	protected String getTermNameFromStandardVariable(ColumnLabels columnLabel, Map<Integer, StandardVariable> columnStandardVariableMap) {
+	protected String getTermNameOrDefaultLabel(ColumnLabels columnLabel, Map<Integer, Term> columnTermMap) {
 
-		StandardVariable standardVariable = columnStandardVariableMap.get(columnLabel.getTermId().getId());
+		Term term = columnTermMap.get(columnLabel.getTermId().getId());
 
-		if (standardVariable != null && !standardVariable.getName().isEmpty()) {
-			return standardVariable.getName().toUpperCase();
+		if (term != null && !term.getName().isEmpty()) {
+			return term.getName().toUpperCase();
 		} else {
 			return columnLabel.getName().toUpperCase();
 		}
@@ -572,7 +575,7 @@ public class ExportServiceImpl implements ExportService {
 		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
 
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
-		Map<Integer, StandardVariable> columnStandardVariables = input.getColumnStandardVariableMap();
+		Map<Integer, Term> columnTermMap = input.getColumnTermMap();
 
 		int actualRow = startingRow - 1;
 
@@ -589,13 +592,13 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
 
-			StandardVariable entryNumber = columnStandardVariables.get(ColumnLabels.ENTRY_ID.getTermId().getId());
+			Term termEntry = columnTermMap.get(ColumnLabels.ENTRY_ID.getTermId().getId());
 			HSSFRow entryIdRow = descriptionSheet.createRow(++actualRow);
 
-			if (entryNumber != null) {
-
+			if (termEntry != null && Objects.equals(termEntry.getVocabularyId(), CvId.VARIABLES.getId())) {
+				Variable variable = (Variable) termEntry;
 				this.writeStandardVariableToRow(entryIdRow, labelStyleFactor, styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR),
-						entryNumber);
+						variable);
 				this.createCell(7, entryIdRow, textStyle, "Sequence number - mandatory");
 
 			}
@@ -605,7 +608,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GID))) {
 
-			StandardVariable gid = columnStandardVariables.get(ColumnLabels.GID.getTermId().getId());
+			Variable gid = (Variable) columnTermMap.get(ColumnLabels.GID.getTermId().getId());
 			HSSFRow gidRow = descriptionSheet.createRow(++actualRow);
 
 			if (gid != null) {
@@ -620,7 +623,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
 
-			StandardVariable entryCode = columnStandardVariables.get(ColumnLabels.ENTRY_CODE.getTermId().getId());
+			Variable entryCode = (Variable)  columnTermMap.get(ColumnLabels.ENTRY_CODE.getTermId().getId());
 			HSSFRow entryCodeRow = descriptionSheet.createRow(++actualRow);
 
 			if (entryCode != null) {
@@ -635,7 +638,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))) {
 
-			StandardVariable designation = columnStandardVariables.get(ColumnLabels.DESIGNATION.getTermId().getId());
+			Variable designation = (Variable) columnTermMap.get(ColumnLabels.DESIGNATION.getTermId().getId());
 			HSSFRow designationRow = descriptionSheet.createRow(++actualRow);
 
 			if (designation != null) {
@@ -651,7 +654,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))) {
 
-			StandardVariable parentage = columnStandardVariables.get(ColumnLabels.PARENTAGE.getTermId().getId());
+			Variable parentage = (Variable) columnTermMap.get(ColumnLabels.PARENTAGE.getTermId().getId());
 			HSSFRow crossRow = descriptionSheet.createRow(++actualRow);
 
 			if (parentage != null) {
@@ -665,12 +668,12 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))) {
 
-			StandardVariable femaleParent = columnStandardVariables.get(ColumnLabels.FEMALE_PARENT.getTermId().getId());
+			Term femaleParent = columnTermMap.get(ColumnLabels.FEMALE_PARENT.getTermId().getId());
 			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
 
 			if (femaleParent != null) {
 				this.createCell(0, sourceRow, labelStyleFactor, femaleParent.getName());
-				this.createCell(1, sourceRow, textStyle, femaleParent.getDescription());
+				this.createCell(1, sourceRow, textStyle, femaleParent.getDefinition());
 			} else {
 				this.createCell(0, sourceRow, labelStyleFactor, "FEMALE PARENT");
 				this.createCell(1, sourceRow, textStyle, "NAME OF FEMALE PARENT");
@@ -686,12 +689,12 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))) {
 
-			StandardVariable maleParent = columnStandardVariables.get(ColumnLabels.MALE_PARENT.getTermId().getId());
+			Term maleParent = columnTermMap.get(ColumnLabels.MALE_PARENT.getTermId().getId());
 			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
 
 			if (maleParent != null) {
 				this.createCell(0, sourceRow, labelStyleFactor, maleParent.getName());
-				this.createCell(1, sourceRow, textStyle, maleParent.getDescription());
+				this.createCell(1, sourceRow, textStyle, maleParent.getDefinition());
 			} else {
 				this.createCell(0, sourceRow, labelStyleFactor, "MALE PARENT");
 				this.createCell(1, sourceRow, textStyle, "NAME OF MALE PARENT");
@@ -705,12 +708,12 @@ public class ExportServiceImpl implements ExportService {
 
 		if (visibleColumnMap.containsKey(ColumnLabels.FGID.getName()) && visibleColumnMap.get(ColumnLabels.FGID.getName())) {
 
-			StandardVariable fgid = columnStandardVariables.get(ColumnLabels.FGID.getTermId().getId());
+			Term fgid = columnTermMap.get(ColumnLabels.FGID.getTermId().getId());
 			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
 
 			if (fgid != null) {
 				this.createCell(0, sourceRow, labelStyleFactor, fgid.getName());
-				this.createCell(1, sourceRow, textStyle, fgid.getDescription());
+				this.createCell(1, sourceRow, textStyle, fgid.getDefinition());
 			} else {
 				this.createCell(0, sourceRow, labelStyleFactor, "FGID");
 				this.createCell(1, sourceRow, textStyle, "GID OF FEMALE PARENT");
@@ -724,12 +727,12 @@ public class ExportServiceImpl implements ExportService {
 
 		if (visibleColumnMap.containsKey(ColumnLabels.MGID.getName()) && visibleColumnMap.get(ColumnLabels.MGID.getName())) {
 
-			StandardVariable mgid = columnStandardVariables.get(ColumnLabels.MGID.getTermId().getId());
+			Term mgid = columnTermMap.get(ColumnLabels.MGID.getTermId().getId());
 			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
 
 			if (mgid != null) {
 				this.createCell(0, sourceRow, labelStyleFactor, mgid.getName());
-				this.createCell(1, sourceRow, textStyle, mgid.getDescription());
+				this.createCell(1, sourceRow, textStyle, mgid.getDefinition());
 			} else {
 				this.createCell(0, sourceRow, labelStyleFactor, "MGID");
 				this.createCell(1, sourceRow, textStyle, "GID OF MALE PARENT");
@@ -744,7 +747,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
 
-			StandardVariable seedSource = columnStandardVariables.get(ColumnLabels.SEED_SOURCE.getTermId().getId());
+			Variable seedSource = (Variable) columnTermMap.get(ColumnLabels.SEED_SOURCE.getTermId().getId());
 			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
 
 			if (seedSource != null) {
@@ -758,7 +761,7 @@ public class ExportServiceImpl implements ExportService {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
 
-			StandardVariable entryType = columnStandardVariables.get(ColumnLabels.ENTRY_TYPE.getTermId().getId());
+			Variable entryType = (Variable) columnTermMap.get(ColumnLabels.ENTRY_TYPE.getTermId().getId());
 			HSSFRow sourceRow = descriptionSheet.createRow(++actualRow);
 
 			if (entryType != null) {
@@ -852,7 +855,7 @@ public class ExportServiceImpl implements ExportService {
 
 		int actualRow = startingRow;
 
-		if (!input.getInventoryStandardVariableMap().isEmpty()) {
+		if (!input.getInventoryVariableMap().isEmpty()) {
 
 			HSSFRow conditionDetailsHeading = descriptionSheet.createRow(actualRow);
 			this.createCell(0, conditionDetailsHeading, headingStyle, ExportServiceImpl.INVENTORY);
@@ -864,7 +867,7 @@ public class ExportServiceImpl implements ExportService {
 			this.createCell(6, conditionDetailsHeading, headingStyle, "");
 			this.createCell(7, conditionDetailsHeading, headingStyle, ExportServiceImpl.COMMENTS);
 
-			for (StandardVariable stdVar : input.getInventoryStandardVariableMap().values()) {
+			for (Variable stdVar : input.getInventoryVariableMap().values()) {
 				HSSFRow row = descriptionSheet.createRow(++actualRow);
 				this.writeStandardVariableToRow(row, labelStyleInventory, textStyle, stdVar);
 
@@ -892,7 +895,7 @@ public class ExportServiceImpl implements ExportService {
 
 		int actualRow = startingRow;
 
-		if (!input.getVariateStandardVariableMap().isEmpty()) {
+		if (!input.getVariateVariableMap().isEmpty()) {
 
 			HSSFRow conditionDetailsHeading = descriptionSheet.createRow(actualRow);
 			this.createCell(0, conditionDetailsHeading, headingStyle, ExportServiceImpl.VARIATE);
@@ -904,7 +907,7 @@ public class ExportServiceImpl implements ExportService {
 			this.createCell(6, conditionDetailsHeading, headingStyle, "");
 			this.createCell(7, conditionDetailsHeading, headingStyle, ExportServiceImpl.COMMENTS);
 
-			for (StandardVariable stdVar : input.getVariateStandardVariableMap().values()) {
+			for (Variable stdVar : input.getVariateVariableMap().values()) {
 				HSSFRow row = descriptionSheet.createRow(++actualRow);
 				this.writeStandardVariableToRow(row, labelStyleVariate, textStyle, stdVar);
 				if (stdVar.getId() == TermId.NOTES.getId()) {
@@ -944,14 +947,14 @@ public class ExportServiceImpl implements ExportService {
 	}
 
 	protected void writeStandardVariableToRow(HSSFRow hssfRow, CellStyle labelStyleFactor, CellStyle textStyle,
-			StandardVariable standardVariable) {
+			Variable standardVariable) {
 
 		this.createCell(0, hssfRow, labelStyleFactor, standardVariable.getName().toUpperCase());
-		this.createCell(1, hssfRow, textStyle, standardVariable.getDescription());
+		this.createCell(1, hssfRow, textStyle, standardVariable.getDefinition());
 		this.createCell(2, hssfRow, textStyle, standardVariable.getProperty().getName().toUpperCase());
 		this.createCell(3, hssfRow, textStyle, standardVariable.getScale().getName().toUpperCase());
 		this.createCell(4, hssfRow, textStyle, standardVariable.getMethod().getName().toUpperCase());
-		this.createCell(5, hssfRow, textStyle, standardVariable.getDataType().getName().substring(0, 1).toUpperCase());
+		this.createCell(5, hssfRow, textStyle, standardVariable.getScale().getDataType().getName().substring(0, 1).toUpperCase());
 		this.createCell(6, hssfRow, textStyle, "");
 		this.createCell(7, hssfRow, textStyle, "");
 

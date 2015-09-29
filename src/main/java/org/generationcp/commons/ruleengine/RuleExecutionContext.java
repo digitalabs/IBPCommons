@@ -4,7 +4,7 @@ package org.generationcp.commons.ruleengine;
 import java.util.List;
 
 /**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte
+ * Base interface for context objects used to store state for rule executions
  */
 public interface RuleExecutionContext {
 
@@ -12,7 +12,4 @@ public interface RuleExecutionContext {
 
 	public Object getRuleExecutionOutput();
 
-	public void setCurrentExecutionIndex(int index);
-
-	public int getCurrentExecutionIndex();
 }

@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import au.com.bytecode.opencsv.CSVReader;
 import junit.framework.Assert;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -24,18 +24,20 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
-import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.DataType;
+import org.generationcp.middleware.domain.ontology.Method;
+import org.generationcp.middleware.domain.ontology.Property;
+import org.generationcp.middleware.domain.ontology.Scale;
+import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import au.com.bytecode.opencsv.CSVReader;
 
 public class ExportServiceImplTest {
 
@@ -376,9 +378,9 @@ public class ExportServiceImplTest {
 		GermplasmList germplasmList = this.input.getGermplasmList();
 		Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 
-		Map<Integer, StandardVariable> germplasmStandardVariables = this.input.getColumnStandardVariableMap();
-		Map<Integer, StandardVariable> inventoryStandardVariables = this.input.getInventoryStandardVariableMap();
-		Map<Integer, StandardVariable> variateStandardVariables = this.input.getVariateStandardVariableMap();
+		Map<Integer, Term> columnTerms = this.input.getColumnTermMap();
+		Map<Integer, Variable> inventoryVariables = this.input.getInventoryVariableMap();
+		Map<Integer, Variable> variateVariables = this.input.getVariateVariableMap();
 
 		// to test
 		try {
@@ -520,35 +522,26 @@ public class ExportServiceImplTest {
 		for (Entry<String, Boolean> entry : visibleColumnMap.entrySet()) {
 
 			if (entry.getValue()) {
-				StandardVariable stdVariable = germplasmStandardVariables.get(Integer.valueOf(entry.getKey()));
+				Term term = columnTerms.get(Integer.valueOf(entry.getKey()));
 
 				row = descriptionSheet.getRow(++rowIndex);
-				Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
-						.getName().toUpperCase());
+				Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(),
+						term.getName().toUpperCase());
 				Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-						stdVariable.getDescription());
-				Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
-						.getProperty().getName().toUpperCase());
-				Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
-						.getScale().getName().toUpperCase());
-				Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
-						.getMethod().getName().toUpperCase());
-				Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-						.getDataType().getName().substring(0, 1).toUpperCase());
-				Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
+						term.getDefinition());
 			}
 
 		}
 
 		rowIndex = rowIndex + 2;
 
-		for (StandardVariable stdVariable : inventoryStandardVariables.values()) {
+		for (Variable stdVariable : inventoryVariables.values()) {
 
 			row = descriptionSheet.getRow(++rowIndex);
 			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
 					.getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-					stdVariable.getDescription());
+					stdVariable.getDefinition());
 			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
 					.getProperty().getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
@@ -556,20 +549,20 @@ public class ExportServiceImplTest {
 			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
 					.getMethod().getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-					.getDataType().getName().substring(0, 1).toUpperCase());
+					.getScale().getDataType().getName().substring(0, 1).toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
 		}
 
 		rowIndex = rowIndex + 2;
 
-		for (StandardVariable stdVariable : variateStandardVariables.values()) {
+		for (Variable stdVariable : variateVariables.values()) {
 
 			row = descriptionSheet.getRow(++rowIndex);
 			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
 					.getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-					stdVariable.getDescription());
+					stdVariable.getDefinition());
 			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
 					.getProperty().getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
@@ -577,7 +570,7 @@ public class ExportServiceImplTest {
 			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
 					.getMethod().getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-					.getDataType().getName().substring(0, 1).toUpperCase());
+					.getScale().getDataType().getName().substring(0, 1).toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
 		}
@@ -610,64 +603,73 @@ public class ExportServiceImplTest {
 		input.setCurrentLocalIbdbUserId(ExportServiceImplTest.CURRENT_USER_ID);
 		input.setExporterName(ExportServiceImplTest.CURRENT_USER_NAME);
 		input.setVisibleColumnMap(this.getVisibleColumnMap());
-		input.setColumnStandardVariableMap(this.getGermplasmStandardVariables());
-		input.setInventoryStandardVariableMap(this.getInventoryStandardVariables());
-		input.setVariateStandardVariableMap(this.getVariateStandardVariables());
+		input.setColumnTermMap(this.getColumnTerms());
+		input.setInventoryVariableMap(this.getInventoryVariables());
+		input.setVariateVariableMap(this.getVariateVariables());
 		input.setListData(this.generateListEntries());
 		return input;
 	}
 
-	private Map<Integer, StandardVariable> getVariateStandardVariables() {
-		Map<Integer, StandardVariable> standardVariableMap = new LinkedHashMap<>();
+	private Map<Integer, Variable> getVariateVariables() {
+		Map<Integer, Variable> standardVariableMap = new LinkedHashMap<>();
 
-		standardVariableMap.put(TermId.NOTES.getId(), this.createStandardVariable(TermId.NOTES.getId(), "NOTES",
-				"Field notes - observed (text)", "Comment", "Text", "Observed", "Character variable"));
-
-		return standardVariableMap;
-	}
-
-	private Map<Integer, StandardVariable> getInventoryStandardVariables() {
-
-		Map<Integer, StandardVariable> standardVariableMap = new LinkedHashMap<>();
-
-		standardVariableMap.put(TermId.STOCKID.getId(), this.createStandardVariable(TermId.STOCKID.getId(), "stockID",
-				"ID of an inventory deposit", "Germplasm stock id", "DBCV", "Assigned", "Character variable"));
-		standardVariableMap.put(TermId.SEED_AMOUNT_G.getId(), this.createStandardVariable(TermId.SEED_AMOUNT_G.getId(), "SEED_AMOUNT_g",
-				"Seed inventory amount deposited or withdrawn (g)", "Inventory amount", "g", "Weighed", "Numeric variable"));
+		standardVariableMap.put(TermId.NOTES.getId(),
+				this.createVariable(TermId.NOTES.getId(), "NOTES", "Field notes - observed (text)", "Comment", "Text", "Observed",
+						DataType.CHARACTER_VARIABLE));
 
 		return standardVariableMap;
 	}
 
-	private Map<Integer, StandardVariable> getGermplasmStandardVariables() {
+	private Map<Integer, Variable> getInventoryVariables() {
 
-		Map<Integer, StandardVariable> standardVariableMap = new LinkedHashMap<>();
+		Map<Integer, Variable> standardVariableMap = new LinkedHashMap<>();
 
-		standardVariableMap.put(TermId.ENTRY_NO.getId(), this.createStandardVariable(TermId.ENTRY_NO.getId(), "ENTRY_NO",
-				"Germplasm entry - enumerated (number)", "Germplasm entry", "Number", "Enumerated", "Numeric variable"));
-		standardVariableMap.put(TermId.GID.getId(), this.createStandardVariable(TermId.GID.getId(), "GID",
-				"Germplasm identifier - assigned (DBID)", "Germplasm id", "DBID", "Assigned", "Numeric DBID  variable"));
-		standardVariableMap.put(TermId.CROSS.getId(), this.createStandardVariable(TermId.CROSS.getId(), "CROSS",
-				"The pedigree string of the germplasm", "Cross history", "Text", "Assigned", "Character variable"));
-		standardVariableMap.put(TermId.ENTRY_CODE.getId(), this.createStandardVariable(TermId.ENTRY_CODE.getId(), "ENTRY_CODE",
-				"Germplasm ID - Assigned (Code)", "Germplasm entry", "Code", "Assigned", "Character variable"));
-		standardVariableMap.put(TermId.DESIG.getId(), this.createStandardVariable(TermId.DESIG.getId(), "DESIGNATION",
-				"Germplasm identifier - assigned (DBCV)", "Germplasm id", "DBCV", "Assigned", "Character variable"));
-		standardVariableMap.put(TermId.SEED_SOURCE.getId(), this.createStandardVariable(TermId.SEED_SOURCE.getId(), "SEED_SOURCE",
-				"Seed source - Selected (Code)", "Seed source", "Code", "Selected", "Character variable"));
+		standardVariableMap.put(TermId.STOCKID.getId(),
+				this.createVariable(TermId.STOCKID.getId(), "stockID", "ID of an inventory deposit", "Germplasm stock id", "DBCV",
+						"Assigned", DataType.CHARACTER_VARIABLE));
+		standardVariableMap.put(TermId.SEED_AMOUNT_G.getId(),
+				this.createVariable(TermId.SEED_AMOUNT_G.getId(), "SEED_AMOUNT_g", "Seed inventory amount deposited or withdrawn (g)",
+						"Inventory amount", "g", "Weighed", DataType.CHARACTER_VARIABLE));
 
 		return standardVariableMap;
 	}
 
-	private StandardVariable createStandardVariable(int termId, String name, String description, String property, String scale,
-			String method, String dataType) {
-		StandardVariable stdvariable = new StandardVariable();
+	private Map<Integer, Term> getColumnTerms() {
+
+		Map<Integer, Term> termMap = new LinkedHashMap<>();
+
+		termMap.put(TermId.ENTRY_NO.getId(),
+				this.createVariable(TermId.ENTRY_NO.getId(), "ENTRY_NO", "Germplasm entry - enumerated (number)", "Germplasm entry",
+						"Number", "Enumerated", DataType.NUMERIC_VARIABLE));
+		termMap.put(TermId.GID.getId(),
+				this.createVariable(TermId.GID.getId(), "GID", "Germplasm identifier - assigned (DBID)", "Germplasm id", "DBID", "Assigned",
+						DataType.NUMERIC_VARIABLE));
+		termMap.put(TermId.CROSS.getId(),
+				this.createVariable(TermId.CROSS.getId(), "CROSS", "The pedigree string of the germplasm", "Cross history", "Text",
+						"Assigned", DataType.CHARACTER_VARIABLE));
+		termMap.put(TermId.ENTRY_CODE.getId(),
+				this.createVariable(TermId.ENTRY_CODE.getId(), "ENTRY_CODE", "Germplasm ID - Assigned (Code)", "Germplasm entry", "Code",
+						"Assigned", DataType.CHARACTER_VARIABLE));
+		termMap.put(TermId.DESIG.getId(),
+				this.createVariable(TermId.DESIG.getId(), "DESIGNATION", "Germplasm identifier - assigned (DBCV)", "Germplasm id", "DBCV",
+						"Assigned", DataType.CHARACTER_VARIABLE));
+		termMap.put(TermId.SEED_SOURCE.getId(),
+				this.createVariable(TermId.SEED_SOURCE.getId(), "SEED_SOURCE", "Seed source - Selected (Code)", "Seed source", "Code",
+						"Selected", DataType.CHARACTER_VARIABLE));
+
+		return termMap;
+	}
+
+	private Variable createVariable(int termId, String name, String description, String property, String scale, String method,
+			DataType dataType) {
+		Variable stdvariable = new Variable();
 		stdvariable.setId(termId);
 		stdvariable.setName(name);
-		stdvariable.setDescription(description);
-		stdvariable.setProperty(new Term(0, property, ""));
-		stdvariable.setScale(new Term(0, scale, ""));
-		stdvariable.setMethod(new Term(0, method, ""));
-		stdvariable.setDataType(new Term(0, dataType, ""));
+		stdvariable.setDefinition(description);
+		stdvariable.setProperty(new Property(new Term(0, property, "")));
+		stdvariable.setScale(new Scale(new Term(0, scale, "")));
+		stdvariable.setMethod(new Method(new Term(0, method, "")));
+		stdvariable.getScale().setDataType(dataType);
 		return stdvariable;
 	}
 
@@ -692,12 +694,12 @@ public class ExportServiceImplTest {
 		germplasmList.setType("LST");
 		germplasmList.setDate(20141112L);
 		germplasmList.setNotes("Sample Notes");
-		germplasmList.setListData(ExportServiceImplTest.generateListEntries());
+		germplasmList.setListData(this.generateListEntries());
 
 		return germplasmList;
 	}
 
-	private static List<GermplasmListData> generateListEntries() {
+	private List<GermplasmListData> generateListEntries() {
 		List<GermplasmListData> entries = new ArrayList<>();
 
 		for (int x = 1; x <= ExportServiceImplTest.NO_OF_LIST_ENTRIES; x++) {
