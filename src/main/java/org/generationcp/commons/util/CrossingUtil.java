@@ -2,8 +2,10 @@
 package org.generationcp.commons.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.commons.settings.BreedingMethodSetting;
 import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -33,8 +35,8 @@ public class CrossingUtil {
 	 * @return Germplasm - the parameter gc will be returned and its method id should have been set correctly
 	 * @throws MiddlewareQueryException
 	 */
-	public static Germplasm setCrossingBreedingMethod(Germplasm child, Germplasm female, Germplasm male, Germplasm motherOfFemale,
-			Germplasm fatherOfFemale, Germplasm motherOfMale, Germplasm fatherOfMale) {
+	public static Germplasm setCrossingBreedingMethod(final Germplasm child, final Germplasm female, final Germplasm male,
+			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale, final Germplasm fatherOfMale) {
 
 		if (female != null && female.getGnpgs() < 0) {
 			if (male != null && male.getGnpgs() < 0) {
@@ -87,27 +89,27 @@ public class CrossingUtil {
 	 *
 	 * @return
 	 */
-	public static boolean applyBreedingMethodSetting(GermplasmDataManager germplasmDataManager, CrossSetting setting,
-			Map<Germplasm, Name> germplasmNameMap) {
+	public static boolean applyBreedingMethodSetting(final GermplasmDataManager germplasmDataManager, final CrossSetting setting,
+			final List<Germplasm> germplasmList) {
 
-		BreedingMethodSetting methodSetting = setting.getBreedingMethodSetting();
+		final BreedingMethodSetting methodSetting = setting.getBreedingMethodSetting();
 
 		// Use same breeding method for all crosses
 		if (!methodSetting.isBasedOnStatusOfParentalLines()) {
-			CrossingUtil.setBreedingMethodBasedOnMethod(methodSetting.getMethodId(), germplasmNameMap);
+			CrossingUtil.setBreedingMethodBasedOnMethod(methodSetting.getMethodId(), germplasmList);
 
 			// Use CrossingManagerUtil to set breeding method based on parents
 		} else {
-			for (Germplasm germplasm : germplasmNameMap.keySet()) {
+			for (final Germplasm germplasm : germplasmList) {
 
 				if (germplasm.getMethodId() == null || germplasm.getMethodId() == 0) {
 
-					Integer femaleGid = germplasm.getGpid1();
-					Integer maleGid = germplasm.getGpid2();
+					final Integer femaleGid = germplasm.getGpid1();
+					final Integer maleGid = germplasm.getGpid2();
 
 					try {
-						Germplasm female = germplasmDataManager.getGermplasmByGID(femaleGid);
-						Germplasm male = germplasmDataManager.getGermplasmByGID(maleGid);
+						final Germplasm female = germplasmDataManager.getGermplasmByGID(femaleGid);
+						final Germplasm male = germplasmDataManager.getGermplasmByGID(maleGid);
 
 						Germplasm motherOfFemale = null;
 						Germplasm fatherOfFemale = null;
@@ -126,37 +128,37 @@ public class CrossingUtil {
 						CrossingUtil.setCrossingBreedingMethod(germplasm, female, male, motherOfFemale, fatherOfFemale, motherOfMale,
 								fatherOfMale);
 
-					} catch (MiddlewareQueryException e) {
+					} catch (final MiddlewareQueryException e) {
 						CrossingUtil.LOG.error(e.toString() + "\n" + e.getStackTrace());
 						return false;
 					}
 				}
-
 			}
 		}
 		return true;
 
 	}
 
-	protected static void setBreedingMethodBasedOnMethod(Integer breedingMethodId, Map<Germplasm, Name> germplasmNameMap) {
-		for (Germplasm germplasm : germplasmNameMap.keySet()) {
+	protected static void setBreedingMethodBasedOnMethod(final Integer breedingMethodId, final List<Germplasm> germplasmList) {
+		for (final Germplasm germplasm : germplasmList) {
 
 			// method id retrieved via the input file is prioritized over a method to be applied to all entries
 			if (germplasm.getMethodId() == null || germplasm.getMethodId() == 0) {
 				germplasm.setMethodId(breedingMethodId);
 			}
-
 		}
+
 	}
 
 	/*
 	 * This is supposed to set the correct name type id to name using the crossing method snametype BMS-577
 	 */
-	public static void applyMethodNameType(GermplasmDataManager germplasmDataManager, Map<Germplasm, Name> crossesMap, Integer defautTypeId) {
-		Map<Integer, Method> methodMap = new HashMap<Integer, Method>();
-		for (Map.Entry<Germplasm, Name> entry : crossesMap.entrySet()) {
-			Name nameObject = entry.getValue();
-			Germplasm germplasm = entry.getKey();
+	public static void applyMethodNameType(final GermplasmDataManager germplasmDataManager,
+			final List<Pair<Germplasm, Name>> germplasmPairs, final Integer defaultTypeId) {
+		final Map<Integer, Method> methodMap = new HashMap<Integer, Method>();
+		for (final Pair<Germplasm, Name> pair : germplasmPairs) {
+			final Name nameObject = pair.getRight();
+			final Germplasm germplasm = pair.getLeft();
 			Method method = null;
 			if (methodMap.containsKey(germplasm.getMethodId())) {
 				method = methodMap.get(germplasm.getMethodId());
@@ -164,7 +166,7 @@ public class CrossingUtil {
 				try {
 					method = germplasmDataManager.getMethodByID(germplasm.getMethodId());
 					methodMap.put(germplasm.getMethodId(), method);
-				} catch (MiddlewareQueryException e) {
+				} catch (final MiddlewareQueryException e) {
 					CrossingUtil.LOG.error(e.getMessage(), e);
 				}
 			}
@@ -172,12 +174,13 @@ public class CrossingUtil {
 				nameObject.setTypeId(method.getSnametype());
 			} else {
 				// we set the default value
-				nameObject.setTypeId(defautTypeId);
+				nameObject.setTypeId(defaultTypeId);
 			}
 		}
+
 	}
 
-	public static boolean isCimmytWheat(String profile, String crop) {
+	public static boolean isCimmytWheat(final String profile, final String crop) {
 		if (profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
 				&& CropEnum.WHEAT.toString().equalsIgnoreCase(crop)) {
 			return true;
