@@ -24,6 +24,7 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -93,8 +94,11 @@ public class ExportServiceImpl implements ExportService {
 	public static final String HEADIING_STYLE_INVENTORY = "headingStyleInventory";
 	public static final String HEADING_STYLE_VARIATE = "headingStyleVariate";
 	public static final String SHEET_STYLE = "sheetStyle";
+	public static final String NUMBER_DATA_FORMAT_STYLE = "numberDataFormatStyle";
+	public static final String TEXT_DATA_FORMAT_STYLE = "textDataFormatStyle";
 	public static final String TEXT_HIGHLIGHT_STYLE_FACTOR = "textHightlightFactor";
 	public static final String COLUMN_HIGHLIGHT_STYLE_FACTOR = "columnHighlightFactor";
+	public static final String NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR = "numberColumnHighlightFactor";
 
 	@Resource
 	private FileService fileService;
@@ -420,7 +424,7 @@ public class ExportServiceImpl implements ExportService {
 			Cell entryIdCell = listEntriesHeader.createCell(columnIndex);
 			entryIdCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_ID, columnTermMap));
 			entryIdCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -429,6 +433,7 @@ public class ExportServiceImpl implements ExportService {
 			Cell gidCell = listEntriesHeader.createCell(columnIndex);
 			gidCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GID, columnTermMap));
 			gidCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -509,6 +514,7 @@ public class ExportServiceImpl implements ExportService {
 			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
 			stockIDCell.setCellValue(input.getInventoryVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
 			stockIDCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -516,6 +522,7 @@ public class ExportServiceImpl implements ExportService {
 			Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
 			seedAmountCell.setCellValue(input.getInventoryVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
 			seedAmountCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -523,6 +530,7 @@ public class ExportServiceImpl implements ExportService {
 			Cell notesCell = listEntriesHeader.createCell(columnIndex);
 			notesCell.setCellValue(variateStandardVariableMap.get(TermId.NOTES.getId()).getName().toUpperCase());
 			notesCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -963,6 +971,7 @@ public class ExportServiceImpl implements ExportService {
 	@Override
 	public Map<String, CellStyle> createStyles(Workbook wb) {
 		Map<String, CellStyle> styles = new HashMap<String, CellStyle>();
+		DataFormat format = wb.createDataFormat();
 
 		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.LIGHT_ORANGE, 253, 233, 217);
 		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.VIOLET, 228, 223, 236);
@@ -973,9 +982,25 @@ public class ExportServiceImpl implements ExportService {
 		this.setCustomColorAtIndex((HSSFWorkbook) wb, IndexedColors.RED, 242, 220, 219);
 
 		// default style for all cells in a sheet
-		CellStyle sheetStyle = this.createStyle(wb);
+		final CellStyle sheetStyle = this.createStyle(wb);
 		sheetStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
 		styles.put(ExportServiceImpl.SHEET_STYLE, sheetStyle);
+
+		// numeric data format for Numeric values
+		final CellStyle numberDataFormatStyle = wb.createCellStyle();
+		numberDataFormatStyle.setDataFormat(format.getFormat("0"));
+		styles.put(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE, numberDataFormatStyle);
+
+		// numeric data format for Entry No column with highlight color
+		final CellStyle numberHighlightColumnStyle = this.createStyle(wb);
+		numberHighlightColumnStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
+		numberHighlightColumnStyle.setDataFormat(format.getFormat("0"));
+		styles.put(ExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR, numberHighlightColumnStyle);
+
+		// text data format for Text values
+		CellStyle textDataFormatStyle = wb.createCellStyle();
+		textDataFormatStyle.setDataFormat(format.getFormat("@"));
+		styles.put(ExportServiceImpl.TEXT_DATA_FORMAT_STYLE, textDataFormatStyle);
 
 		// cell style for labels in the description sheet
 		CellStyle labelStyle = this.createStyleWithBorder(wb);
@@ -1008,7 +1033,7 @@ public class ExportServiceImpl implements ExportService {
 		highlightFactorStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
 		styles.put(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR, highlightFactorStyle);
 
-		// cell style to highlight the Entry No and Designation for Column
+		// cell style to highlight the Designation for Column
 		CellStyle highlightColumnStyle = this.createStyle(wb);
 		highlightColumnStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
 		styles.put(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR, highlightColumnStyle);
