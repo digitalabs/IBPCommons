@@ -336,12 +336,15 @@ public class ExportServiceImplTest {
 				Assert.assertEquals("Expecting " + this.getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to "
 						+ listData.getEntryId() + " but didn't.", this.getInteger(row.getCell(columnIndex).getNumericCellValue()),
 						listData.getEntryId());
+				Assert.assertEquals(sheetStyles.get(ExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR),
+						row.getCell(columnIndex).getCellStyle());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.GID.getId()))) {
 				Assert.assertEquals("Expecting " + this.getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to "
 						+ listData.getEntryId() + " but didn't.", this.getInteger(row.getCell(columnIndex).getNumericCellValue()),
 						listData.getGid());
+				Assert.assertEquals(sheetStyles.get(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE), row.getCell(columnIndex).getCellStyle());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_CODE.getId()))) {
