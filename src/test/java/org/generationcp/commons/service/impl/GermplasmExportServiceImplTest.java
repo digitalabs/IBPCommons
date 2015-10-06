@@ -39,14 +39,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-public class ExportServiceImplTest {
+public class GermplasmExportServiceImplTest {
 
 	private static final String CURRENT_USER_NAME = "User User";
 	private static final int CURRENT_USER_ID = 1;
 	private static final Integer USER_ID = 1;
 	private static final int NO_OF_LIST_ENTRIES = 10;
 
-	private ExportServiceImpl exportService;
+	private GermplasmExportServiceImpl germplasmExportService;
 	private List<ExportColumnHeader> columnsHeaders;
 	private List<Map<Integer, ExportColumnValue>> columnValues;
 	private String testFileName;
@@ -56,7 +56,7 @@ public class ExportServiceImplTest {
 
 	@Before
 	public void setUp() throws InvalidFormatException, IOException {
-		this.exportService = Mockito.spy(new ExportServiceImpl());
+		this.germplasmExportService = Mockito.spy(new GermplasmExportServiceImpl());
 		this.columnsHeaders = this.generateSampleExportColumnHeader(14);
 		this.columnValues = this.generateSampleExportColumns(10, 14);
 		this.testFileName = "test.csv";
@@ -65,7 +65,7 @@ public class ExportServiceImplTest {
 		this.germplasmList = this.generateGermplasmList();
 		this.input = this.generateGermplasmListExportInputValues();
 
-		Mockito.doReturn(this.createWorkbook()).when(this.exportService).retrieveTemplate();
+		Mockito.doReturn(this.createWorkbook()).when(this.germplasmExportService).retrieveTemplate();
 	}
 
 	@After
@@ -77,7 +77,7 @@ public class ExportServiceImplTest {
 	@Test
 	public void testGenerateCSVFile() throws IOException {
 
-		File generatedFile = this.exportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName);
+		File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName);
 
 		CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
 
@@ -89,10 +89,10 @@ public class ExportServiceImplTest {
 				String actualData[];
 				if (index == 0) {
 					// get the columns
-					actualData = this.exportService.getColumnHeaderNames(this.columnsHeaders);
+					actualData = this.germplasmExportService.getColumnHeaderNames(this.columnsHeaders);
 				} else {
 					// the actual data
-					actualData = this.exportService.getColumnValues(this.columnValues.get(index - 1), this.columnsHeaders);
+					actualData = this.germplasmExportService.getColumnValues(this.columnValues.get(index - 1), this.columnsHeaders);
 				}
 				Assert.assertEquals("Should have the same value in the file and the java representation of the string arrays",
 						Arrays.toString(actualData), Arrays.toString(nextLine));
@@ -105,7 +105,7 @@ public class ExportServiceImplTest {
 	@Test
 	public void testGenerateCSVFileWithHeader() throws IOException {
 
-		File generatedFile = this.exportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName, true);
+		File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName, true);
 
 		CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
 
@@ -117,10 +117,10 @@ public class ExportServiceImplTest {
 				String actualData[];
 				if (index == 0) {
 					// get the columns
-					actualData = this.exportService.getColumnHeaderNames(this.columnsHeaders);
+					actualData = this.germplasmExportService.getColumnHeaderNames(this.columnsHeaders);
 				} else {
 					// the actual data
-					actualData = this.exportService.getColumnValues(this.columnValues.get(index - 1), this.columnsHeaders);
+					actualData = this.germplasmExportService.getColumnValues(this.columnValues.get(index - 1), this.columnsHeaders);
 				}
 				Assert.assertEquals("Should have the same value in the file and the java representation of the string arrays",
 						Arrays.toString(actualData), Arrays.toString(nextLine));
@@ -133,7 +133,7 @@ public class ExportServiceImplTest {
 	@Test
 	public void testGenerateCSVFileWithoutHeader() throws IOException {
 
-		File generatedFile = this.exportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName, false);
+		File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName, false);
 
 		CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
 
@@ -145,7 +145,7 @@ public class ExportServiceImplTest {
 				String actualData[];
 				// we don't inclde the header in the checking
 				// the actual data
-				actualData = this.exportService.getColumnValues(this.columnValues.get(index), this.columnsHeaders);
+				actualData = this.germplasmExportService.getColumnValues(this.columnValues.get(index), this.columnsHeaders);
 
 				Assert.assertEquals("Should have the same value in the file and the java representation of the string arrays",
 						Arrays.toString(actualData), Arrays.toString(nextLine));
@@ -159,7 +159,7 @@ public class ExportServiceImplTest {
 	public void testGetColumnValues() {
 		String actualData[];
 		for (int i = 0; i < this.columnValues.size(); i++) {
-			actualData = this.exportService.getColumnValues(this.columnValues.get(i), this.columnsHeaders);
+			actualData = this.germplasmExportService.getColumnValues(this.columnValues.get(i), this.columnsHeaders);
 			Assert.assertEquals("Should have the same size of column values", actualData.length, this.columnsHeaders.size());
 
 		}
@@ -168,7 +168,7 @@ public class ExportServiceImplTest {
 	@Test
 	public void testGetColumnHeaderNames() {
 		String actualData[];
-		actualData = this.exportService.getColumnHeaderNames(this.columnsHeaders);
+		actualData = this.germplasmExportService.getColumnHeaderNames(this.columnsHeaders);
 		Assert.assertEquals("Should have the same size of column names", actualData.length, this.columnsHeaders.size());
 	}
 
@@ -176,7 +176,7 @@ public class ExportServiceImplTest {
 	public void testCleanNameValueCommasWithNoComma() {
 		String param = "Test Value";
 		Assert.assertEquals("Should be still the same string since there is no comma character",
-				this.exportService.cleanNameValueCommas(param), param);
+				this.germplasmExportService.cleanNameValueCommas(param), param);
 	}
 
 	@Test
@@ -184,13 +184,13 @@ public class ExportServiceImplTest {
 		String param = "Test, Value";
 		String paramNew = "Test_ Value";
 		Assert.assertEquals("The comma character in the string should be change to a _ character",
-				this.exportService.cleanNameValueCommas(param), paramNew);
+				this.germplasmExportService.cleanNameValueCommas(param), paramNew);
 	}
 
 	@Test
 	public void testCleanNameValueCommasWithNullParameter() {
 		String param = null;
-		Assert.assertEquals("Should be empty string since param passed was null", this.exportService.cleanNameValueCommas(param), "");
+		Assert.assertEquals("Should be empty string since param passed was null", this.germplasmExportService.cleanNameValueCommas(param), "");
 	}
 
 	private List<Map<Integer, ExportColumnValue>> generateSampleExportColumns(int rows, int columnHeaders) {
@@ -219,7 +219,7 @@ public class ExportServiceImplTest {
 
 	@Test
 	public void testCreateWorkbookForSingleSheet() {
-		HSSFWorkbook wb = this.exportService.createWorkbookForSingleSheet(this.columnValues, this.columnsHeaders, this.sheetName);
+		HSSFWorkbook wb = this.germplasmExportService.createWorkbookForSingleSheet(this.columnValues, this.columnsHeaders, this.sheetName);
 		HSSFSheet sheet = wb.getSheetAt(0);
 
 		Assert.assertTrue("Expected to return a sheetName = " + this.sheetName, sheet.getSheetName().equalsIgnoreCase(this.sheetName));
@@ -252,7 +252,7 @@ public class ExportServiceImplTest {
 	@Test
 	public void testGenerateExcelFileForSingleSheet() {
 		try {
-			this.exportService.generateExcelFileForSingleSheet(this.columnValues, this.columnsHeaders, this.testFileName, this.sheetName);
+			this.germplasmExportService.generateExcelFileForSingleSheet(this.columnValues, this.columnsHeaders, this.testFileName, this.sheetName);
 		} catch (IOException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -260,12 +260,12 @@ public class ExportServiceImplTest {
 
 	@Test
 	public void testGetNoOfVisibleColumns() {
-		int visibleColumns = this.exportService.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
+		int visibleColumns = this.germplasmExportService.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
 		Assert.assertTrue("Expected that the number of visibleColums = " + this.input.getVisibleColumnMap().size(),
 				visibleColumns == this.input.getVisibleColumnMap().size());
 
 		this.input.getVisibleColumnMap().put(ColumnLabels.SEED_SOURCE.getName(), false);
-		visibleColumns = this.exportService.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
+		visibleColumns = this.germplasmExportService.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
 		Assert.assertTrue("Expected that the number of visibleColums = " + (this.input.getVisibleColumnMap().size() - 1),
 				visibleColumns == this.input.getVisibleColumnMap().size() - 1);
 	}
@@ -274,7 +274,7 @@ public class ExportServiceImplTest {
 	public void testGenerateObservationSheet() {
 		// input data
 		HSSFWorkbook wb = this.createWorkbook();
-		Map<String, CellStyle> sheetStyles = this.exportService.createStyles(wb);
+		Map<String, CellStyle> sheetStyles = this.germplasmExportService.createStyles(wb);
 		GermplasmList germplasmList = this.input.getGermplasmList();
 		List<GermplasmListData> listDatas = germplasmList.getListData();
 		Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
@@ -282,7 +282,7 @@ public class ExportServiceImplTest {
 		// to test
 
 		try {
-			this.exportService.generateObservationSheet(wb, sheetStyles, this.input);
+			this.germplasmExportService.generateObservationSheet(wb, sheetStyles, this.input);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -336,7 +336,7 @@ public class ExportServiceImplTest {
 				Assert.assertEquals("Expecting " + this.getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to "
 						+ listData.getEntryId() + " but didn't.", this.getInteger(row.getCell(columnIndex).getNumericCellValue()),
 						listData.getEntryId());
-				Assert.assertEquals(sheetStyles.get(ExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR),
+				Assert.assertEquals(sheetStyles.get(GermplasmExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR),
 						row.getCell(columnIndex).getCellStyle());
 				columnIndex++;
 			}
@@ -344,7 +344,7 @@ public class ExportServiceImplTest {
 				Assert.assertEquals("Expecting " + this.getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to "
 						+ listData.getEntryId() + " but didn't.", this.getInteger(row.getCell(columnIndex).getNumericCellValue()),
 						listData.getGid());
-				Assert.assertEquals(sheetStyles.get(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE), row.getCell(columnIndex).getCellStyle());
+				Assert.assertEquals(sheetStyles.get(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE), row.getCell(columnIndex).getCellStyle());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_CODE.getId()))) {
@@ -377,7 +377,7 @@ public class ExportServiceImplTest {
 
 		// input data
 		HSSFWorkbook wb = new HSSFWorkbook();
-		Map<String, CellStyle> sheetStyles = this.exportService.createStyles(wb);
+		Map<String, CellStyle> sheetStyles = this.germplasmExportService.createStyles(wb);
 		GermplasmList germplasmList = this.input.getGermplasmList();
 		Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 
@@ -387,7 +387,7 @@ public class ExportServiceImplTest {
 
 		// to test
 		try {
-			this.exportService.generateDescriptionSheet(wb, sheetStyles, this.input);
+			this.germplasmExportService.generateDescriptionSheet(wb, sheetStyles, this.input);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -591,7 +591,7 @@ public class ExportServiceImplTest {
 	@Test
 	public void testGenerateGermplasmListExcelFile() {
 		try {
-			this.exportService.generateGermplasmListExcelFile(this.input);
+			this.germplasmExportService.generateGermplasmListExcelFile(this.input);
 		} catch (GermplasmListExporterException e) {
 			Assert.fail(e.getMessage());
 		}
@@ -602,9 +602,9 @@ public class ExportServiceImplTest {
 
 		input.setFileName(this.testFileName);
 		input.setGermplasmList(this.germplasmList);
-		input.setOwnerName(ExportServiceImplTest.CURRENT_USER_NAME);
-		input.setCurrentLocalIbdbUserId(ExportServiceImplTest.CURRENT_USER_ID);
-		input.setExporterName(ExportServiceImplTest.CURRENT_USER_NAME);
+		input.setOwnerName(GermplasmExportServiceImplTest.CURRENT_USER_NAME);
+		input.setCurrentLocalIbdbUserId(GermplasmExportServiceImplTest.CURRENT_USER_ID);
+		input.setExporterName(GermplasmExportServiceImplTest.CURRENT_USER_NAME);
 		input.setVisibleColumnMap(this.getVisibleColumnMap());
 		input.setColumnTermMap(this.getColumnTerms());
 		input.setInventoryVariableMap(this.getInventoryVariables());
@@ -692,7 +692,7 @@ public class ExportServiceImplTest {
 	private GermplasmList generateGermplasmList() {
 		GermplasmList germplasmList = new GermplasmList();
 		germplasmList.setName("Sample List");
-		germplasmList.setUserId(ExportServiceImplTest.USER_ID);
+		germplasmList.setUserId(GermplasmExportServiceImplTest.USER_ID);
 		germplasmList.setDescription("Sample description");
 		germplasmList.setType("LST");
 		germplasmList.setDate(20141112L);
@@ -705,7 +705,7 @@ public class ExportServiceImplTest {
 	private List<GermplasmListData> generateListEntries() {
 		List<GermplasmListData> entries = new ArrayList<>();
 
-		for (int x = 1; x <= ExportServiceImplTest.NO_OF_LIST_ENTRIES; x++) {
+		for (int x = 1; x <= GermplasmExportServiceImplTest.NO_OF_LIST_ENTRIES; x++) {
 			GermplasmListData germplasmListData = new GermplasmListData();
 			germplasmListData.setId(x);
 			germplasmListData.setEntryId(x);

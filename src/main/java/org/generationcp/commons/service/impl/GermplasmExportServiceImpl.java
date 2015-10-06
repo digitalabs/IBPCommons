@@ -36,7 +36,7 @@ import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
-import org.generationcp.commons.service.ExportService;
+import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
@@ -50,9 +50,9 @@ import org.slf4j.LoggerFactory;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
-public class ExportServiceImpl implements ExportService {
+public class GermplasmExportServiceImpl implements GermplasmExportService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ExportServiceImpl.class);
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmExportServiceImpl.class);
 
 	// List Details
 	public static final String LIST_NAME = "LIST NAME";
@@ -262,7 +262,7 @@ public class ExportServiceImpl implements ExportService {
 		try {
 			wb = (HSSFWorkbook) this.retrieveTemplate();
 		} catch (InvalidFormatException | IOException e) {
-			ExportServiceImpl.LOG.error(e.getMessage(), e);
+			GermplasmExportServiceImpl.LOG.error(e.getMessage(), e);
 			throw new GermplasmListExporterException();
 		}
 
@@ -282,7 +282,7 @@ public class ExportServiceImpl implements ExportService {
 			fileOutputStream.close();
 			return fileOutputStream;
 		} catch (Exception ex) {
-			ExportServiceImpl.LOG.error(ex.getMessage(), ex);
+			GermplasmExportServiceImpl.LOG.error(ex.getMessage(), ex);
 			throw new GermplasmListExporterException();
 		}
 	}
@@ -423,8 +423,8 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
 			Cell entryIdCell = listEntriesHeader.createCell(columnIndex);
 			entryIdCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_ID, columnTermMap));
-			entryIdCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR));
+			entryIdCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -432,8 +432,8 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GID))) {
 			Cell gidCell = listEntriesHeader.createCell(columnIndex);
 			gidCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GID, columnTermMap));
-			gidCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
+			gidCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -441,7 +441,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
 			Cell entryCodeCell = listEntriesHeader.createCell(columnIndex);
 			entryCodeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_CODE, columnTermMap));
-			entryCodeCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			entryCodeCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -449,8 +449,8 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.DESIGNATION))) {
 			Cell designationCell = listEntriesHeader.createCell(columnIndex);
 			designationCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.DESIGNATION, columnTermMap));
-			designationCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
+			designationCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -458,7 +458,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PARENTAGE))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.PARENTAGE, columnTermMap));
-			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			crossCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -466,7 +466,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.FEMALE_PARENT, columnTermMap));
-			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			crossCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -474,7 +474,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.MALE_PARENT, columnTermMap));
-			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			crossCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -482,7 +482,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.FGID, columnTermMap));
-			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			crossCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -490,7 +490,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
 			Cell crossCell = listEntriesHeader.createCell(columnIndex);
 			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.MGID, columnTermMap));
-			crossCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			crossCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -498,7 +498,7 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
 			Cell sourceCell = listEntriesHeader.createCell(columnIndex);
 			sourceCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.SEED_SOURCE, columnTermMap));
-			sourceCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			sourceCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -506,31 +506,31 @@ public class ExportServiceImpl implements ExportService {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
 			Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
 			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_TYPE, columnTermMap));
-			entryTypeCell.setCellStyle(styles.get(ExportServiceImpl.HEADING_STYLE_FACTOR));
+			entryTypeCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
 
 		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
 			stockIDCell.setCellValue(input.getInventoryVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
-			stockIDCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
+			stockIDCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
 		if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
 			Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
 			seedAmountCell.setCellValue(input.getInventoryVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
-			seedAmountCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
+			seedAmountCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
 		if (variateStandardVariableMap.containsKey(TermId.NOTES.getId())) {
 			Cell notesCell = listEntriesHeader.createCell(columnIndex);
 			notesCell.setCellValue(variateStandardVariableMap.get(TermId.NOTES.getId()).getName().toUpperCase());
-			notesCell.setCellStyle(styles.get(ExportServiceImpl.HEADIING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(ExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
+			notesCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADIING_STYLE_INVENTORY));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -570,7 +570,7 @@ public class ExportServiceImpl implements ExportService {
 
 		this.writeListVariateSection(sheetStyles, descriptionSheet, nextRow + 2, input);
 
-		this.fillSheetWithCellStyle(sheetStyles.get(ExportServiceImpl.SHEET_STYLE), descriptionSheet);
+		this.fillSheetWithCellStyle(sheetStyles.get(GermplasmExportServiceImpl.SHEET_STYLE), descriptionSheet);
 		this.setDescriptionColumnsWidth(descriptionSheet);
 
 	}
@@ -578,9 +578,9 @@ public class ExportServiceImpl implements ExportService {
 	public int writeListFactorSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) {
 
-		CellStyle headingStyle = styles.get(ExportServiceImpl.HEADING_STYLE);
-		CellStyle labelStyleFactor = styles.get(ExportServiceImpl.LABEL_STYLE_FACTOR);
-		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
+		CellStyle headingStyle = styles.get(GermplasmExportServiceImpl.HEADING_STYLE);
+		CellStyle labelStyleFactor = styles.get(GermplasmExportServiceImpl.LABEL_STYLE_FACTOR);
+		CellStyle textStyle = styles.get(GermplasmExportServiceImpl.TEXT_STYLE);
 
 		Map<String, Boolean> visibleColumnMap = input.getVisibleColumnMap();
 		Map<Integer, Term> columnTermMap = input.getColumnTermMap();
@@ -588,14 +588,14 @@ public class ExportServiceImpl implements ExportService {
 		int actualRow = startingRow - 1;
 
 		HSSFRow factorDetailsHeader = descriptionSheet.createRow(actualRow);
-		this.createCell(0, factorDetailsHeader, headingStyle, ExportServiceImpl.FACTOR);
-		this.createCell(1, factorDetailsHeader, headingStyle, ExportServiceImpl.DESCRIPTION);
-		this.createCell(2, factorDetailsHeader, headingStyle, ExportServiceImpl.PROPERTY);
-		this.createCell(3, factorDetailsHeader, headingStyle, ExportServiceImpl.SCALE);
-		this.createCell(4, factorDetailsHeader, headingStyle, ExportServiceImpl.METHOD);
-		this.createCell(5, factorDetailsHeader, headingStyle, ExportServiceImpl.DATA_TYPE);
+		this.createCell(0, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.FACTOR);
+		this.createCell(1, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.DESCRIPTION);
+		this.createCell(2, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.PROPERTY);
+		this.createCell(3, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.SCALE);
+		this.createCell(4, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.METHOD);
+		this.createCell(5, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.DATA_TYPE);
 		this.createCell(6, factorDetailsHeader, headingStyle, "");
-		this.createCell(7, factorDetailsHeader, headingStyle, ExportServiceImpl.COMMENTS);
+		this.createCell(7, factorDetailsHeader, headingStyle, GermplasmExportServiceImpl.COMMENTS);
 
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
@@ -605,7 +605,8 @@ public class ExportServiceImpl implements ExportService {
 
 			if (termEntry != null && Objects.equals(termEntry.getVocabularyId(), CvId.VARIABLES.getId())) {
 				Variable variable = (Variable) termEntry;
-				this.writeStandardVariableToRow(entryIdRow, labelStyleFactor, styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR),
+				this.writeStandardVariableToRow(entryIdRow, labelStyleFactor, styles.get(
+						GermplasmExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR),
 						variable);
 				this.createCell(7, entryIdRow, textStyle, "Sequence number - mandatory");
 
@@ -652,7 +653,7 @@ public class ExportServiceImpl implements ExportService {
 			if (designation != null) {
 
 				this.writeStandardVariableToRow(designationRow, labelStyleFactor,
-						styles.get(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR), designation);
+						styles.get(GermplasmExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR), designation);
 				this.createCell(7, designationRow, textStyle, "Germplasm name - mandatory");
 
 			}
@@ -786,9 +787,9 @@ public class ExportServiceImpl implements ExportService {
 	public int writeListConditionSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 
-		CellStyle headingStyle = styles.get(ExportServiceImpl.HEADING_STYLE);
-		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
-		CellStyle labelStyleCondition = styles.get(ExportServiceImpl.LABEL_STYLE_CONDITION);
+		CellStyle headingStyle = styles.get(GermplasmExportServiceImpl.HEADING_STYLE);
+		CellStyle textStyle = styles.get(GermplasmExportServiceImpl.TEXT_STYLE);
+		CellStyle labelStyleCondition = styles.get(GermplasmExportServiceImpl.LABEL_STYLE_CONDITION);
 
 		// prepare inputs
 		GermplasmList germplasmList = input.getGermplasmList();
@@ -800,21 +801,21 @@ public class ExportServiceImpl implements ExportService {
 
 		// write user details
 		HSSFRow conditionDetailsHeading = descriptionSheet.createRow(actualRow);
-		this.createCell(0, conditionDetailsHeading, headingStyle, ExportServiceImpl.CONDITION);
-		this.createCell(1, conditionDetailsHeading, headingStyle, ExportServiceImpl.DESCRIPTION);
-		this.createCell(2, conditionDetailsHeading, headingStyle, ExportServiceImpl.PROPERTY);
-		this.createCell(3, conditionDetailsHeading, headingStyle, ExportServiceImpl.SCALE);
-		this.createCell(4, conditionDetailsHeading, headingStyle, ExportServiceImpl.METHOD);
-		this.createCell(5, conditionDetailsHeading, headingStyle, ExportServiceImpl.DATA_TYPE);
-		this.createCell(6, conditionDetailsHeading, headingStyle, ExportServiceImpl.VALUE);
-		this.createCell(7, conditionDetailsHeading, headingStyle, ExportServiceImpl.COMMENTS);
+		this.createCell(0, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.CONDITION);
+		this.createCell(1, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.DESCRIPTION);
+		this.createCell(2, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.PROPERTY);
+		this.createCell(3, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.SCALE);
+		this.createCell(4, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.METHOD);
+		this.createCell(5, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.DATA_TYPE);
+		this.createCell(6, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.VALUE);
+		this.createCell(7, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.COMMENTS);
 
 		HSSFRow listUserRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listUserRow, labelStyleCondition, "LIST USER");
 		this.createCell(1, listUserRow, textStyle, "PERSON WHO MADE THE LIST");
-		this.createCell(2, listUserRow, textStyle, ExportServiceImpl.PERSON);
+		this.createCell(2, listUserRow, textStyle, GermplasmExportServiceImpl.PERSON);
 		this.createCell(3, listUserRow, textStyle, "DBCV");
-		this.createCell(4, listUserRow, textStyle, ExportServiceImpl.ASSIGNED);
+		this.createCell(4, listUserRow, textStyle, GermplasmExportServiceImpl.ASSIGNED);
 		this.createCell(5, listUserRow, textStyle, "C");
 		this.createCell(6, listUserRow, textStyle, ownerName.trim());
 		this.createCell(7, listUserRow, textStyle, "See valid user names and IDs on Codes sheet (or leave blank)");
@@ -822,9 +823,9 @@ public class ExportServiceImpl implements ExportService {
 		HSSFRow listUserIdRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listUserIdRow, labelStyleCondition, "LIST USER ID");
 		this.createCell(1, listUserIdRow, textStyle, "ID OF LIST OWNER");
-		this.createCell(2, listUserIdRow, textStyle, ExportServiceImpl.PERSON);
+		this.createCell(2, listUserIdRow, textStyle, GermplasmExportServiceImpl.PERSON);
 		this.createCell(3, listUserIdRow, textStyle, "DBID");
-		this.createCell(4, listUserIdRow, textStyle, ExportServiceImpl.ASSIGNED);
+		this.createCell(4, listUserIdRow, textStyle, GermplasmExportServiceImpl.ASSIGNED);
 		this.createCell(5, listUserIdRow, textStyle, "N");
 		this.createCell(6, listUserIdRow, textStyle, String.valueOf(germplasmList.getUserId()));
 		this.createCell(7, listUserIdRow, textStyle, "");
@@ -832,9 +833,9 @@ public class ExportServiceImpl implements ExportService {
 		HSSFRow listExporterRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listExporterRow, labelStyleCondition, "LIST EXPORTER");
 		this.createCell(1, listExporterRow, textStyle, "PERSON EXPORTING THE LIST");
-		this.createCell(2, listExporterRow, textStyle, ExportServiceImpl.PERSON);
+		this.createCell(2, listExporterRow, textStyle, GermplasmExportServiceImpl.PERSON);
 		this.createCell(3, listExporterRow, textStyle, "DBCV");
-		this.createCell(4, listExporterRow, textStyle, ExportServiceImpl.ASSIGNED);
+		this.createCell(4, listExporterRow, textStyle, GermplasmExportServiceImpl.ASSIGNED);
 		this.createCell(5, listExporterRow, textStyle, "C");
 		this.createCell(6, listExporterRow, textStyle, exporterName.trim());
 		this.createCell(7, listExporterRow, textStyle, "");
@@ -842,9 +843,9 @@ public class ExportServiceImpl implements ExportService {
 		HSSFRow listExporterIdRow = descriptionSheet.createRow(++actualRow);
 		this.createCell(0, listExporterIdRow, labelStyleCondition, "LIST EXPORTER ID");
 		this.createCell(1, listExporterIdRow, textStyle, "ID OF LIST EXPORTER");
-		this.createCell(2, listExporterIdRow, textStyle, ExportServiceImpl.PERSON);
+		this.createCell(2, listExporterIdRow, textStyle, GermplasmExportServiceImpl.PERSON);
 		this.createCell(3, listExporterIdRow, textStyle, "DBID");
-		this.createCell(4, listExporterIdRow, textStyle, ExportServiceImpl.ASSIGNED);
+		this.createCell(4, listExporterIdRow, textStyle, GermplasmExportServiceImpl.ASSIGNED);
 		this.createCell(5, listExporterIdRow, textStyle, "N");
 		this.createCell(6, listExporterIdRow, textStyle, String.valueOf(currentLocalIbdbUserId));
 		this.createCell(7, listExporterIdRow, textStyle, "");
@@ -857,23 +858,23 @@ public class ExportServiceImpl implements ExportService {
 	public int writeListInventorySection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 
-		CellStyle labelStyleInventory = styles.get(ExportServiceImpl.LABEL_STYLE_INVENTORY);
-		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
-		CellStyle headingStyle = styles.get(ExportServiceImpl.HEADING_STYLE);
+		CellStyle labelStyleInventory = styles.get(GermplasmExportServiceImpl.LABEL_STYLE_INVENTORY);
+		CellStyle textStyle = styles.get(GermplasmExportServiceImpl.TEXT_STYLE);
+		CellStyle headingStyle = styles.get(GermplasmExportServiceImpl.HEADING_STYLE);
 
 		int actualRow = startingRow;
 
 		if (!input.getInventoryVariableMap().isEmpty()) {
 
 			HSSFRow conditionDetailsHeading = descriptionSheet.createRow(actualRow);
-			this.createCell(0, conditionDetailsHeading, headingStyle, ExportServiceImpl.INVENTORY);
-			this.createCell(1, conditionDetailsHeading, headingStyle, ExportServiceImpl.DESCRIPTION);
-			this.createCell(2, conditionDetailsHeading, headingStyle, ExportServiceImpl.PROPERTY);
-			this.createCell(3, conditionDetailsHeading, headingStyle, ExportServiceImpl.SCALE);
-			this.createCell(4, conditionDetailsHeading, headingStyle, ExportServiceImpl.METHOD);
-			this.createCell(5, conditionDetailsHeading, headingStyle, ExportServiceImpl.DATA_TYPE);
+			this.createCell(0, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.INVENTORY);
+			this.createCell(1, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.DESCRIPTION);
+			this.createCell(2, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.PROPERTY);
+			this.createCell(3, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.SCALE);
+			this.createCell(4, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.METHOD);
+			this.createCell(5, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.DATA_TYPE);
 			this.createCell(6, conditionDetailsHeading, headingStyle, "");
-			this.createCell(7, conditionDetailsHeading, headingStyle, ExportServiceImpl.COMMENTS);
+			this.createCell(7, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.COMMENTS);
 
 			for (Variable stdVar : input.getInventoryVariableMap().values()) {
 				HSSFRow row = descriptionSheet.createRow(++actualRow);
@@ -897,23 +898,23 @@ public class ExportServiceImpl implements ExportService {
 	public void writeListVariateSection(Map<String, CellStyle> styles, HSSFSheet descriptionSheet, int startingRow,
 			GermplasmListExportInputValues input) throws GermplasmListExporterException {
 
-		CellStyle labelStyleVariate = styles.get(ExportServiceImpl.LABEL_STYLE_VARIATE);
-		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
-		CellStyle headingStyle = styles.get(ExportServiceImpl.HEADING_STYLE);
+		CellStyle labelStyleVariate = styles.get(GermplasmExportServiceImpl.LABEL_STYLE_VARIATE);
+		CellStyle textStyle = styles.get(GermplasmExportServiceImpl.TEXT_STYLE);
+		CellStyle headingStyle = styles.get(GermplasmExportServiceImpl.HEADING_STYLE);
 
 		int actualRow = startingRow;
 
 		if (!input.getVariateVariableMap().isEmpty()) {
 
 			HSSFRow conditionDetailsHeading = descriptionSheet.createRow(actualRow);
-			this.createCell(0, conditionDetailsHeading, headingStyle, ExportServiceImpl.VARIATE);
-			this.createCell(1, conditionDetailsHeading, headingStyle, ExportServiceImpl.DESCRIPTION);
-			this.createCell(2, conditionDetailsHeading, headingStyle, ExportServiceImpl.PROPERTY);
-			this.createCell(3, conditionDetailsHeading, headingStyle, ExportServiceImpl.SCALE);
-			this.createCell(4, conditionDetailsHeading, headingStyle, ExportServiceImpl.METHOD);
-			this.createCell(5, conditionDetailsHeading, headingStyle, ExportServiceImpl.DATA_TYPE);
+			this.createCell(0, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.VARIATE);
+			this.createCell(1, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.DESCRIPTION);
+			this.createCell(2, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.PROPERTY);
+			this.createCell(3, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.SCALE);
+			this.createCell(4, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.METHOD);
+			this.createCell(5, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.DATA_TYPE);
 			this.createCell(6, conditionDetailsHeading, headingStyle, "");
-			this.createCell(7, conditionDetailsHeading, headingStyle, ExportServiceImpl.COMMENTS);
+			this.createCell(7, conditionDetailsHeading, headingStyle, GermplasmExportServiceImpl.COMMENTS);
 
 			for (Variable stdVar : input.getVariateVariableMap().values()) {
 				HSSFRow row = descriptionSheet.createRow(++actualRow);
@@ -928,16 +929,16 @@ public class ExportServiceImpl implements ExportService {
 	public int writeListDetailsSection(Map<String, CellStyle> styles, Sheet descriptionSheet, int startingRow, GermplasmList germplasmList) {
 		int actualRow = startingRow - 1;
 
-		this.writeListDetailsRow(descriptionSheet, styles, actualRow, ExportServiceImpl.LIST_NAME, germplasmList.getName(),
+		this.writeListDetailsRow(descriptionSheet, styles, actualRow, GermplasmExportServiceImpl.LIST_NAME, germplasmList.getName(),
 				"Enter a list name here, or add it when saving in the BMS");
 
-		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, ExportServiceImpl.LIST_DESCRIPTION, germplasmList.getDescription(),
+		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, GermplasmExportServiceImpl.LIST_DESCRIPTION, germplasmList.getDescription(),
 				"Enter a list description here, or add it when saving in the BMS");
 
-		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, ExportServiceImpl.LIST_TYPE,
+		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, GermplasmExportServiceImpl.LIST_TYPE,
 				germplasmList.getType(), "See valid list types on Codes sheet for more options");
 
-		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, ExportServiceImpl.LIST_DATE, String.valueOf(
+		this.writeListDetailsRow(descriptionSheet, styles, ++actualRow, GermplasmExportServiceImpl.LIST_DATE, String.valueOf(
 				germplasmList.getDate()), "Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank");
 
 		return ++actualRow;
@@ -945,8 +946,8 @@ public class ExportServiceImpl implements ExportService {
 
 	protected void writeListDetailsRow(Sheet descriptionSheet, Map<String, CellStyle> styles, int rowNumber, String labelName, String text,
 			String defaultText) {
-		CellStyle labelStyle = styles.get(ExportServiceImpl.LABEL_STYLE);
-		CellStyle textStyle = styles.get(ExportServiceImpl.TEXT_STYLE);
+		CellStyle labelStyle = styles.get(GermplasmExportServiceImpl.LABEL_STYLE);
+		CellStyle textStyle = styles.get(GermplasmExportServiceImpl.TEXT_STYLE);
 
 		HSSFRow row = (HSSFRow) descriptionSheet.createRow(rowNumber);
 		this.createCell(0, row, labelStyle, labelName);
@@ -984,23 +985,23 @@ public class ExportServiceImpl implements ExportService {
 		// default style for all cells in a sheet
 		final CellStyle sheetStyle = this.createStyle(wb);
 		sheetStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
-		styles.put(ExportServiceImpl.SHEET_STYLE, sheetStyle);
+		styles.put(GermplasmExportServiceImpl.SHEET_STYLE, sheetStyle);
 
 		// numeric data format for Numeric values
 		final CellStyle numberDataFormatStyle = wb.createCellStyle();
 		numberDataFormatStyle.setDataFormat(format.getFormat("0"));
-		styles.put(ExportServiceImpl.NUMBER_DATA_FORMAT_STYLE, numberDataFormatStyle);
+		styles.put(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE, numberDataFormatStyle);
 
 		// numeric data format for Entry No column with highlight color
 		final CellStyle numberHighlightColumnStyle = this.createStyle(wb);
 		numberHighlightColumnStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
 		numberHighlightColumnStyle.setDataFormat(format.getFormat("0"));
-		styles.put(ExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR, numberHighlightColumnStyle);
+		styles.put(GermplasmExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR, numberHighlightColumnStyle);
 
 		// text data format for Text values
 		CellStyle textDataFormatStyle = wb.createCellStyle();
 		textDataFormatStyle.setDataFormat(format.getFormat("@"));
-		styles.put(ExportServiceImpl.TEXT_DATA_FORMAT_STYLE, textDataFormatStyle);
+		styles.put(GermplasmExportServiceImpl.TEXT_DATA_FORMAT_STYLE, textDataFormatStyle);
 
 		// cell style for labels in the description sheet
 		CellStyle labelStyle = this.createStyleWithBorder(wb);
@@ -1010,71 +1011,71 @@ public class ExportServiceImpl implements ExportService {
 		labelFont.setFontHeightInPoints((short) 9);
 		labelFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
 		labelStyle.setFont(labelFont);
-		styles.put(ExportServiceImpl.LABEL_STYLE, labelStyle);
+		styles.put(GermplasmExportServiceImpl.LABEL_STYLE, labelStyle);
 
 		// cell style for CONDITION labels
 		CellStyle conditionStyle = this.createStyleWithBorder(wb);
 		conditionStyle.setFillForegroundColor(IndexedColors.VIOLET.getIndex());
-		styles.put(ExportServiceImpl.LABEL_STYLE_CONDITION, conditionStyle);
+		styles.put(GermplasmExportServiceImpl.LABEL_STYLE_CONDITION, conditionStyle);
 
 		// cell style for FACTOR labels
 		CellStyle factorStyle = this.createStyleWithBorder(wb);
 		factorStyle.setFillForegroundColor(IndexedColors.OLIVE_GREEN.getIndex());
-		styles.put(ExportServiceImpl.LABEL_STYLE_FACTOR, factorStyle);
+		styles.put(GermplasmExportServiceImpl.LABEL_STYLE_FACTOR, factorStyle);
 
 		// cell style for FACTOR header in Observation sheet
 		CellStyle headingFactorStyle = this.createStyleWithBorder(wb);
 		this.setHeadingFont(wb, headingFactorStyle);
 		headingFactorStyle.setFillForegroundColor(IndexedColors.OLIVE_GREEN.getIndex());
-		styles.put(ExportServiceImpl.HEADING_STYLE_FACTOR, headingFactorStyle);
+		styles.put(GermplasmExportServiceImpl.HEADING_STYLE_FACTOR, headingFactorStyle);
 
 		// cell style to highlight the Entry No and Designation
 		CellStyle highlightFactorStyle = this.createStyleWithBorder(wb);
 		highlightFactorStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-		styles.put(ExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR, highlightFactorStyle);
+		styles.put(GermplasmExportServiceImpl.TEXT_HIGHLIGHT_STYLE_FACTOR, highlightFactorStyle);
 
 		// cell style to highlight the Designation for Column
 		CellStyle highlightColumnStyle = this.createStyle(wb);
 		highlightColumnStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
-		styles.put(ExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR, highlightColumnStyle);
+		styles.put(GermplasmExportServiceImpl.COLUMN_HIGHLIGHT_STYLE_FACTOR, highlightColumnStyle);
 
 		// cell style for INVENTORY labels
 		CellStyle inventoryStyle = this.createStyleWithBorder(wb);
 		inventoryStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
-		styles.put(ExportServiceImpl.LABEL_STYLE_INVENTORY, inventoryStyle);
+		styles.put(GermplasmExportServiceImpl.LABEL_STYLE_INVENTORY, inventoryStyle);
 
 		// cell style for INVENTORY header in Observation sheet
 		CellStyle headingInventoryStyle = this.createStyleWithBorder(wb);
 		this.setHeadingFont(wb, headingInventoryStyle);
 		headingInventoryStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
-		styles.put(ExportServiceImpl.HEADIING_STYLE_INVENTORY, headingInventoryStyle);
+		styles.put(GermplasmExportServiceImpl.HEADIING_STYLE_INVENTORY, headingInventoryStyle);
 
 		// cell style for VARIATE labels
 		CellStyle variateStyle = this.createStyleWithBorder(wb);
 		variateStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
-		styles.put(ExportServiceImpl.LABEL_STYLE_VARIATE, variateStyle);
+		styles.put(GermplasmExportServiceImpl.LABEL_STYLE_VARIATE, variateStyle);
 
 		// cell style for VARIATE header in Observation sheet
 		CellStyle headingVariateStyle = this.createStyleWithBorder(wb);
 		this.setHeadingFont(wb, headingVariateStyle);
 		headingVariateStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
-		styles.put(ExportServiceImpl.HEADING_STYLE_VARIATE, headingVariateStyle);
+		styles.put(GermplasmExportServiceImpl.HEADING_STYLE_VARIATE, headingVariateStyle);
 
 		// cell style for headings in the description sheet
 		CellStyle headingStyle = this.createStyleWithBorder(wb);
 		this.setHeadingFont(wb, headingStyle);
-		styles.put(ExportServiceImpl.HEADING_STYLE, headingStyle);
+		styles.put(GermplasmExportServiceImpl.HEADING_STYLE, headingStyle);
 
 		// cell style for numeric values (left alignment)
 		CellStyle numericStyle = this.createStyleWithBorder(wb);
 		numericStyle.setAlignment(CellStyle.ALIGN_LEFT);
 		numericStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-		styles.put(ExportServiceImpl.NUMERIC_STYLE, numericStyle);
+		styles.put(GermplasmExportServiceImpl.NUMERIC_STYLE, numericStyle);
 
 		// cell style for text
 		CellStyle textStyle = this.createStyleWithBorder(wb);
 		textStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
-		styles.put(ExportServiceImpl.TEXT_STYLE, textStyle);
+		styles.put(GermplasmExportServiceImpl.TEXT_STYLE, textStyle);
 
 		return styles;
 	}
