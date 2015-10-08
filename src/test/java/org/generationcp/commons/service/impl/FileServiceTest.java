@@ -23,7 +23,7 @@ public class FileServiceTest {
 	@Test
 	public void testFileSaveWithCleanup() throws IOException {
 		InputStream inputStream =
-				Thread.currentThread().getContextClassLoader().getResourceAsStream("templates/GermplasmImportTemplate-Expanded-rev5.xls");
+				Thread.currentThread().getContextClassLoader().getResourceAsStream("templates/GermplasmImportTemplate-Expanded-rev5a.xls");
 		String tempFilename = unitUnderTest.saveTemporaryFile(inputStream);
 
 		Assert.assertNotNull("Service must be able to output the saved temporary filename of the given input", tempFilename);
