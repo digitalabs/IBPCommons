@@ -49,7 +49,7 @@ public class GermplasmExportServiceImplTest {
 	private FileService fileService;
 
 	@InjectMocks
-	private GermplasmExportServiceImpl germplasmExportService  = Mockito.spy(new GermplasmExportServiceImpl());
+	private GermplasmExportServiceImpl germplasmExportService  = new GermplasmExportServiceImpl();
 
 	private static final String CURRENT_USER_NAME = "User User";
 	private static final int CURRENT_USER_ID = 1;
