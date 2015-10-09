@@ -58,6 +58,26 @@ public class WorkbenchUserDetailsServiceTest {
 		}
 	}
 
+	@Test
+	public void testLoadUserByUsernameUTF8Support() throws Exception {
+		String htmlEscaptedUTF8Username = "&#28900;&#29482;";
+		String rawUTF8Username = "烤猪";
+
+		List<User> matchingUsers = new ArrayList<User>();
+		User testUserWorkbench = new User();
+		testUserWorkbench.setName(rawUTF8Username);
+		testUserWorkbench.setPassword("password");
+		UserRole testUserRole = new UserRole(testUserWorkbench, "ADMIN");
+		testUserWorkbench.setRoles(Arrays.asList(testUserRole));
+		matchingUsers.add(testUserWorkbench);
+
+		Mockito.when(this.workbenchDataManager.getUserByName(rawUTF8Username, 0, 1, Operation.EQUAL))
+				.thenReturn(matchingUsers);
+
+		UserDetails userDetails = this.service.loadUserByUsername(htmlEscaptedUTF8Username);
+		Assert.assertEquals(testUserWorkbench.getName(), userDetails.getUsername());
+	}
+
 	@Test(expected = UsernameNotFoundException.class)
 	public void testLoadUserByNonExistantUserName() throws MiddlewareQueryException {
 		Mockito.when(this.workbenchDataManager.getUserByName(WorkbenchUserDetailsServiceTest.TEST_USER, 0, 1, Operation.EQUAL)).thenReturn(
