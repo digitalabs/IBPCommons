@@ -50,5 +50,14 @@ public interface FileService {
 	 */
 	File retrieveFileFromFileName(String currentFilename) throws IOException;
 
+	/**
+	 * Retrieves the workbook template from the file with the given filename
+	 * @param templateFileName the name of the workbook template to locate in the file system
+	 * @return workbook template
+	 * @throws IOException
+	 * @throws InvalidFormatException
+	 */
+	Workbook retrieveWorkbookTemplate(String templateFileName) throws IOException, InvalidFormatException;
+
 	String getFilePath(String tempFilename);
 }

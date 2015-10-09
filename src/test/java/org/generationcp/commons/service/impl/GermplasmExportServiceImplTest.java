@@ -24,6 +24,7 @@ import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.commons.service.FileService;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -37,16 +38,24 @@ import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 public class GermplasmExportServiceImplTest {
+
+	@Mock
+	private FileService fileService;
+
+	@InjectMocks
+	private GermplasmExportServiceImpl germplasmExportService  = Mockito.spy(new GermplasmExportServiceImpl());
 
 	private static final String CURRENT_USER_NAME = "User User";
 	private static final int CURRENT_USER_ID = 1;
 	private static final Integer USER_ID = 1;
 	private static final int NO_OF_LIST_ENTRIES = 10;
 
-	private GermplasmExportServiceImpl germplasmExportService;
 	private List<ExportColumnHeader> columnsHeaders;
 	private List<Map<Integer, ExportColumnValue>> columnValues;
 	private String testFileName;
@@ -56,7 +65,8 @@ public class GermplasmExportServiceImplTest {
 
 	@Before
 	public void setUp() throws InvalidFormatException, IOException {
-		this.germplasmExportService = Mockito.spy(new GermplasmExportServiceImpl());
+		MockitoAnnotations.initMocks(this);
+
 		this.columnsHeaders = this.generateSampleExportColumnHeader(14);
 		this.columnValues = this.generateSampleExportColumns(10, 14);
 		this.testFileName = "test.csv";
@@ -65,7 +75,8 @@ public class GermplasmExportServiceImplTest {
 		this.germplasmList = this.generateGermplasmList();
 		this.input = this.generateGermplasmListExportInputValues();
 
-		Mockito.doReturn(this.createWorkbook()).when(this.germplasmExportService).retrieveTemplate();
+		this.germplasmExportService.setTemplateFile(this.testFileName);
+		Mockito.doReturn(this.createWorkbook()).when(this.fileService).retrieveWorkbookTemplate(this.testFileName);
 	}
 
 	@After
