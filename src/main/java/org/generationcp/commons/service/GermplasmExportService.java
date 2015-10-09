@@ -16,7 +16,7 @@ import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 
-public interface ExportService {
+public interface GermplasmExportService {
 
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues, List<ExportColumnHeader> exportColumnHeaders,
 			String fileNameFullPath) throws IOException;
