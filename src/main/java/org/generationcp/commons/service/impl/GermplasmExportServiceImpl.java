@@ -4,7 +4,6 @@ package org.generationcp.commons.service.impl;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,7 +43,6 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.util.ResourceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -260,7 +258,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		// create workbook
 		HSSFWorkbook wb;
 		try {
-			wb = (HSSFWorkbook) this.retrieveTemplate();
+			wb = (HSSFWorkbook) this.fileService.retrieveWorkbookTemplate(this.templateFile);
 		} catch (InvalidFormatException | IOException e) {
 			GermplasmExportServiceImpl.LOG.error(e.getMessage(), e);
 			throw new GermplasmListExporterException();
@@ -1166,15 +1164,6 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		sheet.setColumnWidth(5, 15 * 256 + 200);
 		sheet.setColumnWidth(6, 15 * 256 + 200);
 		sheet.setColumnWidth(7, 55 * 256 + 200);
-	}
-
-	public Workbook retrieveTemplate() throws IOException, InvalidFormatException {
-
-		try (InputStream is = ResourceFinder.locateFile(this.templateFile).openStream()) {
-			String tempFile = this.fileService.saveTemporaryFile(is);
-
-			return this.fileService.retrieveWorkbook(tempFile);
-		}
 	}
 
 	public void setTemplateFile(String templateFile) {

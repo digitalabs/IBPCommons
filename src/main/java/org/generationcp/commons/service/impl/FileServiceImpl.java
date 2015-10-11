@@ -22,6 +22,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.service.FileService;
+import org.generationcp.middleware.util.ResourceFinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
@@ -115,6 +116,15 @@ public class FileServiceImpl implements FileService {
 
 		return WorkbookFactory.create(workbookFile);
 
+	}
+
+	public Workbook retrieveWorkbookTemplate(final String templateFileName) throws IOException, InvalidFormatException {
+
+		try (InputStream is = ResourceFinder.locateFile(templateFileName).openStream()) {
+			final String tempFile = this.saveTemporaryFile(is);
+
+			return this.retrieveWorkbook(tempFile);
+		}
 	}
 
 }
