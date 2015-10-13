@@ -477,8 +477,8 @@ public class GermplasmExportServiceImplTest {
 				.getStringCellValue(), "ASSIGNED");
 		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.", row.getCell(5)
 				.getStringCellValue(), "N");
-		Assert.assertEquals("Expecting " + Integer.valueOf(row.getCell(6).getStringCellValue()) + " equals to " + germplasmList.getUserId()
-				+ " but didn't.", Integer.valueOf(row.getCell(6).getStringCellValue()), germplasmList.getUserId());
+		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to " + germplasmList.getUserId()
+				+ " but didn't.", row.getCell(6).getNumericCellValue() == germplasmList.getUserId());
 
 		row = descriptionSheet.getRow(8);
 		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER but didn't.", row.getCell(0)
@@ -509,10 +509,9 @@ public class GermplasmExportServiceImplTest {
 				.getStringCellValue(), "ASSIGNED");
 		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.", row.getCell(5)
 				.getStringCellValue(), "N");
-		Assert.assertEquals(
-				"Expecting " + Integer.valueOf(row.getCell(6).getStringCellValue()) + " equals to "
-						+ this.input.getCurrentLocalIbdbUserId() + "R but didn't.", Integer.valueOf(row.getCell(6).getStringCellValue()),
-				this.input.getCurrentLocalIbdbUserId());
+		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to "
+				+ this.input.getCurrentLocalIbdbUserId() + "R but didn't.",
+				row.getCell(6).getNumericCellValue() == this.input.getCurrentLocalIbdbUserId());
 
 		// Assert List Factor Section
 		row = descriptionSheet.getRow(11);

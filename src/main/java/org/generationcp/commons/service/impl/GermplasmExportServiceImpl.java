@@ -97,6 +97,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	public static final String TEXT_HIGHLIGHT_STYLE_FACTOR = "textHightlightFactor";
 	public static final String COLUMN_HIGHLIGHT_STYLE_FACTOR = "columnHighlightFactor";
 	public static final String NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR = "numberColumnHighlightFactor";
+	public static final String DECIMAL_NUMBER_DATA_FORMAT_STYLE = "decimalNumberDataFormatStyle";
 
 	@Resource
 	private FileService fileService;
@@ -512,7 +513,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
 			stockIDCell.setCellValue(input.getInventoryVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
 			stockIDCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADIING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.TEXT_DATA_FORMAT_STYLE));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -520,7 +521,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
 			seedAmountCell.setCellValue(input.getInventoryVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
 			seedAmountCell.setCellStyle(styles.get(GermplasmExportServiceImpl.HEADIING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE));
+			observationSheet.setDefaultColumnStyle(columnIndex, styles.get(GermplasmExportServiceImpl.DECIMAL_NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -788,6 +789,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		CellStyle headingStyle = styles.get(GermplasmExportServiceImpl.HEADING_STYLE);
 		CellStyle textStyle = styles.get(GermplasmExportServiceImpl.TEXT_STYLE);
 		CellStyle labelStyleCondition = styles.get(GermplasmExportServiceImpl.LABEL_STYLE_CONDITION);
+		final CellStyle numberStyle = styles.get(GermplasmExportServiceImpl.NUMERIC_STYLE);
 
 		// prepare inputs
 		GermplasmList germplasmList = input.getGermplasmList();
@@ -825,7 +827,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		this.createCell(3, listUserIdRow, textStyle, "DBID");
 		this.createCell(4, listUserIdRow, textStyle, GermplasmExportServiceImpl.ASSIGNED);
 		this.createCell(5, listUserIdRow, textStyle, "N");
-		this.createCell(6, listUserIdRow, textStyle, String.valueOf(germplasmList.getUserId()));
+		this.createCell(6, listUserIdRow, numberStyle, germplasmList.getUserId());
 		this.createCell(7, listUserIdRow, textStyle, "");
 
 		HSSFRow listExporterRow = descriptionSheet.createRow(++actualRow);
@@ -845,7 +847,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		this.createCell(3, listExporterIdRow, textStyle, "DBID");
 		this.createCell(4, listExporterIdRow, textStyle, GermplasmExportServiceImpl.ASSIGNED);
 		this.createCell(5, listExporterIdRow, textStyle, "N");
-		this.createCell(6, listExporterIdRow, textStyle, String.valueOf(currentLocalIbdbUserId));
+		this.createCell(6, listExporterIdRow, numberStyle, currentLocalIbdbUserId);
 		this.createCell(7, listExporterIdRow, textStyle, "");
 
 		descriptionSheet.addMergedRegion(new CellRangeAddress(actualRow - 3, actualRow, 7, 7));
@@ -990,6 +992,11 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		numberDataFormatStyle.setDataFormat(format.getFormat("0"));
 		styles.put(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE, numberDataFormatStyle);
 
+		// numeric data format for Numeric values with two decimal points
+		final CellStyle decimalNumberDataFormatStyle = wb.createCellStyle();
+		decimalNumberDataFormatStyle.setDataFormat(format.getFormat("0.00"));
+		styles.put(GermplasmExportServiceImpl.DECIMAL_NUMBER_DATA_FORMAT_STYLE, decimalNumberDataFormatStyle);
+
 		// numeric data format for Entry No column with highlight color
 		final CellStyle numberHighlightColumnStyle = this.createStyle(wb);
 		numberHighlightColumnStyle.setFillForegroundColor(IndexedColors.RED.getIndex());
@@ -1065,9 +1072,10 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		styles.put(GermplasmExportServiceImpl.HEADING_STYLE, headingStyle);
 
 		// cell style for numeric values (left alignment)
-		CellStyle numericStyle = this.createStyleWithBorder(wb);
+		final CellStyle numericStyle = this.createStyleWithBorder(wb);
 		numericStyle.setAlignment(CellStyle.ALIGN_LEFT);
 		numericStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		numericStyle.setDataFormat(format.getFormat("0"));
 		styles.put(GermplasmExportServiceImpl.NUMERIC_STYLE, numericStyle);
 
 		// cell style for text
@@ -1080,6 +1088,21 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 
 	public Cell createCell(int column, HSSFRow row, CellStyle cellStyle, String value) {
 		HSSFCell cell = row.createCell(column);
+		cell.setCellStyle(cellStyle);
+		cell.setCellValue(value);
+		return cell;
+	}
+
+	/**
+	 * We need this method to store numbers as numbers to the excel workbook, otherwise it gives warning message "Number stored as text"
+	 * @param column column number
+	 * @param row row number
+	 * @param cellStyle the cell style
+	 * @param value numeric value to store
+	 * @return the cell created
+	 */
+	public Cell createCell(final int column, final HSSFRow row, final CellStyle cellStyle, final double value) {
+		final HSSFCell cell = row.createCell(column);
 		cell.setCellStyle(cellStyle);
 		cell.setCellValue(value);
 		return cell;
