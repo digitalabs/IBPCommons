@@ -16,6 +16,9 @@ import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 
+/**
+ * Service to export Germplasm workbook as a file
+ */
 public interface GermplasmExportService {
 
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues, List<ExportColumnHeader> exportColumnHeaders,
@@ -28,12 +31,4 @@ public interface GermplasmExportService {
 			List<ExportColumnHeader> exportColumnHeaders, String filename, String sheetName) throws IOException;
 
 	public FileOutputStream generateGermplasmListExcelFile(GermplasmListExportInputValues input) throws GermplasmListExporterException;
-
-	void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet, GermplasmListExportInputValues input)
-			throws GermplasmListExporterException;
-
-	void generateDescriptionSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles, GermplasmListExportInputValues input)
-			throws GermplasmListExporterException;
-
-	Map<String, CellStyle> createStyles(Workbook wb);
 }

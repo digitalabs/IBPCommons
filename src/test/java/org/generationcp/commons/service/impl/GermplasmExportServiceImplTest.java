@@ -7,34 +7,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
-import au.com.bytecode.opencsv.CSVReader;
-import junit.framework.Assert;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
+import org.generationcp.commons.parsing.GermplasmExportTestHelper;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.FileService;
-import org.generationcp.middleware.domain.inventory.ListDataInventory;
-import org.generationcp.middleware.domain.oms.Term;
-import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.domain.ontology.DataType;
-import org.generationcp.middleware.domain.ontology.Method;
-import org.generationcp.middleware.domain.ontology.Property;
-import org.generationcp.middleware.domain.ontology.Scale;
-import org.generationcp.middleware.domain.ontology.Variable;
-import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.commons.util.StringUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +28,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import au.com.bytecode.opencsv.CSVReader;
+import junit.framework.Assert;
 
 public class GermplasmExportServiceImplTest {
 
@@ -51,17 +40,10 @@ public class GermplasmExportServiceImplTest {
 	@InjectMocks
 	private final GermplasmExportServiceImpl germplasmExportService  = new GermplasmExportServiceImpl();
 
-	private static final String CURRENT_USER_NAME = "User User";
-	private static final int CURRENT_USER_ID = 1;
-	private static final Integer USER_ID = 1;
-	private static final int NO_OF_LIST_ENTRIES = 10;
-
 	private List<ExportColumnHeader> columnsHeaders;
 	private List<Map<Integer, ExportColumnValue>> columnValues;
-	private String testFileName;
 	private String sheetName;
 	private GermplasmListExportInputValues input;
-	private GermplasmList germplasmList;
 
 	@Before
 	public void setUp() throws InvalidFormatException, IOException {
@@ -69,26 +51,26 @@ public class GermplasmExportServiceImplTest {
 
 		this.columnsHeaders = this.generateSampleExportColumnHeader(14);
 		this.columnValues = this.generateSampleExportColumns(10, 14);
-		this.testFileName = "test.csv";
 		this.sheetName = "List";
 
-		this.germplasmList = this.generateGermplasmList();
-		this.input = this.generateGermplasmListExportInputValues();
+		this.input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
 
-		this.germplasmExportService.setTemplateFile(this.testFileName);
-		Mockito.doReturn(this.createWorkbook()).when(this.fileService).retrieveWorkbookTemplate(this.testFileName);
+		this.germplasmExportService.setTemplateFile(GermplasmExportTestHelper.TEST_FILE_NAME);
+		Mockito.doReturn(GermplasmExportTestHelper.createWorkbook()).when(this.fileService)
+				.retrieveWorkbookTemplate(GermplasmExportTestHelper.TEST_FILE_NAME);
 	}
 
 	@After
 	public void tearDown() {
-		final File file = new File(this.testFileName);
+		final File file = new File(GermplasmExportTestHelper.TEST_FILE_NAME);
 		file.deleteOnExit();
 	}
 
 	@Test
 	public void testGenerateCSVFile() throws IOException {
 
-		final File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName);
+		final File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders,
+				GermplasmExportTestHelper.TEST_FILE_NAME);
 
 		final CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
 
@@ -114,7 +96,8 @@ public class GermplasmExportServiceImplTest {
 	@Test
 	public void testGenerateCSVFileWithHeader() throws IOException {
 
-		final File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName, true);
+		final File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders,
+				GermplasmExportTestHelper.TEST_FILE_NAME, true);
 
 		final CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
 
@@ -140,7 +123,8 @@ public class GermplasmExportServiceImplTest {
 	@Test
 	public void testGenerateCSVFileWithoutHeader() throws IOException {
 
-		final File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders, this.testFileName, false);
+		final File generatedFile = this.germplasmExportService.generateCSVFile(this.columnValues, this.columnsHeaders,
+				GermplasmExportTestHelper.TEST_FILE_NAME, false);
 
 		final CSVReader reader = new CSVReader(new FileReader(generatedFile), ',');
 
@@ -180,7 +164,7 @@ public class GermplasmExportServiceImplTest {
 	public void testCleanNameValueCommasWithNoComma() {
 		final String param = "Test Value";
 		Assert.assertEquals("Should be still the same string since there is no comma character",
-				this.germplasmExportService.cleanNameValueCommas(param), param);
+				StringUtil.cleanNameValueCommas(param), param);
 	}
 
 	@Test
@@ -188,12 +172,12 @@ public class GermplasmExportServiceImplTest {
 		final String param = "Test, Value";
 		final String paramNew = "Test_ Value";
 		Assert.assertEquals("The comma character in the string should be change to a _ character",
-				this.germplasmExportService.cleanNameValueCommas(param), paramNew);
+				StringUtil.cleanNameValueCommas(param), paramNew);
 	}
 
 	@Test
 	public void testCleanNameValueCommasWithNullParameter() {
-		Assert.assertEquals("Should be empty string since param passed was null", this.germplasmExportService.cleanNameValueCommas(null),
+		Assert.assertEquals("Should be empty string since param passed was null", StringUtil.cleanNameValueCommas(null),
 				"");
 	}
 
@@ -255,464 +239,13 @@ public class GermplasmExportServiceImplTest {
 
 	@Test
 	public void testGenerateExcelFileForSingleSheet() throws IOException {
-		this.germplasmExportService.generateExcelFileForSingleSheet(this.columnValues, this.columnsHeaders, this.testFileName,
-				this.sheetName);
-	}
-
-	@Test
-	public void testGetNoOfVisibleColumns() {
-		int visibleColumns = this.germplasmExportService.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
-		Assert.assertTrue("Expected that the number of visibleColums = " + this.input.getVisibleColumnMap().size(),
-				visibleColumns == this.input.getVisibleColumnMap().size());
-
-		this.input.getVisibleColumnMap().put(ColumnLabels.SEED_SOURCE.getName(), false);
-		visibleColumns = this.germplasmExportService.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
-		Assert.assertTrue("Expected that the number of visibleColums = " + (this.input.getVisibleColumnMap().size() - 1),
-				visibleColumns == this.input.getVisibleColumnMap().size() - 1);
-	}
-
-	@Test
-	public void testGenerateObservationSheet() throws GermplasmListExporterException {
-		// input data
-		final HSSFWorkbook wb = this.createWorkbook();
-		final Map<String, CellStyle> sheetStyles = this.germplasmExportService.createStyles(wb);
-		final GermplasmList germplasmList = this.input.getGermplasmList();
-		final List<GermplasmListData> listDatas = germplasmList.getListData();
-		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
-
-		// to test
-		this.germplasmExportService.generateObservationSheet(wb, sheetStyles, this.input);
-
-		final HSSFSheet observationSheet = wb.getSheet("Observation");
-
-		HSSFRow row;
-		int columnIndex = 0;
-
-		// Assert Header Row
-		row = observationSheet.getRow(0);
-
-		if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_NO.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY but didn't.",
-					row.getCell(columnIndex).getStringCellValue(), "ENTRY_NO");
-			columnIndex++;
-		}
-		if (visibleColumnMap.get(String.valueOf(TermId.GID.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to GID but didn't.",
-					row.getCell(columnIndex).getStringCellValue(), "GID");
-			columnIndex++;
-		}
-		if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_CODE.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY CODE but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "ENTRY_CODE");
-			columnIndex++;
-		}
-		if (visibleColumnMap.get(String.valueOf(TermId.DESIG.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to DESIGNATION but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "DESIGNATION");
-			columnIndex++;
-		}
-		if (visibleColumnMap.get(String.valueOf(TermId.CROSS.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to CROSS but didn't.",
-					row.getCell(columnIndex).getStringCellValue(), "CROSS");
-			columnIndex++;
-		}
-		if (visibleColumnMap.get(String.valueOf(TermId.SEED_SOURCE.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to SOURCE but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "SEED_SOURCE");
-		}
-
-		// Assert Row Values
-		int rowIndex = 1;
-		for (final GermplasmListData listData : listDatas) {
-			row = observationSheet.getRow(rowIndex);
-
-			columnIndex = 0;
-			if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_NO.getId()))) {
-				Assert.assertEquals("Expecting " + this.getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to "
-						+ listData.getEntryId() + " but didn't.", this.getInteger(row.getCell(columnIndex).getNumericCellValue()),
-						listData.getEntryId());
-				Assert.assertEquals(sheetStyles.get(GermplasmExportServiceImpl.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR),
-						row.getCell(columnIndex).getCellStyle());
-				columnIndex++;
-			}
-			if (visibleColumnMap.get(String.valueOf(TermId.GID.getId()))) {
-				Assert.assertEquals("Expecting " + this.getInteger(row.getCell(columnIndex).getNumericCellValue()) + " equals to "
-						+ listData.getEntryId() + " but didn't.", this.getInteger(row.getCell(columnIndex).getNumericCellValue()),
-						listData.getGid());
-				Assert.assertEquals(sheetStyles.get(GermplasmExportServiceImpl.NUMBER_DATA_FORMAT_STYLE), row.getCell(columnIndex).getCellStyle());
-				columnIndex++;
-			}
-			if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_CODE.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getEntryCode()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getEntryCode());
-				columnIndex++;
-			}
-			if (visibleColumnMap.get(String.valueOf(TermId.DESIG.getId()))) {
-				Assert.assertEquals(
-						"Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getDesignation()
-								+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getDesignation());
-				columnIndex++;
-			}
-			if (visibleColumnMap.get(String.valueOf(TermId.CROSS.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getGroupName()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getGroupName());
-				columnIndex++;
-			}
-			if (visibleColumnMap.get(String.valueOf(TermId.SEED_SOURCE.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getSeedSource()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getSeedSource());
-			}
-			rowIndex++;
-		}
-	}
-
-	@Test
-	public void testGenerateDescriptionSheet() throws GermplasmListExporterException {
-
-		// input data
-		final HSSFWorkbook wb = new HSSFWorkbook();
-		final Map<String, CellStyle> sheetStyles = this.germplasmExportService.createStyles(wb);
-		final GermplasmList germplasmList = this.input.getGermplasmList();
-		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
-
-		final Map<Integer, Term> columnTerms = this.input.getColumnTermMap();
-		final Map<Integer, Variable> inventoryVariables = this.input.getInventoryVariableMap();
-		final Map<Integer, Variable> variateVariables = this.input.getVariateVariableMap();
-
-		// to test
-		this.germplasmExportService.generateDescriptionSheet(wb, sheetStyles, this.input);
-
-		final HSSFSheet descriptionSheet = wb.getSheet("Description");
-
-		Assert.assertNotNull("Expected to successfully generated the description sheet.", descriptionSheet);
-		Assert.assertTrue("The sheet name is Description.", "Description".equalsIgnoreCase(descriptionSheet.getSheetName()));
-
-		HSSFRow row;
-		// Assert List Details Section
-		row = descriptionSheet.getRow(0);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST NAME but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST NAME");
-		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getName());
-
-		row = descriptionSheet.getRow(1);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST DESCRIPTION but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST DESCRIPTION");
-		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getDescription());
-
-		row = descriptionSheet.getRow(2);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST TYPE but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST TYPE");
-		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getType());
-
-		row = descriptionSheet.getRow(3);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST DATE but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST DATE");
-		Assert.assertEquals(this.getLong(Integer.valueOf(row.getCell(1).getStringCellValue())), germplasmList.getDate());
-
-		// Assert List Condition Section
-		row = descriptionSheet.getRow(5);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to CONDITION but didn't.", row.getCell(0)
-				.getStringCellValue(), "CONDITION");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to DESCRIPTION but didn't.", row.getCell(1)
-				.getStringCellValue(), "DESCRIPTION");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PROPERTY but didn't.", row.getCell(2)
-				.getStringCellValue(), "PROPERTY");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to SCALE but didn't.", row.getCell(3)
-				.getStringCellValue(), "SCALE");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to METHOD but didn't.", row.getCell(4)
-				.getStringCellValue(), "METHOD");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to DATA TYPE but didn't.", row.getCell(5)
-				.getStringCellValue(), "DATA TYPE");
-		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to VALUE but didn't.", row.getCell(6)
-				.getStringCellValue(), "VALUE");
-
-		row = descriptionSheet.getRow(6);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST USER but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST USER");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to PERSON WHO MADE THE LIST but didn't.", row
-				.getCell(1).getStringCellValue(), "PERSON WHO MADE THE LIST");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBCV but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBCV");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.", row.getCell(5)
-				.getStringCellValue(), "C");
-		Assert.assertEquals(
-				"Expecting " + row.getCell(6).getStringCellValue() + " equals to " + this.input.getOwnerName() + " but didn't.", row
-						.getCell(6).getStringCellValue(), this.input.getOwnerName());
-
-		row = descriptionSheet.getRow(7);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST USER ID but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST USER ID");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to ID OF LIST OWNER but didn't.", row.getCell(1)
-				.getStringCellValue(), "ID OF LIST OWNER");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBID but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBID");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.",
-				row.getCell(5).getStringCellValue(), "N");
-		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to " + germplasmList.getUserId()
-				+ " but didn't.", row.getCell(6).getNumericCellValue() == germplasmList.getUserId());
-
-		row = descriptionSheet.getRow(8);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST EXPORTER");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to PERSON EXPORTING THE LIST but didn't.", row
-				.getCell(1).getStringCellValue(), "PERSON EXPORTING THE LIST");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBCV but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBCV");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.", row.getCell(5)
-				.getStringCellValue(), "C");
-		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to " + this.input.getExporterName()
-				+ " but didn't.", row.getCell(6).getStringCellValue(), this.input.getExporterName());
-
-		row = descriptionSheet.getRow(9);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER ID but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST EXPORTER ID");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to ID OF LIST EXPORTER but didn't.",
-				row.getCell(1).getStringCellValue(), "ID OF LIST EXPORTER");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBID but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBID");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.",
-				row.getCell(5).getStringCellValue(), "N");
-		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to " + this.input.getCurrentLocalIbdbUserId()
-						+ "R but didn't.", row.getCell(6).getNumericCellValue() == this.input.getCurrentLocalIbdbUserId());
-
-		// Assert List Factor Section
-		row = descriptionSheet.getRow(11);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to FACTOR but didn't.", row.getCell(0)
-				.getStringCellValue(), "FACTOR");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to DESCRIPTION but didn't.", row.getCell(1)
-				.getStringCellValue(), "DESCRIPTION");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PROPERTY but didn't.", row.getCell(2)
-				.getStringCellValue(), "PROPERTY");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to SCALE but didn't.", row.getCell(3)
-				.getStringCellValue(), "SCALE");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to METHOD but didn't.", row.getCell(4)
-				.getStringCellValue(), "METHOD");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to DATA TYPE but didn't.", row.getCell(5)
-				.getStringCellValue(), "DATA TYPE");
-		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to blank but didn't.", row.getCell(6)
-				.getStringCellValue(), "");
-
-		int rowIndex = 11;
-
-		for (final Entry<String, Boolean> entry : visibleColumnMap.entrySet()) {
-
-			if (entry.getValue()) {
-				final Term term = columnTerms.get(Integer.valueOf(entry.getKey()));
-
-				row = descriptionSheet.getRow(++rowIndex);
-				Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(),
-						term.getName().toUpperCase());
-				Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-						term.getDefinition());
-			}
-
-		}
-
-		rowIndex = rowIndex + 2;
-
-		for (final Variable stdVariable : inventoryVariables.values()) {
-
-			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
-					.getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-					stdVariable.getDefinition());
-			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
-					.getProperty().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
-					.getScale().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
-					.getMethod().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-					.getScale().getDataType().getName().substring(0, 1).toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
-
-		}
-
-		rowIndex = rowIndex + 2;
-
-		for (final Variable stdVariable : variateVariables.values()) {
-
-			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
-					.getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-					stdVariable.getDefinition());
-			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
-					.getProperty().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
-					.getScale().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
-					.getMethod().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-					.getScale().getDataType().getName().substring(0, 1).toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
-
-		}
-
-	}
-
-	private Long getLong(final double numericCellValue) {
-		return Math.round(numericCellValue);
-	}
-
-	private Integer getInteger(final double numericCellValue) {
-		return Integer.valueOf(String.valueOf(this.getLong(numericCellValue)));
+		this.germplasmExportService.generateExcelFileForSingleSheet(this.columnValues, this.columnsHeaders,
+				GermplasmExportTestHelper.TEST_FILE_NAME, this.sheetName);
 	}
 
 	@Test
 	public void testGenerateGermplasmListExcelFile() throws GermplasmListExporterException {
 		this.germplasmExportService.generateGermplasmListExcelFile(this.input);
-	}
-
-	private GermplasmListExportInputValues generateGermplasmListExportInputValues() {
-		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
-
-		input.setFileName(this.testFileName);
-		input.setGermplasmList(this.germplasmList);
-		input.setOwnerName(GermplasmExportServiceImplTest.CURRENT_USER_NAME);
-		input.setCurrentLocalIbdbUserId(GermplasmExportServiceImplTest.CURRENT_USER_ID);
-		input.setExporterName(GermplasmExportServiceImplTest.CURRENT_USER_NAME);
-		input.setVisibleColumnMap(this.getVisibleColumnMap());
-		input.setColumnTermMap(this.getColumnTerms());
-		input.setInventoryVariableMap(this.getInventoryVariables());
-		input.setVariateVariableMap(this.getVariateVariables());
-		input.setListData(this.generateListEntries());
-		return input;
-	}
-
-	private Map<Integer, Variable> getVariateVariables() {
-		final Map<Integer, Variable> standardVariableMap = new LinkedHashMap<>();
-
-		standardVariableMap.put(TermId.NOTES.getId(),
-				this.createVariable(TermId.NOTES.getId(), "NOTES", "Field notes - observed (text)", "Comment", "Text", "Observed",
-						DataType.CHARACTER_VARIABLE));
-
-		return standardVariableMap;
-	}
-
-	private Map<Integer, Variable> getInventoryVariables() {
-
-		final Map<Integer, Variable> standardVariableMap = new LinkedHashMap<>();
-
-		standardVariableMap.put(TermId.STOCKID.getId(),
-				this.createVariable(TermId.STOCKID.getId(), "stockID", "ID of an inventory deposit", "Germplasm stock id", "DBCV",
-						"Assigned", DataType.CHARACTER_VARIABLE));
-		standardVariableMap.put(TermId.SEED_AMOUNT_G.getId(),
-				this.createVariable(TermId.SEED_AMOUNT_G.getId(), "SEED_AMOUNT_g", "Seed inventory amount deposited or withdrawn (g)",
-						"Inventory amount", "g", "Weighed", DataType.CHARACTER_VARIABLE));
-
-		return standardVariableMap;
-	}
-
-	private Map<Integer, Term> getColumnTerms() {
-
-		final Map<Integer, Term> termMap = new LinkedHashMap<>();
-
-		termMap.put(TermId.ENTRY_NO.getId(),
-				this.createVariable(TermId.ENTRY_NO.getId(), "ENTRY_NO", "Germplasm entry - enumerated (number)", "Germplasm entry",
-						"Number", "Enumerated", DataType.NUMERIC_VARIABLE));
-		termMap.put(TermId.GID.getId(),
-				this.createVariable(TermId.GID.getId(), "GID", "Germplasm identifier - assigned (DBID)", "Germplasm id", "DBID", "Assigned",
-						DataType.NUMERIC_VARIABLE));
-		termMap.put(TermId.CROSS.getId(),
-				this.createVariable(TermId.CROSS.getId(), "CROSS", "The pedigree string of the germplasm", "Cross history", "Text",
-						"Assigned", DataType.CHARACTER_VARIABLE));
-		termMap.put(TermId.ENTRY_CODE.getId(),
-				this.createVariable(TermId.ENTRY_CODE.getId(), "ENTRY_CODE", "Germplasm ID - Assigned (Code)", "Germplasm entry", "Code",
-						"Assigned", DataType.CHARACTER_VARIABLE));
-		termMap.put(TermId.DESIG.getId(),
-				this.createVariable(TermId.DESIG.getId(), "DESIGNATION", "Germplasm identifier - assigned (DBCV)", "Germplasm id", "DBCV",
-						"Assigned", DataType.CHARACTER_VARIABLE));
-		termMap.put(TermId.SEED_SOURCE.getId(),
-				this.createVariable(TermId.SEED_SOURCE.getId(), "SEED_SOURCE", "Seed source - Selected (Code)", "Seed source", "Code",
-						"Selected", DataType.CHARACTER_VARIABLE));
-
-		return termMap;
-	}
-
-	private Variable createVariable(final int termId, final String name, final String description, final String property,
-			final String scale, final String method, final DataType dataType) {
-		final Variable stdvariable = new Variable();
-		stdvariable.setId(termId);
-		stdvariable.setName(name);
-		stdvariable.setDefinition(description);
-		stdvariable.setProperty(new Property(new Term(0, property, "")));
-		stdvariable.setScale(new Scale(new Term(0, scale, "")));
-		stdvariable.setMethod(new Method(new Term(0, method, "")));
-		stdvariable.getScale().setDataType(dataType);
-		return stdvariable;
-	}
-
-	private Map<String, Boolean> getVisibleColumnMap() {
-		final Map<String, Boolean> visibleColumnMap = new LinkedHashMap<>();
-
-		visibleColumnMap.put(String.valueOf(ColumnLabels.ENTRY_ID.getTermId().getId()), true);
-		visibleColumnMap.put(String.valueOf(ColumnLabels.GID.getTermId().getId()), true);
-		visibleColumnMap.put(String.valueOf(ColumnLabels.ENTRY_CODE.getTermId().getId()), true);
-		visibleColumnMap.put(String.valueOf(ColumnLabels.DESIGNATION.getTermId().getId()), true);
-		visibleColumnMap.put(String.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()), true);
-		visibleColumnMap.put(String.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()), true);
-
-		return visibleColumnMap;
-	}
-
-	private GermplasmList generateGermplasmList() {
-		final GermplasmList germplasmList = new GermplasmList();
-		germplasmList.setName("Sample List");
-		germplasmList.setUserId(GermplasmExportServiceImplTest.USER_ID);
-		germplasmList.setDescription("Sample description");
-		germplasmList.setType("LST");
-		germplasmList.setDate(20141112L);
-		germplasmList.setNotes("Sample Notes");
-		germplasmList.setListData(this.generateListEntries());
-
-		return germplasmList;
-	}
-
-	private List<GermplasmListData> generateListEntries() {
-		final List<GermplasmListData> entries = new ArrayList<>();
-
-		for (int x = 1; x <= GermplasmExportServiceImplTest.NO_OF_LIST_ENTRIES; x++) {
-			final GermplasmListData germplasmListData = new GermplasmListData();
-			germplasmListData.setId(x);
-			germplasmListData.setEntryId(x);
-			germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
-			germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
-			final ListDataInventory inventoryInfo = new ListDataInventory(x, x);
-			inventoryInfo.setLotCount(1);
-			inventoryInfo.setReservedLotCount(1);
-			inventoryInfo.setActualInventoryLotCount(1);
-			germplasmListData.setInventoryInfo(inventoryInfo);
-			germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
-			germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
-			germplasmListData.setGid(x);
-			entries.add(germplasmListData);
-		}
-
-		return entries;
-	}
-
-	private HSSFWorkbook createWorkbook() {
-		final HSSFWorkbook wb = new HSSFWorkbook();
-		wb.createSheet("Codes");
-		return wb;
 	}
 
 }
