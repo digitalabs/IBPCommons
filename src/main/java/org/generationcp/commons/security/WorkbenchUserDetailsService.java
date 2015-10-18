@@ -3,6 +3,7 @@ package org.generationcp.commons.security;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -21,6 +22,9 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 	@Transactional
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		try {
+			// username must be converted from html-encode to utf-8 string to support chinese/utf-8 languages
+			username = StringEscapeUtils.unescapeHtml(username);
+
 			List<User> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
 			if (matchingUsers != null && !matchingUsers.isEmpty()) {
 				User workbenchUser = matchingUsers.get(0);
