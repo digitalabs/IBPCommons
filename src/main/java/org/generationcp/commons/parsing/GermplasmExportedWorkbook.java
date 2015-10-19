@@ -25,7 +25,9 @@ import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 
 /**
- * Germplasm workbook which gets exported as a file
+ * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow
+ * and the ExcelCellStyleBuilder to construct a workbook instance to export.
+ * 
  */
 public class GermplasmExportedWorkbook {
 

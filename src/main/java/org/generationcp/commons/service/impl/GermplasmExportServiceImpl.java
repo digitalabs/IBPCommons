@@ -188,6 +188,10 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		return cellStyle;
 	}
 
+	/**
+	 * Main workbook generation entry point. Uses the GermplasmExportedWorkbook class to
+	 * build an Excel style workbook to export.
+	 */
 	@Override
 	public FileOutputStream generateGermplasmListExcelFile(final GermplasmListExportInputValues input)
 			throws GermplasmListExporterException {

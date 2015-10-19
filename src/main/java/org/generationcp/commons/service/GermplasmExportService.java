@@ -7,17 +7,17 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 
 /**
- * Service to export Germplasm workbook as a file
+ * Service to export Germplasm workbook as a file. Delegates to the GermplasmExportedWorkbook as the central builder,
+ * then assembling an Excel style workbook as a Collection of ExcelWorkbookRow and ExcelCellStyleBuilder instances.
+ * 
+ * CSV output methods aare used for the CSV output format for all Excel output and print style for label printers
+ * 
  */
 public interface GermplasmExportService {
 
