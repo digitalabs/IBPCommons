@@ -332,4 +332,11 @@ public abstract class StringUtil {
 		}
 		return sb.toString();
 	}
+
+	public static String cleanNameValueCommas(final String param) {
+		if (param != null) {
+			return param.replaceAll(",", "_");
+		}
+		return "";
+	}
 }

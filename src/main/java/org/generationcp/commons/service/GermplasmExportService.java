@@ -7,15 +7,18 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 
+/**
+ * Service to export Germplasm workbook as a file. Delegates to the GermplasmExportedWorkbook as the central builder,
+ * then assembling an Excel style workbook as a Collection of ExcelWorkbookRow and ExcelCellStyleBuilder instances.
+ * 
+ * CSV output methods aare used for the CSV output format for all Excel output and print style for label printers
+ * 
+ */
 public interface GermplasmExportService {
 
 	public File generateCSVFile(List<Map<Integer, ExportColumnValue>> exportColumnValues, List<ExportColumnHeader> exportColumnHeaders,
@@ -28,12 +31,4 @@ public interface GermplasmExportService {
 			List<ExportColumnHeader> exportColumnHeaders, String filename, String sheetName) throws IOException;
 
 	public FileOutputStream generateGermplasmListExcelFile(GermplasmListExportInputValues input) throws GermplasmListExporterException;
-
-	void writeObservationSheet(Map<String, CellStyle> styles, HSSFSheet observationSheet, GermplasmListExportInputValues input)
-			throws GermplasmListExporterException;
-
-	void generateDescriptionSheet(HSSFWorkbook wb, Map<String, CellStyle> sheetStyles, GermplasmListExportInputValues input)
-			throws GermplasmListExporterException;
-
-	Map<String, CellStyle> createStyles(Workbook wb);
 }
