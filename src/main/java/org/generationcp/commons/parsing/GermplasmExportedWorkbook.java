@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Resource;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -30,7 +32,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
  * 
  */
 public class GermplasmExportedWorkbook {
-
+	
 	// List Details
 	public static final String LIST_NAME = "LIST NAME";
 	public static final String LIST_DESCRIPTION = "LIST DESCRIPTION";
@@ -57,15 +59,19 @@ public class GermplasmExportedWorkbook {
 	// Factor
 	public static final String FACTOR = "FACTOR";
 
-	private final ExcelCellStyleBuilder sheetStyles;
-	private final CellStyle textStyle;
-	private final CellStyle headingStyle;
+	private ExcelCellStyleBuilder sheetStyles;
+	private CellStyle textStyle;
+	private CellStyle headingStyle;
 
-	private final HSSFWorkbook wb;
-	private final GermplasmListExportInputValues input;
-
-	public GermplasmExportedWorkbook(final HSSFWorkbook wb, final GermplasmListExportInputValues input){
-		this.wb = wb;
+	private HSSFWorkbook wb;
+	private GermplasmListExportInputValues input;
+	
+	//Sheet Generators
+	@Resource
+	private CodesSheetGenerator codesSheetGenerator;
+	
+	public void init(final GermplasmListExportInputValues input){
+		this.wb = new HSSFWorkbook();
 		this.input = input;
 
 		//set styles
@@ -73,11 +79,13 @@ public class GermplasmExportedWorkbook {
 		this.textStyle = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_STYLE);
 		this.headingStyle = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE);
 
-		// create two worksheets - Description and Observations
+		// create three worksheets - Description, Observations, and Codes
 		this.generateDescriptionSheet();
 		this.generateObservationSheet();
-
-		this.wb.setSheetOrder("Codes", 2);
+		
+		//Generate Sheets
+		this.codesSheetGenerator.generateCodesSheet(wb);
+		
 	}
 
 	public void write(final FileOutputStream fos) throws IOException {
@@ -758,5 +766,4 @@ public class GermplasmExportedWorkbook {
 		}
 		return "";
 	}
-
 }
