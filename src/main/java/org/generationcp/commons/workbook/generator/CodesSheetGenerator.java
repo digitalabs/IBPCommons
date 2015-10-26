@@ -23,58 +23,16 @@ import org.generationcp.middleware.service.api.OntologyService;
 public class CodesSheetGenerator {
 	
 	private static final int FNAME_WIDTH = 110 * 256 + 200;
-
 	private static final int FCODE_WIDTH = 21 * 256 + 200;
-
 	private static final int INFORMATION_TYPE_WIDTH = 28 * 256 + 200;
-
-	private static final String SECTION = "Section";
-
 	private static final int SECTION_WIDTH = 13 * 256 + 200;
 
+	private static final String SECTION = "Section";
 	private static final String INFORMATION_TYPE = "Information Type";
-
 	private static final String FCODE = "fcode";
-
 	private static final String FNAME = "fname";
 
-	private static final String LISTTYPE = "LISTTYPE";
-
-	private static final String LISTNMS = "LISTNMS";
-
-	private static final String LIST_HEADER = "LIST HEADER";
-
-	private static final String LIST_TYPE = "LIST TYPE";
-
-	private static final String CONDITION = "CONDITION";
-
-	private static final String USER = "USER";
-
-	private static final String NAME = "NAME";
-
-	private static final String NAMES = "NAMES";
-
-	private static final String FACTOR = "FACTOR";
-
-	private static final String NAME_TYPE = "NAME TYPE";
-
-	private static final String INVENTORY = "INVENTORY";
-
-	private static final String SCALES_FOR_INVENTORY_UNITS = "SCALES FOR INVENTORY UNITS";
-
-	private static final String ATTRIBUTE = "ATTRIBUTE";
-
-	private static final String PASSPORT = "PASSPORT";
-
-	private static final String ATRIBUTS = "ATRIBUTS";
-
-	private static final String ATTRIBUTE_TYPE = "ATTRIBUTE TYPE";
-
-	private static final String PASSPORT_ATTRIBUTE_TYPE = "PASSPORT ATTRIBUTE TYPE";
-
-	private static final String VARIATE = "VARIATE";
-
-		@Resource
+	@Resource
 	private GermplasmDataManager germplasmDataManager;
 	
 	@Resource
@@ -86,6 +44,23 @@ public class CodesSheetGenerator {
 	@Resource
 	private OntologyService ontologyService;
 	
+	@Resource
+	private ListTypeRowGenerator listTypeRowGenerator;
+	
+	@Resource
+	private UserRowGenerator userRowGenerator;
+	
+	@Resource
+	private NameTypesRowGenerator nameTypesRowGenerator;
+	
+	@Resource
+	private InventoryScalesRowGenerator inventoryScalesRowGenerator;
+	
+	@Resource
+	private AttributeTypesRowGenerator attributeTypesRowGenerator;
+	
+	@Resource
+	private PassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
 	
 	private HSSFWorkbook wb;
 	private HSSFSheet codesSheet;
@@ -105,12 +80,12 @@ public class CodesSheetGenerator {
 		int currentRow = 0;
 		
 		this.setCodeSheetHeaders(codesSheet, currentRow);
-		currentRow = this.addListTypesToCodesSheet(codesSheet, ++currentRow);
-		currentRow = this.addUsersToCodesSheet(codesSheet, currentRow);
-		currentRow = this.addNameTypesToCodesSheet(codesSheet, currentRow);
-		currentRow = this.addInventoryScalesToCodesSheet(codesSheet, currentRow);
-		currentRow = this.addAttributeTypesToCodesSheet(codesSheet, currentRow);
-		currentRow = this.addPassportAttributeTypesToCodesSheet(codesSheet, currentRow);
+		listTypeRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
+		userRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
+		nameTypesRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
+		inventoryScalesRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
+		attributeTypesRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
+		passportAttributeTypesRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
 		this.setCodesColumnsWidth(codesSheet);
 	}
 	
@@ -130,121 +105,7 @@ public class CodesSheetGenerator {
 		codesSheetHeader.createCell(1, headingStyle, INFORMATION_TYPE);
 		codesSheetHeader.createCell(2, headingStyleCenter, FCODE);
 		codesSheetHeader.createCell(3, headingStyleCenter, FNAME);
+		
+		codesSheet.getLastRowNum();
 	}
-	
-	private int addListTypesToCodesSheet(HSSFSheet codesSheet, int currentRow) {
-		CellStyle labelStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LIST_HEADER_STYLE);
-		CellStyle textDataStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
-		
-		List<UserDefinedField> listHeaders = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(LISTNMS, LISTTYPE);
-		ExcelWorkbookRow listHeaderRow;
-		
-		for(UserDefinedField udField: listHeaders){
-			listHeaderRow = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
-			listHeaderRow.createCell(0, labelStyle, LIST_HEADER);
-			listHeaderRow.createCell(1, labelStyle, LIST_TYPE);
-			listHeaderRow.createCell(2, textDataStyle, udField.getFcode());
-			listHeaderRow.createCell(3, textDataStyle, WordUtils.capitalizeFully(udField.getFname()));
-			currentRow++;
-		}
-		
-		return currentRow;
-	}
-	
-	private int addUsersToCodesSheet(HSSFSheet codesSheet, int currentRow) {
-		CellStyle labelStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.USER_STYLE);
-		CellStyle textDataStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
-		
-		Project project = contextUtil.getProjectInContext();
-		List<User> users = workbenchDataManager.getUsersByProjectId(project.getProjectId());
-		ExcelWorkbookRow userRow;
-		Person person;
-		for(User user: users){
-			person = workbenchDataManager.getPersonById(user.getUserid());
-			userRow = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
-			userRow.createCell(0, labelStyle, CONDITION);
-			userRow.createCell(1, labelStyle, USER);
-			userRow.createCell(2, textDataStyle, user.getUserid().toString());
-			userRow.createCell(3, textDataStyle, person.getDisplayName());
-			currentRow++;
-		}
-		
-		return currentRow;
-	}
-	
-	private int addNameTypesToCodesSheet(HSSFSheet codesSheet, int currentRow) {
-		CellStyle labelStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_FACTOR);
-		CellStyle textDataStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
-
-		List<UserDefinedField> listHeaders = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(NAMES, NAME);
-		ExcelWorkbookRow factorsRow;
-		
-		for(UserDefinedField udField: listHeaders){
-			factorsRow = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
-			factorsRow.createCell(0, labelStyle, FACTOR);
-			factorsRow.createCell(1, labelStyle, NAME_TYPE);
-			factorsRow.createCell(2, textDataStyle, udField.getFcode());
-			factorsRow.createCell(3, textDataStyle, udField.getFname());
-			currentRow++;
-		}
-		
-		return currentRow;
-	}
-	
-	private int addInventoryScalesToCodesSheet(HSSFSheet codesSheet, int currentRow) {
-		CellStyle labelStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_INVENTORY);
-		CellStyle textDataStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
-
-		List<org.generationcp.middleware.domain.oms.Scale> inventoryScales = ontologyService.getAllInventoryScales();
-		ExcelWorkbookRow factorsRow;
-		
-		for(org.generationcp.middleware.domain.oms.Scale scale: inventoryScales){
-			factorsRow = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
-			factorsRow.createCell(0, labelStyle, INVENTORY);
-			factorsRow.createCell(1, labelStyle, SCALES_FOR_INVENTORY_UNITS);
-			factorsRow.createCell(2, textDataStyle, scale.getDisplayName());
-			factorsRow.createCell(3, textDataStyle, scale.getDefinition());
-			currentRow++;
-		}
-		return currentRow;
-	}
-	
-	private int addAttributeTypesToCodesSheet(HSSFSheet codesSheet, int currentRow) {
-		CellStyle labelStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
-		CellStyle textDataStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
-
-		List<UserDefinedField> listHeaders = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(ATRIBUTS, ATTRIBUTE);
-		ExcelWorkbookRow attributeTypesRow;
-		
-		for(UserDefinedField udField: listHeaders){
-			attributeTypesRow = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
-			attributeTypesRow.createCell(0, labelStyle, VARIATE);
-			attributeTypesRow.createCell(1, labelStyle, ATTRIBUTE_TYPE);
-			attributeTypesRow.createCell(2, textDataStyle, udField.getFcode());
-			attributeTypesRow.createCell(3, textDataStyle, udField.getFname());
-			currentRow++;
-		}
-		
-		return currentRow;
-	}
-	
-	private int addPassportAttributeTypesToCodesSheet(HSSFSheet codesSheet, int currentRow) {
-		CellStyle labelStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
-		CellStyle textDataStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
-
-		List<UserDefinedField> listHeaders = this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(ATRIBUTS, PASSPORT);
-		ExcelWorkbookRow passportAttributeTypesRow;
-		
-		for(UserDefinedField udField: listHeaders){
-			passportAttributeTypesRow = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
-			passportAttributeTypesRow.createCell(0, labelStyle, VARIATE);
-			passportAttributeTypesRow.createCell(1, labelStyle, PASSPORT_ATTRIBUTE_TYPE);
-			passportAttributeTypesRow.createCell(2, textDataStyle, udField.getFcode());
-			passportAttributeTypesRow.createCell(3, textDataStyle, udField.getFname());
-			currentRow++;
-		}
-		
-		return currentRow;
-	}
-	
 }
