@@ -1,10 +1,7 @@
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.WordUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -14,10 +11,6 @@ import org.generationcp.commons.parsing.ExcelWorkbookRow;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
-import org.generationcp.middleware.pojos.UserDefinedField;
-import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.service.api.OntologyService;
 
 public class CodesSheetGenerator {
@@ -77,9 +70,7 @@ public class CodesSheetGenerator {
 		this.codesSheet.setDefaultRowHeightInPoints(13);
 		this.codesSheet.setZoom(10, 8);
 		
-		int currentRow = 0;
-		
-		this.setCodeSheetHeaders(codesSheet, currentRow);
+		this.setCodeSheetHeaders(codesSheet);
 		listTypeRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
 		userRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
 		nameTypesRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
@@ -96,16 +87,18 @@ public class CodesSheetGenerator {
 		sheet.setColumnWidth(3, FNAME_WIDTH);
 	}
 
-	private void setCodeSheetHeaders(HSSFSheet codesSheet, int currentRow){
+	private void setCodeSheetHeaders(HSSFSheet codesSheet){
 		CellStyle headingStyle = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.CODES_HEADER_STYLE);
 		CellStyle headingStyleCenter = sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.CODES_HEADER_STYLE_CENTER);
 		
-		final ExcelWorkbookRow codesSheetHeader = new ExcelWorkbookRow(codesSheet.createRow(currentRow));
+		final ExcelWorkbookRow codesSheetHeader = new ExcelWorkbookRow(codesSheet.createRow(0));
 		codesSheetHeader.createCell(0, headingStyle, SECTION);
 		codesSheetHeader.createCell(1, headingStyle, INFORMATION_TYPE);
 		codesSheetHeader.createCell(2, headingStyleCenter, FCODE);
 		codesSheetHeader.createCell(3, headingStyleCenter, FNAME);
-		
-		codesSheet.getLastRowNum();
+	}
+	
+	HSSFSheet getCodesSheet(){
+		return this.codesSheet;
 	}
 }
