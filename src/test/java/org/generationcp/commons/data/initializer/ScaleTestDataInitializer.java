@@ -7,7 +7,7 @@ import java.util.List;
 import org.generationcp.middleware.domain.oms.Scale;
 import org.generationcp.middleware.domain.oms.Term;
 
-public class ScaleDataInitializer {
+public class ScaleTestDataInitializer {
 
 	public static Scale createScale() {
 		final Scale scale = new Scale(new Term());
@@ -18,7 +18,7 @@ public class ScaleDataInitializer {
 
 	public static List<Scale> createScaleList() {
 		final List<Scale> scales = new ArrayList<Scale>();
-		scales.add(ScaleDataInitializer.createScale());
+		scales.add(ScaleTestDataInitializer.createScale());
 		return scales;
 	}
 }

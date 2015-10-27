@@ -51,10 +51,10 @@ public class CodesSheetGeneratorTest {
 	}
 
 	private void assertHeadersRow(final HSSFRow row) {
-		Assert.assertEquals("Header's first cell should be Section", CodesSheetGeneratorTest.SECTION, row.getCell(0).toString());
-		Assert.assertEquals("Header's second cell should be Information Type", CodesSheetGeneratorTest.INFORMATION_TYPE,
+		Assert.assertEquals("Header's first cell should be \"Section\"", CodesSheetGeneratorTest.SECTION, row.getCell(0).toString());
+		Assert.assertEquals("Header's second cell should be \"Information Type\"", CodesSheetGeneratorTest.INFORMATION_TYPE,
 				row.getCell(1).toString());
-		Assert.assertEquals("Header's third cell should be fcode", CodesSheetGeneratorTest.FCODE, row.getCell(2).toString());
-		Assert.assertEquals("Header's fourth cell should be fname", CodesSheetGeneratorTest.FNAME, row.getCell(3).toString());
+		Assert.assertEquals("Header's third cell should be \"fcode\"", CodesSheetGeneratorTest.FCODE, row.getCell(2).toString());
+		Assert.assertEquals("Header's fourth cell should be \"fname\"", CodesSheetGeneratorTest.FNAME, row.getCell(3).toString());
 	}
 }

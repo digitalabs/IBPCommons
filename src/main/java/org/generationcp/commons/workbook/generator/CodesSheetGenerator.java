@@ -16,6 +16,7 @@ import org.generationcp.middleware.service.api.OntologyService;
 
 public class CodesSheetGenerator {
 
+	private static final int START_ROW = 0;
 	private static final int FNAME_WIDTH = 110 * 256 + 200;
 	private static final int FCODE_WIDTH = 21 * 256 + 200;
 	private static final int INFORMATION_TYPE_WIDTH = 28 * 256 + 200;
@@ -92,7 +93,7 @@ public class CodesSheetGenerator {
 		final CellStyle headingStyle = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.CODES_HEADER_STYLE);
 		final CellStyle headingStyleCenter = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.CODES_HEADER_STYLE_CENTER);
 
-		final ExcelWorkbookRow codesSheetHeader = new ExcelWorkbookRow(codesSheet.createRow(0));
+		final ExcelWorkbookRow codesSheetHeader = new ExcelWorkbookRow(codesSheet.createRow(START_ROW));
 		codesSheetHeader.createCell(0, headingStyle, CodesSheetGenerator.SECTION);
 		codesSheetHeader.createCell(1, headingStyle, CodesSheetGenerator.INFORMATION_TYPE);
 		codesSheetHeader.createCell(2, headingStyleCenter, CodesSheetGenerator.FCODE);

@@ -6,13 +6,10 @@ import java.util.List;
 
 import org.generationcp.middleware.pojos.UserDefinedField;
 
-public class UserDefinedFieldDataInitializer {
+public class UserDefinedFieldTestDataInitializer {
 
 	public static UserDefinedField createUserDefinedField() {
-		final UserDefinedField udField = new UserDefinedField();
-		udField.setFcode("LST");
-		udField.setFname("Generic List");
-		return udField;
+		return UserDefinedFieldTestDataInitializer.createUserDefinedField("LST", "Generic List");
 	}
 
 	public static UserDefinedField createUserDefinedField(final String fcode, final String fname) {
@@ -24,13 +21,13 @@ public class UserDefinedFieldDataInitializer {
 
 	public static List<UserDefinedField> createUserDefinedFieldList() {
 		final List<UserDefinedField> udFields = new ArrayList<UserDefinedField>();
-		udFields.add(UserDefinedFieldDataInitializer.createUserDefinedField());
+		udFields.add(UserDefinedFieldTestDataInitializer.createUserDefinedField());
 		return udFields;
 	}
 
 	public static List<UserDefinedField> createUserDefinedFieldList(final String fcode, final String fname) {
 		final List<UserDefinedField> udFields = new ArrayList<UserDefinedField>();
-		udFields.add(UserDefinedFieldDataInitializer.createUserDefinedField(fcode, fname));
+		udFields.add(UserDefinedFieldTestDataInitializer.createUserDefinedField(fcode, fname));
 		return udFields;
 	}
 }

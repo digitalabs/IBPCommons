@@ -3,7 +3,7 @@ package org.generationcp.commons.data.initializer;
 
 import org.generationcp.middleware.pojos.Person;
 
-public class PersonDataInitializer {
+public class PersonTestDataInitializer {
 
 	public static Person createPerson() {
 		final Person person = new Person();

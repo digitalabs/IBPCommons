@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.generationcp.middleware.pojos.User;
 
-public class UserDataInitializer {
+public class UserTestDataInitializer {
 
 	public static User createUser() {
 		final User user = new User();
@@ -16,7 +16,7 @@ public class UserDataInitializer {
 
 	public static List<User> createUserList() {
 		final List<User> users = new ArrayList<User>();
-		users.add(UserDataInitializer.createUser());
+		users.add(UserTestDataInitializer.createUser());
 		return users;
 	}
 }

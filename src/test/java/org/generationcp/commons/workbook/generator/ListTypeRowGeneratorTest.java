@@ -4,7 +4,7 @@ package org.generationcp.commons.workbook.generator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.generationcp.commons.data.initializer.UserDefinedFieldDataInitializer;
+import org.generationcp.commons.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.junit.Assert;
@@ -35,7 +35,7 @@ public class ListTypeRowGeneratorTest {
 	@Before
 	public void setUp() {
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(UserDefinedFieldDataInitializer.createUserDefinedFieldList());
+				.thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList());
 	}
 
 	@Test
