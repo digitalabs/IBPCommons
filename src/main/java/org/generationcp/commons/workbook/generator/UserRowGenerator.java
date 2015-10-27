@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.workbook.generator;
 
 import java.util.List;
@@ -16,38 +17,44 @@ public class UserRowGenerator extends CodesSheetRowGenerator<User> {
 
 	@Resource
 	private ContextUtil contextUtil;
-	
+
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Override
 	List<User> getSourceItem() {
-		Project project = contextUtil.getProjectInContext();
-		return workbenchDataManager.getUsersByProjectId(project.getProjectId());
+		final Project project = this.contextUtil.getProjectInContext();
+		return this.workbenchDataManager.getUsersByProjectId(project.getProjectId());
 	}
+
 	@Override
 	CellStyle getLabelStyle() {
-		return sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.USER_STYLE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.USER_STYLE);
 	}
+
 	@Override
 	CellStyle getDataStyle() {
-		return sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
 	}
+
 	@Override
 	String getSection() {
 		return RowColumnType.USER.getSection();
 	}
+
 	@Override
 	String getInfoType() {
 		return RowColumnType.USER.toString();
 	}
+
 	@Override
-	String getFcode(User user) {
+	String getFcode(final User user) {
 		return user.getUserid().toString();
 	}
+
 	@Override
-	String getFname(User user) {
-		Person person = workbenchDataManager.getPersonById(user.getUserid());
+	String getFname(final User user) {
+		final Person person = this.workbenchDataManager.getPersonById(user.getUserid());
 		return person.getDisplayName();
 	}
 }

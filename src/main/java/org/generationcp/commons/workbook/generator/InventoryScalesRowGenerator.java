@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.workbook.generator;
 
 import java.util.List;
@@ -10,23 +11,23 @@ import org.generationcp.middleware.domain.oms.Scale;
 import org.generationcp.middleware.service.api.OntologyService;
 
 public class InventoryScalesRowGenerator extends CodesSheetRowGenerator<org.generationcp.middleware.domain.oms.Scale> {
-	
+
 	@Resource
 	private OntologyService ontologyService;
 
 	@Override
 	List<Scale> getSourceItem() {
-		return ontologyService.getAllInventoryScales();
+		return this.ontologyService.getAllInventoryScales();
 	}
 
 	@Override
 	CellStyle getLabelStyle() {
-		return sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_INVENTORY);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_INVENTORY);
 	}
 
 	@Override
 	CellStyle getDataStyle() {
-		return sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
 	}
 
 	@Override
@@ -40,12 +41,12 @@ public class InventoryScalesRowGenerator extends CodesSheetRowGenerator<org.gene
 	}
 
 	@Override
-	String getFcode(Scale scale) {
+	String getFcode(final Scale scale) {
 		return scale.getDisplayName();
 	}
 
 	@Override
-	String getFname(Scale scale) {
+	String getFname(final Scale scale) {
 		return scale.getDefinition();
 	}
 

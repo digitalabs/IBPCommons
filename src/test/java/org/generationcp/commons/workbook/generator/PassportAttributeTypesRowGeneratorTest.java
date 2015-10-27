@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.workbook.generator;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -18,31 +19,38 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PassportAttributeTypesRowGeneratorTest {
+
 	private static final String TAXONOMY = "Taxonomy";
 	private static final String TAXNO = "TAXNO";
-	
-	private HSSFWorkbook wb = new HSSFWorkbook();
-	private HSSFSheet codesSheet = wb.createSheet("Codes");
-	private ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(wb);
-	
+
+	private final HSSFWorkbook wb = new HSSFWorkbook();
+	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
+	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
+
 	@Mock
 	GermplasmDataManager germplasmDataManager;
-	
+
 	@InjectMocks
 	PassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
-			
+
 	@Before
-	public void setUp(){
-		Mockito.when(germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString())).thenReturn(UserDefinedFieldDataInitializer.createUserDefinedFieldList(TAXNO, TAXONOMY));
+	public void setUp() {
+		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString()))
+				.thenReturn(UserDefinedFieldDataInitializer.createUserDefinedFieldList(PassportAttributeTypesRowGeneratorTest.TAXNO,
+						PassportAttributeTypesRowGeneratorTest.TAXONOMY));
 	}
-	
+
 	@Test
-	public void testNameTypesRowsToCodesSheet(){
-		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
-		HSSFRow row = codesSheet.getRow(1);
-		Assert.assertEquals("First cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(), RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(), row.getCell(0).toString());
-		Assert.assertEquals("Second cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString(), RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString(), row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be TAXNO", TAXNO, row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be Taxonomy", TAXONOMY, row.getCell(3).toString());
+	public void testNameTypesRowsToCodesSheet() {
+		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		final HSSFRow row = this.codesSheet.getRow(1);
+		Assert.assertEquals("First cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(),
+				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(), row.getCell(0).toString());
+		Assert.assertEquals("Second cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString(),
+				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString(), row.getCell(1).toString());
+		Assert.assertEquals("Third cell's content should be TAXNO", PassportAttributeTypesRowGeneratorTest.TAXNO,
+				row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be Taxonomy", PassportAttributeTypesRowGeneratorTest.TAXONOMY,
+				row.getCell(3).toString());
 	}
 }

@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.workbook.generator;
 
 import java.util.List;
@@ -9,23 +10,25 @@ import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 
-public class PassportAttributeTypesRowGenerator extends CodesSheetRowGenerator<UserDefinedField>{
+public class PassportAttributeTypesRowGenerator extends CodesSheetRowGenerator<UserDefinedField> {
+
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
-	
+
 	@Override
 	List<UserDefinedField> getSourceItem() {
-		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtable(), RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtype());
+		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtable(),
+				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtype());
 	}
 
 	@Override
 	CellStyle getLabelStyle() {
-		return sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
 	}
 
 	@Override
 	CellStyle getDataStyle() {
-		return sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE);
 	}
 
 	@Override
@@ -39,12 +42,12 @@ public class PassportAttributeTypesRowGenerator extends CodesSheetRowGenerator<U
 	}
 
 	@Override
-	String getFcode(UserDefinedField udField) {
+	String getFcode(final UserDefinedField udField) {
 		return udField.getFcode();
 	}
 
 	@Override
-	String getFname(UserDefinedField udField) {
+	String getFname(final UserDefinedField udField) {
 		return udField.getFname();
 	}
 }

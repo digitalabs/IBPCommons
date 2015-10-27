@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.workbook.generator;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -18,30 +19,35 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ListTypeRowGeneratorTest {
+
 	private static final String GENERIC_LIST = "Generic List";
-		private static final String LST = "LST";
-		private HSSFWorkbook wb = new HSSFWorkbook();
-	private HSSFSheet codesSheet = wb.createSheet("Codes");
-	private ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(wb);
-	
+	private static final String LST = "LST";
+	private final HSSFWorkbook wb = new HSSFWorkbook();
+	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
+	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
+
 	@Mock
 	GermplasmDataManager germplasmDataManager;
-	
+
 	@InjectMocks
 	ListTypeRowGenerator listTypeRowGenerator;
-			
+
 	@Before
-	public void setUp(){
-		Mockito.when(germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString())).thenReturn(UserDefinedFieldDataInitializer.createUserDefinedFieldList());
+	public void setUp() {
+		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString()))
+				.thenReturn(UserDefinedFieldDataInitializer.createUserDefinedFieldList());
 	}
-	
+
 	@Test
-	public void testAddListTypeRowsToCodesSheet(){
-		this.listTypeRowGenerator.addRowsToCodesSheet(codesSheet, sheetStyles);
-		HSSFRow row = codesSheet.getRow(1);
-		Assert.assertEquals("First cell's content should be " + RowColumnType.LIST_TYPE.getSection(), RowColumnType.LIST_TYPE.getSection(), row.getCell(0).toString());
-		Assert.assertEquals("Second cell's content should be " + RowColumnType.LIST_TYPE.toString(), RowColumnType.LIST_TYPE.toString(), row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be LST", LST, row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be Generic List", GENERIC_LIST, row.getCell(3).toString());
+	public void testAddListTypeRowsToCodesSheet() {
+		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		final HSSFRow row = this.codesSheet.getRow(1);
+		Assert.assertEquals("First cell's content should be " + RowColumnType.LIST_TYPE.getSection(), RowColumnType.LIST_TYPE.getSection(),
+				row.getCell(0).toString());
+		Assert.assertEquals("Second cell's content should be " + RowColumnType.LIST_TYPE.toString(), RowColumnType.LIST_TYPE.toString(),
+				row.getCell(1).toString());
+		Assert.assertEquals("Third cell's content should be LST", ListTypeRowGeneratorTest.LST, row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be Generic List", ListTypeRowGeneratorTest.GENERIC_LIST,
+				row.getCell(3).toString());
 	}
 }
