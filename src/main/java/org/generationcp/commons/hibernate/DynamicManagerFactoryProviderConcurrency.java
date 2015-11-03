@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.generationcp.commons.util.ContextUtil;
+import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerThreadProvider;
 import org.generationcp.middleware.hibernate.XADatasourceUtilities;
@@ -60,6 +61,7 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 		factory.setSessionProvider(new HibernateSessionPerThreadProvider(applicableCropSessionFactory));
 		factory.setDatabaseName(databaseName);
 		factory.setCropName(project.getCropType().getCropName());
+		ContextHolder.setCurrentCrop(project.getCropType().getCropName());
 		factory.setPedigreeProfile(this.pedigreeProfile);
 		return factory;
 
