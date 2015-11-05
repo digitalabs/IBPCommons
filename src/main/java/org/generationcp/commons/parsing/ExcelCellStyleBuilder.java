@@ -36,7 +36,12 @@ public class ExcelCellStyleBuilder {
 		TEXT_HIGHLIGHT_STYLE_FACTOR,
 		COLUMN_HIGHLIGHT_STYLE_FACTOR,
 		NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR,
-		DECIMAL_NUMBER_DATA_FORMAT_STYLE
+		DECIMAL_NUMBER_DATA_FORMAT_STYLE,
+		CODES_HEADER_STYLE,
+		CODES_HEADER_STYLE_CENTER, 
+		LIST_HEADER_STYLE, 
+		USER_STYLE,
+		USER_ID_STYLE
 	}
 
 	private final Map<ExcelCellStyle, CellStyle> stylesMap;
@@ -103,8 +108,8 @@ public class ExcelCellStyleBuilder {
 		styles.put(ExcelCellStyle.LABEL_STYLE_CONDITION, conditionStyle);
 
 		// cell style for FACTOR labels
-		final CellStyle factorStyle = this.createStyleWithBorder(wb);
-		factorStyle.setFillForegroundColor(IndexedColors.OLIVE_GREEN.getIndex());
+		final CellStyle factorStyle = this.createStyle(wb);
+		factorStyle.setFillForegroundColor(IndexedColors.LEMON_CHIFFON.getIndex());
 		styles.put(ExcelCellStyle.LABEL_STYLE_FACTOR, factorStyle);
 
 		// cell style for FACTOR header in Observation sheet
@@ -124,8 +129,8 @@ public class ExcelCellStyleBuilder {
 		styles.put(ExcelCellStyle.COLUMN_HIGHLIGHT_STYLE_FACTOR, highlightColumnStyle);
 
 		// cell style for INVENTORY labels
-		final CellStyle inventoryStyle = this.createStyleWithBorder(wb);
-		inventoryStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());
+		final CellStyle inventoryStyle = this.createStyle(wb);
+		inventoryStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
 		styles.put(ExcelCellStyle.LABEL_STYLE_INVENTORY, inventoryStyle);
 
 		// cell style for INVENTORY header in Observation sheet
@@ -135,8 +140,8 @@ public class ExcelCellStyleBuilder {
 		styles.put(ExcelCellStyle.HEADING_STYLE_INVENTORY, headingInventoryStyle);
 
 		// cell style for VARIATE labels
-		final CellStyle variateStyle = this.createStyleWithBorder(wb);
-		variateStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+		final CellStyle variateStyle = this.createStyle(wb);
+		variateStyle.setFillForegroundColor(IndexedColors.LIGHT_TURQUOISE.getIndex());
 		styles.put(ExcelCellStyle.LABEL_STYLE_VARIATE, variateStyle);
 
 		// cell style for VARIATE header in Observation sheet
@@ -161,7 +166,34 @@ public class ExcelCellStyleBuilder {
 		final CellStyle textStyle = this.createStyleWithBorder(wb);
 		textStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
 		styles.put(ExcelCellStyle.TEXT_STYLE, textStyle);
-
+		
+		// cell style for Codes Sheet Headers
+		final CellStyle codesHeaderStyle = this.createStyleWithBorder(wb);
+		codesHeaderStyle.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
+		styles.put(ExcelCellStyle.CODES_HEADER_STYLE, codesHeaderStyle);
+		
+		// cell style for Codes Sheet Headers Center
+		final CellStyle codesHeaderStyleCenter = this.createStyleWithBorder(wb);
+		codesHeaderStyleCenter.setFillForegroundColor(IndexedColors.GREY_50_PERCENT.getIndex());
+		codesHeaderStyleCenter.setAlignment(CellStyle.ALIGN_CENTER);
+		styles.put(ExcelCellStyle.CODES_HEADER_STYLE_CENTER, codesHeaderStyleCenter);
+		
+		// cell style for LIST TYPES
+		final CellStyle listHeaderStyle = this.createStyle(wb);
+		listHeaderStyle.setFillForegroundColor(IndexedColors.TAN.getIndex());
+		styles.put(ExcelCellStyle.LIST_HEADER_STYLE, listHeaderStyle);
+		
+		// cell style for USERS
+		final CellStyle userStyle = this.createStyle(wb);
+		userStyle.setFillForegroundColor(IndexedColors.WHITE.getIndex());
+		styles.put(ExcelCellStyle.USER_STYLE, userStyle);
+		
+		// cell style for numeric values (left alignment)
+		final CellStyle userIdStyle = wb.createCellStyle();
+		userIdStyle.setDataFormat(format.getFormat("0"));
+		userIdStyle.setAlignment(CellStyle.ALIGN_LEFT);
+		styles.put(ExcelCellStyle.USER_ID_STYLE, userIdStyle);
+		
 		return styles;
 	}
 

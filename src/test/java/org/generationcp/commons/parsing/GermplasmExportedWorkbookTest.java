@@ -15,7 +15,6 @@ import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Test;
-
 import junit.framework.Assert;
 
 public class GermplasmExportedWorkbookTest {
@@ -24,8 +23,8 @@ public class GermplasmExportedWorkbookTest {
 
 	@Test
 	public void testGetNoOfVisibleColumns() {
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(GermplasmExportTestHelper.createWorkbook(),
-				input);
+		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook();
+		germplasmExportedWorkbook.init(input);
 		Assert.assertTrue("Expected that the number of visibleColums = " + this.input.getVisibleColumnMap().size(),
 				germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap()) == this.input.getVisibleColumnMap()
 						.size());
@@ -46,8 +45,8 @@ public class GermplasmExportedWorkbookTest {
 		final ExcelCellStyleBuilder styles = new ExcelCellStyleBuilder(wb);
 
 		// to test
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(GermplasmExportTestHelper.createWorkbook(),
-				input);
+		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook();
+		germplasmExportedWorkbook.init(input);
 
 		final HSSFSheet observationSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Observation");
 
@@ -146,8 +145,8 @@ public class GermplasmExportedWorkbookTest {
 		final Map<Integer, Variable> variateVariables = this.input.getVariateVariableMap();
 
 		// to test
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(GermplasmExportTestHelper.createWorkbook(),
-				input);
+		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook();
+		germplasmExportedWorkbook.init(input);
 
 		final HSSFSheet descriptionSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Description");
 
