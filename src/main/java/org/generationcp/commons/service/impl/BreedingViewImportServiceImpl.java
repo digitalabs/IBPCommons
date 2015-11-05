@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -16,19 +17,16 @@ import java.util.Set;
 
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.exceptions.BreedingViewInvalidFormatException;
-import org.generationcp.commons.hibernate.ManagerFactoryProvider;
 import org.generationcp.commons.service.BreedingViewImportService;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
 import org.generationcp.middleware.domain.dms.DatasetReference;
 import org.generationcp.middleware.domain.dms.DatasetValues;
-import org.generationcp.middleware.domain.dms.Enumeration;
 import org.generationcp.middleware.domain.dms.ExperimentType;
 import org.generationcp.middleware.domain.dms.ExperimentValues;
 import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.domain.dms.Stock;
 import org.generationcp.middleware.domain.dms.Stocks;
 import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
@@ -38,60 +36,76 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.Method;
+import org.generationcp.middleware.domain.ontology.VariableType;
 import org.generationcp.middleware.exceptions.MiddlewareException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.ManagerFactory;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
+import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
+import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
+import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
-import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.generationcp.middleware.util.DatasetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import au.com.bytecode.opencsv.CSVReader;
 
 import com.rits.cloning.Cloner;
 
-@Configurable
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BreedingViewImportServiceImpl.class);
 
 	private static final String REGEX_VALID_BREEDING_VIEW_CHARACTERS = "[^a-zA-Z0-9-_%']+";
 	private static final String UNIT_ERRORS_SUFFIX = "_UnitErrors";
 	private static final String MEANS_SUFFIX = "_Means";
 	private static final String LS_MEAN = "LS MEAN";
-	private static final String ERROR_ESTIMATE = "error estimate";
+	private static final String ERROR_ESTIMATE = "ERROR ESTIMATE";
 
+	@Autowired
 	private StudyDataManager studyDataManager;
 
-	private OntologyDataManager ontologyDataManager;
+	@Autowired
+	private OntologyVariableDataManager ontologyVariableDataManager;
+
+	@Autowired
+	private OntologyDaoFactory ontologyDaoFactory;
+
+	@Autowired
+	private Cloner cloner;
+
+	@Autowired
+	private OntologyMethodDataManager methodDataManager;
+
+	@Autowired
+	private StandardVariableTransformer standardVariableTransformer;
 
 	private DataSet plotDataSet;
 
 	private Map<String, String> localNameToAliasMap = null;
 
-	@Autowired
-	private Cloner cloner;
-
 	public BreedingViewImportServiceImpl() {
 
 	}
 
-	public BreedingViewImportServiceImpl(StudyDataManager studyDataManager, OntologyDataManager ontologyDataManager) {
+	public BreedingViewImportServiceImpl(StudyDataManager studyDataManager, OntologyVariableDataManager ontologyVariableDataManager,
+			OntologyMethodDataManager methodDataManager, OntologyDaoFactory ontologyDaoFactory,
+			StandardVariableTransformer standardVariableTransformer) {
 		this.studyDataManager = studyDataManager;
-		this.ontologyDataManager = ontologyDataManager;
+		this.ontologyVariableDataManager = ontologyVariableDataManager;
+		this.methodDataManager = methodDataManager;
+		this.ontologyDaoFactory = ontologyDaoFactory;
+		this.standardVariableTransformer = standardVariableTransformer;
 	}
 
 	@Override
 	public void importMeansData(File file, int studyId) throws BreedingViewImportException {
 
-		Boolean meansDataSetExists = false;
-		List<ExperimentValues> experimentValuesList = new ArrayList<>();
+		boolean meansDataSetExists = false;
+		CVTerm lsMean = this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(LS_MEAN, CvId.METHODS.getId());
+		CVTerm errorEstimate = this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(ERROR_ESTIMATE, CvId.METHODS.getId());
 
 		try {
 
@@ -100,135 +114,28 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			Map<String, String> nameToAliasMap = this.generateNameToAliasMap(studyId);
 			Map<String, ArrayList<String>> traitsAndMeans = new MeansCSV(file, nameToAliasMap).csvToMap();
-			Map<String, Integer> ndGeolocationIds = new HashMap<String, Integer>();
 
 			if (!traitsAndMeans.isEmpty()) {
 
 				String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 
-				DataSet meansDataSet = null;
+				DataSet meansDataSet = this.getMeansDataSet(studyId);
+				DataSet plotDataSet = this.getPlotDataSet(studyId);
+				DataSet trialDataSet = this.getTrialDataSet(studyId);
 
-				List<DataSet> ds = this.studyDataManager.getDataSetsByType(studyId, DataSetType.MEANS_DATA);
-
-				if (ds != null) {
-					if (!ds.isEmpty()) {
-						meansDataSet = ds.get(0);
-					}
-					if (meansDataSet != null) {
-						meansDataSet =
-								this.appendVariableTypesToExistingMeans(csvHeader, this.getPlotDataSet(studyId), meansDataSet, programUUID);
-						meansDataSetExists = true;
-					}
+				if (meansDataSet != null) {
+					meansDataSet =
+							this.appendVariableTypesToExistingMeans(csvHeader, plotDataSet, meansDataSet, programUUID, lsMean,
+									errorEstimate);
+					meansDataSetExists = true;
+				} else {
+					meansDataSet =
+							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, plotDataSet, programUUID,
+									lsMean, errorEstimate);
 				}
 
-				TrialEnvironments trialEnvironments =
-						this.studyDataManager.getTrialEnvironmentsInDataset(this.getPlotDataSet(studyId).getId());
-				for (TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
-					ndGeolocationIds.put(trialEnv.getVariables().findByLocalName(csvHeader[0]).getValue(), trialEnv.getId());
-				}
-
-				Stocks stocks = this.studyDataManager.getStocksInDataset(this.getPlotDataSet(studyId).getId());
-				DataSet dataSet = this.getPlotDataSet(studyId);
-
-				VariableTypeList meansVariatesList = this.getMeansVariableTypeList();
-
-				// Get only the trial environment and germplasm factors
-
-				for (DMSVariableType factorFromDataSet : dataSet.getVariableTypes().getFactors().getVariableTypes()) {
-					if (factorFromDataSet.getStandardVariable().getPhenotypicType() == PhenotypicType.TRIAL_ENVIRONMENT
-							|| factorFromDataSet.getStandardVariable().getPhenotypicType() == PhenotypicType.GERMPLASM) {
-						meansVariatesList.makeRoom(1);
-						factorFromDataSet.setRank(1);
-						meansVariatesList.add(factorFromDataSet);
-					}
-				}
-				// get variates only
-				VariableTypeList allVariatesList = dataSet.getVariableTypes().getVariates();
-
-				Integer numOfFactorsAndVariates =
-						meansVariatesList.getFactors().getVariableTypes().size()
-								+ meansVariatesList.getVariates().getVariableTypes().size() + 1;
-
-				for (int i = 2; i < csvHeader.length; i++) {
-					this.createMeansVariableType(numOfFactorsAndVariates, csvHeader[i], allVariatesList, meansVariatesList, programUUID);
-				}
-
-				// please make sure that the study name is unique and does not exist in the db.
-				VariableList variableList = new VariableList();
-				Variable variable =
-						this.createVariable(TermId.DATASET_NAME.getId(), study.getName() + "-MEANS", 1, programUUID, PhenotypicType.DATASET);
-				meansVariatesList.makeRoom(1);
-				variable.getVariableType().setRank(1);
-				meansVariatesList.add(variable.getVariableType());
-
-				// name of dataset [STUDY NAME]-MEANS
-				this.updateVariableType(variable.getVariableType(), study.getName() + "-MEANS", "Dataset name (local)");
-				variableList.add(variable);
-
-				variable =
-						this.createVariable(TermId.DATASET_TITLE.getId(), "My Dataset Description", 2, programUUID, PhenotypicType.DATASET);
-				meansVariatesList.makeRoom(1);
-				variable.getVariableType().setRank(1);
-				meansVariatesList.add(variable.getVariableType());
-				this.updateVariableType(variable.getVariableType(), "DATASET_TITLE", "Dataset title (local)");
-				variableList.add(variable);
-
-				variable = this.createVariable(TermId.DATASET_TYPE.getId(), "10070", 3, programUUID, PhenotypicType.DATASET);
-				meansVariatesList.makeRoom(1);
-				variable.getVariableType().setRank(1);
-				meansVariatesList.add(variable.getVariableType());
-				this.updateVariableType(variable.getVariableType(), "DATASET_TYPE", "Dataset type (local)");
-				variableList.add(variable);
-				DatasetValues datasetValues = new DatasetValues();
-				datasetValues.setVariables(variableList);
-
-				DatasetReference datasetReference = null;
-				if (meansDataSet == null) {
-					// save data
-					// get dataset using new datasetid
-					datasetReference = this.studyDataManager.addDataSet(studyId, meansVariatesList, datasetValues, "");
-					meansDataSet = this.studyDataManager.getDataSet(datasetReference.getId());
-				}
-
-				experimentValuesList = new ArrayList<ExperimentValues>();
-				List<String> environments = traitsAndMeans.get(csvHeader[0]);
-				for (int i = 0; i < environments.size(); i++) {
-
-					String envName = traitsAndMeans.get(csvHeader[0]).get(i).replace(";", ",");
-
-					Stock stock = stocks.findOnlyOneByLocalName(csvHeader[1], traitsAndMeans.get(csvHeader[1]).get(i));
-					if (stock != null) {
-						ExperimentValues experimentRow = new ExperimentValues();
-						experimentRow.setGermplasmId(stock.getId());
-						Integer ndLocationId = ndGeolocationIds.get(envName);
-						experimentRow.setLocationId(ndLocationId);
-
-						List<Variable> list = new ArrayList<Variable>();
-
-						for (int j = 2; j < csvHeader.length; j++) {
-							if (meansDataSetExists) {
-								if (meansDataSet.getVariableTypes().getVariates().findByLocalName(csvHeader[j]) == null) {
-									continue;
-								}
-							}
-
-							String variableValue = traitsAndMeans.get(csvHeader[j]).get(i).trim();
-							if (!variableValue.trim().isEmpty()) {
-								Variable var = new Variable(meansDataSet.getVariableTypes().findByLocalName(csvHeader[j]), variableValue);
-								list.add(var);
-							}
-
-						}
-						VariableList variableList1 = new VariableList();
-						variableList1.setVariables(list);
-						experimentRow.setVariableList(variableList1);
-						experimentValuesList.add(experimentRow);
-
-					}
-
-				}
-
-				this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
+				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, plotDataSet.getId(),
+						trialDataSet.getId());
 
 			}
 		} catch (Exception e) {
@@ -236,10 +143,214 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 	}
 
+	private void createOrAppendMeansExperiments(DataSet meansDataSet, Map<String, ArrayList<String>> traitsAndMeans,
+			boolean meansDataSetExists, int plotDatasetId, int trialDatasetId) {
+		List<ExperimentValues> experimentValuesList = new ArrayList<>();
+		String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
+		String envHeader = csvHeader[0];
+		String entryNoHeader = csvHeader[1];
+		Map<String, Integer> envNameToNdGeolocationIdMap = this.getEnvNameToNdGeolocationIdMap(envHeader, trialDatasetId);
+		Map<String, Integer> entroNoToNdStockIdMap = this.getEntroNoToNdStockIdMap(entryNoHeader, plotDatasetId);
+
+		List<String> environments = traitsAndMeans.get(envHeader);
+		for (int i = 0; i < environments.size(); i++) {
+			String envName = environments.get(i).replace(";", ",");
+			Integer ndGeolocationId = envNameToNdGeolocationIdMap.get(envName);
+			String entryNo = traitsAndMeans.get(entryNoHeader).get(i);
+			Integer ndStockId = entroNoToNdStockIdMap.get(entryNo);
+
+			ExperimentValues experimentRow = new ExperimentValues();
+			experimentRow.setGermplasmId(ndStockId);
+			experimentRow.setLocationId(ndGeolocationId);
+
+			List<Variable> list = new ArrayList<Variable>();
+
+			for (int j = 2; j < csvHeader.length; j++) {
+				String meansVariable = csvHeader[j];
+				if (meansDataSetExists) {
+					if (meansDataSet.getVariableTypes().getVariates().findByLocalName(meansVariable) == null) {
+						continue;
+					}
+				}
+
+				String variableValue = traitsAndMeans.get(meansVariable).get(i).trim();
+				if (!variableValue.trim().isEmpty()) {
+					Variable var = new Variable(meansDataSet.getVariableTypes().findByLocalName(meansVariable), variableValue);
+					list.add(var);
+				}
+
+			}
+
+			VariableList variableList1 = new VariableList();
+			variableList1.setVariables(list);
+			experimentRow.setVariableList(variableList1);
+			experimentValuesList.add(experimentRow);
+		}
+
+		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
+	}
+
+	private Map<String, Integer> getEntroNoToNdStockIdMap(String entryNoHeader, int plotDatasetId) {
+		Stocks stocks = this.studyDataManager.getStocksInDataset(plotDatasetId);
+		return stocks.getStockMap(entryNoHeader);
+	}
+
+	private Map<String, Integer> getEnvNameToNdGeolocationIdMap(String envFactor, int trialDatasetId) {
+		Map<String, Integer> envNameToGeolocationIdMap = new HashMap<String, Integer>();
+		TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(trialDatasetId);
+		for (TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
+			envNameToGeolocationIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(), trialEnv.getId());
+		}
+		return envNameToGeolocationIdMap;
+	}
+
+	private DataSet createMeansDataset(int studyId, String datasetName, String[] csvHeader, DataSet plotDataSet, String programUUID,
+			CVTerm lSMean, CVTerm errorEstimate) {
+
+		VariableTypeList meansVariableTypeList = new VariableTypeList();
+		VariableList meansVariableList = new VariableList();
+		DatasetValues datasetValues = new DatasetValues();
+		datasetValues.setVariables(meansVariableList);
+
+		this.createMeansVariableAndAddToLists(meansVariableList, meansVariableTypeList, TermId.DATASET_NAME.getId(), datasetName,
+				"Dataset name (local)", datasetName, 1, programUUID, PhenotypicType.DATASET);
+
+		this.createMeansVariableAndAddToLists(meansVariableList, meansVariableTypeList, TermId.DATASET_TITLE.getId(), "DATASET_TITLE",
+				"Dataset title (local)", "My Dataset Description", 2, programUUID, PhenotypicType.DATASET);
+
+		this.createMeansVariableAndAddToLists(meansVariableList, meansVariableTypeList, TermId.DATASET_TYPE.getId(), "DATASET_TYPE",
+				"Dataset type (local)", "10070", 3, programUUID, PhenotypicType.DATASET);
+
+		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
+
+		this.createMeansVariablesFromImportFileAndAddToList(csvHeader, plotDataSet.getVariableTypes().getVariates(), meansVariableTypeList,
+				programUUID, lSMean, errorEstimate);
+
+		DatasetReference datasetReference = this.studyDataManager.addDataSet(studyId, meansVariableTypeList, datasetValues, "");
+		return this.studyDataManager.getDataSet(datasetReference.getId());
+
+	}
+
+	private void createMeansVariablesFromImportFileAndAddToList(String[] csvHeader, VariableTypeList plotVariates,
+			VariableTypeList meansVariableTypeList, String programUUID, CVTerm lsMean, CVTerm errorEstimate) {
+		int numberOfMeansVariables = meansVariableTypeList.getVariableTypes().size();
+		int rank = meansVariableTypeList.getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
+		Set<String> inputDataSetVariateNames = this.getAllNewVariatesToProcess(csvHeader, null);
+		Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
+		Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
+
+		for (String variateName : inputDataSetVariateNames) {
+			DMSVariableType variate = plotVariates.findByLocalName(variateName);
+			meansVariableTypeList.add(this.createAnalysisVariable(variate, variateName + BreedingViewImportServiceImpl.MEANS_SUFFIX,
+					lsMeanTerm, programUUID, rank++));
+			meansVariableTypeList.add(this.createAnalysisVariable(variate, variateName + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX,
+					errorEstimateTerm, programUUID, rank++));
+		}
+	}
+
+	private void createMeansVariablesFromPlotDatasetAndAddToList(DataSet plotDataSet, VariableTypeList meansVariableTypeList, int lastRank) {
+		int rank = lastRank;
+		for (DMSVariableType factorFromDataSet : plotDataSet.getVariableTypes().getFactors().getVariableTypes()) {
+			if (factorFromDataSet.getStandardVariable().getPhenotypicType() == PhenotypicType.TRIAL_ENVIRONMENT
+					|| factorFromDataSet.getStandardVariable().getPhenotypicType() == PhenotypicType.GERMPLASM) {
+				factorFromDataSet.setRank(++rank);
+				meansVariableTypeList.add(factorFromDataSet);
+			}
+		}
+	}
+
+	private void createMeansVariableAndAddToLists(VariableList meansVariableList, VariableTypeList meansVariableTypeList,
+			int ontologyVariableId, String name, String definition, String value, int rank, String programUUID,
+			PhenotypicType phenotypicType) {
+
+		Variable variable = this.createVariable(ontologyVariableId, value, rank, programUUID, phenotypicType);
+		meansVariableList.add(variable);
+
+		VariableType variableType = this.getVariableTypeByPhenotypicType(phenotypicType);
+		this.updateVariableType(variable.getVariableType(), name, definition, variableType);
+		meansVariableTypeList.add(variable.getVariableType());
+	}
+
+	private VariableType getVariableTypeByPhenotypicType(PhenotypicType phenotypicType) {
+
+		if (PhenotypicType.DATASET == phenotypicType) {
+			return VariableType.STUDY_DETAIL;
+		} else if (PhenotypicType.GERMPLASM == phenotypicType) {
+			return VariableType.GERMPLASM_DESCRIPTOR;
+		} else {
+			return VariableType.ANALYSIS;
+		}
+
+	}
+
+	private DataSet getMeansDataSet(int studyId) {
+		List<DataSet> ds = this.studyDataManager.getDataSetsByType(studyId, DataSetType.MEANS_DATA);
+		if (ds != null && !ds.isEmpty()) {
+			// return the 1st one as we're sure that we can only have one means dataset per study
+			return ds.get(0);
+		}
+		return null;
+	}
+
 	@Override
 	public void importMeansData(File file, int studyId, Map<String, String> localNameToAliasMap) throws BreedingViewImportException {
 		this.localNameToAliasMap = localNameToAliasMap;
 		this.importMeansData(file, studyId);
+	}
+
+	private Map<String, Integer> findOrSaveMethodsIfNotExisting(List<String> methodNameList) {
+		Map<String, Integer> methodNameToIdMap = new HashMap<>();
+		for (String methodName : methodNameList) {
+			Integer methodId = this.findOrSaveMethod(methodName, methodName + "  (system generated method)");
+			methodNameToIdMap.put(methodName, methodId);
+		}
+		return methodNameToIdMap;
+	}
+
+	private Integer findOrSaveMethod(String methodName, String methodDefinition) {
+		Integer methodId = null;
+		CVTerm cvterm = this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(methodName, CvId.METHODS.getId());
+		if (cvterm == null) {
+			methodId = this.saveMethod(methodName, methodDefinition);
+		} else {
+			methodId = cvterm.getCvTermId();
+		}
+		return methodId;
+	}
+
+	private Integer saveMethod(String methodName, String methodDefinition) {
+		Method method = new Method();
+		method.setName(methodName);
+		method.setDefinition(methodDefinition);
+		this.methodDataManager.addMethod(method);
+		return method.getId();
+	}
+
+	private boolean isVariableExisting(String variableName) {
+		CVTerm cvterm = this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(variableName, CvId.VARIABLES.getId());
+		if (cvterm != null) {
+			return true;
+		}
+		return false;
+	}
+
+	private Integer saveAnalysisVariable(String name, String description, int methodId, int propertyId, int scaleId, String programUUID) {
+		OntologyVariableInfo variableInfo = new OntologyVariableInfo();
+		variableInfo.setName(name);
+		variableInfo.setDescription(description);
+		variableInfo.setMethodId(methodId);
+		variableInfo.setPropertyId(propertyId);
+		variableInfo.setScaleId(scaleId);
+		variableInfo.setProgramUuid(programUUID);
+		variableInfo.addVariableType(VariableType.ANALYSIS);
+		this.ontologyVariableDataManager.addVariable(variableInfo);
+		return variableInfo.getId();
+	}
+
+	@Override
+	public void importSummaryStatsData(File file, int studyId, Map<String, String> localNameToAliasMap) throws BreedingViewImportException {
+		this.localNameToAliasMap = localNameToAliasMap;
+		this.importSummaryStatsData(file, studyId);
 	}
 
 	@Override
@@ -252,168 +363,28 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			Map<String, Map<String, ArrayList<String>>> summaryStatsData = summaryStatsCSV.getData();
 
+			DmsProject study = this.studyDataManager.getProject(studyId);
+			String programUUID = study.getProgramUUID();
 			DataSet trialDataSet = this.getTrialDataSet(studyId);
 
 			// used in getting the new project properties
 			VariableTypeList variableTypeListVariates = this.getPlotDataSet(studyId).getVariableTypes().getVariates();
 
-			// list that will contain all summary stats project properties
-			VariableTypeList variableTypeListSummaryStats = new VariableTypeList();
+			VariableTypeList summaryStatsVariableTypeList =
+					this.createSummaryStatsVariableTypes(summaryStatsCSV, trialDataSet, variableTypeListVariates, nameToAliasMap,
+							programUUID);
 
-			List<String> summaryStatsList = summaryStatsCSV.getHeaderStats();
-			String trialLocalName = summaryStatsCSV.getTrialHeader();
+			Map<String, Integer> envFactorTolocationIdMap =
+					this.retrieveAllLocationsOfStudy(summaryStatsData.keySet(), studyId, summaryStatsCSV.getTrialHeader());
+			List<ExperimentValues> summaryStatsExperimentValuesList =
+					this.createSummaryStatsExperimentValuesList(trialDataSet, envFactorTolocationIdMap, summaryStatsCSV.getHeaderStats(),
+							summaryStatsCSV.getData());
 
-			for (String summaryStatName : summaryStatsList) {
-				Term termSummaryStat = this.ontologyDataManager.findMethodByName(summaryStatName);
-				if (termSummaryStat == null) {
-					termSummaryStat = this.ontologyDataManager.addMethod(summaryStatName, summaryStatName + "  (system generated method)");
-				}
-			}
-
-			BreedingViewImportServiceImpl.LOG.info("prepare the summary stats project properties if necessary");
-			int lastRank = trialDataSet.getVariableTypes().size();
-
-			List<StandardVariable> list = new ArrayList<StandardVariable>();
-
-			for (String summaryStatName : summaryStatsList) {
-
-				for (DMSVariableType variate : variableTypeListVariates.getVariableTypes()) {
-
-					if (nameToAliasMap.containsValue(variate.getLocalName())) {
-
-						DMSVariableType originalVariableType = null;
-						DMSVariableType summaryStatVariableType = null;
-						Term termSummaryStat = this.ontologyDataManager.findMethodByName(summaryStatName);
-						Term termIsASummaryStat = this.ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
-
-						// check if the summary stat trait is already existing
-						String trait = variate.getLocalName();
-						String localName = trait + "_" + summaryStatName;
-						summaryStatVariableType = trialDataSet.findVariableTypeByLocalName(localName);
-						// this means we need to append the traits in the dataset project properties
-						if (summaryStatVariableType == null) {
-							BreedingViewImportServiceImpl.LOG.info(localName + " project property not found.. need to add " + localName);
-							originalVariableType = variableTypeListVariates.findByLocalName(trait);
-							summaryStatVariableType = this.cloner.deepClone(originalVariableType);
-							summaryStatVariableType.setLocalName(localName);
-
-							Integer stdVariableId =
-									this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(summaryStatVariableType
-											.getStandardVariable().getProperty().getId(), summaryStatVariableType.getStandardVariable()
-											.getScale().getId(), termSummaryStat.getId());
-
-							if (stdVariableId == null) {
-
-								StandardVariable stdVariable = new StandardVariable();
-								stdVariable = this.cloner.deepClone(summaryStatVariableType.getStandardVariable());
-								stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(), "", ""));
-								stdVariable.setEnumerations(null);
-								stdVariable.setConstraints(null);
-								stdVariable.setId(0);
-								stdVariable.setName(summaryStatVariableType.getLocalName());
-								stdVariable.setMethod(termSummaryStat);
-								stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
-
-								if (termIsASummaryStat != null) {
-									stdVariable.setIsA(termIsASummaryStat);
-								}
-
-								// check if localname is already used
-								Term existingStdVar = this.ontologyDataManager.findTermByName(stdVariable.getName(), CvId.VARIABLES);
-								if (existingStdVar != null) {
-									// rename
-									stdVariable.setName(stdVariable.getName() + "_1");
-								}
-
-								list.add(stdVariable);
-								summaryStatVariableType.setStandardVariable(stdVariable);
-								BreedingViewImportServiceImpl.LOG.info("added standard variable "
-										+ summaryStatVariableType.getStandardVariable().getName());
-							} else {
-								StandardVariable stdVar =
-										this.ontologyDataManager.getStandardVariable(stdVariableId,
-												this.studyDataManager.getProject(studyId).getProgramUUID());
-								stdVar.setPhenotypicType(PhenotypicType.VARIATE);
-
-								if (stdVar.getEnumerations() != null) {
-									for (Enumeration enumeration : stdVar.getEnumerations()) {
-										this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
-									}
-								}
-								stdVar.setEnumerations(null);
-								stdVar.setConstraints(null);
-								this.ontologyDataManager.deleteStandardVariableLocalConstraints(stdVariableId);
-								summaryStatVariableType.setStandardVariable(stdVar);
-								BreedingViewImportServiceImpl.LOG.info("reused standard variable "
-										+ summaryStatVariableType.getStandardVariable().getName());
-							}
-
-							summaryStatVariableType.setRank(++lastRank);
-							variableTypeListSummaryStats.add(summaryStatVariableType);
-							trialDataSet.getVariableTypes().add(summaryStatVariableType);
-						}
-					}
-				}
-			}
-
-			this.ontologyDataManager.addStandardVariable(list);
-
-			Set<String> environments = summaryStatsData.keySet();
-			List<ExperimentValues> summaryStatsExperimentValuesList = new ArrayList<ExperimentValues>();
-			List<Integer> locationIds = new ArrayList<Integer>();
-
-			TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(this.getPlotDataSet(studyId).getId());
-
-			for (String summaryStatName : summaryStatsList) {
-
-				DMSVariableType summaryStatVariableType = null;
-
-				for (String env : environments) {
-
-					BreedingViewImportServiceImpl.LOG.info("prepare experiment values per location, " + trialLocalName + "=" + env);
-					// --------- prepare experiment values per location ------------------------------------------------------//
-					TrialEnvironment trialEnv = trialEnvironments.findOnlyOneByLocalName(trialLocalName, env.replace(";", ","));
-					if (trialEnv == null) {
-						trialEnv = trialEnvironments.findOnlyOneByLocalName(trialLocalName, env);
-					}
-					int ndLocationId = trialEnv.getId();
-					BreedingViewImportServiceImpl.LOG.info("ndLocationId =" + ndLocationId);
-					locationIds.add(ndLocationId);
-					List<Variable> traits = new ArrayList<Variable>();
-					VariableList variableList = new VariableList();
-					variableList.setVariables(traits);
-					ExperimentValues e = new ExperimentValues();
-					e.setVariableList(variableList);
-					e.setLocationId(ndLocationId);
-					summaryStatsExperimentValuesList.add(e);
-
-					Map<String, ArrayList<String>> traitSummaryStats = summaryStatsData.get(env);
-					for (Entry<String, ArrayList<String>> traitSummaryStat : traitSummaryStats.entrySet()) {
-						String trait = traitSummaryStat.getKey();
-
-						String summaryStatValue = traitSummaryStat.getValue().get(summaryStatsList.indexOf(summaryStatName));
-						String localName = trait + "_" + summaryStatName;
-
-						// get summary stat trait
-						summaryStatVariableType = trialDataSet.findVariableTypeByLocalName(localName);
-
-						// ---------- prepare experiments -------------------------------------//
-						if (summaryStatVariableType != null) {
-							Variable var = new Variable(summaryStatVariableType, summaryStatValue);
-							e.getVariableList().getVariables().add(var);
-							BreedingViewImportServiceImpl.LOG.info("preparing experiment variable "
-									+ summaryStatVariableType.getLocalName() + " with value " + summaryStatValue);
-						}
-					}
-				}
-
-			}
-
-			// ------------ save project properties and experiments ----------------------------------//
+			// save project properties and experiments
 			DmsProject project = new DmsProject();
 			project.setProjectId(trialDataSet.getId());
-			this.studyDataManager.saveTrialDatasetSummary(project, variableTypeListSummaryStats, summaryStatsExperimentValuesList,
-					locationIds);
+			this.studyDataManager.saveTrialDatasetSummary(project, summaryStatsVariableTypeList, summaryStatsExperimentValuesList,
+					new ArrayList<>(envFactorTolocationIdMap.values()));
 
 		} catch (Exception e) {
 			throw new BreedingViewImportException(e.getMessage(), e);
@@ -421,10 +392,84 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	}
 
-	@Override
-	public void importSummaryStatsData(File file, int studyId, Map<String, String> localNameToAliasMap) throws BreedingViewImportException {
-		this.localNameToAliasMap = localNameToAliasMap;
-		this.importSummaryStatsData(file, studyId);
+	private List<ExperimentValues> createSummaryStatsExperimentValuesList(DataSet trialDataSet,
+			Map<String, Integer> envFactorTolocationIdMap, List<String> summaryStatsList,
+			Map<String, Map<String, ArrayList<String>>> summaryStatsData) {
+
+		List<ExperimentValues> summaryStatsExperimentValuesList = new ArrayList<ExperimentValues>();
+		for (String envFactorValue : envFactorTolocationIdMap.keySet()) {
+			for (String summaryStatName : summaryStatsList) {
+				for (Entry<String, ArrayList<String>> traitSummaryStat : summaryStatsData.get(envFactorValue).entrySet()) {
+
+					VariableList variableList = new VariableList();
+					variableList.setVariables(new ArrayList<Variable>());
+					ExperimentValues experimentValues = new ExperimentValues();
+					experimentValues.setVariableList(variableList);
+					experimentValues.setLocationId(envFactorTolocationIdMap.get(envFactorValue));
+
+					DMSVariableType summaryStatVariableType =
+							trialDataSet.findVariableTypeByLocalName(traitSummaryStat.getKey() + "_" + summaryStatName);
+
+					if (summaryStatVariableType != null) {
+						String summaryStatValue = traitSummaryStat.getValue().get(summaryStatsList.indexOf(summaryStatName));
+						Variable var = new Variable(summaryStatVariableType, summaryStatValue);
+						experimentValues.getVariableList().getVariables().add(var);
+						summaryStatsExperimentValuesList.add(experimentValues);
+					}
+				}
+			}
+		}
+		return summaryStatsExperimentValuesList;
+	}
+
+	private Map<String, Integer> retrieveAllLocationsOfStudy(Set<String> environments, int studyId, String envFactorName) {
+		Map<String, Integer> envFactorTolocationIdMap = new LinkedHashMap<>();
+		TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(this.getTrialDataSet(studyId).getId());
+		for (String env : environments) {
+			String envFactor = env.replace(";", ",");
+			TrialEnvironment trialEnv = trialEnvironments.findOnlyOneByLocalName(envFactorName, envFactor);
+			if (trialEnv == null) {
+				envFactor = env;
+				trialEnv = trialEnvironments.findOnlyOneByLocalName(envFactorName, envFactor);
+			}
+			envFactorTolocationIdMap.put(env, trialEnv.getId());
+		}
+		return envFactorTolocationIdMap;
+	}
+
+	protected VariableTypeList createSummaryStatsVariableTypes(SummaryStatsCSV summaryStatsCSV, DataSet trialDataSet,
+			VariableTypeList plotVariates, Map<String, String> nameToAliasMap, String programUUID) throws IOException {
+		VariableTypeList summaryStatsVariableTypeList = new VariableTypeList();
+
+		summaryStatsCSV.getData();
+		List<String> summaryStatsList = summaryStatsCSV.getHeaderStats();
+		summaryStatsCSV.getTrialHeader();
+
+		Map<String, Integer> summaryStatNameToIdMap = this.findOrSaveMethodsIfNotExisting(summaryStatsList);
+
+		int numberOfTrialDatasetVariables = trialDataSet.getVariableTypes().size();
+		int rank = trialDataSet.getVariableTypes().getVariableTypes().get(numberOfTrialDatasetVariables - 1).getRank() + 1;
+
+		for (String summaryStatName : summaryStatsList) {
+			for (DMSVariableType variate : plotVariates.getVariableTypes()) {
+				if (nameToAliasMap.containsValue(variate.getLocalName())) {
+					String trait = variate.getLocalName();
+					String localName = trait + "_" + summaryStatName;
+					if (trialDataSet.findVariableTypeByLocalName(localName) == null) {
+						DMSVariableType originalVariableType = plotVariates.findByLocalName(trait);
+						Term summaryStatMethod = new Term(summaryStatNameToIdMap.get(summaryStatName), summaryStatName, summaryStatName);
+						DMSVariableType summaryStatVariableType =
+								this.createAnalysisVariable(originalVariableType, localName, summaryStatMethod, programUUID, rank++);
+						summaryStatVariableType.setVariableType(VariableType.ANALYSIS);
+						summaryStatsVariableTypeList.add(summaryStatVariableType);
+						trialDataSet.getVariableTypes().add(summaryStatVariableType);
+					}
+
+				}
+			}
+		}
+
+		return summaryStatsVariableTypeList;
 	}
 
 	@Override
@@ -500,10 +545,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	protected DataSet getPlotDataSet(int studyId) throws MiddlewareException {
-		if (this.plotDataSet != null && this.plotDataSet.getId() == studyId) {
+		if (this.plotDataSet != null) {
 			return this.plotDataSet;
 		} else {
-			this.plotDataSet = this.studyDataManager.getDataSet(DatasetUtil.getPlotDataSetId(this.studyDataManager, studyId));
+			this.plotDataSet = DatasetUtil.getPlotDataSet(this.studyDataManager, studyId);
 		}
 		return this.plotDataSet;
 	}
@@ -512,317 +557,140 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return DatasetUtil.getTrialDataSet(this.studyDataManager, studyId);
 	}
 
-	protected DataSet appendVariableTypesToExistingMeans(String[] csvHeader, DataSet inputDataSet, DataSet meansDataSet, String programUUID)
-			throws MiddlewareException {
-
-		List<Integer> numericTypes = new ArrayList<Integer>();
-		numericTypes.add(TermId.NUMERIC_VARIABLE.getId());
-		numericTypes.add(TermId.MIN_VALUE.getId());
-		numericTypes.add(TermId.MAX_VALUE.getId());
-		numericTypes.add(TermId.DATE_VARIABLE.getId());
-		numericTypes.add(TermId.NUMERIC_DBID_VARIABLE.getId());
-
-		List<Integer> standardVariableIdTracker = new ArrayList<Integer>();
-
-		int rank =
-				meansDataSet.getVariableTypes().getVariableTypes().get(meansDataSet.getVariableTypes().getVariableTypes().size() - 1)
-						.getRank() + 1;
-
-		List<String> inputDataSetVariateNames = new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(csvHeader, 3, csvHeader.length)));
-		List<String> meansDataSetVariateNames = new ArrayList<String>();
-
-		Iterator<String> iterator = inputDataSetVariateNames.iterator();
-		while (iterator.hasNext()) {
-			if (iterator.next().contains(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX)) {
-				iterator.remove();
-			}
+	protected DataSet appendVariableTypesToExistingMeans(String[] csvHeader, DataSet inputDataSet, DataSet meansDataSet,
+			String programUUID, CVTerm lsMean, CVTerm errorEstimate) throws MiddlewareException {
+		int numberOfMeansVariables = meansDataSet.getVariableTypes().getVariableTypes().size();
+		int rank = meansDataSet.getVariableTypes().getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
+		Set<String> inputDataSetVariateNames =
+				this.getAllNewVariatesToProcess(csvHeader, meansDataSet.getVariableTypes().getVariates().getVariableTypes());
+		Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
+		Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
+		for (String variateName : inputDataSetVariateNames) {
+			DMSVariableType variate = inputDataSet.getVariableTypes().findByLocalName(variateName);
+			// add means of the variate to the means dataset
+			this.addVariableToDataset(meansDataSet, this.createAnalysisVariable(variate, variateName
+					+ BreedingViewImportServiceImpl.MEANS_SUFFIX, lsMeanTerm, programUUID, rank++));
+			// add unit errors of the variate to the means dataset
+			this.addVariableToDataset(meansDataSet, this.createAnalysisVariable(variate, variateName
+					+ BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, errorEstimateTerm, programUUID, rank++));
 		}
 
-		for (DMSVariableType var : meansDataSet.getVariableTypes().getVariates().getVariableTypes()) {
-			standardVariableIdTracker.add(var.getStandardVariable().getId());
-			if (!var.getStandardVariable().getMethod().getName().equalsIgnoreCase(BreedingViewImportServiceImpl.ERROR_ESTIMATE)) {
-				meansDataSetVariateNames.add(var.getLocalName().trim());
+		return meansDataSet;
+	}
+
+	private void addVariableToDataset(DataSet dataSet, DMSVariableType meansVariableType) {
+		this.studyDataManager.addDataSetVariableType(dataSet.getId(), meansVariableType);
+		dataSet.getVariableTypes().add(meansVariableType);
+	}
+
+	/***
+	 * 
+	 * This method creates the analysis variable based from the variates in the plot dataset. Basically, the difference between the original
+	 * variate and the new means variable is their name and the ontology variable where they are associated, having a different method and
+	 * having no specific variable value constraints. This method also creates the ontology variable if it is still not existing.
+	 * 
+	 * @param originalVariableType - the variate where the analysis variable will be based
+	 * @param name - the name of the analysis variable
+	 * @param method - the method of the analysis variable
+	 * @param programUUID - the program where the analysis belongs
+	 * @param rank - the rank of the analysis variable from the list
+	 * @return DMSVariableType - the new analysis variable
+	 */
+	private DMSVariableType createAnalysisVariable(DMSVariableType originalVariableType, String name, Term method, String programUUID,
+			int rank) {
+		DMSVariableType analysisVariableType = this.cloner.deepClone(originalVariableType);
+		analysisVariableType.setLocalName(name);
+		StandardVariable standardVariable = analysisVariableType.getStandardVariable();
+		standardVariable.setMethod(method);
+
+		Integer ontologyVariableId =
+				this.findOntologyVariableId(standardVariable.getProperty().getId(), standardVariable.getScale().getId(), standardVariable
+						.getMethod().getId(), programUUID);
+
+		if (ontologyVariableId == null) {
+
+			String variableName = name;
+			if (this.isVariableExisting(variableName)) {
+				variableName = variableName + "_1";
 			}
 
+			ontologyVariableId =
+					this.saveAnalysisVariable(variableName, standardVariable.getDescription(), standardVariable.getMethod().getId(),
+							standardVariable.getProperty().getId(), standardVariable.getScale().getId(), programUUID);
+
+			standardVariable.setId(ontologyVariableId);
+			standardVariable.setPhenotypicType(PhenotypicType.VARIATE);
+
+		} else {
+
+			analysisVariableType.setStandardVariable(this
+					.createStandardardVariable(ontologyVariableId, programUUID, PhenotypicType.VARIATE));
+		}
+
+		analysisVariableType.setRank(rank);
+		return analysisVariableType;
+	}
+
+	/***
+	 * 
+	 * This method processes the headers from the CSV file which are list of means variable names. The variate names are extracted from the
+	 * headers and added to the list. Existing variates are removed from the list. The list with only the new variates is returned.
+	 * 
+	 * @param csvHeader - the array of headers from the CSV file
+	 * @param existingMeansVariables - existing means variables in the means dataset of the study
+	 * @return Set<String> - unique list of new variates
+	 */
+	private Set<String> getAllNewVariatesToProcess(String[] csvHeader, List<DMSVariableType> existingMeansVariables) {
+		Set<String> newVariateNames = new LinkedHashSet<>();
+		List<String> inputDataSetVariateNames = new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(csvHeader, 3, csvHeader.length)));
+
+		for (String csvHeaderNames : inputDataSetVariateNames) {
+			String variateName = csvHeaderNames.substring(0, csvHeaderNames.lastIndexOf("_"));
+			newVariateNames.add(variateName);
 		}
 
 		// only process the new traits that were not part of the previous analysis
-		inputDataSetVariateNames.removeAll(meansDataSetVariateNames);
-
-		for (String variateName : inputDataSetVariateNames) {
-			String root = variateName.substring(0, variateName.lastIndexOf("_"));
-			if (!"".equals(root)) {
-
-				DMSVariableType meansVariableType = this.cloner.deepClone(inputDataSet.getVariableTypes().findByLocalName(root));
-				meansVariableType.setLocalName(root + BreedingViewImportServiceImpl.MEANS_SUFFIX);
-
-				Term termLSMean = this.ontologyDataManager.findMethodByName(BreedingViewImportServiceImpl.LS_MEAN);
-				Term termTreatmentMean = this.ontologyDataManager.getTermById(TermId.TREATMENT_MEAN.getId());
-
-				if (termLSMean == null) {
-					String definitionMeans = meansVariableType.getStandardVariable().getMethod().getDefinition();
-					termLSMean = this.ontologyDataManager.addMethod(BreedingViewImportServiceImpl.LS_MEAN, definitionMeans);
-				}
-
-				Integer stdVariableId =
-						this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(meansVariableType.getStandardVariable()
-								.getProperty().getId(), meansVariableType.getStandardVariable().getScale().getId(), termLSMean.getId());
-
-				// check if the stdVariableId already exists in the standardVariableIdTracker
-				for (Integer vt : standardVariableIdTracker) {
-					if (stdVariableId != null && vt.intValue() == stdVariableId.intValue()) {
-
-						termLSMean = this.ontologyDataManager.findMethodByName("LS MEAN (" + root + ")");
-
-						if (termLSMean == null) {
-							String definitionMeans = meansVariableType.getStandardVariable().getMethod().getDefinition();
-							termLSMean = this.ontologyDataManager.addMethod("LS MEAN (" + root + ")", definitionMeans);
-						}
-
-						stdVariableId =
-								this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(meansVariableType
-										.getStandardVariable().getProperty().getId(), meansVariableType.getStandardVariable().getScale()
-										.getId(), termLSMean.getId());
-						break;
-					}
-				}
-
-				if (stdVariableId == null) {
-					StandardVariable stdVariable = new StandardVariable();
-					stdVariable = this.cloner.deepClone(meansVariableType.getStandardVariable());
-					stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(), "", ""));
-					stdVariable.setEnumerations(null);
-					stdVariable.setConstraints(null);
-					stdVariable.setId(0);
-					stdVariable.setName(meansVariableType.getLocalName());
-					stdVariable.setMethod(termLSMean);
-					stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
-
-					if (termTreatmentMean != null) {
-						stdVariable.setIsA(termTreatmentMean);
-					}
-
-					// check if name is already used
-					Term existingStdVar = this.ontologyDataManager.findTermByName(stdVariable.getName(), CvId.VARIABLES);
-					if (existingStdVar != null) {
-						// rename
-						stdVariable.setName(stdVariable.getName() + "_1");
-					}
-					this.ontologyDataManager.addStandardVariable(stdVariable, programUUID);
-					meansVariableType.setStandardVariable(stdVariable);
-					standardVariableIdTracker.add(stdVariable.getId());
-				} else {
-					StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId, programUUID);
-					stdVar.setPhenotypicType(PhenotypicType.VARIATE);
-					if (stdVar.getEnumerations() != null) {
-						for (Enumeration enumeration : stdVar.getEnumerations()) {
-							this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
-						}
-					}
-					stdVar.setEnumerations(null);
-					this.ontologyDataManager.deleteStandardVariableLocalConstraints(stdVariableId);
-					meansVariableType.setStandardVariable(stdVar);
-					standardVariableIdTracker.add(stdVariableId);
-				}
-
-				meansVariableType.setRank(rank);
-				try {
-					this.studyDataManager.addDataSetVariableType(meansDataSet.getId(), meansVariableType);
-					rank++;
-				} catch (MiddlewareQueryException e) {
-					BreedingViewImportServiceImpl.LOG.info("INFO: ", e);
-				}
-
-				stdVariableId = null;
-				// Unit Errors
-				DMSVariableType unitErrorsVariableType = this.cloner.deepClone(inputDataSet.getVariableTypes().findByLocalName(root));
-				unitErrorsVariableType.setLocalName(root + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX);
-
-				Term termErrorEstimate = this.ontologyDataManager.findMethodByName("ERROR ESTIMATE");
-				Term termSummaryStatistic = this.ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
-
-				if (termErrorEstimate == null) {
-					String definitionUErrors = unitErrorsVariableType.getStandardVariable().getMethod().getDefinition();
-					termErrorEstimate = this.ontologyDataManager.addMethod("ERROR ESTIMATE", definitionUErrors);
-				}
-
-				stdVariableId =
-						this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(unitErrorsVariableType
-								.getStandardVariable().getProperty().getId(), unitErrorsVariableType.getStandardVariable().getScale()
-								.getId(), termErrorEstimate.getId());
-
-				// check if the stdVariableId already exists in the variableTypeList
-				for (Integer vt : standardVariableIdTracker) {
-					if (stdVariableId != null && vt.intValue() == stdVariableId.intValue()) {
-
-						termErrorEstimate = this.ontologyDataManager.findMethodByName("ERROR ESTIMATE (" + root + ")");
-						if (termErrorEstimate == null) {
-							String definitionUErrors = unitErrorsVariableType.getStandardVariable().getMethod().getDefinition();
-							termErrorEstimate = this.ontologyDataManager.addMethod("ERROR ESTIMATE (" + root + ")", definitionUErrors);
-						}
-
-						stdVariableId =
-								this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(unitErrorsVariableType
-										.getStandardVariable().getProperty().getId(), unitErrorsVariableType.getStandardVariable()
-										.getScale().getId(), termErrorEstimate.getId());
-						break;
-					}
-				}
-
-				if (stdVariableId == null) {
-					StandardVariable stdVariable = new StandardVariable();
-					stdVariable = this.cloner.deepClone(unitErrorsVariableType.getStandardVariable());
-					stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(), "", ""));
-					stdVariable.setEnumerations(null);
-					stdVariable.setConstraints(null);
-					stdVariable.setId(0);
-					stdVariable.setName(unitErrorsVariableType.getLocalName());
-					stdVariable.setMethod(termErrorEstimate);
-					stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
-					if (termSummaryStatistic != null) {
-						stdVariable.setIsA(termSummaryStatistic);
-					}
-
-					// check if name is already used
-					Term existingStdVar = this.ontologyDataManager.findTermByName(stdVariable.getName(), CvId.VARIABLES);
-					if (existingStdVar != null) {
-						// rename
-						stdVariable.setName(stdVariable.getName() + "_1");
-					}
-					this.ontologyDataManager.addStandardVariable(stdVariable, programUUID);
-					unitErrorsVariableType.setStandardVariable(stdVariable);
-					standardVariableIdTracker.add(stdVariable.getId());
-				} else {
-					StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId, programUUID);
-					stdVar.setPhenotypicType(PhenotypicType.VARIATE);
-					if (stdVar.getEnumerations() != null) {
-						for (Enumeration enumeration : stdVar.getEnumerations()) {
-							this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
-						}
-					}
-					stdVar.setEnumerations(null);
-					this.ontologyDataManager.deleteStandardVariableLocalConstraints(stdVariableId);
-					unitErrorsVariableType.setStandardVariable(stdVar);
-					standardVariableIdTracker.add(stdVariableId);
-				}
-
-				unitErrorsVariableType.setRank(rank);
-				try {
-					this.studyDataManager.addDataSetVariableType(meansDataSet.getId(), unitErrorsVariableType);
-					rank++;
-				} catch (MiddlewareQueryException e) {
-					BreedingViewImportServiceImpl.LOG.info("INFO: ", e);
-				}
+		if (existingMeansVariables != null) {
+			for (DMSVariableType var : existingMeansVariables) {
+				String variateName = var.getLocalName().trim();
+				variateName = variateName.substring(0, variateName.lastIndexOf("_"));
+				newVariateNames.remove(variateName);
 			}
-
 		}
 
-		return this.studyDataManager.getDataSet(meansDataSet.getId());
-
+		return newVariateNames;
 	}
 
-	protected void createMeansVariableType(Integer numOfFactorsAndVariates, String headerName, VariableTypeList allVariatesList,
-			VariableTypeList meansVariateList, String programUUID) throws MiddlewareException {
+	private Integer findOntologyVariableId(int propertyId, int scaleId, Integer methodId, String programUUID) {
+		Integer ontologyVariableId = null;
 
-		String traitName = "", localName = "", methodName = "";
-		Term isATerm = null;
+		VariableFilter filterOpts = new VariableFilter();
+		filterOpts.setProgramUuid(programUUID);
+		filterOpts.addPropertyId(propertyId);
+		filterOpts.addMethodId(methodId);
+		filterOpts.addScaleId(scaleId);
 
-		traitName = headerName != null && headerName.lastIndexOf("_") != -1 ? headerName.substring(0, headerName.lastIndexOf("_")) : "";
-		if (headerName.endsWith(BreedingViewImportServiceImpl.MEANS_SUFFIX)) {
-			localName = BreedingViewImportServiceImpl.MEANS_SUFFIX;
-			methodName = BreedingViewImportServiceImpl.LS_MEAN;
-			isATerm = this.ontologyDataManager.getTermById(TermId.TREATMENT_MEAN.getId());
-		} else if (headerName.endsWith(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX)) {
-			localName = BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX;
-			methodName = "ERROR ESTIMATE";
-			isATerm = this.ontologyDataManager.getTermById(TermId.SUMMARY_STATISTIC.getId());
-		} else {
-			return;
+		List<org.generationcp.middleware.domain.ontology.Variable> variableList =
+				this.ontologyVariableDataManager.getWithFilter(filterOpts);
+		if (variableList != null && !variableList.isEmpty()) {
+			org.generationcp.middleware.domain.ontology.Variable variable = variableList.get(0);
+			ontologyVariableId = variable.getId();
 		}
+		return ontologyVariableId;
+	}
 
-		DMSVariableType originalVariableType = null;
-		DMSVariableType newVariableType = null;
-
-		originalVariableType = allVariatesList.findByLocalName(traitName);
-		newVariableType = this.cloner.deepClone(originalVariableType);
-
-		newVariableType.setLocalName(traitName + localName);
-
-		Term termMethod = this.ontologyDataManager.findMethodByName(methodName);
-		if (termMethod == null) {
-			String definitionMeans = newVariableType.getStandardVariable().getMethod().getDefinition();
-			termMethod = this.ontologyDataManager.addMethod(methodName, definitionMeans);
-		}
-
-		Integer stdVariableId =
-				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(newVariableType.getStandardVariable()
-						.getProperty().getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId());
-
-		// check if the stdVariableId already exists in the variableTypeList
-		for (DMSVariableType vt : meansVariateList.getVariableTypes()) {
-			if (stdVariableId != null && vt.getStandardVariable().getId() == stdVariableId.intValue()) {
-
-				termMethod = this.ontologyDataManager.findMethodByName(methodName + " (" + traitName + ")");
-
-				if (termMethod == null) {
-					String definitionMeans = newVariableType.getStandardVariable().getMethod().getDefinition();
-					termMethod = this.ontologyDataManager.addMethod(methodName + " (" + traitName + ")", definitionMeans);
-				}
-
-				stdVariableId =
-						this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(newVariableType.getStandardVariable()
-								.getProperty().getId(), newVariableType.getStandardVariable().getScale().getId(), termMethod.getId());
-				break;
-			}
-		}
-
-		if (stdVariableId == null) {
-			StandardVariable stdVariable = new StandardVariable();
-			stdVariable = this.cloner.deepClone(newVariableType.getStandardVariable());
-			stdVariable.setDataType(new Term(TermId.NUMERIC_VARIABLE.getId(), "", ""));
-			stdVariable.setEnumerations(null);
-			stdVariable.setConstraints(null);
-			stdVariable.setId(0);
-			stdVariable.setName(newVariableType.getLocalName());
-			stdVariable.setMethod(termMethod);
-			stdVariable.setPhenotypicType(PhenotypicType.VARIATE);
-
-			if (isATerm != null) {
-				stdVariable.setIsA(isATerm);
-			}
-
-			// check if name is already used
-			Term existingStdVar = this.ontologyDataManager.findTermByName(stdVariable.getName(), CvId.VARIABLES);
-			if (existingStdVar != null) {
-				// rename
-				stdVariable.setName(stdVariable.getName() + "_1");
-			}
-			this.ontologyDataManager.addStandardVariable(stdVariable, programUUID);
-			newVariableType.setStandardVariable(stdVariable);
-
-		} else {
-			StandardVariable stdVar = this.ontologyDataManager.getStandardVariable(stdVariableId, programUUID);
-			stdVar.setPhenotypicType(PhenotypicType.VARIATE);
-			if (stdVar.getEnumerations() != null) {
-				for (Enumeration enumeration : stdVar.getEnumerations()) {
-					this.ontologyDataManager.deleteStandardVariableEnumeration(stdVariableId, enumeration.getId());
-				}
-			}
-			stdVar.setEnumerations(null);
-			this.ontologyDataManager.deleteStandardVariableLocalConstraints(stdVariableId);
-			newVariableType.setStandardVariable(stdVar);
-		}
-
-		meansVariateList.makeRoom(numOfFactorsAndVariates);
-		newVariableType.setRank(numOfFactorsAndVariates);
-		meansVariateList.add(newVariableType);
-
+	protected StandardVariable createStandardardVariable(int termId, String programUUID, PhenotypicType phenotypicType) {
+		org.generationcp.middleware.domain.ontology.Variable ontologyVariable =
+				this.ontologyVariableDataManager.getVariable(programUUID, termId, false, false);
+		StandardVariable standardVariable = this.standardVariableTransformer.transformVariable(ontologyVariable);
+		standardVariable.setPhenotypicType(phenotypicType);
+		return standardVariable;
 	}
 
 	protected Variable createVariable(int termId, String value, int rank, String programUUID, PhenotypicType phenotypicType)
 			throws MiddlewareException {
-		StandardVariable stVar = this.ontologyDataManager.getStandardVariable(termId, programUUID);
-		stVar.setPhenotypicType(phenotypicType);
+
+		StandardVariable stVar = this.createStandardardVariable(termId, programUUID, phenotypicType);
 
 		DMSVariableType vtype = new DMSVariableType();
 		vtype.setStandardVariable(stVar);
@@ -834,13 +702,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return var;
 	}
 
-	protected void updateVariableType(DMSVariableType type, String name, String description) {
+	protected void updateVariableType(DMSVariableType type, String name, String description, VariableType variableType) {
 		type.setLocalName(name);
 		type.setLocalDescription(description);
-	}
-
-	protected VariableTypeList getMeansVariableTypeList() {
-		return new VariableTypeList();
+		type.setVariableType(variableType);
 	}
 
 	protected Map<String, String> generateNameToAliasMap(int studyId) throws MiddlewareException {

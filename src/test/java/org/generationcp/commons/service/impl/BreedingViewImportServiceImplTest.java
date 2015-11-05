@@ -3,10 +3,10 @@ package org.generationcp.commons.service.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
@@ -16,20 +16,25 @@ import org.generationcp.middleware.domain.dms.ExperimentType;
 import org.generationcp.middleware.domain.dms.LocationDto;
 import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.domain.dms.Stock;
 import org.generationcp.middleware.domain.dms.Stocks;
-import org.generationcp.middleware.domain.dms.Study;
 import org.generationcp.middleware.domain.dms.TrialEnvironment;
 import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.domain.dms.Variable;
 import org.generationcp.middleware.domain.dms.VariableList;
 import org.generationcp.middleware.domain.dms.VariableTypeList;
+import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
+import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
+import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
+import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
 import org.generationcp.middleware.pojos.dms.DmsProject;
+import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -49,27 +54,29 @@ public class BreedingViewImportServiceImplTest {
 	private final int EXISTING_MEANS_DATASET_ID = 3;
 	private final int NEW_MEANS_DATASET_ID = 4;
 	private final int TRIAL_DATASET_ID = 1;
-	private static final int DATASET_TITLE_STANDARD_VAR_ID = 8155;
-	private static final int DATASET_STANDARD_VAR_ID = 8160;
-	private static final int STUDY_STANDARD_VAR_ID = 8150;
-
 	private static final String PROGRAM_UUID = "12345678";
 
 	private final String EMPTY_VALUE = "";
 
 	private final String LS_MEAN = "LS MEAN";
-	private final int LS_MEAN_ID = 97393;
+	private final int LS_MEAN_ID = 16090;
+	private final String ERROR_ESTIMATE = "ERROR ESTIMATE";
+	private final int ERROR_ESTIMATE_ID = 16095;
 
 	List<DMSVariableType> factorVariableTypes = new ArrayList<DMSVariableType>();
 	List<DMSVariableType> variateVariableTypes = new ArrayList<DMSVariableType>();
 	List<DMSVariableType> meansVariateVariableTypes = new ArrayList<DMSVariableType>();
 
-	Map<String, String> localNameToAliasMapping;
-
 	@Mock
 	StudyDataManager studyDataManager;
 	@Mock
-	OntologyDataManager ontologyDataManager;
+	OntologyDaoFactory ontologyDaoFactory;
+	@Mock
+	OntologyVariableDataManager ontologyVariableDataManager;
+	@Mock
+	OntologyMethodDataManager methodDataManager;
+	@Mock
+	StandardVariableTransformer standardVariableTransformer;
 	@Mock
 	WorkbenchDataManager workbenchDataManager;
 	@Mock
@@ -80,41 +87,27 @@ public class BreedingViewImportServiceImplTest {
 	@Mock
 	TrialEnvironment trialEnvironment;
 
-	@Mock
-	Stocks stocks;
-
-	@Mock
-	private Study study;
-
-	@Mock
-	private DmsProject dmsProject;
-
-	@Mock
-	private DataSet newMeansDataSet;
-
 	Map<String, ArrayList<String>> meansInput;
 	Map<String, Map<String, ArrayList<String>>> summaryStatisticsInput;
 
 	@InjectMocks
-	BreedingViewImportServiceImpl service = Mockito.spy(new BreedingViewImportServiceImpl());
+	BreedingViewImportServiceImpl service = new BreedingViewImportServiceImpl();
+
+	private Stocks stocks;
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
-		Mockito.doReturn(this.STUDY_ID).when(this.study).getId();
-		Mockito.doReturn(this.STUDY_NAME).when(this.study).getName();
+		CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
+		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
+		Mockito.doReturn(this.createCVTerm(this.LS_MEAN_ID, this.LS_MEAN)).when(cvTermDao).getByNameAndCvId(this.LS_MEAN,
+				CvId.METHODS.getId());
+		Mockito.doReturn(this.createCVTerm(this.ERROR_ESTIMATE_ID, this.ERROR_ESTIMATE)).when(cvTermDao)
+		.getByNameAndCvId(this.ERROR_ESTIMATE, CvId.METHODS.getId());
 
-		Mockito.doReturn(PROGRAM_UUID).when(this.dmsProject).getProgramUUID();
-
-		this.localNameToAliasMapping = new HashMap<>();
-		this.localNameToAliasMapping.put("TRIAL_INSTANCE", "TRIAL_INSTANCE");
-		this.localNameToAliasMapping.put("ENTRY_NO", "ENTRY_NO");
-		this.localNameToAliasMapping.put("GID", "GID");
-		this.localNameToAliasMapping.put("ASI", "ASI");
-		this.localNameToAliasMapping.put("Aphid1_5", "Aphid1_5");
-		this.localNameToAliasMapping.put("EPH", "EPH");
-		this.localNameToAliasMapping.put("FMSROT", "FMSROT");
+		Mockito.doReturn(this.createDmsProject(this.STUDY_ID, this.STUDY_NAME, this.PROGRAM_UUID)).when(this.studyDataManager)
+		.getProject(this.STUDY_ID);
 
 		this.factorVariableTypes.add(this.createTrialEnvironmentVariableType("TRIAL_INSTANCE"));
 		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("ENTRY_NO"));
@@ -134,90 +127,98 @@ public class BreedingViewImportServiceImplTest {
 		this.meansVariateVariableTypes.add(this.createVariateVariableType("FMSROT_Means", "", "", "LS MEAN"));
 		this.meansVariateVariableTypes.add(this.createVariateVariableType("FMSROT_UnitErrors", "", "", "ERROR ESTIMATE"));
 
-		Mockito.doReturn(this.createMeasurementDataSet()).when(this.service).getPlotDataSet(this.STUDY_ID);
-		Mockito.doReturn(this.localNameToAliasMapping).when(this.service).generateNameToAliasMap(this.STUDY_ID);
+		List<DataSet> plotDatasets = new ArrayList<>();
+		plotDatasets.add(this.createMeasurementDataSet());
+		Mockito.doReturn(plotDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.PLOT_DATA);
+
+		this.stocks = this.createStocksTestData();
+		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		this.service.setCloner(new Cloner());
+
+		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
+		.transformVariable(Mockito.any(org.generationcp.middleware.domain.ontology.Variable.class));
+	}
+
+	private DmsProject createDmsProject(int id, String name, String programUUID) {
+		DmsProject study = new DmsProject();
+		study.setProjectId(id);
+		study.setName(name);
+		study.setProgramUUID(programUUID);
+		return study;
 	}
 
 	@Test
 	public void testImportMeansData() throws Exception {
+		// import with no existing means data
+		Mockito.doReturn(null).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
+		
+		List<DataSet> summaryDatasets = new ArrayList<>();
+		summaryDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
-		StandardVariable studyStdVar = new StandardVariable();
-		studyStdVar.setId(BreedingViewImportServiceImplTest.STUDY_STANDARD_VAR_ID);
-		studyStdVar.setPhenotypicType(PhenotypicType.STUDY);
-
-		StandardVariable dataSetStdVar = new StandardVariable();
-		dataSetStdVar.setId(BreedingViewImportServiceImplTest.DATASET_STANDARD_VAR_ID);
-		dataSetStdVar.setPhenotypicType(PhenotypicType.DATASET);
-
-		StandardVariable titleStdVar = new StandardVariable();
-		titleStdVar.setId(BreedingViewImportServiceImplTest.DATASET_TITLE_STANDARD_VAR_ID);
-
-		Mockito.when(this.studyDataManager.getDataSetsByType(Matchers.anyInt(), (DataSetType) Matchers.anyObject())).thenReturn(
-				new ArrayList<DataSet>());
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
-		Mockito.when(this.studyDataManager.getDataSet(this.MEASUREMENT_DATASET_ID)).thenReturn(this.createMeasurementDataSet());
-		Mockito.when(this.studyDataManager.getDataSet(this.EXISTING_MEANS_DATASET_ID)).thenReturn(null);
-		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
-		Mockito.when(this.studyDataManager.getStudy(Matchers.anyInt())).thenReturn(this.study);
-		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
-		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
+								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 
-		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
-				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
-		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt())).thenReturn(null);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8150, PROGRAM_UUID)).thenReturn(studyStdVar);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8155, PROGRAM_UUID)).thenReturn(titleStdVar);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(8160, PROGRAM_UUID)).thenReturn(dataSetStdVar);
+		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
 
-		Mockito.when(this.stocks.findOnlyOneByLocalName(Matchers.anyString(), Matchers.anyString())).thenReturn(Mockito.mock(Stock.class));
-		Mockito.when(this.stocks.findOnlyOneByLocalName(Matchers.anyString(), Matchers.anyString()).getId()).thenReturn(1);
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
+
+		Mockito.verify(this.studyDataManager).addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
+				(DatasetValues) Matchers.anyObject(), Matchers.anyString());
 
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
 	}
 
+	private Stocks createStocksTestData() {
+		Stocks stocks = new Stocks();
+		// TODO
+		return stocks;
+	}
+
+	private CVTerm createCVTerm(int cvTermId, String name) {
+		CVTerm cvTerm = new CVTerm();
+		cvTerm.setCvTermId(cvTermId);
+		cvTerm.setName(name);
+		return cvTerm;
+	}
+
 	@Test
 	public void testImportMeansDataWithExistingMeansDataSet() throws Exception {
 
-		List<DataSet> dataSets = new ArrayList<>();
-		dataSets.add(this.createExistingMeansDataSet());
-		Mockito.when(this.studyDataManager.getDataSetsByType(Matchers.anyInt(), (DataSetType) Matchers.anyObject())).thenReturn(dataSets);
+		// import with existing means data
+		List<DataSet> meansDataSets = new ArrayList<>();
+		meansDataSets.add(this.createExistingMeansDataSet());
+		Mockito.doReturn(meansDataSets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
+		
+		List<DataSet> summaryDatasets = new ArrayList<>();
+		summaryDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
+
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
+
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
-		Mockito.when(this.studyDataManager.getDataSet(this.MEASUREMENT_DATASET_ID)).thenReturn(this.createMeasurementDataSet());
-		Mockito.when(this.studyDataManager.getDataSet(this.EXISTING_MEANS_DATASET_ID)).thenReturn(this.createExistingMeansDataSet());
-		Mockito.when(this.studyDataManager.getStudy(Matchers.anyInt())).thenReturn(this.study);
-		Mockito.when(
-				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
-		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
-		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
-				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
-		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
-				Mockito.mock(StandardVariable.class));
-		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
-
+		Mockito.doNothing().when(this.studyDataManager).addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
-		Mockito.verify(this.service).appendVariableTypesToExistingMeans((String[]) Matchers.anyObject(), Matchers.any(DataSet.class),
-				Matchers.any(DataSet.class), Matchers.anyString());
+		Mockito.verify(this.studyDataManager, Mockito.times(0)).addDataSetVariableType(Matchers.anyInt(),
+				Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
@@ -228,36 +229,32 @@ public class BreedingViewImportServiceImplTest {
 
 		this.variateVariableTypes.add(this.createVariateVariableType("EXTRAIT"));
 		DataSet measurementDataSet = this.createMeasurementDataSet();
+		List<DataSet> plotDataDatasets = new ArrayList<>();
+		plotDataDatasets.add(measurementDataSet);
+		Mockito.doReturn(plotDataDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.PLOT_DATA);
+		
+		List<DataSet> summaryDatasets = new ArrayList<>();
+		summaryDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
-		List<DataSet> dataSets = new ArrayList<>();
-		dataSets.add(this.createExistingMeansDataSet());
-		Mockito.when(this.studyDataManager.getDataSetsByType(Matchers.anyInt(), (DataSetType) Matchers.anyObject())).thenReturn(dataSets);
+		// import with existing means data
+		List<DataSet> meansDataSets = new ArrayList<>();
+		meansDataSets.add(this.createExistingMeansDataSet());
+		Mockito.doReturn(meansDataSets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
+
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
-		Mockito.when(this.service.getPlotDataSet(this.STUDY_ID)).thenReturn(measurementDataSet);
-		Mockito.when(this.studyDataManager.getDataSet(this.EXISTING_MEANS_DATASET_ID)).thenReturn(this.createExistingMeansDataSet());
-		Mockito.when(this.studyDataManager.getStudy(Matchers.anyInt())).thenReturn(this.study);
-		Mockito.when(
-				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
-		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
-		Mockito.when(this.ontologyDataManager.addMethod(Matchers.anyString(), Matchers.anyString())).thenReturn(
-				this.createTerm(this.LS_MEAN_ID, this.LS_MEAN));
-		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt())).thenReturn(null);
-		Mockito.when(this.ontologyDataManager.getStandardVariable(Matchers.anyInt(), Matchers.anyString())).thenReturn(
-				Mockito.mock(StandardVariable.class));
-		Mockito.when(this.studyDataManager.getProject(Matchers.anyInt())).thenReturn(this.dmsProject);
+		Mockito.doNothing().when(this.studyDataManager).addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
 
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
-		Mockito.verify(this.service).appendVariableTypesToExistingMeans((String[]) Matchers.anyObject(), Matchers.any(DataSet.class),
-				Matchers.any(DataSet.class), Matchers.anyString());
+		Mockito.verify(this.studyDataManager, Mockito.times(2)).addDataSetVariableType(Matchers.anyInt(),
+				Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
@@ -283,14 +280,18 @@ public class BreedingViewImportServiceImplTest {
 	@Test
 	public void testImportSummaryStatsData() throws Exception {
 
-		Mockito.doReturn(this.createTrialDataSet()).when(this.service).getTrialDataSet(this.TRIAL_DATASET_ID);
+		List<DataSet> summaryDataDatasets = new ArrayList<>();
+		summaryDataDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.createTrialEnvironments());
 
-		Mockito.when(this.ontologyDataManager.findMethodByName(Matchers.anyString())).thenReturn(this.createTerm(888, "DUMMYTERM"));
-		Mockito.when(
-				this.ontologyDataManager.getStandardVariableIdByPropertyIdScaleIdMethodId(Matchers.anyInt(), Matchers.anyInt(),
-						Matchers.anyInt())).thenReturn(null);
+		CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
+		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
+		Mockito.doReturn(this.createCVTerm(888, "DUMMYTERM")).when(cvTermDao).getByNameAndCvId("DUMMYTERM", CvId.METHODS.getId());
+
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
 
 		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummary.csv").toURI());
 		this.service.importSummaryStatsData(file, this.STUDY_ID);
@@ -298,10 +299,6 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.studyDataManager).saveTrialDatasetSummary(Matchers.any(DmsProject.class), Matchers.any(VariableTypeList.class),
 				Matchers.anyList(), Matchers.anyList());
 
-	}
-
-	private Term createTerm(int id, String name) {
-		return new Term(id, name, "");
 	}
 
 	private DataSet createTrialDataSet() {
@@ -407,7 +404,7 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setName(localName);
 		variate.setLocalName(localName);
 		variate.setStandardVariable(variateStandardVar);
-		variate.setRole(PhenotypicType.VARIATE);
+		variate.setRole(variateStandardVar.getPhenotypicType());
 
 		return variate;
 	}
@@ -445,6 +442,7 @@ public class BreedingViewImportServiceImplTest {
 		variateStandardVar.setDataType(dataType);
 		variate.setLocalName(localName);
 		variate.setStandardVariable(variateStandardVar);
+		variate.setRole(variateStandardVar.getPhenotypicType());
 
 		return variate;
 	}
@@ -458,7 +456,7 @@ public class BreedingViewImportServiceImplTest {
 		factorStandardVar.setName(localName);
 		factor.setLocalName(localName);
 		factor.setStandardVariable(factorStandardVar);
-
+		factor.setRole(factorStandardVar.getPhenotypicType());
 		return factor;
 	}
 
@@ -489,6 +487,7 @@ public class BreedingViewImportServiceImplTest {
 		factorStandardVar.setDataType(dataType);
 		factor.setLocalName(localName);
 		factor.setStandardVariable(factorStandardVar);
+		factor.setRole(factorStandardVar.getPhenotypicType());
 
 		return factor;
 	}
