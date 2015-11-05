@@ -17,7 +17,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
@@ -25,7 +24,6 @@ import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
-import org.generationcp.commons.service.FileService;
 import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.commons.util.StringUtil;
 import org.slf4j.Logger;
@@ -37,11 +35,12 @@ import au.com.bytecode.opencsv.CSVWriter;
  * see {@link org.generationcp.commons.service.GermplasmExportService} documentation
  */
 public class GermplasmExportServiceImpl implements GermplasmExportService {
-
-	private static final Logger LOG = LoggerFactory.getLogger(GermplasmExportServiceImpl.class);
-
+	
+	// create workbook
 	@Resource
-	private FileService fileService;
+	private GermplasmExportedWorkbook wb;
+	
+	private static final Logger LOG = LoggerFactory.getLogger(GermplasmExportServiceImpl.class);
 
 	private String templateFile;
 
@@ -195,17 +194,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	@Override
 	public FileOutputStream generateGermplasmListExcelFile(final GermplasmListExportInputValues input)
 			throws GermplasmListExporterException {
-
-		// create workbook
-		final GermplasmExportedWorkbook wb;
-		try {
-			final HSSFWorkbook hssWb = (HSSFWorkbook) this.fileService.retrieveWorkbookTemplate(this.templateFile);
-			wb = new GermplasmExportedWorkbook(hssWb, input);
-		} catch (InvalidFormatException | IOException e) {
-			GermplasmExportServiceImpl.LOG.error(e.getMessage(), e);
-			throw new GermplasmListExporterException();
-		}
-
+		wb.init(input);
 		final String filename = input.getFileName();
 		try {
 			// write the excel file
@@ -223,6 +212,4 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	public void setTemplateFile(final String templateFile) {
 		this.templateFile = templateFile;
 	}
-
-
 }
