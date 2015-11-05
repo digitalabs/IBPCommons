@@ -71,6 +71,22 @@ public class GermplasmExportedWorkbook {
 	@Resource
 	private CodesSheetGenerator codesSheetGenerator;
 	
+	/**
+	 * Default constructor
+	 */
+	public GermplasmExportedWorkbook() {
+	}
+	
+	/**
+	 * Test constructor
+	 * @param codesSheetGenerator mock codesSheetGenerator
+	 */
+	public GermplasmExportedWorkbook(final CodesSheetGenerator codesSheetGenerator) {
+		this.codesSheetGenerator = codesSheetGenerator;
+	}
+	
+
+	
 	public void init(final GermplasmListExportInputValues input){
 		this.wb = new HSSFWorkbook();
 		this.input = input;

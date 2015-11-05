@@ -16,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.parsing.GermplasmExportTestHelper;
+import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
@@ -38,7 +39,7 @@ public class GermplasmExportServiceImplTest {
 	private FileService fileService;
 
 	@InjectMocks
-	private final GermplasmExportServiceImpl germplasmExportService  = new GermplasmExportServiceImpl();
+	private final GermplasmExportServiceImpl germplasmExportService  = new GermplasmExportServiceImpl(Mockito.mock(GermplasmExportedWorkbook.class));
 
 	private List<ExportColumnHeader> columnsHeaders;
 	private List<Map<Integer, ExportColumnValue>> columnValues;
