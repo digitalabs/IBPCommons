@@ -9,12 +9,15 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.generationcp.commons.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
 import org.junit.Test;
+import org.mockito.Mockito;
+
 import junit.framework.Assert;
 
 public class GermplasmExportedWorkbookTest {
@@ -23,7 +26,7 @@ public class GermplasmExportedWorkbookTest {
 
 	@Test
 	public void testGetNoOfVisibleColumns() {
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook();
+		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
 		germplasmExportedWorkbook.init(input);
 		Assert.assertTrue("Expected that the number of visibleColums = " + this.input.getVisibleColumnMap().size(),
 				germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap()) == this.input.getVisibleColumnMap()
@@ -45,7 +48,7 @@ public class GermplasmExportedWorkbookTest {
 		final ExcelCellStyleBuilder styles = new ExcelCellStyleBuilder(wb);
 
 		// to test
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook();
+		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
 		germplasmExportedWorkbook.init(input);
 
 		final HSSFSheet observationSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Observation");
@@ -145,7 +148,7 @@ public class GermplasmExportedWorkbookTest {
 		final Map<Integer, Variable> variateVariables = this.input.getVariateVariableMap();
 
 		// to test
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook();
+		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
 		germplasmExportedWorkbook.init(input);
 
 		final HSSFSheet descriptionSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Description");
