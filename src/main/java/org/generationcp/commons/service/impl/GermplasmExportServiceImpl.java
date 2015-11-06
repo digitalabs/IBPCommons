@@ -44,6 +44,21 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 
 	private String templateFile;
 
+	/**
+	 * Default constructor for spring
+	 */
+	public GermplasmExportServiceImpl() {
+		
+	}
+	
+	/**
+	 * Test constructor
+	 * @param wb mock {@link GermplasmExportedWorkbook}
+	 */
+	public GermplasmExportServiceImpl(final GermplasmExportedWorkbook wb) {
+		this.wb = wb;
+	}
+	
 	@Override
 	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
 			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath) throws IOException {
