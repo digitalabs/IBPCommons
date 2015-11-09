@@ -126,16 +126,16 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 				if (meansDataSet != null) {
 					meansDataSet =
-							this.appendVariableTypesToExistingMeans(csvHeader, plotDataSet, meansDataSet, programUUID, lsMean,
+							this.appendVariableTypesToExistingMeans(csvHeader, this.plotDataSet, meansDataSet, programUUID, lsMean,
 									errorEstimate);
 					meansDataSetExists = true;
 				} else {
 					meansDataSet =
-							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, plotDataSet, programUUID,
-									lsMean, errorEstimate);
+							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, this.plotDataSet,
+									programUUID, lsMean, errorEstimate);
 				}
 
-				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, plotDataSet.getId(),
+				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, this.plotDataSet.getId(),
 						trialDataSet.getId());
 
 			}
@@ -169,7 +169,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			for (int j = 2; j < csvHeader.length; j++) {
 				final String meansVariable = csvHeader[j];
 				if (meansDataSetExists && meansDataSet.getVariableTypes().getVariates().findByLocalName(meansVariable) == null) {
-						continue;
+					continue;
 				}
 
 				final String variableValue = traitsAndMeans.get(meansVariable).get(i).trim();
@@ -211,14 +211,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final DatasetValues datasetValues = new DatasetValues();
 		datasetValues.setVariables(meansVariableList);
 
-		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_NAME.getId(), datasetName,
-				"Dataset name (local)", datasetName, 1, programUUID, PhenotypicType.DATASET),meansVariableList, meansVariableTypeList);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_NAME.getId(), datasetName, "Dataset name (local)",
+				datasetName, 1, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
-		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TITLE.getId(), "DATASET_TITLE",
-				"Dataset title (local)", "My Dataset Description", 2, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TITLE.getId(), "DATASET_TITLE", "Dataset title (local)",
+				"My Dataset Description", 2, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
-		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE",
-				"Dataset type (local)", "10070", 3, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE", "Dataset type (local)", "10070",
+				3, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
 		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
 
@@ -259,13 +259,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 	}
 
-	private void addMeansVariableToLists(final Variable variable, final VariableList meansVariableList, final VariableTypeList meansVariableTypeList) {
+	private void addMeansVariableToLists(final Variable variable, final VariableList meansVariableList,
+			final VariableTypeList meansVariableTypeList) {
 		meansVariableList.add(variable);
 		meansVariableTypeList.add(variable.getVariableType());
 	}
-	
-	private Variable createMeansVariable(final int ontologyVariableId, final String name, final String definition, final String value, final int rank,
-			final String programUUID, final PhenotypicType phenotypicType) {
+
+	private Variable createMeansVariable(final int ontologyVariableId, final String name, final String definition, final String value,
+			final int rank, final String programUUID, final PhenotypicType phenotypicType) {
 		final Variable variable = this.createVariable(ontologyVariableId, value, rank, programUUID, phenotypicType);
 		final VariableType variableType = this.getVariableTypeByPhenotypicType(phenotypicType);
 		this.updateDMSVariableType(variable.getVariableType(), name, definition, variableType);
@@ -273,8 +274,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	private VariableType getVariableTypeByPhenotypicType(final PhenotypicType phenotypicType) {
-		//this will map the variable type of the means dataset variables
-		//the only valid variable types are study detail, environment detail, germplasm descriptor and analysis
+		// this will map the variable type of the means dataset variables
+		// the only valid variable types are study detail, environment detail, germplasm descriptor and analysis
 		if (PhenotypicType.DATASET == phenotypicType) {
 			return VariableType.STUDY_DETAIL;
 		} else if (PhenotypicType.TRIAL_ENVIRONMENT == phenotypicType) {
