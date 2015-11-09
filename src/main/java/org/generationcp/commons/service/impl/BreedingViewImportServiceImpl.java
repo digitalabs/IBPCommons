@@ -270,14 +270,17 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		meansVariableList.add(variable);
 
 		final VariableType variableType = this.getVariableTypeByPhenotypicType(phenotypicType);
-		this.updateVariableType(variable.getVariableType(), name, definition, variableType);
+		this.updateDMSVariableType(variable.getVariableType(), name, definition, variableType);
 		meansVariableTypeList.add(variable.getVariableType());
 	}
 
 	private VariableType getVariableTypeByPhenotypicType(final PhenotypicType phenotypicType) {
-
+		//this will map the variable type of the means dataset variables
+		//the only valid variable types are study detail, environment detail, germplasm descriptor and analysis
 		if (PhenotypicType.DATASET == phenotypicType) {
 			return VariableType.STUDY_DETAIL;
+		} else if (PhenotypicType.TRIAL_ENVIRONMENT == phenotypicType) {
+			return VariableType.ENVIRONMENT_DETAIL;
 		} else if (PhenotypicType.GERMPLASM == phenotypicType) {
 			return VariableType.GERMPLASM_DESCRIPTOR;
 		} else {
@@ -713,7 +716,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return var;
 	}
 
-	protected void updateVariableType(final DMSVariableType type, final String name, final String description,
+	protected void updateDMSVariableType(final DMSVariableType type, final String name, final String description,
 			final VariableType variableType) {
 		type.setLocalName(name);
 		type.setLocalDescription(description);
