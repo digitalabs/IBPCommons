@@ -155,6 +155,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		final List<String> environments = traitsAndMeans.get(envHeader);
 		for (int i = 0; i < environments.size(); i++) {
+			// Unfortunately, Breeding View cannot handle double quotes in CSV. Because of that, variables in the CSV file with comma are
+			// replaced with semicolon
+			// So in comparison, we need to replace semicolon with comma again
 			final String envName = environments.get(i).replace(";", ",");
 			final Integer ndGeolocationId = envNameToNdGeolocationIdMap.get(envName);
 			final String entryNo = traitsAndMeans.get(entryNoHeader).get(i);
@@ -435,6 +438,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final TrialEnvironments trialEnvironments =
 				this.studyDataManager.getTrialEnvironmentsInDataset(this.getTrialDataSet(studyId).getId());
 		for (final String env : environments) {
+			// Unfortunately, Breeding View cannot handle double quotes in CSV. Because of that, variables in the CSV file with comma are
+			// replaced with semicolon
+			// So in comparison, we need to replace semicolon with comma again
 			String envFactor = env.replace(";", ",");
 			TrialEnvironment trialEnv = trialEnvironments.findOnlyOneByLocalName(envFactorName, envFactor);
 			if (trialEnv == null) {
