@@ -99,15 +99,15 @@ public class BreedingViewImportServiceImplTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 
-		CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
+		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
 		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
-		Mockito.doReturn(this.createCVTerm(this.LS_MEAN_ID, this.LS_MEAN)).when(cvTermDao).getByNameAndCvId(this.LS_MEAN,
-				CvId.METHODS.getId());
+		Mockito.doReturn(this.createCVTerm(this.LS_MEAN_ID, this.LS_MEAN)).when(cvTermDao)
+		.getByNameAndCvId(this.LS_MEAN, CvId.METHODS.getId());
 		Mockito.doReturn(this.createCVTerm(this.ERROR_ESTIMATE_ID, this.ERROR_ESTIMATE)).when(cvTermDao)
 		.getByNameAndCvId(this.ERROR_ESTIMATE, CvId.METHODS.getId());
 
-		Mockito.doReturn(this.createDmsProject(this.STUDY_ID, this.STUDY_NAME, this.PROGRAM_UUID)).when(this.studyDataManager)
-		.getProject(this.STUDY_ID);
+		Mockito.doReturn(this.createDmsProject(this.STUDY_ID, this.STUDY_NAME, BreedingViewImportServiceImplTest.PROGRAM_UUID))
+				.when(this.studyDataManager).getProject(this.STUDY_ID);
 
 		this.factorVariableTypes.add(this.createTrialEnvironmentVariableType("TRIAL_INSTANCE"));
 		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("ENTRY_NO"));
@@ -127,7 +127,7 @@ public class BreedingViewImportServiceImplTest {
 		this.meansVariateVariableTypes.add(this.createVariateVariableType("FMSROT_Means", "", "", "LS MEAN"));
 		this.meansVariateVariableTypes.add(this.createVariateVariableType("FMSROT_UnitErrors", "", "", "ERROR ESTIMATE"));
 
-		List<DataSet> plotDatasets = new ArrayList<>();
+		final List<DataSet> plotDatasets = new ArrayList<>();
 		plotDatasets.add(this.createMeasurementDataSet());
 		Mockito.doReturn(plotDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.PLOT_DATA);
 
@@ -137,11 +137,11 @@ public class BreedingViewImportServiceImplTest {
 		this.service.setCloner(new Cloner());
 
 		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
-		.transformVariable(Mockito.any(org.generationcp.middleware.domain.ontology.Variable.class));
+		.transformVariable(Matchers.any(org.generationcp.middleware.domain.ontology.Variable.class));
 	}
 
-	private DmsProject createDmsProject(int id, String name, String programUUID) {
-		DmsProject study = new DmsProject();
+	private DmsProject createDmsProject(final int id, final String name, final String programUUID) {
+		final DmsProject study = new DmsProject();
 		study.setProjectId(id);
 		study.setName(name);
 		study.setProgramUUID(programUUID);
@@ -152,8 +152,8 @@ public class BreedingViewImportServiceImplTest {
 	public void testImportMeansData() throws Exception {
 		// import with no existing means data
 		Mockito.doReturn(null).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
-		
-		List<DataSet> summaryDatasets = new ArrayList<>();
+
+		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
 		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
@@ -164,12 +164,12 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
 
-		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
-		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Matchers.any(OntologyVariableInfo.class));
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
 
-		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
@@ -182,13 +182,13 @@ public class BreedingViewImportServiceImplTest {
 	}
 
 	private Stocks createStocksTestData() {
-		Stocks stocks = new Stocks();
+		final Stocks stocks = new Stocks();
 		// TODO
 		return stocks;
 	}
 
-	private CVTerm createCVTerm(int cvTermId, String name) {
-		CVTerm cvTerm = new CVTerm();
+	private CVTerm createCVTerm(final int cvTermId, final String name) {
+		final CVTerm cvTerm = new CVTerm();
 		cvTerm.setCvTermId(cvTermId);
 		cvTerm.setName(name);
 		return cvTerm;
@@ -198,22 +198,22 @@ public class BreedingViewImportServiceImplTest {
 	public void testImportMeansDataWithExistingMeansDataSet() throws Exception {
 
 		// import with existing means data
-		List<DataSet> meansDataSets = new ArrayList<>();
+		final List<DataSet> meansDataSets = new ArrayList<>();
 		meansDataSets.add(this.createExistingMeansDataSet());
 		Mockito.doReturn(meansDataSets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
-		
-		List<DataSet> summaryDatasets = new ArrayList<>();
+
+		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
 		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
-		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
-		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Matchers.any(OntologyVariableInfo.class));
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
 
 		Mockito.doNothing().when(this.studyDataManager).addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
 
-		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
@@ -228,17 +228,17 @@ public class BreedingViewImportServiceImplTest {
 	public void testImportMeansDataWithExistingMeansDataAndAdditionalTraits() throws Exception {
 
 		this.variateVariableTypes.add(this.createVariateVariableType("EXTRAIT"));
-		DataSet measurementDataSet = this.createMeasurementDataSet();
-		List<DataSet> plotDataDatasets = new ArrayList<>();
+		final DataSet measurementDataSet = this.createMeasurementDataSet();
+		final List<DataSet> plotDataDatasets = new ArrayList<>();
 		plotDataDatasets.add(measurementDataSet);
 		Mockito.doReturn(plotDataDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.PLOT_DATA);
-		
-		List<DataSet> summaryDatasets = new ArrayList<>();
+
+		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
 		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
 		// import with existing means data
-		List<DataSet> meansDataSets = new ArrayList<>();
+		final List<DataSet> meansDataSets = new ArrayList<>();
 		meansDataSets.add(this.createExistingMeansDataSet());
 		Mockito.doReturn(meansDataSets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
 
@@ -246,10 +246,10 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.doNothing().when(this.studyDataManager).addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
 
-		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
-		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Matchers.any(OntologyVariableInfo.class));
 
-		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithAdditionalTraits.csv").toURI());
 
 		this.service.importMeansData(file, this.STUDY_ID);
 
@@ -263,7 +263,7 @@ public class BreedingViewImportServiceImplTest {
 	@Test
 	public void testImportOutlierData() throws Exception {
 
-		List<Object[]> phenotypeIds = new ArrayList<>();
+		final List<Object[]> phenotypeIds = new ArrayList<>();
 		phenotypeIds.add(new Object[] {"76373", "9999", "1"});
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.createTrialEnvironments());
@@ -271,7 +271,7 @@ public class BreedingViewImportServiceImplTest {
 				this.studyDataManager.getPhenotypeIdsByLocationAndPlotNo(Matchers.anyInt(), Matchers.anyInt(), Matchers.anyInt(),
 						Matchers.anyList())).thenReturn(phenotypeIds);
 
-		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutlier.csv").toURI());
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutlier.csv").toURI());
 		this.service.importOutlierData(file, this.STUDY_ID);
 
 		Mockito.verify(this.studyDataManager).saveOrUpdatePhenotypeOutliers(Matchers.anyList());
@@ -280,20 +280,20 @@ public class BreedingViewImportServiceImplTest {
 	@Test
 	public void testImportSummaryStatsData() throws Exception {
 
-		List<DataSet> summaryDataDatasets = new ArrayList<>();
+		final List<DataSet> summaryDataDatasets = new ArrayList<>();
 		summaryDataDatasets.add(this.createTrialDataSet());
 		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.createTrialEnvironments());
 
-		CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
+		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
 		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
 		Mockito.doReturn(this.createCVTerm(888, "DUMMYTERM")).when(cvTermDao).getByNameAndCvId("DUMMYTERM", CvId.METHODS.getId());
 
-		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Mockito.any(VariableFilter.class));
-		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Mockito.any(OntologyVariableInfo.class));
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Matchers.any(OntologyVariableInfo.class));
 
-		File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummary.csv").toURI());
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummary.csv").toURI());
 		this.service.importSummaryStatsData(file, this.STUDY_ID);
 
 		Mockito.verify(this.studyDataManager).saveTrialDatasetSummary(Matchers.any(DmsProject.class), Matchers.any(VariableTypeList.class),
@@ -303,16 +303,16 @@ public class BreedingViewImportServiceImplTest {
 
 	private DataSet createTrialDataSet() {
 
-		DataSet dataSet = new DataSet();
+		final DataSet dataSet = new DataSet();
 		dataSet.setId(this.TRIAL_DATASET_ID);
 
-		VariableTypeList variableTypes = new VariableTypeList();
+		final VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (DMSVariableType factor : this.factorVariableTypes) {
+		for (final DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (DMSVariableType variate : this.variateVariableTypes) {
+		for (final DMSVariableType variate : this.variateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -321,16 +321,16 @@ public class BreedingViewImportServiceImplTest {
 
 	private DataSet createMeasurementDataSet() {
 
-		DataSet dataSet = new DataSet();
+		final DataSet dataSet = new DataSet();
 		dataSet.setId(this.MEASUREMENT_DATASET_ID);
 
-		VariableTypeList variableTypes = new VariableTypeList();
+		final VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (DMSVariableType factor : this.factorVariableTypes) {
+		for (final DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (DMSVariableType variate : this.variateVariableTypes) {
+		for (final DMSVariableType variate : this.variateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -339,16 +339,16 @@ public class BreedingViewImportServiceImplTest {
 
 	private DataSet createNewMeansDataSet() {
 
-		DataSet dataSet = new DataSet();
+		final DataSet dataSet = new DataSet();
 		dataSet.setId(this.NEW_MEANS_DATASET_ID);
 
-		VariableTypeList variableTypes = new VariableTypeList();
+		final VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (DMSVariableType factor : this.factorVariableTypes) {
+		for (final DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (DMSVariableType variate : this.meansVariateVariableTypes) {
+		for (final DMSVariableType variate : this.meansVariateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
@@ -357,42 +357,42 @@ public class BreedingViewImportServiceImplTest {
 
 	private DataSet createExistingMeansDataSet() {
 
-		DataSet dataSet = new DataSet();
+		final DataSet dataSet = new DataSet();
 		dataSet.setId(this.EXISTING_MEANS_DATASET_ID);
 
-		VariableTypeList variableTypes = new VariableTypeList();
+		final VariableTypeList variableTypes = new VariableTypeList();
 
 		dataSet.setVariableTypes(variableTypes);
-		for (DMSVariableType factor : this.factorVariableTypes) {
+		for (final DMSVariableType factor : this.factorVariableTypes) {
 			dataSet.getVariableTypes().add(factor);
 		}
-		for (DMSVariableType variate : this.meansVariateVariableTypes) {
+		for (final DMSVariableType variate : this.meansVariateVariableTypes) {
 			dataSet.getVariableTypes().add(variate);
 		}
 
 		return dataSet;
 	}
 
-	private DMSVariableType createVariateVariableType(String localName) {
-		DMSVariableType variate = new DMSVariableType();
-		StandardVariable variateStandardVar = new StandardVariable();
+	private DMSVariableType createVariateVariableType(final String localName) {
+		final DMSVariableType variate = new DMSVariableType();
+		final StandardVariable variateStandardVar = new StandardVariable();
 		variateStandardVar.setPhenotypicType(PhenotypicType.VARIATE);
 
-		Term storedIn = new Term();
+		final Term storedIn = new Term();
 		storedIn.setId(TermId.OBSERVATION_VARIATE.getId());
 
-		Term dataType = new Term();
+		final Term dataType = new Term();
 		dataType.setId(TermId.NUMERIC_VARIABLE.getId());
 
-		Term method = new Term();
+		final Term method = new Term();
 		method.setId(1111);
 		method.setDefinition(this.EMPTY_VALUE);
 
-		Term scale = new Term();
+		final Term scale = new Term();
 		scale.setDefinition(this.EMPTY_VALUE);
 		scale.setId(22222);
 
-		Term property = new Term();
+		final Term property = new Term();
 		scale.setDefinition(this.EMPTY_VALUE);
 		scale.setId(33333);
 
@@ -409,28 +409,29 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private DMSVariableType createVariateVariableType(String localName, String propertyName, String scaleName, String methodName) {
-		DMSVariableType variate = new DMSVariableType();
-		StandardVariable variateStandardVar = new StandardVariable();
+	private DMSVariableType createVariateVariableType(final String localName, final String propertyName, final String scaleName,
+			final String methodName) {
+		final DMSVariableType variate = new DMSVariableType();
+		final StandardVariable variateStandardVar = new StandardVariable();
 		variateStandardVar.setPhenotypicType(PhenotypicType.VARIATE);
 
-		Term storedIn = new Term();
+		final Term storedIn = new Term();
 		storedIn.setId(TermId.OBSERVATION_VARIATE.getId());
 
-		Term dataType = new Term();
+		final Term dataType = new Term();
 		dataType.setId(TermId.NUMERIC_VARIABLE.getId());
 
-		Term method = new Term();
+		final Term method = new Term();
 		method.setId(1111);
 		method.setDefinition(this.EMPTY_VALUE);
 		method.setName(methodName);
 
-		Term scale = new Term();
+		final Term scale = new Term();
 		scale.setDefinition(this.EMPTY_VALUE);
 		scale.setId(22222);
 		scale.setName(scaleName);
 
-		Term property = new Term();
+		final Term property = new Term();
 		property.setDefinition(this.EMPTY_VALUE);
 		property.setId(33333);
 		property.setName(propertyName);
@@ -447,10 +448,10 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private DMSVariableType createTrialEnvironmentVariableType(String localName) {
+	private DMSVariableType createTrialEnvironmentVariableType(final String localName) {
 
-		DMSVariableType factor = new DMSVariableType();
-		StandardVariable factorStandardVar = new StandardVariable();
+		final DMSVariableType factor = new DMSVariableType();
+		final StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setId(TermId.LOCATION_ID.getId());
 		factorStandardVar.setPhenotypicType(PhenotypicType.TRIAL_ENVIRONMENT);
 		factorStandardVar.setName(localName);
@@ -460,23 +461,23 @@ public class BreedingViewImportServiceImplTest {
 		return factor;
 	}
 
-	private DMSVariableType createGermplasmFactorVariableType(String localName) {
-		DMSVariableType factor = new DMSVariableType();
-		StandardVariable factorStandardVar = new StandardVariable();
+	private DMSVariableType createGermplasmFactorVariableType(final String localName) {
+		final DMSVariableType factor = new DMSVariableType();
+		final StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setPhenotypicType(PhenotypicType.GERMPLASM);
 
-		Term dataType = new Term();
+		final Term dataType = new Term();
 		dataType.setId(TermId.NUMERIC_DBID_VARIABLE.getId());
 
-		Term method = new Term();
+		final Term method = new Term();
 		method.setId(1111);
 		method.setDefinition(this.EMPTY_VALUE);
 
-		Term scale = new Term();
+		final Term scale = new Term();
 		scale.setDefinition(this.EMPTY_VALUE);
 		scale.setId(22222);
 
-		Term property = new Term();
+		final Term property = new Term();
 		scale.setDefinition(this.EMPTY_VALUE);
 		scale.setId(33333);
 
@@ -494,7 +495,7 @@ public class BreedingViewImportServiceImplTest {
 
 	private TrialEnvironments createTrialEnvironments() {
 
-		TrialEnvironments trialEnvs = new TrialEnvironments();
+		final TrialEnvironments trialEnvs = new TrialEnvironments();
 		trialEnvs.add(this.createTrialEnvironment());
 		return trialEnvs;
 
@@ -502,29 +503,29 @@ public class BreedingViewImportServiceImplTest {
 
 	private TrialEnvironment createTrialEnvironment() {
 
-		LocationDto location = new LocationDto(1, "CIMMYT");
-		VariableList variableList = new VariableList();
+		final LocationDto location = new LocationDto(1, "CIMMYT");
+		final VariableList variableList = new VariableList();
 
 		this.addVariables(variableList);
 
-		TrialEnvironment trialEnv = new TrialEnvironment(1, variableList);
+		final TrialEnvironment trialEnv = new TrialEnvironment(1, variableList);
 		trialEnv.setLocation(location);
 
 		return trialEnv;
 
 	}
 
-	private void addVariables(VariableList list) {
-		for (DMSVariableType f : this.factorVariableTypes) {
+	private void addVariables(final VariableList list) {
+		for (final DMSVariableType f : this.factorVariableTypes) {
 			list.add(this.createVariable(f));
 		}
-		for (DMSVariableType v : this.variateVariableTypes) {
+		for (final DMSVariableType v : this.variateVariableTypes) {
 			list.add(this.createVariable(v));
 		}
 	}
 
-	private Variable createVariable(DMSVariableType variableType) {
-		Variable v = new Variable();
+	private Variable createVariable(final DMSVariableType variableType) {
+		final Variable v = new Variable();
 		if (variableType.getLocalName().equals("TRIAL_INSTANCE")) {
 			v.setValue("1");
 		} else {
