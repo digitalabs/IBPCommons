@@ -122,7 +122,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 
 				DataSet meansDataSet = this.getMeansDataSet(studyId);
-				final DataSet plotDataSet = this.getPlotDataSet(studyId);
+				this.getPlotDataSet(studyId);
 				final DataSet trialDataSet = this.getTrialDataSet(studyId);
 
 				if (meansDataSet != null) {
@@ -988,17 +988,17 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		public void validate() throws BreedingViewInvalidFormatException {
 
 			CSVReader reader;
-			String[] header = new String[] {};
+			String[] fileHeaders = new String[] {};
 
 			try {
 				reader = new CSVReader(new FileReader(this.file));
-				header = reader.readNext();
+				fileHeaders = reader.readNext();
 				reader.close();
 			} catch (final Exception e) {
 				throw new BreedingViewInvalidFormatException("A problem occurred while reading the Summary Statistics data file", e);
 			}
 
-			final List<String> headerList = Arrays.asList(header);
+			final List<String> headerList = Arrays.asList(fileHeaders);
 
 			if (!headerList
 					.containsAll(Arrays
