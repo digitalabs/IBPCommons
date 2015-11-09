@@ -168,10 +168,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			for (int j = 2; j < csvHeader.length; j++) {
 				final String meansVariable = csvHeader[j];
-				if (meansDataSetExists) {
-					if (meansDataSet.getVariableTypes().getVariates().findByLocalName(meansVariable) == null) {
+				if (meansDataSetExists && meansDataSet.getVariableTypes().getVariates().findByLocalName(meansVariable) == null) {
 						continue;
-					}
 				}
 
 				final String variableValue = traitsAndMeans.get(meansVariable).get(i).trim();
