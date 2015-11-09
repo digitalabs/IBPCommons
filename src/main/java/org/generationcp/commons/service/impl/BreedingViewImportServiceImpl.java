@@ -211,14 +211,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final DatasetValues datasetValues = new DatasetValues();
 		datasetValues.setVariables(meansVariableList);
 
-		this.createMeansVariableAndAddToLists(meansVariableList, meansVariableTypeList, TermId.DATASET_NAME.getId(), datasetName,
-				"Dataset name (local)", datasetName, 1, programUUID, PhenotypicType.DATASET);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_NAME.getId(), datasetName,
+				"Dataset name (local)", datasetName, 1, programUUID, PhenotypicType.DATASET),meansVariableList, meansVariableTypeList);
 
-		this.createMeansVariableAndAddToLists(meansVariableList, meansVariableTypeList, TermId.DATASET_TITLE.getId(), "DATASET_TITLE",
-				"Dataset title (local)", "My Dataset Description", 2, programUUID, PhenotypicType.DATASET);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TITLE.getId(), "DATASET_TITLE",
+				"Dataset title (local)", "My Dataset Description", 2, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
-		this.createMeansVariableAndAddToLists(meansVariableList, meansVariableTypeList, TermId.DATASET_TYPE.getId(), "DATASET_TYPE",
-				"Dataset type (local)", "10070", 3, programUUID, PhenotypicType.DATASET);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE",
+				"Dataset type (local)", "10070", 3, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
 		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
 
@@ -259,16 +259,17 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 	}
 
-	private void createMeansVariableAndAddToLists(final VariableList meansVariableList, final VariableTypeList meansVariableTypeList,
-			final int ontologyVariableId, final String name, final String definition, final String value, final int rank,
-			final String programUUID, final PhenotypicType phenotypicType) {
-
-		final Variable variable = this.createVariable(ontologyVariableId, value, rank, programUUID, phenotypicType);
+	private void addMeansVariableToLists(final Variable variable, final VariableList meansVariableList, final VariableTypeList meansVariableTypeList) {
 		meansVariableList.add(variable);
-
+		meansVariableTypeList.add(variable.getVariableType());
+	}
+	
+	private Variable createMeansVariable(final int ontologyVariableId, final String name, final String definition, final String value, final int rank,
+			final String programUUID, final PhenotypicType phenotypicType) {
+		final Variable variable = this.createVariable(ontologyVariableId, value, rank, programUUID, phenotypicType);
 		final VariableType variableType = this.getVariableTypeByPhenotypicType(phenotypicType);
 		this.updateDMSVariableType(variable.getVariableType(), name, definition, variableType);
-		meansVariableTypeList.add(variable.getVariableType());
+		return variable;
 	}
 
 	private VariableType getVariableTypeByPhenotypicType(final PhenotypicType phenotypicType) {
