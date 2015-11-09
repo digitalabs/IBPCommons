@@ -554,7 +554,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.importOutlierData(file, studyId);
 	}
 
-	protected DataSet getPlotDataSet(final int studyId) throws MiddlewareException {
+	protected DataSet getPlotDataSet(final int studyId) {
 		if (this.plotDataSet != null) {
 			return this.plotDataSet;
 		} else {
@@ -563,12 +563,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return this.plotDataSet;
 	}
 
-	protected DataSet getTrialDataSet(final int studyId) throws MiddlewareException {
+	protected DataSet getTrialDataSet(final int studyId) {
 		return DatasetUtil.getTrialDataSet(this.studyDataManager, studyId);
 	}
 
 	protected DataSet appendVariableTypesToExistingMeans(final String[] csvHeader, final DataSet inputDataSet, final DataSet meansDataSet,
-			final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate) throws MiddlewareException {
+			final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate) {
 		final int numberOfMeansVariables = meansDataSet.getVariableTypes().getVariableTypes().size();
 		int rank = meansDataSet.getVariableTypes().getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
 		final Set<String> inputDataSetVariateNames =
@@ -699,7 +699,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	protected Variable createVariable(final int termId, final String value, final int rank, final String programUUID,
-			final PhenotypicType phenotypicType) throws MiddlewareException {
+			final PhenotypicType phenotypicType) {
 
 		final StandardVariable stVar = this.createStandardardVariable(termId, programUUID, phenotypicType);
 
@@ -720,7 +720,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		type.setVariableType(variableType);
 	}
 
-	protected Map<String, String> generateNameToAliasMap(final int studyId) throws MiddlewareException {
+	protected Map<String, String> generateNameToAliasMap(final int studyId) {
 
 		if (this.localNameToAliasMap != null) {
 			return this.localNameToAliasMap;
