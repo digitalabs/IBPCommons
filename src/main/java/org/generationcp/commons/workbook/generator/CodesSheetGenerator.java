@@ -13,7 +13,9 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.service.api.OntologyService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CodesSheetGenerator {
 
 	private static final int START_ROW = 0;
