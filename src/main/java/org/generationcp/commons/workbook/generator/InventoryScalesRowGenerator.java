@@ -9,7 +9,9 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.domain.oms.Scale;
 import org.generationcp.middleware.service.api.OntologyService;
+import org.springframework.stereotype.Component;
 
+@Component
 public class InventoryScalesRowGenerator extends CodesSheetRowGenerator<org.generationcp.middleware.domain.oms.Scale> {
 
 	@Resource
