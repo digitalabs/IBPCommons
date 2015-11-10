@@ -9,6 +9,7 @@ import org.apache.commons.lang.WordUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +17,11 @@ import org.springframework.stereotype.Component;
 public class ListTypeRowGenerator extends CodesSheetRowGenerator<UserDefinedField> {
 
 	@Resource
-	private GermplasmDataManager germplasmDataManager;
+	private GermplasmListManager germplasmListManager;
 
 	@Override
 	List<UserDefinedField> getSourceItem() {
-		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(),
-				RowColumnType.LIST_TYPE.getFtype());
+		return this.germplasmListManager.getGermplasmListTypes();
 	}
 
 	@Override
