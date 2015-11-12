@@ -6,13 +6,12 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.generationcp.commons.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -27,14 +26,14 @@ public class ListTypeRowGeneratorTest {
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
 
 	@Mock
-	GermplasmDataManager germplasmDataManager;
+	private GermplasmListManager germplasmListManager;
 
 	@InjectMocks
 	ListTypeRowGenerator listTypeRowGenerator;
 
 	@Before
 	public void setUp() {
-		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString()))
+		Mockito.when(this.germplasmListManager.getGermplasmListTypes())
 				.thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList());
 	}
 
