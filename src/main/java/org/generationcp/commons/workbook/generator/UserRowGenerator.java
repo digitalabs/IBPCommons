@@ -12,7 +12,9 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserRowGenerator extends CodesSheetRowGenerator<User> {
 
 	@Resource
