@@ -114,7 +114,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final String programUUID = study.getProgramUUID();
 
 			final Map<String, String> nameToAliasMap = this.generateNameToAliasMap(studyId);
-			final Map<String, ArrayList<String>> traitsAndMeans = new MeansCSV(file, nameToAliasMap).csvToMap();
+			final MeansCSV meansCSV = new MeansCSV(file, nameToAliasMap);
+			final Map<String, ArrayList<String>> traitsAndMeans = meansCSV.csvToMap();
+			final boolean hasDuplicateColumnsInFile = meansCSV.isHasDuplicateColumns();
 
 			if (!traitsAndMeans.isEmpty()) {
 
@@ -127,12 +129,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				if (meansDataSet != null) {
 					meansDataSet =
 							this.appendVariableTypesToExistingMeans(csvHeader, this.plotDataSet, meansDataSet, programUUID, lsMean,
-									errorEstimate);
+									errorEstimate, hasDuplicateColumnsInFile);
 					meansDataSetExists = true;
 				} else {
 					meansDataSet =
 							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, this.plotDataSet,
-									programUUID, lsMean, errorEstimate);
+									programUUID, lsMean, errorEstimate, hasDuplicateColumnsInFile);
 				}
 
 				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, this.plotDataSet.getId(),
@@ -207,7 +209,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	private DataSet createMeansDataset(final int studyId, final String datasetName, final String[] csvHeader, final DataSet plotDataSet,
-			final String programUUID, final CVTerm lSMean, final CVTerm errorEstimate) {
+			final String programUUID, final CVTerm lSMean, final CVTerm errorEstimate, final boolean hasDuplicateColumnsInFile) {
 
 		final VariableTypeList meansVariableTypeList = new VariableTypeList();
 		final VariableList meansVariableList = new VariableList();
@@ -226,7 +228,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
 
 		this.createMeansVariablesFromImportFileAndAddToList(csvHeader, plotDataSet.getVariableTypes().getVariates(), meansVariableTypeList,
-				programUUID, lSMean, errorEstimate);
+				programUUID, lSMean, errorEstimate, hasDuplicateColumnsInFile);
 
 		final DatasetReference datasetReference = this.studyDataManager.addDataSet(studyId, meansVariableTypeList, datasetValues, "");
 		return this.studyDataManager.getDataSet(datasetReference.getId());
@@ -234,10 +236,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	private void createMeansVariablesFromImportFileAndAddToList(final String[] csvHeader, final VariableTypeList plotVariates,
-			final VariableTypeList meansVariableTypeList, final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate) {
+			final VariableTypeList meansVariableTypeList, final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate,
+			final boolean hasDuplicateColumnsInFile) {
 		final int numberOfMeansVariables = meansVariableTypeList.getVariableTypes().size();
 		int rank = meansVariableTypeList.getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
-		final Set<String> inputDataSetVariateNames = this.getAllNewVariatesToProcess(csvHeader, null);
+		final Set<String> inputDataSetVariateNames = this.getAllNewVariatesToProcess(csvHeader, null, hasDuplicateColumnsInFile);
 		final Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
 		final Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
 
@@ -576,11 +579,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	protected DataSet appendVariableTypesToExistingMeans(final String[] csvHeader, final DataSet inputDataSet, final DataSet meansDataSet,
-			final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate) {
+			final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate, final boolean hasDuplicateColumnsInFile) {
 		final int numberOfMeansVariables = meansDataSet.getVariableTypes().getVariableTypes().size();
 		int rank = meansDataSet.getVariableTypes().getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
 		final Set<String> inputDataSetVariateNames =
-				this.getAllNewVariatesToProcess(csvHeader, meansDataSet.getVariableTypes().getVariates().getVariableTypes());
+				this.getAllNewVariatesToProcess(csvHeader, meansDataSet.getVariableTypes().getVariates().getVariableTypes(),
+						hasDuplicateColumnsInFile);
 		final Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
 		final Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
 		for (final String variateName : inputDataSetVariateNames) {
@@ -658,10 +662,15 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param existingMeansVariables - existing means variables in the means dataset of the study
 	 * @return Set<String> - unique list of new variates
 	 */
-	private Set<String> getAllNewVariatesToProcess(final String[] csvHeader, final List<DMSVariableType> existingMeansVariables) {
+	private Set<String> getAllNewVariatesToProcess(final String[] csvHeader, final List<DMSVariableType> existingMeansVariables,
+			final boolean hasDuplicateColumnsInFile) {
 		final Set<String> newVariateNames = new LinkedHashSet<>();
+		int variatesStartingIndex = 3;
+		if (hasDuplicateColumnsInFile) {
+			variatesStartingIndex = 2;
+		}
 		final List<String> inputDataSetVariateNames =
-				new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(csvHeader, 3, csvHeader.length)));
+				new ArrayList<String>(Arrays.asList(Arrays.copyOfRange(csvHeader, variatesStartingIndex, csvHeader.length)));
 
 		for (final String csvHeaderNames : inputDataSetVariateNames) {
 			final String variateName = csvHeaderNames.substring(0, csvHeaderNames.lastIndexOf("_"));
@@ -737,21 +746,32 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			final Map<String, String> nameAliasMap = new HashMap<>();
 
+			String entryNoName = null;
 			for (final Iterator<DMSVariableType> i = variateList.iterator(); i.hasNext();) {
 				final DMSVariableType k = i.next();
+				if (k.getStandardVariable().getId() == TermId.ENTRY_NO.getId()) {
+					entryNoName = k.getLocalName();
+				}
 				final String nameSanitized =
 						k.getLocalName().replaceAll(BreedingViewImportServiceImpl.REGEX_VALID_BREEDING_VIEW_CHARACTERS, "_");
 				nameAliasMap.put(nameSanitized, k.getLocalName());
 			}
 
+			this.mapDupeEntryNoToActualEntryNo(nameAliasMap, entryNoName);
 			return nameAliasMap;
 		}
+	}
+
+	// This will handle the duplicate entry no generated by Breeding View if ENTRY_NO is used a genotypes value
+	private void mapDupeEntryNoToActualEntryNo(final Map<String, String> nameAliasMap, final String entryNoName) {
+		nameAliasMap.put(entryNoName + "_1", entryNoName);
 	}
 
 	public class MeansCSV {
 
 		private final Map<String, String> nameToAliasMapping;
 		private final File file;
+		private boolean hasDuplicateColumns;
 
 		public MeansCSV(final File file, final Map<String, String> nameToAliasMapping) {
 			this.file = file;
@@ -763,7 +783,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final CSVReader reader = new CSVReader(new FileReader(this.file));
 			final Map<String, ArrayList<String>> csvMap = new LinkedHashMap<String, ArrayList<String>>();
 			final String[] header = reader.readNext();
-
+			// track columns to skip - they are skipped because they are duplicates
+			final List<Integer> columnIndexesToSkip = new ArrayList<>();
+			int columnIndex = 0;
 			for (final String headerCol : header) {
 				final String aliasLocalName =
 						headerCol.trim().replace(BreedingViewImportServiceImpl.MEANS_SUFFIX, "")
@@ -774,16 +796,27 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				if (actualLocalName == null) {
 					actualLocalName = aliasLocalName;
 				}
-				csvMap.put(headerCol.trim().replace(aliasLocalName, actualLocalName), new ArrayList<String>());
+
+				final String newHeaderName = headerCol.trim().replace(aliasLocalName, actualLocalName);
+				if (csvMap.containsKey(newHeaderName)) {
+					columnIndexesToSkip.add(columnIndex);
+					this.hasDuplicateColumns = true;
+				} else {
+					csvMap.put(newHeaderName, new ArrayList<String>());
+				}
+				columnIndex++;
 
 			}
 			final String[] trimHeader = csvMap.keySet().toArray(new String[0]);
 			String[] nextLine;
 			while ((nextLine = reader.readNext()) != null) {
-				if (nextLine != null) {
-					for (int i = 0; i < header.length; i++) {
-						csvMap.get(trimHeader[i]).add(nextLine[i].trim());
+				int uniqueColumnsIndex = 0;
+				for (int i = 0; i < header.length; i++) {
+					if (columnIndexesToSkip.contains(i)) {
+						continue;
 					}
+					csvMap.get(trimHeader[uniqueColumnsIndex]).add(nextLine[i].trim());
+					uniqueColumnsIndex++;
 				}
 			}
 
@@ -821,6 +854,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				throw new BreedingViewInvalidFormatException("Cannot parse the file because the format is invalid for MEANS data.");
 			}
 		}
+
+		public boolean isHasDuplicateColumns() {
+			return this.hasDuplicateColumns;
+		}
+
 	}
 
 	public class OutlierCSV {
