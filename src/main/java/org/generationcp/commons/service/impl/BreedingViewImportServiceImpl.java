@@ -123,21 +123,20 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 
 				DataSet meansDataSet = this.getMeansDataSet(studyId);
-				this.getPlotDataSet(studyId);
 				final DataSet trialDataSet = this.getTrialDataSet(studyId);
 
 				if (meansDataSet != null) {
 					meansDataSet =
-							this.appendVariableTypesToExistingMeans(csvHeader, this.plotDataSet, meansDataSet, programUUID, lsMean,
+							this.appendVariableTypesToExistingMeans(csvHeader, studyId, meansDataSet, programUUID, lsMean,
 									errorEstimate, hasDuplicateColumnsInFile);
 					meansDataSetExists = true;
 				} else {
 					meansDataSet =
-							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, this.plotDataSet,
-									programUUID, lsMean, errorEstimate, hasDuplicateColumnsInFile);
+							this.createMeansDataset(studyId, study.getName() + "-MEANS", csvHeader, programUUID, lsMean,
+									errorEstimate, hasDuplicateColumnsInFile);
 				}
 
-				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, this.plotDataSet.getId(),
+				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, this.getPlotDataSet(studyId).getId(),
 						trialDataSet.getId());
 
 			}
@@ -208,8 +207,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return envNameToGeolocationIdMap;
 	}
 
-	private DataSet createMeansDataset(final int studyId, final String datasetName, final String[] csvHeader, final DataSet plotDataSet,
-			final String programUUID, final CVTerm lSMean, final CVTerm errorEstimate, final boolean hasDuplicateColumnsInFile) {
+	private DataSet createMeansDataset(final int studyId, final String datasetName, final String[] csvHeader, final String programUUID,
+			final CVTerm lSMean, final CVTerm errorEstimate, final boolean hasDuplicateColumnsInFile) {
 
 		final VariableTypeList meansVariableTypeList = new VariableTypeList();
 		final VariableList meansVariableList = new VariableList();
@@ -225,10 +224,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE", "Dataset type (local)", "10070",
 				3, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
-		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
+		this.createMeansVariablesFromPlotDatasetAndAddToList(this.getPlotDataSet(studyId), meansVariableTypeList, 4);
 
-		this.createMeansVariablesFromImportFileAndAddToList(csvHeader, plotDataSet.getVariableTypes().getVariates(), meansVariableTypeList,
-				programUUID, lSMean, errorEstimate, hasDuplicateColumnsInFile);
+		this.createMeansVariablesFromImportFileAndAddToList(csvHeader, this.getPlotDataSet(studyId).getVariableTypes().getVariates(),
+				meansVariableTypeList, programUUID, lSMean, errorEstimate, hasDuplicateColumnsInFile);
 
 		final DatasetReference datasetReference = this.studyDataManager.addDataSet(studyId, meansVariableTypeList, datasetValues, "");
 		return this.studyDataManager.getDataSet(datasetReference.getId());
@@ -578,7 +577,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return DatasetUtil.getTrialDataSet(this.studyDataManager, studyId);
 	}
 
-	protected DataSet appendVariableTypesToExistingMeans(final String[] csvHeader, final DataSet inputDataSet, final DataSet meansDataSet,
+	protected DataSet appendVariableTypesToExistingMeans(final String[] csvHeader, final int studyId, final DataSet meansDataSet,
 			final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate, final boolean hasDuplicateColumnsInFile) {
 		final int numberOfMeansVariables = meansDataSet.getVariableTypes().getVariableTypes().size();
 		int rank = meansDataSet.getVariableTypes().getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
@@ -588,7 +587,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
 		final Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
 		for (final String variateName : inputDataSetVariateNames) {
-			final DMSVariableType variate = inputDataSet.getVariableTypes().findByLocalName(variateName);
+			final DMSVariableType variate = this.getPlotDataSet(studyId).getVariableTypes().findByLocalName(variateName);
 			// add means of the variate to the means dataset
 			this.addVariableToDataset(meansDataSet, this.createAnalysisVariable(variate, variateName
 					+ BreedingViewImportServiceImpl.MEANS_SUFFIX, lsMeanTerm, programUUID, rank++));
@@ -789,7 +788,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			for (final String headerCol : header) {
 				final String aliasLocalName =
 						headerCol.trim().replace(BreedingViewImportServiceImpl.MEANS_SUFFIX, "")
-						.replace(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, "");
+								.replace(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, "");
 				String actualLocalName = null;
 
 				actualLocalName = this.nameToAliasMapping.get(aliasLocalName);
