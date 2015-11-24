@@ -81,8 +81,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	@Autowired
 	private StandardVariableTransformer standardVariableTransformer;
 
-	private DataSet plotDataSet;
-
 	private Map<String, String> localNameToAliasMap = null;
 
 	public BreedingViewImportServiceImpl() {
@@ -121,21 +119,21 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 
 				DataSet meansDataSet = this.getMeansDataSet(studyId);
-				this.getPlotDataSet(studyId);
+				DataSet plotDataSet = this.getPlotDataSet(studyId);
 				final DataSet trialDataSet = this.getTrialDataSet(studyId);
 
 				if (meansDataSet != null) {
 					meansDataSet =
-							this.appendVariableTypesToExistingMeans(csvHeader, this.plotDataSet, meansDataSet, programUUID, lsMean,
+							this.appendVariableTypesToExistingMeans(csvHeader, plotDataSet, meansDataSet, programUUID, lsMean,
 									errorEstimate);
 					meansDataSetExists = true;
 				} else {
 					meansDataSet =
-							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, this.plotDataSet,
+							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, plotDataSet,
 									programUUID, lsMean, errorEstimate);
 				}
 
-				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, this.plotDataSet.getId(),
+				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, plotDataSet.getId(),
 						trialDataSet.getId());
 
 			}
@@ -563,12 +561,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	protected DataSet getPlotDataSet(final int studyId) {
-		if (this.plotDataSet != null) {
-			return this.plotDataSet;
-		} else {
-			this.plotDataSet = DatasetUtil.getPlotDataSet(this.studyDataManager, studyId);
-		}
-		return this.plotDataSet;
+		return DatasetUtil.getPlotDataSet(this.studyDataManager, studyId);
 	}
 
 	protected DataSet getTrialDataSet(final int studyId) {
