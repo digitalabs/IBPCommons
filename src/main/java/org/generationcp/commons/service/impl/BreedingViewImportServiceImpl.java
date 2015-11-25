@@ -150,7 +150,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final String envHeader = csvHeader[0];
 		final String entryNoHeader = csvHeader[1];
 		final Map<String, Integer> envNameToNdGeolocationIdMap = this.getEnvNameToNdGeolocationIdMap(envHeader, trialDatasetId);
-		final Map<String, Integer> entroNoToNdStockIdMap = this.getEntryNoToNdStockIdMap(entryNoHeader, plotDatasetId);
+		final Map<String, Integer> entroNoToStockIdMap = this.getEntryNoToStockIdMap(entryNoHeader, plotDatasetId);
 
 		final List<String> environments = traitsAndMeans.get(envHeader);
 		for (int i = 0; i < environments.size(); i++) {
@@ -160,10 +160,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final String envName = environments.get(i).replace(";", ",");
 			final Integer ndGeolocationId = envNameToNdGeolocationIdMap.get(envName);
 			final String entryNo = traitsAndMeans.get(entryNoHeader).get(i);
-			final Integer ndStockId = entroNoToNdStockIdMap.get(entryNo);
+			final Integer stockId = entroNoToStockIdMap.get(entryNo);
 
 			final ExperimentValues experimentRow = new ExperimentValues();
-			experimentRow.setGermplasmId(ndStockId);
+			experimentRow.setGermplasmId(stockId);
 			experimentRow.setLocationId(ndGeolocationId);
 
 			final List<Variable> list = new ArrayList<Variable>();
@@ -191,7 +191,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
 	}
 
-	private Map<String, Integer> getEntryNoToNdStockIdMap(final String entryNoHeader, final int plotDatasetId) {
+	private Map<String, Integer> getEntryNoToStockIdMap(final String entryNoHeader, final int plotDatasetId) {
 		final Stocks stocks = this.studyDataManager.getStocksInDataset(plotDatasetId);
 		return stocks.getStockMap(entryNoHeader);
 	}
