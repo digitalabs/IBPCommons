@@ -182,9 +182,7 @@ public class BreedingViewImportServiceImplTest {
 	}
 
 	private Stocks createStocksTestData() {
-		final Stocks stocks = new Stocks();
-		// TODO
-		return stocks;
+		return new Stocks();
 	}
 
 	private CVTerm createCVTerm(final int cvTermId, final String name) {
