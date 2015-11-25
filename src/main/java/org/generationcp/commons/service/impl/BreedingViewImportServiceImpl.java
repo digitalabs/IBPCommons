@@ -120,7 +120,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 
 				DataSet meansDataSet = this.getMeansDataSet(studyId);
-				DataSet plotDataSet = this.getPlotDataSet(studyId);
+				final DataSet plotDataSet = this.getPlotDataSet(studyId);
 				final DataSet trialDataSet = this.getTrialDataSet(studyId);
 
 				if (meansDataSet != null) {
@@ -130,8 +130,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					meansDataSetExists = true;
 				} else {
 					meansDataSet =
-							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, plotDataSet,
-									programUUID, lsMean, errorEstimate);
+							this.createMeansDataset(study.getProjectId(), study.getName() + "-MEANS", csvHeader, plotDataSet, programUUID,
+									lsMean, errorEstimate);
 				}
 
 				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, plotDataSet.getId(),
@@ -219,8 +219,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TITLE.getId(), "DATASET_TITLE", "Dataset title (local)",
 				"My Dataset Description", 2, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
-		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE", "Dataset type (local)", String.valueOf(DataSetType.MEANS_DATA.getId()),
-				3, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
+		this.addMeansVariableToLists(
+				this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE", "Dataset type (local)",
+						String.valueOf(DataSetType.MEANS_DATA.getId()), 3, programUUID, PhenotypicType.DATASET), meansVariableList,
+						meansVariableTypeList);
 
 		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
 
