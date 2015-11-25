@@ -44,6 +44,7 @@ import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManage
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
 import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
+import org.generationcp.middleware.operation.builder.StandardVariableBuilder;
 import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
@@ -269,24 +270,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	private Variable createMeansVariable(final int ontologyVariableId, final String name, final String definition, final String value,
 			final int rank, final String programUUID, final PhenotypicType phenotypicType) {
 		final Variable variable = this.createVariable(ontologyVariableId, value, rank, programUUID, phenotypicType);
-		final VariableType variableType = this.getVariableTypeByPhenotypicType(phenotypicType);
+		final VariableType variableType = new StandardVariableBuilder(null).mapPhenotypicTypeToDefaultVariableType(phenotypicType, true);
 		this.updateDMSVariableType(variable.getVariableType(), name, definition, variableType);
 		return variable;
-	}
-
-	private VariableType getVariableTypeByPhenotypicType(final PhenotypicType phenotypicType) {
-		// this will map the variable type of the means dataset variables
-		// the only valid variable types are study detail, environment detail, germplasm descriptor and analysis
-		if (PhenotypicType.DATASET == phenotypicType) {
-			return VariableType.STUDY_DETAIL;
-		} else if (PhenotypicType.TRIAL_ENVIRONMENT == phenotypicType) {
-			return VariableType.ENVIRONMENT_DETAIL;
-		} else if (PhenotypicType.GERMPLASM == phenotypicType) {
-			return VariableType.GERMPLASM_DESCRIPTOR;
-		} else {
-			return VariableType.ANALYSIS;
-		}
-
 	}
 
 	private DataSet getMeansDataSet(final int studyId) {
