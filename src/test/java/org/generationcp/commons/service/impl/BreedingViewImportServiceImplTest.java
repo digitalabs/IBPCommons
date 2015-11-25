@@ -102,9 +102,9 @@ public class BreedingViewImportServiceImplTest {
 		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
 		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
 		Mockito.doReturn(this.createCVTerm(this.LS_MEAN_ID, this.LS_MEAN)).when(cvTermDao)
-		.getByNameAndCvId(this.LS_MEAN, CvId.METHODS.getId());
+				.getByNameAndCvId(this.LS_MEAN, CvId.METHODS.getId());
 		Mockito.doReturn(this.createCVTerm(this.ERROR_ESTIMATE_ID, this.ERROR_ESTIMATE)).when(cvTermDao)
-		.getByNameAndCvId(this.ERROR_ESTIMATE, CvId.METHODS.getId());
+				.getByNameAndCvId(this.ERROR_ESTIMATE, CvId.METHODS.getId());
 
 		Mockito.doReturn(this.createDmsProject(this.STUDY_ID, this.STUDY_NAME, BreedingViewImportServiceImplTest.PROGRAM_UUID))
 				.when(this.studyDataManager).getProject(this.STUDY_ID);
@@ -137,7 +137,7 @@ public class BreedingViewImportServiceImplTest {
 		this.service.setCloner(new Cloner());
 
 		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
-		.transformVariable(Matchers.any(org.generationcp.middleware.domain.ontology.Variable.class));
+				.transformVariable(Matchers.any(org.generationcp.middleware.domain.ontology.Variable.class));
 	}
 
 	private DmsProject createDmsProject(final int id, final String name, final String programUUID) {
@@ -160,7 +160,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(
 				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
 						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-								new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 
 		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
 
