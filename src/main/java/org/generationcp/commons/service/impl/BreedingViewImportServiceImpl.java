@@ -652,7 +652,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final Map<String, Integer> ndGeolocationIds = new HashMap<String, Integer>();
 
 			final Map<Integer, Integer> stdVariableIds = new HashMap<Integer, Integer>();
-			final VariableTypeList plotVariableTypeList = this.getPlotDataSet(studyId).getVariableTypes();
+			final DataSet plotDataset = this.getPlotDataSet(studyId);
+			final VariableTypeList plotVariableTypeList = plotDataset.getVariableTypes();
 
 			Integer i = 0;
 			for (final String l : outlierCSV.getHeaderTraits()) {
@@ -661,8 +662,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				i++;
 			}
 
-			final TrialEnvironments trialEnvironments =
-					this.studyDataManager.getTrialEnvironmentsInDataset(this.getPlotDataSet(studyId).getId());
+			final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(plotDataset.getId());
 			for (final TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
 				ndGeolocationIds.put(trialEnv.getVariables().findByLocalName(outlierCSV.getTrialHeader()).getValue(), trialEnv.getId());
 			}
@@ -692,8 +692,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 					// retrieve all phenotype id of variables based on the plot no
 					final List<Object[]> list =
-							this.studyDataManager.getPhenotypeIdsByLocationAndPlotNo(this.getPlotDataSet(studyId).getId(), ndGeolocationId,
-									plotNo, cvTermIds);
+							this.studyDataManager.getPhenotypeIdsByLocationAndPlotNo(plotDataset.getId(), ndGeolocationId, plotNo,
+									cvTermIds);
 					for (final Object[] object : list) {
 						// create PhenotypeOutlier objects and add to list
 						final PhenotypeOutlier outlier = new PhenotypeOutlier();
