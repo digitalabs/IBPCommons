@@ -131,7 +131,7 @@ public class BreedingViewImportServiceImplTest {
 		plotDatasets.add(this.createMeasurementDataSet());
 		Mockito.doReturn(plotDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.PLOT_DATA);
 
-		this.stocks = this.createStocksTestData();
+		this.stocks = new Stocks();
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		this.service.setCloner(new Cloner());
@@ -179,10 +179,6 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyList());
 
-	}
-
-	private Stocks createStocksTestData() {
-		return new Stocks();
 	}
 
 	private CVTerm createCVTerm(final int cvTermId, final String name) {
