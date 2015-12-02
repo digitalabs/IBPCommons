@@ -27,7 +27,7 @@ public class FileUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
-    public static final char[] WINDOWS_INVALID_FILE_CHARACTERS = new char[] {'\\', '/', ':', '*', '?', '"', '<', '>', '|'};
+    public static final String INVALID_WINDOWS_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
     public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
 
 
@@ -57,41 +57,24 @@ public class FileUtils {
 
     public static boolean isFilenameValid(String proposedFileName) {
         // blank file names are invalid regardless of OS
-        if (proposedFileName.length() == 0) {
-            return false;
-        }
-        if (isWindowsOS()) {
-            // files ending with dot are invalid
-            if (proposedFileName.endsWith(".")) {
-                return false;
-            }
+		if (proposedFileName.length() == 0) {
+			return false;
+		}
 
-			for (char windowsInvalidFileCharacter : WINDOWS_INVALID_FILE_CHARACTERS) {
-				if (proposedFileName.indexOf(windowsInvalidFileCharacter) != -1) {
-                    return false;
-                }
-			}
+		// files ending with dot are invalid
+		if (proposedFileName.endsWith(".")) {
+			return false;
+		}
 
-            return true;
-        } else {
-            return true;
-        }
+		return !(proposedFileName.matches(".*" + INVALID_WINDOWS_CHARACTER_REGEX_PATTERN + ".*"));
+        
     }
 
     public static String sanitizeFileName(String fileName) {
         String sanitizedFileName = fileName;
 
-        if (isWindowsOS()) {
 
-			for (char windowsInvalidCharacter : WINDOWS_INVALID_FILE_CHARACTERS) {
-                int index = sanitizedFileName.indexOf(windowsInvalidCharacter);
-                while (index != -1) {
-                    sanitizedFileName = sanitizedFileName.replace(windowsInvalidCharacter, INVALID_FILE_CHARACTER_REPLACEMENT);
-                    index = sanitizedFileName.indexOf(windowsInvalidCharacter);
-                }
-
-			}
-        }
+        sanitizedFileName = sanitizedFileName.replaceAll(INVALID_WINDOWS_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
 
         if (sanitizedFileName.endsWith(".")) {
             int index = sanitizedFileName.lastIndexOf('.');
@@ -99,10 +82,6 @@ public class FileUtils {
         }
 
         return sanitizedFileName;
-    }
-
-    protected static boolean isWindowsOS() {
-        return System.getProperty("os.name").toLowerCase().startsWith("win");
     }
 
 	public static byte[] contentsOfFile(File file) throws IOException {
