@@ -19,12 +19,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FileUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
+
+    public static final char[] WINDOWS_INVALID_FILE_CHARACTERS = new char[] {'\\', '/', ':', '*', '?', '"', '<', '>', '|'};
+    public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
+
 
 	private FileUtils() {
 		// hide public constructor for this utility class
@@ -49,6 +54,56 @@ public class FileUtils {
 		}
 		return ret && path.delete();
 	}
+
+    public static boolean isFilenameValid(String proposedFileName) {
+        // blank file names are invalid regardless of OS
+        if (proposedFileName.length() == 0) {
+            return false;
+        }
+        if (isWindowsOS()) {
+            // files ending with dot are invalid
+            if (proposedFileName.endsWith(".")) {
+                return false;
+            }
+
+			for (char windowsInvalidFileCharacter : WINDOWS_INVALID_FILE_CHARACTERS) {
+				if (proposedFileName.indexOf(windowsInvalidFileCharacter) != -1) {
+                    return false;
+                }
+			}
+
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    public static String sanitizeFileName(String fileName) {
+        String sanitizedFileName = fileName;
+
+        if (isWindowsOS()) {
+
+			for (char windowsInvalidCharacter : WINDOWS_INVALID_FILE_CHARACTERS) {
+                int index = sanitizedFileName.indexOf(windowsInvalidCharacter);
+                while (index != -1) {
+                    sanitizedFileName = sanitizedFileName.replace(windowsInvalidCharacter, INVALID_FILE_CHARACTER_REPLACEMENT);
+                    index = sanitizedFileName.indexOf(windowsInvalidCharacter);
+                }
+
+			}
+        }
+
+        if (sanitizedFileName.endsWith(".")) {
+            int index = sanitizedFileName.lastIndexOf('.');
+            sanitizedFileName = sanitizedFileName.substring(0, index) + INVALID_FILE_CHARACTER_REPLACEMENT.toString();
+        }
+
+        return sanitizedFileName;
+    }
+
+    protected static boolean isWindowsOS() {
+        return System.getProperty("os.name").toLowerCase().startsWith("win");
+    }
 
 	public static byte[] contentsOfFile(File file) throws IOException {
 		BufferedInputStream bis = null;
