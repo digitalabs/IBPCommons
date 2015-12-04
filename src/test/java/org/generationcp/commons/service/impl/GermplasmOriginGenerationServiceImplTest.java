@@ -13,14 +13,14 @@ public class GermplasmOriginGenerationServiceImplTest {
 	public void testDefaults() {
 
 		GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginTrialsDefault("{NAME}:{LOCATION}:{PLOTNO}");
-		profile.setGermplasmOriginNurseriesDefault("{NAME}:{PLOTNO}");
+		profile.setGermplasmOriginTrialsDefault("[NAME]:[LOCATION]:[PLOTNO]");
+		profile.setGermplasmOriginNurseriesDefault("[NAME]:[PLOTNO]");
 
-		profile.setGermplasmOriginTrialsWheat("{NAME}:{LOCATION}:{PLOTNO}");
-		profile.setGermplasmOriginNurseriesWheat("{NAME}:{PLOTNO}");
+		profile.setGermplasmOriginTrialsWheat("[NAME]:[LOCATION]:[PLOTNO]");
+		profile.setGermplasmOriginNurseriesWheat("[NAME]:[PLOTNO]");
 
-		profile.setGermplasmOriginTrialsMaize("{NAME}:{LOCATION}:{PLOTNO}");
-		profile.setGermplasmOriginNurseriesMaize("{NAME}:{PLOTNO}");
+		profile.setGermplasmOriginTrialsMaize("[NAME]:[LOCATION]:[PLOTNO]");
+		profile.setGermplasmOriginNurseriesMaize("[NAME]:[PLOTNO]");
 
 		GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 
@@ -60,8 +60,8 @@ public class GermplasmOriginGenerationServiceImplTest {
 	public void testWheat() {
 
 		GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginTrialsWheat("{LOCATION}{SEASON}\\{NAME}\\{PLOTNO}");
-		profile.setGermplasmOriginNurseriesWheat("{LOCATION}{SEASON}\\{NAME}\\{PLOTNO}");
+		profile.setGermplasmOriginTrialsWheat("[LOCATION][SEASON]\\[NAME]\\[PLOTNO]");
+		profile.setGermplasmOriginNurseriesWheat("[LOCATION][SEASON]\\[NAME]\\[PLOTNO]");
 
 		GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("wheat");
@@ -84,8 +84,8 @@ public class GermplasmOriginGenerationServiceImplTest {
 	public void testMaize() {
 
 		GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginTrialsMaize("{LOCATION}{SEASON}-{NAME}-{PLOTNO}");
-		profile.setGermplasmOriginNurseriesMaize("{LOCATION}{SEASON}-{NAME}-{PLOTNO}");
+		profile.setGermplasmOriginTrialsMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
+		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
 
 		GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("maize");

@@ -16,10 +16,10 @@ public class GermplasmOriginGenerationServiceImpl implements GermplasmOriginGene
 	public String generateOriginString(GermplasmOriginGenerationParameters parameters) {
 		String formatToUse = this.determineFormatStringToUse(parameters);
 		return formatToUse
-				.replace("{NAME}", Strings.nullToEmpty(parameters.getStudyName()))
-				.replace("{LOCATION}", Strings.nullToEmpty(parameters.getLocation()))
-				.replace("{SEASON}", Strings.nullToEmpty(parameters.getSeason()))
-				.replace("{PLOTNO}", Strings.nullToEmpty(parameters.getPlotNumber()));
+				.replace("[NAME]", Strings.nullToEmpty(parameters.getStudyName()))
+				.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
+				.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
+				.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getPlotNumber()));
 	}
 
 	private String determineFormatStringToUse(GermplasmOriginGenerationParameters namingParameters) {
