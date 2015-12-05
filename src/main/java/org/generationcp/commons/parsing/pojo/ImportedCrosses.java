@@ -113,7 +113,7 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
 
 		// <Source Female Nursery>: "<female Nursery>:<Source Female Plot no> / <Male Nursery>:<Source Male Plot no>"
-		this.setSource(femaleStudyName + ":" + femalePlotNo + " / " + maleStudyName + ":" + malePlotNo);
+		this.setSource(femaleStudyName + ":" + femalePlotNo + ":" + maleStudyName + ":" + malePlotNo);
 
 	}
 

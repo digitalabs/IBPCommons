@@ -6,10 +6,15 @@ public class GermplasmOriginGenerationParameters {
 
 	private String crop;
 	private String studyName;
+	private String maleStudyName;
+	private String femaleStudyName;
 	private StudyType studyType;
 	private String location;
 	private String season;
 	private String plotNumber;
+	private String malePlotNumber;
+	private String femalePlotNumber;
+	private boolean isCross = false;
 
 	public String getCrop() {
 		return this.crop;
@@ -27,6 +32,23 @@ public class GermplasmOriginGenerationParameters {
 		this.studyName = studyName;
 	}
 
+	
+	public String getFemaleStudyName() {
+		return femaleStudyName;
+	}
+	
+	public void setFemaleStudyName(String femaleStudyName) {
+		this.femaleStudyName = femaleStudyName;
+	}
+	
+	public String getMaleStudyName() {
+		return maleStudyName;
+	}
+	
+	public void setMaleStudyName(String maleStudyName) {
+		this.maleStudyName = maleStudyName;
+	}
+	
 	public StudyType getStudyType() {
 		return this.studyType;
 	}
@@ -58,5 +80,31 @@ public class GermplasmOriginGenerationParameters {
 	public void setPlotNumber(String plotNumber) {
 		this.plotNumber = plotNumber;
 	}
+
+	public String getMalePlotNumber() {
+		return malePlotNumber;
+	}
+	
+	public void setMalePlotNumber(String malePlotNumber) {
+		this.malePlotNumber = malePlotNumber;
+	}
+	
+	public String getFemalePlotNumber() {
+		return femalePlotNumber;
+	}
+
+	
+	public void setFemalePlotNumber(String femalePlotNumber) {
+		this.femalePlotNumber = femalePlotNumber;
+	}
+	
+	public boolean isCross() {
+		return isCross;
+	}
+	
+	public void setCross(boolean isCross) {
+		this.isCross = isCross;
+	}
+
 
 }
