@@ -13,13 +13,8 @@ public class GermplasmOriginGenerationServiceImplTest {
 	public void testDefaults() {
 
 		GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginTrialsDefault("[NAME]:[LOCATION]:[PLOTNO]");
 		profile.setGermplasmOriginNurseriesDefault("[NAME]:[PLOTNO]");
-
-		profile.setGermplasmOriginTrialsWheat("[NAME]:[LOCATION]:[PLOTNO]");
 		profile.setGermplasmOriginNurseriesWheat("[NAME]:[PLOTNO]");
-
-		profile.setGermplasmOriginTrialsMaize("[NAME]:[LOCATION]:[PLOTNO]");
 		profile.setGermplasmOriginNurseriesMaize("[NAME]:[PLOTNO]");
 
 		GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
@@ -32,36 +27,20 @@ public class GermplasmOriginGenerationServiceImplTest {
 		service.setGermplasmNamingProperties(profile);
 
 		parameters.setCrop("rice");
-		parameters.setStudyType(StudyType.N);
-		Assert.assertEquals("StudyName:1", service.generateOriginString(parameters));
-
-		parameters.setCrop("rice");
-		parameters.setStudyType(StudyType.T);
-		Assert.assertEquals("StudyName:IND:1", service.generateOriginString(parameters));
-
-		parameters.setCrop("wheat");
-		parameters.setStudyType(StudyType.N);
 		Assert.assertEquals("StudyName:1", service.generateOriginString(parameters));
 
 		parameters.setCrop("wheat");
-		parameters.setStudyType(StudyType.T);
-		Assert.assertEquals("StudyName:IND:1", service.generateOriginString(parameters));
-
-		parameters.setCrop("maize");
-		parameters.setStudyType(StudyType.N);
 		Assert.assertEquals("StudyName:1", service.generateOriginString(parameters));
 
 		parameters.setCrop("maize");
-		parameters.setStudyType(StudyType.T);
-		Assert.assertEquals("StudyName:IND:1", service.generateOriginString(parameters));
+		Assert.assertEquals("StudyName:1", service.generateOriginString(parameters));
 	}
 
 	@Test
 	public void testWheat() {
 
 		GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginTrialsWheat("[LOCATION][SEASON]\\[NAME]\\[PLOTNO]");
-		profile.setGermplasmOriginNurseriesWheat("[LOCATION][SEASON]\\[NAME]\\[PLOTNO]");
+		profile.setGermplasmOriginNurseriesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 
 		GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("wheat");
@@ -73,18 +52,13 @@ public class GermplasmOriginGenerationServiceImplTest {
 		GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
 
-		parameters.setStudyType(StudyType.N);
-		Assert.assertEquals("INDSummer\\Wheat Study\\1", service.generateOriginString(parameters));
-
-		parameters.setStudyType(StudyType.T);
-		Assert.assertEquals("INDSummer\\Wheat Study\\1", service.generateOriginString(parameters));
+		Assert.assertEquals("IND\\Summer\\Wheat Study\\1", service.generateOriginString(parameters));
 	}
 
 	@Test
 	public void testMaize() {
 
 		GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginTrialsMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
 		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
 
 		GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();

@@ -6,13 +6,8 @@ package org.generationcp.commons.service;
 public class GermplasmNamingProperties {
 
 	private String germplasmOriginNurseriesDefault;
-	private String germplasmOriginTrialsDefault;
-
 	private String germplasmOriginNurseriesWheat;
-	private String germplasmOriginTrialsWheat;
-
 	private String germplasmOriginNurseriesMaize;
-	private String germplasmOriginTrialsMaize;
 
 	public String getGermplasmOriginNurseriesDefault() {
 		return this.germplasmOriginNurseriesDefault;
@@ -20,14 +15,6 @@ public class GermplasmNamingProperties {
 
 	public void setGermplasmOriginNurseriesDefault(String germplasmOriginNurseriesDefault) {
 		this.germplasmOriginNurseriesDefault = germplasmOriginNurseriesDefault;
-	}
-
-	public String getGermplasmOriginTrialsDefault() {
-		return this.germplasmOriginTrialsDefault;
-	}
-
-	public void setGermplasmOriginTrialsDefault(String germplasmOriginTrialsDefault) {
-		this.germplasmOriginTrialsDefault = germplasmOriginTrialsDefault;
 	}
 
 	public String getGermplasmOriginNurseriesWheat() {
@@ -38,27 +25,11 @@ public class GermplasmNamingProperties {
 		this.germplasmOriginNurseriesWheat = germplasmOriginNurseriesWheat;
 	}
 
-	public String getGermplasmOriginTrialsWheat() {
-		return this.germplasmOriginTrialsWheat;
-	}
-
-	public void setGermplasmOriginTrialsWheat(String germplasmOriginTrialsWheat) {
-		this.germplasmOriginTrialsWheat = germplasmOriginTrialsWheat;
-	}
-
 	public String getGermplasmOriginNurseriesMaize() {
 		return this.germplasmOriginNurseriesMaize;
 	}
 
 	public void setGermplasmOriginNurseriesMaize(String germplasmOriginNurseriesMaize) {
 		this.germplasmOriginNurseriesMaize = germplasmOriginNurseriesMaize;
-	}
-
-	public String getGermplasmOriginTrialsMaize() {
-		return this.germplasmOriginTrialsMaize;
-	}
-
-	public void setGermplasmOriginTrialsMaize(String germplasmOriginTrialsMaize) {
-		this.germplasmOriginTrialsMaize = germplasmOriginTrialsMaize;
 	}
 }
