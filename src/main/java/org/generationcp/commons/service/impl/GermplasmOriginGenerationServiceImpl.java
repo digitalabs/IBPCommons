@@ -14,10 +14,27 @@ public class GermplasmOriginGenerationServiceImpl implements GermplasmOriginGene
 	@Override
 	public String generateOriginString(GermplasmOriginGenerationParameters parameters) {
 		String formatToUse = this.determineFormatStringToUse(parameters);
-		return formatToUse.replace("[NAME]", Strings.nullToEmpty(parameters.getStudyName()))
-				.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
-				.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
-				.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getPlotNumber()));
+		
+		if (parameters.isCross()) {
+			String maleString =
+					formatToUse.replace("[NAME]", Strings.nullToEmpty(parameters.getMaleStudyName()))
+							.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
+							.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
+							.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getMalePlotNumber()));
+
+			String femaleString =
+					formatToUse.replace("[NAME]", Strings.nullToEmpty(parameters.getFemaleStudyName()))
+							.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
+							.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
+							.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getFemalePlotNumber()));
+
+			return maleString + "/" + femaleString;
+		} else {
+			return formatToUse.replace("[NAME]", Strings.nullToEmpty(parameters.getStudyName()))
+					.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
+					.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
+					.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getPlotNumber()));
+		}
 	}
 
 	private String determineFormatStringToUse(GermplasmOriginGenerationParameters namingParameters) {
