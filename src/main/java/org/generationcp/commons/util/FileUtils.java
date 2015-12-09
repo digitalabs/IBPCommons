@@ -27,7 +27,7 @@ public class FileUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
-    public static final String INVALID_WINDOWS_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
+    public static final String INVALID_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
     public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
 
 
@@ -66,7 +66,7 @@ public class FileUtils {
 			return false;
 		}
 
-		return !(proposedFileName.matches(".*" + INVALID_WINDOWS_CHARACTER_REGEX_PATTERN + ".*"));
+		return !(proposedFileName.matches(".*" + INVALID_CHARACTER_REGEX_PATTERN + ".*"));
         
     }
 
@@ -74,7 +74,7 @@ public class FileUtils {
         String sanitizedFileName = fileName;
 
 
-        sanitizedFileName = sanitizedFileName.replaceAll(INVALID_WINDOWS_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
+        sanitizedFileName = sanitizedFileName.replaceAll(INVALID_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
 
         if (sanitizedFileName.endsWith(".")) {
             int index = sanitizedFileName.lastIndexOf('.');
