@@ -21,6 +21,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class FileUtils {
 
@@ -50,6 +51,42 @@ public class FileUtils {
 		return ret && path.delete();
 	}
 
+<<<<<<< Updated upstream
+=======
+    public static boolean isFilenameValid(String proposedFileName) {
+        // blank file names are invalid regardless of OS
+		if (StringUtils.isEmpty(proposedFileName)) {
+			return false;
+		}
+
+		// files ending with dot are invalid
+		if (proposedFileName.endsWith(".")) {
+			return false;
+		}
+
+		return !(proposedFileName.matches(".*" + INVALID_CHARACTER_REGEX_PATTERN + ".*"));
+        
+    }
+
+    public static String sanitizeFileName(String fileName) {
+        if (StringUtils.isEmpty(fileName)) {
+            return fileName;
+        }
+
+        String sanitizedFileName = fileName;
+
+
+        sanitizedFileName = sanitizedFileName.replaceAll(INVALID_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
+
+        if (sanitizedFileName.endsWith(".")) {
+            int index = sanitizedFileName.lastIndexOf('.');
+            sanitizedFileName = sanitizedFileName.substring(0, index) + INVALID_FILE_CHARACTER_REPLACEMENT.toString();
+        }
+
+        return sanitizedFileName;
+    }
+
+>>>>>>> Stashed changes
 	public static byte[] contentsOfFile(File file) throws IOException {
 		BufferedInputStream bis = null;
 
