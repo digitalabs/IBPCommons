@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
 	<artifactId>ibpcommons</artifactId>
-	<version>4.0.0.BETA</version>
+    <version>4.0.0.BETA.6</version>
 	<packaging>jar</packaging>
 	<name>Commons</name>
 
@@ -22,7 +22,7 @@
 
 	<properties>
 		<vaadin.version>6.8.13</vaadin.version>
-		<middleware.version>4.0.0.BETA</middleware.version>
+        <middleware.version>${version}</middleware.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<atomikos.version>3.9.3</atomikos.version>
