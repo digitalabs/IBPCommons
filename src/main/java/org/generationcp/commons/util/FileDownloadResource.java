@@ -49,7 +49,7 @@ public class FileDownloadResource extends FileResource {
 	 */
 	public FileDownloadResource(File sourceFile, Application application) {
 		super(sourceFile, application);
-		this.filename = this.getFilename();
+		this.setFilename(this.getFilename());
 	}
 
 	/**
@@ -59,7 +59,11 @@ public class FileDownloadResource extends FileResource {
 	 * @param filename
 	 */
 	public void setFilename(String filename) {
-		this.filename = filename;
+        String sanitized = filename;
+        if (!FileUtils.isFilenameValid(sanitized)) {
+            sanitized = FileUtils.sanitizeFileName(sanitized);
+        }
+		this.filename = sanitized;
 	}
 
 	public static String getDownloadFileName(String filename, HttpServletRequest request) {

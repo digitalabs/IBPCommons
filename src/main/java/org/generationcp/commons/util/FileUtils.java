@@ -19,12 +19,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FileUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
+
+    public static final String INVALID_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
+    public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
+
 
 	private FileUtils() {
 		// hide public constructor for this utility class
@@ -49,6 +54,35 @@ public class FileUtils {
 		}
 		return ret && path.delete();
 	}
+
+    public static boolean isFilenameValid(String proposedFileName) {
+        // blank file names are invalid regardless of OS
+		if (proposedFileName.length() == 0) {
+			return false;
+		}
+
+		// files ending with dot are invalid
+		if (proposedFileName.endsWith(".")) {
+			return false;
+		}
+
+		return !(proposedFileName.matches(".*" + INVALID_CHARACTER_REGEX_PATTERN + ".*"));
+        
+    }
+
+    public static String sanitizeFileName(String fileName) {
+        String sanitizedFileName = fileName;
+
+
+        sanitizedFileName = sanitizedFileName.replaceAll(INVALID_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
+
+        if (sanitizedFileName.endsWith(".")) {
+            int index = sanitizedFileName.lastIndexOf('.');
+            sanitizedFileName = sanitizedFileName.substring(0, index) + INVALID_FILE_CHARACTER_REPLACEMENT.toString();
+        }
+
+        return sanitizedFileName;
+    }
 
 	public static byte[] contentsOfFile(File file) throws IOException {
 		BufferedInputStream bis = null;
