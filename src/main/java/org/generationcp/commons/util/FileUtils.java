@@ -22,6 +22,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 public class FileUtils {
 
@@ -57,7 +58,7 @@ public class FileUtils {
 
     public static boolean isFilenameValid(String proposedFileName) {
         // blank file names are invalid regardless of OS
-		if (proposedFileName.length() == 0) {
+		if (StringUtils.isEmpty(proposedFileName)) {
 			return false;
 		}
 
@@ -71,6 +72,10 @@ public class FileUtils {
     }
 
     public static String sanitizeFileName(String fileName) {
+        if (StringUtils.isEmpty(fileName)) {
+            return fileName;
+        }
+
         String sanitizedFileName = fileName;
 
 
