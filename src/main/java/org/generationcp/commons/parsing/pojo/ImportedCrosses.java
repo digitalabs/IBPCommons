@@ -117,10 +117,6 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 
 		// Parentage: "female designation / male designation"
 		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
-		
-		//Show as pending in initial dialogue. 
-		//Source string is generated later in the proces and will be displayed in the final list generated.
-		this.setSource("Pending");
 	}
 
 	public void setOptionalFields(String rawBreedingMethod, String crossingDate, String seedsHarvested, String notes) {
