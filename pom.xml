@@ -22,7 +22,7 @@
 
 	<properties>
 		<vaadin.version>6.8.13</vaadin.version>
-        <middleware.version>${version}</middleware.version>
+        <middleware.version>${project.version}</middleware.version>
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<atomikos.version>3.9.3</atomikos.version>
