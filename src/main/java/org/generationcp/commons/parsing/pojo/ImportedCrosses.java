@@ -64,6 +64,10 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 
 	private String duplicatePrefix;
 
+	private String maleStudyName;
+	
+	private String femaleStudyName;
+	
 	private Set<Integer> duplicateEntries;
 
 	/**
@@ -108,13 +112,11 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		this.setFemalePlotNo(femalePlotNo);
 		this.setMalePlotNo(malePlotNo);
 		this.setEntryId(entryId);
+		this.setMaleStudyName(maleStudyName);
+		this.setFemaleStudyName(femaleStudyName);
 
 		// Parentage: "female designation / male designation"
 		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
-
-		// <Source Female Nursery>: "<female Nursery>:<Source Female Plot no> / <Male Nursery>:<Source Male Plot no>"
-		this.setSource(femaleStudyName + ":" + femalePlotNo + " / " + maleStudyName + ":" + malePlotNo);
-
 	}
 
 	public void setOptionalFields(String rawBreedingMethod, String crossingDate, String seedsHarvested, String notes) {
@@ -290,4 +292,21 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public void setDuplicatePrefix(String duplicatePrefix) {
 		this.duplicatePrefix = duplicatePrefix;
 	}
+
+	public String getMaleStudyName() {
+		return this.maleStudyName;
+	}
+
+	public void setMaleStudyName(String maleStudyName) {
+		this.maleStudyName = maleStudyName;
+	}
+
+	public String getFemaleStudyName() {
+		return this.femaleStudyName;
+	}
+
+	public void setFemaleStudyName(String femaleStudyName) {
+		this.femaleStudyName = femaleStudyName;
+	}
+
 }
