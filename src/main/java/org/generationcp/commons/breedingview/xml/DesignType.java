@@ -19,7 +19,7 @@ public enum DesignType {
 
 	private final String name;
 
-	private DesignType(String name) {
+	private DesignType(final String name) {
 		this.name = name;
 	}
 
