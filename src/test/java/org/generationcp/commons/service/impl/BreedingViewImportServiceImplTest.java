@@ -79,8 +79,6 @@ public class BreedingViewImportServiceImplTest {
 	StandardVariableTransformer standardVariableTransformer;
 	@Mock
 	WorkbenchDataManager workbenchDataManager;
-	@Mock
-	Map<String, String> params;
 
 	@Mock
 	TrialEnvironments trialEnvironments;
@@ -110,8 +108,8 @@ public class BreedingViewImportServiceImplTest {
 				.when(this.studyDataManager).getProject(this.STUDY_ID);
 
 		this.factorVariableTypes.add(this.createTrialEnvironmentVariableType("TRIAL_INSTANCE"));
-		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("ENTRY_NO"));
-		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("GID"));
+		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("ENTRY_NO", TermId.ENTRY_NO.getId()));
+		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("GID", TermId.GID.getId()));
 
 		this.variateVariableTypes.add(this.createVariateVariableType("ASI"));
 		this.variateVariableTypes.add(this.createVariateVariableType("Aphid1_5"));
@@ -455,7 +453,7 @@ public class BreedingViewImportServiceImplTest {
 		return factor;
 	}
 
-	private DMSVariableType createGermplasmFactorVariableType(final String localName) {
+	private DMSVariableType createGermplasmFactorVariableType(final String localName, final int termId) {
 		final DMSVariableType factor = new DMSVariableType();
 		final StandardVariable factorStandardVar = new StandardVariable();
 		factorStandardVar.setPhenotypicType(PhenotypicType.GERMPLASM);
@@ -475,7 +473,7 @@ public class BreedingViewImportServiceImplTest {
 		scale.setDefinition(this.EMPTY_VALUE);
 		scale.setId(33333);
 
-		factorStandardVar.setId(1234);
+		factorStandardVar.setId(termId);
 		factorStandardVar.setProperty(property);
 		factorStandardVar.setScale(scale);
 		factorStandardVar.setMethod(method);
@@ -528,6 +526,39 @@ public class BreedingViewImportServiceImplTest {
 
 		v.setVariableType(variableType);
 		return v;
+	}
+
+	@Test
+	public void testImportMeansDataWithDupeEntryNo() throws Exception {
+		// import with no existing means data
+		Mockito.doReturn(null).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
+
+		final List<DataSet> summaryDatasets = new ArrayList<>();
+		summaryDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
+
+		Mockito.when(
+				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
+						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
+				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+
+		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
+
+		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
+		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Matchers.any(OntologyVariableInfo.class));
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
+
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputDupeEntryNo.csv").toURI());
+
+		this.service.importMeansData(file, this.STUDY_ID);
+
+		Mockito.verify(this.studyDataManager).addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
+				(DatasetValues) Matchers.anyObject(), Matchers.anyString());
+
+		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
+				Matchers.anyList());
+
 	}
 
 }
