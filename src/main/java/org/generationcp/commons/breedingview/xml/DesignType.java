@@ -15,11 +15,11 @@ package org.generationcp.commons.breedingview.xml;
 public enum DesignType {
 	RANDOMIZED_BLOCK_DESIGN("Randomized block design"), INCOMPLETE_BLOCK_DESIGN("Incomplete block design"), RESOLVABLE_INCOMPLETE_BLOCK_DESIGN(
 			"Resolvable incomplete block design"), ROW_COLUMN_DESIGN("Row-column design"), RESOLVABLE_ROW_COLUMN_DESIGN(
-			"Resolvable row-column design");
+			"Resolvable row-column design"), ALPHA_LATTICE("Alpha lattice");
 
 	private final String name;
 
-	private DesignType(String name) {
+	private DesignType(final String name) {
 		this.name = name;
 	}
 
