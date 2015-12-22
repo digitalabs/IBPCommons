@@ -13,8 +13,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.pojos.workbench.CropType.CropEnum;
-import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +22,7 @@ public class CrossingUtil {
 
 	/**
 	 * Determines the proper crossing method for a germplasm based on how its parental lines have been created.
-	 *
+	 * 
 	 * @param child - the germplasm whose breeding method will be set
 	 * @param female - female parent
 	 * @param male - male parent
@@ -86,7 +84,7 @@ public class CrossingUtil {
 
 	/**
 	 * Set breeding method of germplasm based on configuration in setting. Can be same for all crosses or based on status of parental lines
-	 *
+	 * 
 	 * @return
 	 */
 	public static boolean applyBreedingMethodSetting(final GermplasmDataManager germplasmDataManager, final CrossSetting setting,
@@ -178,13 +176,5 @@ public class CrossingUtil {
 			}
 		}
 
-	}
-
-	public static boolean isCimmytWheat(final String profile, final String crop) {
-		if (profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
-				&& CropEnum.WHEAT.toString().equalsIgnoreCase(crop)) {
-			return true;
-		}
-		return false;
 	}
 }
