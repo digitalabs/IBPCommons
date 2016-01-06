@@ -56,13 +56,13 @@ public class GermplasmOriginGenerationServiceImplTest {
 		service.setGermplasmNamingProperties(profile);
 
 		parameters.setCrop("rice");
-		Assert.assertEquals("Male Study Name:1/Female Study Name:2", service.generateOriginString(parameters));
+		Assert.assertEquals("Female Study Name:2/Male Study Name:1", service.generateOriginString(parameters));
 
 		parameters.setCrop("wheat");
-		Assert.assertEquals("Male Study Name:1/Female Study Name:2", service.generateOriginString(parameters));
+		Assert.assertEquals("Female Study Name:2/Male Study Name:1", service.generateOriginString(parameters));
 
 		parameters.setCrop("maize");
-		Assert.assertEquals("Male Study Name:1/Female Study Name:2", service.generateOriginString(parameters));
+		Assert.assertEquals("Female Study Name:2/Male Study Name:1", service.generateOriginString(parameters));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
 
-		Assert.assertEquals("IND\\Summer\\Male Study Name\\1/IND\\Summer\\Female Study Name\\2", service.generateOriginString(parameters));
+		Assert.assertEquals("IND\\Summer\\Female Study Name\\2/IND\\Summer\\Male Study Name\\1", service.generateOriginString(parameters));
 	}
 
 	@Test
@@ -148,7 +148,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
 
-		Assert.assertEquals("INDSummer-Male Study Name-1/INDSummer-Female Study Name-2", service.generateOriginString(parameters));
+		Assert.assertEquals("INDSummer-Female Study Name-2/INDSummer-Male Study Name-1", service.generateOriginString(parameters));
 	}
 
 }
