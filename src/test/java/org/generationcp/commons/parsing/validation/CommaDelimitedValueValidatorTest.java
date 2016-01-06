@@ -69,6 +69,24 @@ public class CommaDelimitedValueValidatorTest {
 		this.validator = new CommaDelimitedValueValidator(valuesList);
 		Assert.assertFalse(this.validator.isParsedValueValid("SID1-1,SID1-1", null));
 	}
+	
+	@Test
+	public void testUpperCaseList(){
+		List<String> lowerCaseList = this.createLowerCaseList();
+		this.validator = new CommaDelimitedValueValidator(lowerCaseList);
+		List<String> upperCasedList = this.validator.upperCaseList(lowerCaseList);
+		for(int i=0; i<upperCasedList.size(); i++){
+			Assert.assertEquals("String value should be " + lowerCaseList.get(i).toUpperCase(),upperCasedList.get(i), lowerCaseList.get(i).toUpperCase());
+		}
+	}
+	
+	private List<String> createLowerCaseList() {
+		List<String> lowerCaseList = new ArrayList<String>();
+		lowerCaseList.add("sid1-1");
+		lowerCaseList.add("sid1-2");
+		lowerCaseList.add("sid1-3");
+		return lowerCaseList;
+	}
 
 	private List<String> createAcceptedValueList() {
 		List<String> valuesList = new ArrayList<String>();

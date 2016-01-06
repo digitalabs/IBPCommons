@@ -35,16 +35,18 @@ public class CommaDelimitedValueValidator extends ParsingValidator {
 			if (!this.convertCommaDelimitedValueToList(value, valuesToValidate)) {
 				return false;
 			}
+			valuesToValidate = this.upperCaseList(valuesToValidate);
+			this.acceptedList = this.upperCaseList(this.acceptedList);
 			return this.acceptedList.containsAll(valuesToValidate);
 		}
 	}
 
-	public List<String> getAcceptedList() {
-		return this.acceptedList;
-	}
-
-	public void setAcceptedList(List<String> acceptedList) {
-		this.acceptedList = acceptedList;
+	protected List<String> upperCaseList(List<String> values) {
+		List<String> upperCasedList = new ArrayList<String>();
+		for(String value: values){
+			upperCasedList.add(value.toUpperCase());
+		}
+		return upperCasedList;
 	}
 
 	private boolean convertCommaDelimitedValueToList(String value, List<String> valuesToValidate) {
