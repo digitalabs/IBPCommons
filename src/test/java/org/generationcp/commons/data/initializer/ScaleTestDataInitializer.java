@@ -11,7 +11,7 @@ public class ScaleTestDataInitializer {
 
 	public static Scale createScale() {
 		final Scale scale = new Scale(new Term());
-		scale.setDisplayName("SEED_AMOUNT_kg");
+		scale.setName("SEED_AMOUNT_kg");
 		scale.setDefinition("for kg - Weighed");
 		return scale;
 	}

@@ -44,7 +44,7 @@ public class InventoryScalesRowGenerator extends CodesSheetRowGenerator<org.gene
 
 	@Override
 	String getFcode(final Scale scale) {
-		return scale.getDisplayName();
+		return scale.getName();
 	}
 
 	@Override

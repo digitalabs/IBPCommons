@@ -49,17 +49,26 @@ public class FileDownloadResource extends FileResource {
 	 */
 	public FileDownloadResource(File sourceFile, Application application) {
 		super(sourceFile, application);
-		this.filename = this.getFilename();
+		this.setFilename(super.getFilename());
 	}
 
-	/**
+    @Override
+    public String getFilename() {
+        return filename;
+    }
+
+    /**
 	 * Use this method to set the downloaded filename, if not used, the downloaded filename will be the same as the filename of the
 	 * sourceFile
 	 *
 	 * @param filename
 	 */
 	public void setFilename(String filename) {
-		this.filename = filename;
+        String sanitized = filename;
+        if (!FileUtils.isFilenameValid(sanitized)) {
+            sanitized = FileUtils.sanitizeFileName(sanitized);
+        }
+		this.filename = sanitized;
 	}
 
 	public static String getDownloadFileName(String filename, HttpServletRequest request) {
