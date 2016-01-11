@@ -38,6 +38,7 @@ import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Method;
 import org.generationcp.middleware.domain.ontology.VariableType;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
@@ -69,6 +70,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	@Autowired
 	private OntologyVariableDataManager ontologyVariableDataManager;
+
+    @Autowired
+    private OntologyDataManager ontologyDataManager;
 
 	@Autowired
 	private OntologyDaoFactory ontologyDaoFactory;
@@ -805,35 +809,36 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param rank - the rank of the analysis variable from the list
 	 * @return DMSVariableType - the new analysis variable
 	 */
-	private DMSVariableType createAnalysisVariable(final DMSVariableType originalVariableType, final String name, final Term method,
+	protected DMSVariableType createAnalysisVariable(final DMSVariableType originalVariableType, final String name, final Term method,
 			final String programUUID, final int rank) {
 		final DMSVariableType analysisVariableType = this.cloner.deepClone(originalVariableType);
 		analysisVariableType.setLocalName(name);
 		final StandardVariable standardVariable = analysisVariableType.getStandardVariable();
 		standardVariable.setMethod(method);
 
-		Integer ontologyVariableId =
-				this.findOntologyVariableId(standardVariable.getProperty().getId(), standardVariable.getScale().getId(), standardVariable
-						.getMethod().getId(), programUUID);
+		Integer analysisVariableID =
+				this.ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getStandardVariable().getId(), method.getId());
 
-		if (ontologyVariableId == null) {
+		if (analysisVariableID == null) {
 
 			String variableName = name;
 			if (this.isVariableExisting(variableName)) {
 				variableName = variableName + "_1";
 			}
 
-			ontologyVariableId =
+			analysisVariableID =
 					this.saveAnalysisVariable(variableName, standardVariable.getDescription(), standardVariable.getMethod().getId(),
 							standardVariable.getProperty().getId(), standardVariable.getScale().getId(), programUUID);
+            this.ontologyDataManager.addCvTermRelationship(originalVariableType.getStandardVariable().getId(),
+                    analysisVariableID, TermId.HAS_ANALYSIS_VARIABLE.getId());
 
-			standardVariable.setId(ontologyVariableId);
+			standardVariable.setId(analysisVariableID);
 			standardVariable.setPhenotypicType(PhenotypicType.VARIATE);
 
 		} else {
 
 			analysisVariableType.setStandardVariable(this
-					.createStandardardVariable(ontologyVariableId, programUUID, PhenotypicType.VARIATE));
+					.createStandardardVariable(analysisVariableID, programUUID, PhenotypicType.VARIATE));
 		}
 
 		analysisVariableType.setRank(rank);
