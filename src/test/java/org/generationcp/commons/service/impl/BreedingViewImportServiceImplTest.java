@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.Assert;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
@@ -25,6 +26,9 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.VariableType;
+import org.generationcp.middleware.helper.VariableInfo;
+import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
@@ -37,11 +41,7 @@ import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import com.rits.cloning.Cloner;
 
@@ -55,11 +55,12 @@ public class BreedingViewImportServiceImplTest {
 	private final int NEW_MEANS_DATASET_ID = 4;
 	private final int TRIAL_DATASET_ID = 1;
 	private static final String PROGRAM_UUID = "12345678";
+    private static final Integer TEST_ANALYSIS_VARIABLE_TERM_ID = 65000;
 
 	private final String EMPTY_VALUE = "";
 
 	private final String LS_MEAN = "LS MEAN";
-	private final int LS_MEAN_ID = 16090;
+	private final Integer LS_MEAN_ID = 16090;
 	private final String ERROR_ESTIMATE = "ERROR ESTIMATE";
 	private final int ERROR_ESTIMATE_ID = 16095;
 
@@ -79,6 +80,8 @@ public class BreedingViewImportServiceImplTest {
 	StandardVariableTransformer standardVariableTransformer;
 	@Mock
 	WorkbenchDataManager workbenchDataManager;
+    @Mock
+    OntologyDataManager ontologyDataManager;
 
 	@Mock
 	TrialEnvironments trialEnvironments;
@@ -560,5 +563,44 @@ public class BreedingViewImportServiceImplTest {
 				Matchers.anyList());
 
 	}
+
+    @Test
+    public void testCreateAnalysisVariableNonExisting() {
+        DMSVariableType originalVariableType = this.createVariateVariableType("ASI");
+        Term meansMethod = new Term();
+        meansMethod.setId(this.LS_MEAN_ID);
+        String analysisVariableName = "ASI_Means";
+
+        Mockito.when(ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getId(), this.LS_MEAN_ID)).thenReturn(null);
+
+        service.createAnalysisVariable(originalVariableType,analysisVariableName , meansMethod, PROGRAM_UUID, 1);
+        ArgumentCaptor<OntologyVariableInfo> infoArgument = ArgumentCaptor.forClass(OntologyVariableInfo.class);
+
+        Mockito.verify(ontologyVariableDataManager).addVariable(infoArgument.capture());
+        // anyInt is used as the 2nd argument since this represents the dynamic term ID that will be generated after saving the new variable into the DB
+        Mockito.verify(ontologyDataManager).addCvTermRelationship(Mockito.eq(originalVariableType.getId()), Mockito.anyInt(), Mockito.eq(TermId.HAS_ANALYSIS_VARIABLE.getId()));
+        OntologyVariableInfo argument = infoArgument.getValue();
+
+        Assert.assertEquals("Unable to properly add a new analysis variable with the proper method ID", this.LS_MEAN_ID, argument.getMethodId());
+        Assert.assertEquals("Unable to properly add a new analysis variable with the proper name", analysisVariableName, argument.getName() );
+
+    }
+
+    @Test
+    public void testCreateAnalysisVariableExisting() {
+        DMSVariableType originalVariableType = this.createVariateVariableType("ASI");
+        Term meansMethod = new Term();
+        meansMethod.setId(this.LS_MEAN_ID);
+        String analysisVariableName = "ASI_Means";
+
+        Mockito.when(ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getId(), this.LS_MEAN_ID)).thenReturn(TEST_ANALYSIS_VARIABLE_TERM_ID);
+
+        service.createAnalysisVariable(originalVariableType,analysisVariableName , meansMethod, PROGRAM_UUID, 1);
+
+
+        Mockito.verify(ontologyVariableDataManager, Mockito.never()).addVariable(Mockito.any(OntologyVariableInfo.class));
+        Mockito.verify(ontologyDataManager, Mockito.never()).addCvTermRelationship(Mockito.eq(originalVariableType.getId()), Mockito.anyInt(), Mockito.eq(TermId.HAS_ANALYSIS_VARIABLE.getId()));
+
+    }
 
 }
