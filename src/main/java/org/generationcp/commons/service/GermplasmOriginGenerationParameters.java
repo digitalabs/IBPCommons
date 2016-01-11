@@ -15,7 +15,7 @@ public class GermplasmOriginGenerationParameters {
 	private String malePlotNumber;
 	private String femalePlotNumber;
 	private boolean isCross = false;
-	private String plantOrEarNumber;
+	private String selectionNumber;
 
 	public String getCrop() {
 		return this.crop;
@@ -107,11 +107,11 @@ public class GermplasmOriginGenerationParameters {
 		this.isCross = isCross;
 	}
 	
-	public String getPlantOrEarNumber() {
-		return plantOrEarNumber;
+	public String getSelectionNumber() {
+		return selectionNumber;
 	}
 
-	public void setPlantOrEarNumber(String plantOrEarNumber) {
-		this.plantOrEarNumber = plantOrEarNumber;
+	public void setSelectionNumber(String selectionNumber) {
+		this.selectionNumber = selectionNumber;
 	}
 }

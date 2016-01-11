@@ -34,7 +34,7 @@ public class GermplasmOriginGenerationServiceImpl implements GermplasmOriginGene
 					.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
 					.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
 					.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getPlotNumber()))
-					.replace("[PLANT_OR_EAR_NUMBER]", Strings.nullToEmpty(parameters.getPlantOrEarNumber()));
+					.replace("[SELECTION_NUMBER]", Strings.nullToEmpty(parameters.getSelectionNumber()));
 		}
 	}
 

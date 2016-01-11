@@ -110,7 +110,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 	public void testMaize() {
 
 		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]-[PLANT_OR_EAR_NUMBER]");
+		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]-[SELECTION_NUMBER]");
 
 		final GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("maize");
@@ -118,7 +118,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		parameters.setLocation("IND");
 		parameters.setPlotNumber("12");
 		parameters.setSeason("Winter");
-		parameters.setPlantOrEarNumber("2");
+		parameters.setSelectionNumber("2");
 
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
