@@ -110,23 +110,24 @@ public class GermplasmOriginGenerationServiceImplTest {
 	public void testMaize() {
 
 		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
-		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
+		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]-[PLANT_OR_EAR_NUMBER]");
 
 		final GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("maize");
 		parameters.setStudyName("Maize Study");
 		parameters.setLocation("IND");
-		parameters.setPlotNumber("1");
+		parameters.setPlotNumber("12");
 		parameters.setSeason("Winter");
+		parameters.setPlantOrEarNumber("2");
 
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
 
 		parameters.setStudyType(StudyType.N);
-		Assert.assertEquals("INDWinter-Maize Study-1", service.generateOriginString(parameters));
+		Assert.assertEquals("INDWinter-Maize Study-12-2", service.generateOriginString(parameters));
 
 		parameters.setStudyType(StudyType.T);
-		Assert.assertEquals("INDWinter-Maize Study-1", service.generateOriginString(parameters));
+		Assert.assertEquals("INDWinter-Maize Study-12-2", service.generateOriginString(parameters));
 	}
 
 	@Test
