@@ -30,11 +30,16 @@ public class GermplasmOriginGenerationServiceImpl implements GermplasmOriginGene
 
 			return maleString + "/" + femaleString;
 		} else {
-			return formatToUse.replace("[NAME]", Strings.nullToEmpty(parameters.getStudyName()))
+			final String seedSource = formatToUse.replace("[NAME]", Strings.nullToEmpty(parameters.getStudyName()))
 					.replace("[LOCATION]", Strings.nullToEmpty(parameters.getLocation()))
 					.replace("[SEASON]", Strings.nullToEmpty(parameters.getSeason()))
-					.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getPlotNumber()))
-					.replace("[SELECTION_NUMBER]", Strings.nullToEmpty(parameters.getSelectionNumber()));
+					.replace("[PLOTNO]", Strings.nullToEmpty(parameters.getPlotNumber()));
+			
+			if (!Strings.isNullOrEmpty(parameters.getSelectionNumber())) {
+				return seedSource.replace("[SELECTION_NUMBER]", "-" + parameters.getSelectionNumber());
+			} else {
+				return seedSource.replace("[SELECTION_NUMBER]", "");
+			}
 		}
 	}
 
