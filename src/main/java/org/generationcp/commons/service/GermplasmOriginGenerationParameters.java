@@ -15,6 +15,7 @@ public class GermplasmOriginGenerationParameters {
 	private String malePlotNumber;
 	private String femalePlotNumber;
 	private boolean isCross = false;
+	private String selectionNumber;
 
 	public String getCrop() {
 		return this.crop;
@@ -105,6 +106,12 @@ public class GermplasmOriginGenerationParameters {
 	public void setCross(boolean isCross) {
 		this.isCross = isCross;
 	}
+	
+	public String getSelectionNumber() {
+		return selectionNumber;
+	}
 
-
+	public void setSelectionNumber(String selectionNumber) {
+		this.selectionNumber = selectionNumber;
+	}
 }
