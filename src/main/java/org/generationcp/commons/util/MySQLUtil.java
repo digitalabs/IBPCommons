@@ -17,6 +17,9 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -34,8 +37,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.generationcp.commons.exceptions.SQLFileException;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 /**
@@ -45,6 +53,12 @@ import org.springframework.beans.factory.annotation.Configurable;
  */
 @Configurable
 public class MySQLUtil {
+	
+	@Autowired
+	ContextUtil contextUtil;
+	
+	@Autowired
+	WorkbenchDataManager workbenchDataManager;
 
 	private static final Logger LOG = LoggerFactory.getLogger(MySQLUtil.class);
 
@@ -58,7 +72,7 @@ public class MySQLUtil {
 	private int mysqlPort = 3306;
 	private String username;
 	private String password;
-
+	
 	private Connection connection;
 
 	private File currentDbBackupFile;
@@ -198,6 +212,32 @@ public class MySQLUtil {
 		process.waitFor();
 
 		File file = new File(backupFilename);
+		
+		// append program information to the backup file
+		// e.g. (2,2,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','maize','2016-01-01 23:26:53'),
+		if(file.exists()) {
+			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
+			for (Project program : workbenchDataManager.getProjects()) {
+				if(program.getCropType().equals(contextUtil.getProjectInContext().getCropType())) {
+  				StringBuilder sb = new StringBuilder();
+  				// sorry magic number here, will be replaced on restoration
+  				sb.append("INSERT into `workbench_project` values (null, 9999, '");
+  				sb.append(program.getProjectName());
+  				sb.append("','");
+  				sb.append(program.getStartDate());
+  				sb.append("','");
+  				sb.append(program.getUniqueID());
+  				sb.append("','");
+  				sb.append(program.getCropType().getCropName());
+  				sb.append("','");
+  				sb.append(program.getLastOpenDate());
+  				sb.append("');\n");
+  				LOG.info("Writing to Backup project Information : " + sb.toString());
+  				Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
+				}
+			}	
+		}
+		
 		return file.exists() ? file.getAbsoluteFile() : null;
 	}
 
@@ -244,7 +284,18 @@ public class MySQLUtil {
 		this.currentDbBackupFile = this.createCurrentDbBackupFile(databaseName);
 
 		this.executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
-
+		
+		// remove program records for dropped crop DB
+		this.executeQuery(connection, "USE workbench");
+		List<String> programIdsToDelete = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '" + contextUtil.getProjectInContext().getCropType().getCropName() + "';");
+		for (String programIdToDelete : programIdsToDelete) {
+			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
+			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_user_role where project_id = " + programIdToDelete);
+			this.executeQuery(connection, "DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
+			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
+			this.executeQuery(connection, "DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
+		}
+		
 		// CREATE LOCAL DB INSTANCE
 		if (preRestoreTasks != null && !preRestoreTasks.call()) {
 			throw new Exception("Failure to generate LocalDB");
@@ -261,7 +312,8 @@ public class MySQLUtil {
 			this.runScriptFromFile(databaseName, backupFile);
 
 			// after restore, restore from backup schema the users + persons table
-			this.restoreUsersPersonsAfterRestoreDB(connection, databaseName);
+			//this.restoreUsersPersonsAfterRestoreDB(connection, databaseName);
+			this.addCurrentUserToRestoredPrograms(connection);
 
 		} catch (Exception e) {
 			// fail restore using the selected backup, reverting to previous DB..
@@ -354,6 +406,20 @@ public class MySQLUtil {
 				MySQLUtil.LOG.error("Cannot drop temp_db", e);
 			}
 		}
+	}
+	
+	protected void addCurrentUserToRestoredPrograms(Connection connection) {
+		int currentUserId = contextUtil.getCurrentWorkbenchUserId();
+		try {
+			this.executeQuery(connection, "USE workbench");
+			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '" + contextUtil.getProjectInContext().getCropType().getCropName() + "';");
+			for (String programKey : programIds) {
+				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
+				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");				
+			}
+		} catch (SQLException e) {
+			MySQLUtil.LOG.error("Could not add current user to restored programs", e);			
+		}		
 	}
 
 	protected void alterListNmsTable(Connection connection, String databaseName) {
@@ -631,6 +697,30 @@ public class MySQLUtil {
 				return rs.getString(1);
 			}
 			return null;
+		} catch (SQLException e) {
+			throw e;
+		} finally {
+			if (rs != null) {
+				rs.close();
+			}
+			if (stmt != null) {
+				stmt.close();
+			}
+		}
+	}
+	
+	public List<String> executeForManyStringResults(Connection connection, String query) throws SQLException {
+		List<String> results = new ArrayList<>();
+		Statement stmt = connection.createStatement();
+		ResultSet rs = null;
+		try {
+			rs = stmt.executeQuery(query);
+
+			while (rs.next()) {
+				results.add(rs.getString(1));
+			}
+			
+			return results;
 		} catch (SQLException e) {
 			throw e;
 		} finally {
