@@ -38,7 +38,6 @@ import java.util.regex.Pattern;
 
 import org.generationcp.commons.exceptions.SQLFileException;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.slf4j.Logger;
@@ -415,8 +414,9 @@ public class MySQLUtil {
 			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '" + contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 			for (String programKey : programIds) {
 				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
-				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");				
+				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
 			}
+			this.executeQuery(connection, "UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
 		} catch (SQLException e) {
 			MySQLUtil.LOG.error("Could not add current user to restored programs", e);			
 		}		
