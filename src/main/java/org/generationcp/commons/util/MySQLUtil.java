@@ -311,7 +311,6 @@ public class MySQLUtil {
 			this.runScriptFromFile(databaseName, backupFile);
 
 			// after restore, restore from backup schema the users + persons table
-			//this.restoreUsersPersonsAfterRestoreDB(connection, databaseName);
 			this.addCurrentUserToRestoredPrograms(connection);
 
 		} catch (Exception e) {
@@ -414,6 +413,7 @@ public class MySQLUtil {
 			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '" + contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 			for (String programKey : programIds) {
 				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
+				this.executeQuery(connection, "INSERT into workbench_project_user_info values (null," + programKey + "," + currentUserId + ",NOW())");
 				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
 			}
 			this.executeQuery(connection, "UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
@@ -709,6 +709,11 @@ public class MySQLUtil {
 		}
 	}
 	
+	/*
+	 * Perhaps unnecessary redundancy here in duplication of executeForStringResult, but
+	 * implemented this way to favour stability for now
+	 * 
+	 */
 	public List<String> executeForManyStringResults(Connection connection, String query) throws SQLException {
 		List<String> results = new ArrayList<>();
 		Statement stmt = connection.createStatement();
@@ -758,7 +763,7 @@ public class MySQLUtil {
 		Collections.sort(sqlFiles);
 
 		for (File sqlFile : sqlFiles) {
-			MySQLUtil.LOG.debug("Running script: " + sqlFile.getAbsolutePath());
+			MySQLUtil.LOG.info("Running script: " + sqlFile.getAbsolutePath());
 			if (null != databaseName) {
 				this.runScriptFromFile(databaseName, sqlFile);
 			} else {
