@@ -52,10 +52,10 @@ import org.springframework.beans.factory.annotation.Configurable;
  */
 @Configurable
 public class MySQLUtil {
-	
+
 	@Autowired
 	ContextUtil contextUtil;
-	
+
 	@Autowired
 	WorkbenchDataManager workbenchDataManager;
 
@@ -71,7 +71,7 @@ public class MySQLUtil {
 	private int mysqlPort = 3306;
 	private String username;
 	private String password;
-	
+
 	private Connection connection;
 
 	private File currentDbBackupFile;
@@ -161,8 +161,7 @@ public class MySQLUtil {
 		// connect
 		if (this.mysqlHost != null) {
 			this.connection =
-					DriverManager
-							.getConnection("jdbc:mysql://" + this.mysqlHost + ":" + this.mysqlPort + "/", this.username, this.password);
+					DriverManager.getConnection("jdbc:mysql://" + this.mysqlHost + ":" + this.mysqlPort + "/", this.username, this.password);
 		}
 	}
 
@@ -191,10 +190,9 @@ public class MySQLUtil {
 
 		String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
 
-		List<String> command =
-				new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert", "--no-create-db",
-						"--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
-						"--user=" + this.username, database, "-r", backupFilename));
+		List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
+				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
+				"--user=" + this.username, database, "-r", backupFilename));
 
 		if (includeProcedures) {
 			command.add(1, "--routines");
@@ -211,32 +209,32 @@ public class MySQLUtil {
 		process.waitFor();
 
 		File file = new File(backupFilename);
-		
+
 		// append program information to the backup file
 		// e.g. (2,2,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','maize','2016-01-01 23:26:53'),
-		if(file.exists()) {
+		if (file.exists()) {
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
-			for (Project program : workbenchDataManager.getProjects()) {
-				if(program.getCropType().equals(contextUtil.getProjectInContext().getCropType())) {
-  				StringBuilder sb = new StringBuilder();
-  				// sorry magic number here, will be replaced on restoration
-  				sb.append("INSERT into `workbench_project` values (null, 9999, '");
-  				sb.append(program.getProjectName());
-  				sb.append("','");
-  				sb.append(program.getStartDate());
-  				sb.append("','");
-  				sb.append(program.getUniqueID());
-  				sb.append("','");
-  				sb.append(program.getCropType().getCropName());
-  				sb.append("','");
-  				sb.append(program.getLastOpenDate());
-  				sb.append("');\n");
-  				LOG.info("Writing to Backup project Information : " + sb.toString());
-  				Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
+			for (Project program : this.workbenchDataManager.getProjects()) {
+				if (program.getCropType().equals(this.contextUtil.getProjectInContext().getCropType())) {
+					StringBuilder sb = new StringBuilder();
+					// sorry magic number here, will be replaced on restoration
+					sb.append("INSERT into `workbench_project` values (null, 9999, '");
+					sb.append(program.getProjectName());
+					sb.append("','");
+					sb.append(program.getStartDate());
+					sb.append("','");
+					sb.append(program.getUniqueID());
+					sb.append("','");
+					sb.append(program.getCropType().getCropName());
+					sb.append("','");
+					sb.append(program.getLastOpenDate());
+					sb.append("');\n");
+					MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
+					Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
 				}
-			}	
+			}
 		}
-		
+
 		return file.exists() ? file.getAbsoluteFile() : null;
 	}
 
@@ -283,10 +281,12 @@ public class MySQLUtil {
 		this.currentDbBackupFile = this.createCurrentDbBackupFile(databaseName);
 
 		this.executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
-		
+
 		// remove program records for dropped crop DB
 		this.executeQuery(connection, "USE workbench");
-		List<String> programIdsToDelete = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '" + contextUtil.getProjectInContext().getCropType().getCropName() + "';");
+		List<String> programIdsToDelete =
+				this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '"
+						+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 		for (String programIdToDelete : programIdsToDelete) {
 			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
 			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_user_role where project_id = " + programIdToDelete);
@@ -294,7 +294,7 @@ public class MySQLUtil {
 			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
 			this.executeQuery(connection, "DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
 		}
-		
+
 		// CREATE LOCAL DB INSTANCE
 		if (preRestoreTasks != null && !preRestoreTasks.call()) {
 			throw new Exception("Failure to generate LocalDB");
@@ -405,21 +405,23 @@ public class MySQLUtil {
 			}
 		}
 	}
-	
+
 	protected void addCurrentUserToRestoredPrograms(Connection connection) {
-		int currentUserId = contextUtil.getCurrentWorkbenchUserId();
+		int currentUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		try {
 			this.executeQuery(connection, "USE workbench");
-			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '" + contextUtil.getProjectInContext().getCropType().getCropName() + "';");
+			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '"
+					+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 			for (String programKey : programIds) {
 				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
-				this.executeQuery(connection, "INSERT into workbench_project_user_info values (null," + programKey + "," + currentUserId + ",NOW())");
+				this.executeQuery(connection,
+						"INSERT into workbench_project_user_info values (null," + programKey + "," + currentUserId + ",NOW())");
 				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
 			}
 			this.executeQuery(connection, "UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
 		} catch (SQLException e) {
-			MySQLUtil.LOG.error("Could not add current user to restored programs", e);			
-		}		
+			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
+		}
 	}
 
 	protected void alterListNmsTable(Connection connection, String databaseName) {
@@ -441,16 +443,12 @@ public class MySQLUtil {
 		MySQLUtil.LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
 
 		if (StringUtil.isEmpty(this.password)) {
-			pb =
-					new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
-							"--user=" + this.username, "--default-character-set=utf8", dbName, "--execute=source "
-									+ sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
+					"--default-character-set=utf8", dbName, "--execute=source " + sqlFile.getAbsoluteFile());
 
 		} else {
-			pb =
-					new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
-							"--user=" + this.username, "--password=" + this.password, "--default-character-set=utf8", dbName,
-							"--execute=source " + sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
+					"--password=" + this.password, "--default-character-set=utf8", dbName, "--execute=source " + sqlFile.getAbsoluteFile());
 		}
 
 		Process mysqlRestoreProcess;
@@ -480,14 +478,11 @@ public class MySQLUtil {
 		MySQLUtil.LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
 
 		if (StringUtil.isEmpty(this.password)) {
-			pb =
-					new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
-							"--user=" + this.username, "--default-character-set=utf8", "--execute=source " + sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
+					"--default-character-set=utf8", "--execute=source " + sqlFile.getAbsoluteFile());
 		} else {
-			pb =
-					new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
-							"--user=" + this.username, "--password=" + this.password, "--default-character-set=utf8", "--execute=source "
-									+ sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
+					"--password=" + this.password, "--default-character-set=utf8", "--execute=source " + sqlFile.getAbsoluteFile());
 		}
 
 		Process mysqlRestoreProcess;
@@ -518,8 +513,8 @@ public class MySQLUtil {
 		}
 		reader.close();
 		/*
-		 * When the process writes to stderr the output goes to a fixed-size buffer. If the buffer fills up then the process blocks until
-		 * the buffer gets emptied. So if the buffer doesn't empty then the process will hang.
+		 * When the process writes to stderr the output goes to a fixed-size buffer. If the buffer fills up then the process blocks until the
+		 * buffer gets emptied. So if the buffer doesn't empty then the process will hang.
 		 * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
 		 */
 		BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -582,8 +577,7 @@ public class MySQLUtil {
 		String currentSchemaVersion = null;
 		try {
 			// get the current version of the database
-			currentSchemaVersion =
-					this.executeForStringResult(connection, "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1");
+			currentSchemaVersion = this.executeForStringResult(connection, "SELECT version FROM schema_version ORDER BY version DESC LIMIT 1");
 		} catch (SQLException e) {
 			// assume old schema if there is an SQL error
 			MySQLUtil.LOG.debug("Could not query value for schema_version");
@@ -708,11 +702,10 @@ public class MySQLUtil {
 			}
 		}
 	}
-	
+
 	/*
-	 * Perhaps unnecessary redundancy here in duplication of executeForStringResult, but
-	 * implemented this way to favour stability for now
-	 * 
+	 * Perhaps unnecessary redundancy here in duplication of executeForStringResult, but implemented this way to favour stability for now
+	 *
 	 */
 	public List<String> executeForManyStringResults(Connection connection, String query) throws SQLException {
 		List<String> results = new ArrayList<>();
@@ -724,7 +717,7 @@ public class MySQLUtil {
 			while (rs.next()) {
 				results.add(rs.getString(1));
 			}
-			
+
 			return results;
 		} catch (SQLException e) {
 			throw e;
