@@ -4,6 +4,7 @@ package org.generationcp.commons.service.impl;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.GermplasmOriginGenerationParameters;
 import org.generationcp.commons.service.GermplasmOriginGenerationService;
+import org.generationcp.middleware.domain.oms.StudyType;
 
 import com.google.common.base.Strings;
 
@@ -44,15 +45,24 @@ public class GermplasmOriginGenerationServiceImpl implements GermplasmOriginGene
 	}
 
 	private String determineFormatStringToUse(GermplasmOriginGenerationParameters namingParameters) {
+		String formatToUse = "";
+		if (namingParameters.getStudyType().equals(StudyType.N)) {
+			formatToUse = this.germplasmNamingProperties.getGermplasmOriginNurseriesDefault();
 
-		String formatToUse = this.germplasmNamingProperties.getGermplasmOriginNurseriesDefault();
+			if (namingParameters.getCrop().equals("wheat")) {
+				formatToUse = this.germplasmNamingProperties.getGermplasmOriginNurseriesWheat();
+			} else if (namingParameters.getCrop().equals("maize")) {
+				formatToUse = this.germplasmNamingProperties.getGermplasmOriginNurseriesMaize();
+			}
+		} else if (namingParameters.getStudyType().equals(StudyType.T)) {
+			formatToUse = this.germplasmNamingProperties.getGermplasmOriginTrialsDefault();
 
-		if (namingParameters.getCrop().equals("wheat")) {
-			formatToUse = this.germplasmNamingProperties.getGermplasmOriginNurseriesWheat();
-		} else if (namingParameters.getCrop().equals("maize")) {
-			formatToUse = this.germplasmNamingProperties.getGermplasmOriginNurseriesMaize();
+			if (namingParameters.getCrop().equals("wheat")) {
+				formatToUse = this.germplasmNamingProperties.getGermplasmOriginTrialsWheat();
+			} else if (namingParameters.getCrop().equals("maize")) {
+				formatToUse = this.germplasmNamingProperties.getGermplasmOriginTrialsMaize();
+			}
 		}
-
 		return formatToUse;
 	}
 
