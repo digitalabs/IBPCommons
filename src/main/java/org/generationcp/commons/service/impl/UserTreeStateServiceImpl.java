@@ -32,13 +32,18 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	@Override
 	public List<String> getUserProgramTreeStateForSaveList(int userId, String programUuid) {
 		GermplasmList germplasmList = this.germplasmListManager.getLastSavedGermplasmListByUserId(userId, programUuid);
+        List<String> treeState;
 
 		// if no lists have been saved yet, attempt to retrieve the user's tree navigation state
 		if (germplasmList == null) {
-			return this.getUserProgramTreeStateByUserIdProgramUuidAndType(userId, programUuid, ListTreeState.GERMPLASM_LIST.name());
+            treeState = this.getUserProgramTreeStateByUserIdProgramUuidAndType(userId, programUuid, ListTreeState.GERMPLASM_LIST.name());
+            treeState.add(0, "NAVIGATION");
 		} else {
-			return this.computeTreeStateForSavedTree(germplasmList);
+            treeState = this.computeTreeStateForSavedTree(germplasmList);
+            treeState.add(0,"SAVED");
 		}
+
+        return treeState;
 	}
 
 	@Override

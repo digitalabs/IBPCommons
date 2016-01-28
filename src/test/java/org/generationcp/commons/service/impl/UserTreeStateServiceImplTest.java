@@ -55,13 +55,13 @@ public class UserTreeStateServiceImplTest {
 				constructDummyNestedGermplasmListFolder());
 
 		List<String> expectedTreeState =
-				Arrays.asList(new String[] {UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM, FIRST_LEVEL_FOLDER_ID.toString(),
+				Arrays.asList(new String[] {"SAVED", UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM, FIRST_LEVEL_FOLDER_ID.toString(),
 						SECOND_LEVEL_FOLDER_ID.toString()});
 
 		List<String> actualState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
 
 		Assert.assertEquals(
-				"Service must generate a state starting from the list item name, followed by the folder IDs of the containing folders",
+				"Service must generate a state starting from the marker, then the list item name, followed by the folder IDs of the containing folders",
 				expectedTreeState, actualState);
 	}
 
