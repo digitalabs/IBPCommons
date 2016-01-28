@@ -23,10 +23,7 @@ import org.springframework.web.util.WebUtils;
  */
 public class ContextUtil {
 
-	/**
-	 * The Constant LOG.
-	 */
-	private static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
+	static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
 
 	@Resource
 	private HttpServletRequest request;
@@ -35,13 +32,11 @@ public class ContextUtil {
 	private WorkbenchDataManager workbenchDataManager;
 
 	public String getCurrentProgramUUID() {
-		try {
-			return this.workbenchDataManager.getProjectById(this.getContextInfoFromSession().getSelectedProjectId()).getUniqueID();
-		} catch (MiddlewareQueryException e) {
-			ContextUtil.LOG.error(e.getMessage(), e);
+		Project program = org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
+		if (program != null) {
+			return program.getUniqueID();
 		}
-
-		return "";
+		return null;
 	}
 
 	public ContextInfo getContextInfoFromSession() {
