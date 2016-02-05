@@ -16,7 +16,7 @@ import org.generationcp.middleware.pojos.UserProgramTreeState;
 public class UserTreeStateServiceImpl implements UserTreeStateService {
 
 	public static final String GERMPLASM_LIST_ROOT_ITEM = "LISTS";
-	@Resource
+    @Resource
 	private UserProgramStateDataManager userProgramStateDataManager;
 
 	@Resource
@@ -37,10 +37,10 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 		// if no lists have been saved yet, attempt to retrieve the user's tree navigation state
 		if (germplasmList == null) {
             treeState = this.getUserProgramTreeStateByUserIdProgramUuidAndType(userId, programUuid, ListTreeState.GERMPLASM_LIST.name());
-            treeState.add(0, "NAVIGATION");
+            treeState.add(0, USE_PREVIOUS_NAVIGATION_MARKER);
 		} else {
             treeState = this.computeTreeStateForSavedTree(germplasmList);
-            treeState.add(0,"SAVED");
+            treeState.add(0, USE_LAST_SAVED_MARKER);
 		}
 
         return treeState;
