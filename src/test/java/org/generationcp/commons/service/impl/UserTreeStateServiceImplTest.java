@@ -1,13 +1,14 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.Assert;
 
 import org.generationcp.commons.constant.ListTreeState;
+import org.generationcp.commons.service.UserTreeStateService;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
@@ -38,14 +39,25 @@ public class UserTreeStateServiceImplTest {
 
 	@Test
 	public void testRetrieveSaveListNoItemsSaved() {
-		List<String> savedNavigationState = new ArrayList<>();
+		final List<String> savedNavigationState = new LinkedList<>();
+        savedNavigationState.add(UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM);
+        savedNavigationState.add(FIRST_LEVEL_FOLDER_ID.toString());
+
+		// receiving null when retrieving for last saved germplasm list triggers the implem to retrieve the user's last stored navigation
+		// tree state
 		Mockito.when(germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(null);
 		Mockito.when(
 				userProgramStateDataManager.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, TEST_PROGRAM_UUID,
 						ListTreeState.GERMPLASM_LIST.name())).thenReturn(savedNavigationState);
 
-		List<String> retrievedState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
-		Assert.assertEquals("Service must retrieve the latest tree navigation if no lists have been saved currently", savedNavigationState,
+		// the expected tree state is similar to the saved navigation state, except that it should have a marker at the start to indicate that results
+        // are based on the user's past navigation
+		final List<String> expectedTreeState =
+				Arrays.asList(UserTreeStateService.USE_PREVIOUS_NAVIGATION_MARKER,
+                        UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM, FIRST_LEVEL_FOLDER_ID.toString());
+
+		final List<String> retrievedState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
+		Assert.assertEquals("Service must retrieve the latest tree navigation if no lists have been saved currently", expectedTreeState,
 				retrievedState);
 	}
 
@@ -54,11 +66,11 @@ public class UserTreeStateServiceImplTest {
 		Mockito.when(germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(
 				constructDummyNestedGermplasmListFolder());
 
-		List<String> expectedTreeState =
-				Arrays.asList(new String[] {"SAVED", UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM, FIRST_LEVEL_FOLDER_ID.toString(),
-						SECOND_LEVEL_FOLDER_ID.toString()});
+		final List<String> expectedTreeState =
+				Arrays.asList(UserTreeStateService.USE_LAST_SAVED_MARKER, UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM,
+                        FIRST_LEVEL_FOLDER_ID.toString(), SECOND_LEVEL_FOLDER_ID.toString());
 
-		List<String> actualState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
+		final List<String> actualState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
 
 		Assert.assertEquals(
 				"Service must generate a state starting from the marker, then the list item name, followed by the folder IDs of the containing folders",
@@ -66,13 +78,13 @@ public class UserTreeStateServiceImplTest {
 	}
 
 	private GermplasmList constructDummyNestedGermplasmListFolder() {
-		GermplasmList firstLevel = new GermplasmList(FIRST_LEVEL_FOLDER_ID);
+		final GermplasmList firstLevel = new GermplasmList(FIRST_LEVEL_FOLDER_ID);
 		firstLevel.setType(GermplasmList.FOLDER_TYPE);
-		GermplasmList secondLevel = new GermplasmList(SECOND_LEVEL_FOLDER_ID);
+		final GermplasmList secondLevel = new GermplasmList(SECOND_LEVEL_FOLDER_ID);
 		secondLevel.setType(GermplasmList.FOLDER_TYPE);
 		secondLevel.setParent(firstLevel);
 
-		GermplasmList actualList = new GermplasmList(TEST_LIST_ID);
+		final GermplasmList actualList = new GermplasmList(TEST_LIST_ID);
 		actualList.setType(GermplasmList.LIST_TYPE);
 		actualList.setParent(secondLevel);
 
