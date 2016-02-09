@@ -213,6 +213,8 @@ public class MySQLUtil {
 		// append program information to the backup file
 		// e.g. (2,2,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','maize','2016-01-01 23:26:53'),
 		if (file.exists()) {
+			String comment  = "-- This backup file is for crop type " + contextUtil.getProjectInContext().getCropType().getCropName() + "\n";
+			Files.write(Paths.get(backupFilename), comment.getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
 			for (Project program : this.workbenchDataManager.getProjects()) {
 				if (program.getCropType().equals(this.contextUtil.getProjectInContext().getCropType())) {
@@ -224,9 +226,7 @@ public class MySQLUtil {
 					sb.append(program.getStartDate());
 					sb.append("','");
 					sb.append(program.getUniqueID());
-					sb.append("','");
-					sb.append(program.getCropType().getCropName());
-					sb.append("','");
+					sb.append("','tutorial','");
 					sb.append(program.getLastOpenDate());
 					sb.append("');\n");
 					MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
@@ -315,7 +315,7 @@ public class MySQLUtil {
 
 		} catch (Exception e) {
 			// fail restore using the selected backup, reverting to previous DB..
-			MySQLUtil.LOG.error("Error encountered on restore", e);
+			MySQLUtil.LOG.error("Error encountered on restore " + e.getCause().getMessage(), e.getCause().getMessage());
 
 			// GCP-7192 (Workaround) If insert data to listnms script fails and throws an error
 			// "Column count doesn't match value count at row 1"
@@ -410,13 +410,13 @@ public class MySQLUtil {
 		int currentUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		try {
 			this.executeQuery(connection, "USE workbench");
-			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '"
-					+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "';");
+			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where user_id = '9999';");
 			for (String programKey : programIds) {
 				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
 				this.executeQuery(connection,
 						"INSERT into workbench_project_user_info values (null," + programKey + "," + currentUserId + ",NOW())");
 				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
+				this.executeQuery(connection, "UPDATE workbench_project set crop_type = '" + this.contextUtil.getProjectInContext().getCropType().getCropName() + "' where project_id = " + programKey + ";");
 			}
 			this.executeQuery(connection, "UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
 		} catch (SQLException e) {
