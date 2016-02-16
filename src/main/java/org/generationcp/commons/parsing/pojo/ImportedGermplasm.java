@@ -68,6 +68,9 @@ public class ImportedGermplasm implements Serializable {
 
 	private String groupName;
 
+	private String trialInstanceNumber;
+	private String replicationNumber;
+
 	public Integer getIndex() {
 		return this.index;
 	}
@@ -346,6 +349,22 @@ public class ImportedGermplasm implements Serializable {
 	 */
 	public void setCheckName(String checkName) {
 		this.checkName = checkName;
+	}
+
+	public String getTrialInstanceNumber() {
+		return this.trialInstanceNumber;
+	}
+
+	public void setTrialInstanceNumber(String trialInstanceNumber) {
+		this.trialInstanceNumber = trialInstanceNumber;
+	}
+
+	public String getReplicationNumber() {
+		return this.replicationNumber;
+	}
+
+	public void setReplicationNumber(String replicationNumber) {
+		this.replicationNumber = replicationNumber;
 	}
 
 	/*
