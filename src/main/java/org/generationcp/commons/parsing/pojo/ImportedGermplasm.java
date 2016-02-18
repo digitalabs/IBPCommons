@@ -56,6 +56,9 @@ public class ImportedGermplasm implements Serializable {
 
 	/** Germplasm's Number of Parents */
 	private Integer gnpgs;
+	
+	/** The maintenance group this germplasm belongs to */
+	private Integer mgid;
 
 	/** List of Names associated with the Germplasm */
 	private List<Name> names;
@@ -307,6 +310,16 @@ public class ImportedGermplasm implements Serializable {
 	 */
 	public void setGnpgs(Integer gnpgs) {
 		this.gnpgs = gnpgs;
+	}
+
+	
+	public Integer getMgid() {
+		return mgid;
+	}
+
+	
+	public void setMgid(Integer mgid) {
+		this.mgid = mgid;
 	}
 
 	/**
