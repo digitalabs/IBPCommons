@@ -56,6 +56,9 @@ public class ImportedGermplasm implements Serializable {
 
 	/** Germplasm's Number of Parents */
 	private Integer gnpgs;
+	
+	/** The maintenance group this germplasm belongs to */
+	private Integer mgid;
 
 	/** List of Names associated with the Germplasm */
 	private List<Name> names;
@@ -67,6 +70,9 @@ public class ImportedGermplasm implements Serializable {
 	private Integer index;
 
 	private String groupName;
+
+	private String trialInstanceNumber;
+	private String replicationNumber;
 
 	public Integer getIndex() {
 		return this.index;
@@ -306,6 +312,16 @@ public class ImportedGermplasm implements Serializable {
 		this.gnpgs = gnpgs;
 	}
 
+	
+	public Integer getMgid() {
+		return mgid;
+	}
+
+	
+	public void setMgid(Integer mgid) {
+		this.mgid = mgid;
+	}
+
 	/**
 	 * @return the names
 	 */
@@ -346,6 +362,22 @@ public class ImportedGermplasm implements Serializable {
 	 */
 	public void setCheckName(String checkName) {
 		this.checkName = checkName;
+	}
+
+	public String getTrialInstanceNumber() {
+		return this.trialInstanceNumber;
+	}
+
+	public void setTrialInstanceNumber(String trialInstanceNumber) {
+		this.trialInstanceNumber = trialInstanceNumber;
+	}
+
+	public String getReplicationNumber() {
+		return this.replicationNumber;
+	}
+
+	public void setReplicationNumber(String replicationNumber) {
+		this.replicationNumber = replicationNumber;
 	}
 
 	/*

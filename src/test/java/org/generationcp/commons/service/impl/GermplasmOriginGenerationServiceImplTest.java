@@ -27,6 +27,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
 
+		parameters.setStudyType(StudyType.N);
 		parameters.setCrop("rice");
 		Assert.assertEquals("StudyName:1", service.generateOriginString(parameters));
 
@@ -55,6 +56,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
 
+		parameters.setStudyType(StudyType.N);
 		parameters.setCrop("rice");
 		Assert.assertEquals("Female Study Name:2/Male Study Name:1", service.generateOriginString(parameters));
 
@@ -77,6 +79,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		parameters.setLocation("IND");
 		parameters.setPlotNumber("1");
 		parameters.setSeason("Summer");
+		parameters.setStudyType(StudyType.N);
 
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
@@ -99,6 +102,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		parameters.setMalePlotNumber("1");
 		parameters.setFemaleStudyName("Female Study Name");
 		parameters.setFemalePlotNumber("2");
+		parameters.setStudyType(StudyType.N);
 
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
@@ -111,6 +115,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 
 		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
 		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+		profile.setGermplasmOriginTrialsMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
 
 		final GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("maize");
@@ -135,6 +140,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 
 		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
 		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+		profile.setGermplasmOriginTrialsMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
 
 		final GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
 		parameters.setCrop("maize");
@@ -144,6 +150,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		parameters.setSeason("Winter");
 		//No selection number
 		parameters.setSelectionNumber(null);
+		parameters.setStudyType(StudyType.N);
 
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
@@ -170,6 +177,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 		parameters.setMalePlotNumber("1");
 		parameters.setFemaleStudyName("Female Study Name");
 		parameters.setFemalePlotNumber("2");
+		parameters.setStudyType(StudyType.N);
 
 		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
 		service.setGermplasmNamingProperties(profile);
