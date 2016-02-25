@@ -39,6 +39,19 @@ public abstract class AbstractExcelFileParser<T> {
 		return this.parseWorkbook(this.workbook, additionalParams);
 	}
 
+	public T parseFile(String absoluteFilename, Map<String, Object> additionalParams) throws FileParsingException {
+		try {
+
+			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);
+			return this.parseWorkbook(this.workbook, additionalParams);
+
+		} catch (InvalidFormatException | IOException e) {
+			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException("common.error.invalid.file");
+		}
+
+	}
+
 	public String[] getSupportedFileExtensions() {
 		return AbstractExcelFileParser.EXCEL_FILE_EXTENSIONS;
 	}
@@ -92,7 +105,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	/**
 	 * Wrapper to PoiUtil.getCellStringValue static call so we can stub the methods on unit tests
-	 *
+	 * 
 	 * @param sheetNo
 	 * @param rowNo
 	 * @param columnNo
@@ -105,7 +118,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	/**
 	 * Wrapper to PoiUtil.rowIsEmpty static call so we can stub the methods on unit tests
-	 *
+	 * 
 	 * @param sheetNo
 	 * @param rowNo
 	 * @param colCount
