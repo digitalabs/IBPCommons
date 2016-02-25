@@ -2,6 +2,7 @@
 package org.generationcp.commons.parsing;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -47,7 +48,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 		} catch (InvalidFormatException | IOException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException("common.error.invalid.file");
+			throw new FileParsingException(this.messageSource.getMessage("common.error.invalid.file", null, Locale.ENGLISH));
 		}
 
 	}
@@ -71,7 +72,7 @@ public abstract class AbstractExcelFileParser<T> {
 			return this.fileService.retrieveWorkbook(serverFilename);
 		} catch (InvalidFormatException | IOException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException("common.error.invalid.file");
+			throw new FileParsingException(this.messageSource.getMessage("common.error.file.not.excel", null, Locale.ENGLISH));
 		}
 	}
 
