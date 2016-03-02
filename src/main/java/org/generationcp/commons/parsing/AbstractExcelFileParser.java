@@ -26,6 +26,7 @@ public abstract class AbstractExcelFileParser<T> {
 	protected String originalFilename;
 
 	public static final String FILE_INVALID = "common.error.invalid.file";
+	public static final String FILE_READ_ERROR = "common.error.file.read.error";
 
 	protected static final String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
 
@@ -46,9 +47,12 @@ public abstract class AbstractExcelFileParser<T> {
 			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);
 			return this.parseWorkbook(this.workbook, additionalParams);
 
-		} catch (InvalidFormatException | IOException e) {
+		} catch (InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage("common.error.invalid.file", null, Locale.ENGLISH));
+			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
+		} catch (IOException e) {
+			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
 		}
 
 	}
@@ -70,9 +74,12 @@ public abstract class AbstractExcelFileParser<T> {
 			String serverFilename = this.fileService.saveTemporaryFile(multipartFile.getInputStream());
 
 			return this.fileService.retrieveWorkbook(serverFilename);
-		} catch (InvalidFormatException | IOException e) {
+		} catch (InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage("common.error.file.not.excel", null, Locale.ENGLISH));
+			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
+		} catch (IOException e) {
+			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
 		}
 	}
 
