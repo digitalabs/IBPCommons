@@ -24,6 +24,8 @@ public class ImportedGermplasm implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	private Integer id;
+
 	/** The entry id. */
 	private Integer entryId;
 
@@ -415,6 +417,14 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public Integer getId() {
+		return this.id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }
