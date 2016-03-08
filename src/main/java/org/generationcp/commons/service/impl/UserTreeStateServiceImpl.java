@@ -60,7 +60,7 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	protected List<String> computeTreeStateForSavedTree(final GermplasmList germplasmList) {
 		List<String> treeState = new ArrayList<>();
 
-		GermplasmList current = germplasmList.isList() ? germplasmList.getParent() : germplasmList;
+        GermplasmList current = germplasmList.isFolder() ? germplasmList  : germplasmList.getParent();
 
 		while (current != null && current.getId() != 0) {
 			treeState.add(0, current.getId().toString());
