@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- *
+ * 
  * Generation Challenge Programme (GCP)
- *
- *
+ * 
+ * 
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- *
+ * 
  *******************************************************************************/
 
 package org.generationcp.commons.util;
@@ -18,7 +18,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +29,8 @@ public class FileUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
-    public static final String INVALID_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
-    public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
-
+	public static final String INVALID_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
+	public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
 
 	private FileUtils() {
 		// hide public constructor for this utility class
@@ -56,8 +56,8 @@ public class FileUtils {
 		return ret && path.delete();
 	}
 
-    public static boolean isFilenameValid(String proposedFileName) {
-        // blank file names are invalid regardless of OS
+	public static boolean isFilenameValid(String proposedFileName) {
+		// blank file names are invalid regardless of OS
 		if (StringUtils.isEmpty(proposedFileName)) {
 			return false;
 		}
@@ -67,27 +67,40 @@ public class FileUtils {
 			return false;
 		}
 
-		return !(proposedFileName.matches(".*" + INVALID_CHARACTER_REGEX_PATTERN + ".*"));
-        
-    }
+		return !proposedFileName.matches(".*" + INVALID_CHARACTER_REGEX_PATTERN + ".*");
 
-    public static String sanitizeFileName(String fileName) {
-        if (StringUtils.isEmpty(fileName)) {
-            return fileName;
-        }
+	}
 
-        String sanitizedFileName = fileName;
+	public static String sanitizeFileName(String fileName) {
+		if (StringUtils.isEmpty(fileName)) {
+			return fileName;
+		}
 
+		String sanitizedFileName = fileName;
 
-        sanitizedFileName = sanitizedFileName.replaceAll(INVALID_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
+		sanitizedFileName = sanitizedFileName.replaceAll(INVALID_CHARACTER_REGEX_PATTERN, INVALID_FILE_CHARACTER_REPLACEMENT.toString());
 
-        if (sanitizedFileName.endsWith(".")) {
-            int index = sanitizedFileName.lastIndexOf('.');
-            sanitizedFileName = sanitizedFileName.substring(0, index) + INVALID_FILE_CHARACTER_REPLACEMENT.toString();
-        }
+		if (sanitizedFileName.endsWith(".")) {
+			int index = sanitizedFileName.lastIndexOf('.');
+			sanitizedFileName = sanitizedFileName.substring(0, index) + INVALID_FILE_CHARACTER_REPLACEMENT.toString();
+		}
 
-        return sanitizedFileName;
-    }
+		return sanitizedFileName;
+	}
+
+	public static String encodeFilenameForDownload(String filename) {
+
+		try {
+
+			URI uri = new URI(null, null, filename, null);
+			return uri.toASCIIString();
+
+		} catch (URISyntaxException e) {
+			FileUtils.LOG.error(e.getMessage(), e);
+
+		}
+		return filename;
+	}
 
 	public static byte[] contentsOfFile(File file) throws IOException {
 		BufferedInputStream bis = null;
