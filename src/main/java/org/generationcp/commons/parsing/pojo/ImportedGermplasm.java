@@ -24,7 +24,7 @@ public class ImportedGermplasm implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	private Integer id;
+	private Integer crossListId;
 
 	/** The entry id. */
 	private Integer entryId;
@@ -420,11 +420,11 @@ public class ImportedGermplasm implements Serializable {
 	}
 
 	public Integer getId() {
-		return this.id;
+		return this.crossListId;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setCrossListId(Integer crossListId) {
+		this.crossListId = crossListId;
 	}
 
 }
