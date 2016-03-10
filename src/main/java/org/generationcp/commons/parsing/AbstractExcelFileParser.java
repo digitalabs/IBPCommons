@@ -25,8 +25,8 @@ public abstract class AbstractExcelFileParser<T> {
 	protected Workbook workbook;
 	protected String originalFilename;
 
-	public static final String FILE_INVALID = "common.error.invalid.file";
-	public static final String FILE_READ_ERROR = "common.error.file.read.error";
+	public static final String FILE_INVALID = "common.error.excel.invalid.format";
+	public static final String FILE_READ_ERROR = "common.error.excel.read.error";
 
 	protected static final String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
 
