@@ -92,7 +92,8 @@ public class FileUtils {
 
 		try {
 
-			URI uri = new URI(null, null, filename, null);
+			URI uri = new URI(null, null, sanitizeFileName(filename), null);
+
 			return uri.toASCIIString();
 
 		} catch (URISyntaxException e) {

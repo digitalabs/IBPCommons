@@ -59,11 +59,7 @@ public class FileDownloadResource extends FileResource {
 	 * @param filename
 	 */
 	public void setFilename(String filename) {
-		String sanitized = filename;
-		if (!FileUtils.isFilenameValid(sanitized)) {
-			sanitized = FileUtils.sanitizeFileName(sanitized);
-		}
-		this.filename = sanitized;
+		this.filename = filename;
 	}
 
 	@Override
