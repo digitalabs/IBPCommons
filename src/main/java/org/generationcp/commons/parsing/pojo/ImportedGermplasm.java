@@ -21,8 +21,12 @@ import org.generationcp.middleware.pojos.Name;
  */
 public class ImportedGermplasm implements Serializable {
 
+	public static final String GID_PENDING = "Pending";
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+
+	private Integer crossListId;
 
 	/** The entry id. */
 	private Integer entryId;
@@ -415,6 +419,14 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public Integer getId() {
+		return this.crossListId;
+	}
+
+	public void setCrossListId(Integer crossListId) {
+		this.crossListId = crossListId;
 	}
 
 }
