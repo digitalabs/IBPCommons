@@ -31,7 +31,7 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public static final String PLOT_RECIP_PREFIX = "Plot Recip: ";
 	public static final String PEDIGREE_RECIP_PREFIX = "Pedigree Recip: ";
 
-	public static final String NO_SEED_SOURCE = "Pending";
+	public static final String SEED_SOURCE_PENDING = "Pending";
 
 	private String notes;
 	private String seedsHarvested;
