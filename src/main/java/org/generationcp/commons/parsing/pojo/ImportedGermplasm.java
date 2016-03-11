@@ -21,6 +21,8 @@ import org.generationcp.middleware.pojos.Name;
  */
 public class ImportedGermplasm implements Serializable {
 
+	public static final String GID_PENDING = "Pending";
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
