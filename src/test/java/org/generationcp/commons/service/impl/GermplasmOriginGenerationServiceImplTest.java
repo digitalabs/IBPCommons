@@ -163,7 +163,7 @@ public class GermplasmOriginGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testMaizeForCrossListImport() {
+	public void testMaizeForCrosses() {
 
 		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
 		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
@@ -183,6 +183,60 @@ public class GermplasmOriginGenerationServiceImplTest {
 		service.setGermplasmNamingProperties(profile);
 
 		Assert.assertEquals("INDSummer-Female Study Name-2/INDSummer-Male Study Name-1", service.generateOriginString(parameters));
+	}
+
+	/**
+	 * [SELECTION_NUMBER] present in template but no value specified.
+	 */
+	@Test
+	public void testMaizeForCrossesWithSelectionNumberInTemplateOnly() {
+
+		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
+		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+
+		final GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
+		parameters.setCrop("maize");
+		parameters.setLocation("IND");
+		parameters.setSeason("Summer");
+		parameters.setCross(true);
+		parameters.setMaleStudyName("Male Study Name");
+		parameters.setMalePlotNumber("1");
+		parameters.setFemaleStudyName("Female Study Name");
+		parameters.setFemalePlotNumber("2");
+		parameters.setStudyType(StudyType.N);
+
+		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
+		service.setGermplasmNamingProperties(profile);
+
+		Assert.assertEquals("INDSummer-Female Study Name-2/INDSummer-Male Study Name-1", service.generateOriginString(parameters));
+	}
+
+	/**
+	 * [SELECTION_NUMBER] present in template value is also in specified parameters. Probably not a likely scenario in real life but service
+	 * handles (better than always null/empty it) it so we must test the behavior.
+	 */
+	@Test
+	public void testMaizeForCrossesWithSelectionNumberInTemplateAndValue() {
+
+		final GermplasmNamingProperties profile = new GermplasmNamingProperties();
+		profile.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+
+		final GermplasmOriginGenerationParameters parameters = new GermplasmOriginGenerationParameters();
+		parameters.setCrop("maize");
+		parameters.setLocation("IND");
+		parameters.setSeason("Summer");
+		parameters.setCross(true);
+		parameters.setMaleStudyName("Male Study Name");
+		parameters.setMalePlotNumber("1");
+		parameters.setFemaleStudyName("Female Study Name");
+		parameters.setFemalePlotNumber("2");
+		parameters.setStudyType(StudyType.N);
+		parameters.setSelectionNumber("2");
+
+		final GermplasmOriginGenerationServiceImpl service = new GermplasmOriginGenerationServiceImpl();
+		service.setGermplasmNamingProperties(profile);
+
+		Assert.assertEquals("INDSummer-Female Study Name-2-2/INDSummer-Male Study Name-1-2", service.generateOriginString(parameters));
 	}
 
 }
