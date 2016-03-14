@@ -71,10 +71,13 @@ public class FileUtils {
 
 	}
 
+	/**
+	 * Removes all forbidden characters in a file name.
+	 * 
+	 * @param fileName
+	 * @return
+	 */
 	public static String sanitizeFileName(String fileName) {
-		if (StringUtils.isEmpty(fileName)) {
-			return fileName;
-		}
 
 		String sanitizedFileName = fileName;
 
@@ -88,6 +91,12 @@ public class FileUtils {
 		return sanitizedFileName;
 	}
 
+	/**
+	 * Encodes the file name to ASCII String
+	 * 
+	 * @param filename
+	 * @return
+	 */
 	public static String encodeFilenameForDownload(String filename) {
 
 		try {
