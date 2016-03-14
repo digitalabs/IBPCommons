@@ -73,8 +73,8 @@ public class FileUtilsTest {
 	@Test
 	public void testEncodeFilenameForDownload() {
 
-		String filename = "testFilenameäö<>";
-		String convertedFilename = "testFilename%C3%A4%C3%B6__";
+		String filename = "testFilename<>";
+		String convertedFilename = "testFilename__";
 
 		Assert.assertEquals("Should be the same character as the converted filename", convertedFilename,
 				FileUtils.encodeFilenameForDownload(filename));

@@ -69,7 +69,7 @@ public class FileDownloadResource extends FileResource {
 					new DownloadStream(new FileInputStream(this.getSourceFile()), FileTypeResolver.getMIMEType(this.filename),
 							this.getFilename());
 
-			// Those user agents that do not support the RFC 5987 encoding ignore “filename*” when it occurs after “filename”.
+			// Those user agents that do not support the RFC 5987 encoding ignore filename when it occurs after filename.
 			ds.setParameter("Content-Disposition", "attachment; filename=" + this.filename + "; filename*=UTF-8''" + this.filename);
 			ds.setCacheTime(this.getCacheTime());
 			return ds;
