@@ -4,11 +4,16 @@ package org.generationcp.commons.vaadin.ui;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
+
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.pojos.UserDefinedField;
 
 import com.vaadin.data.Property;
 import com.vaadin.data.util.BeanItem;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
+import com.vaadin.ui.Select;
 import com.vaadin.ui.Table;
 
 public class VaadinComponentsUtil {
@@ -66,5 +71,17 @@ public class VaadinComponentsUtil {
 			}
 		}
 		return false;
+	}
+	
+	public static void populateSelectType(Select selectType, List<UserDefinedField> listTypes) throws MiddlewareQueryException {
+		for (UserDefinedField listType : listTypes) {
+			String typeCode = listType.getFcode();
+			selectType.addItem(typeCode);
+			selectType.setItemCaption(typeCode, listType.getFname());
+			// set "GERMPLASMLISTS" as the default value
+			if ("LST".equals(typeCode)) {
+				selectType.setValue(typeCode);
+			}
+		}
 	}
 }
