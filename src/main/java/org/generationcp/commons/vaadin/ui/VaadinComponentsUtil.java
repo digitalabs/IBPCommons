@@ -26,11 +26,12 @@ public class VaadinComponentsUtil {
 		// private constructor for utility class
 	}
 
-	public static boolean findComponent(Component root, VaadinComponentFieldType type, String text, String propertyName) {
-		Deque<Component> stack = new ArrayDeque<Component>();
+	public static boolean findComponent(final Component root, final VaadinComponentFieldType type, final String text,
+			final String propertyName) {
+		final Deque<Component> stack = new ArrayDeque<Component>();
 		stack.push(root);
 		while (!stack.isEmpty()) {
-			Component c = stack.pop();
+			final Component c = stack.pop();
 			if (c instanceof ComponentContainer) {
 				VaadinComponentsUtil.pushComponents(stack, ((ComponentContainer) c).getComponentIterator());
 			} else if (c instanceof Table && type == VaadinComponentFieldType.TABLE_CONTENT
@@ -43,13 +44,13 @@ public class VaadinComponentsUtil {
 		return false;
 	}
 
-	private static void pushComponents(Deque<Component> stack, Iterator<Component> componentIterator) {
-		for (Iterator<Component> i = componentIterator; i.hasNext();) {
+	private static void pushComponents(final Deque<Component> stack, final Iterator<Component> componentIterator) {
+		for (final Iterator<Component> i = componentIterator; i.hasNext();) {
 			stack.add(i.next());
 		}
 	}
 
-	private static boolean findCaption(Component c, String text) {
+	private static boolean findCaption(final Component c, final String text) {
 		if (c.getCaption() != null && c.getCaption().equals(text)) {
 			return true;
 		}
@@ -57,14 +58,14 @@ public class VaadinComponentsUtil {
 	}
 
 	@SuppressWarnings("rawtypes")
-	private static boolean findItemInTable(Table table, String text, String propertyName) {
+	private static boolean findItemInTable(final Table table, final String text, final String propertyName) {
 		if (table.getContainerDataSource() == null || table.getItemIds() == null) {
 			return false;
 		}
-		for (Object itemId : table.getItemIds()) {
+		for (final Object itemId : table.getItemIds()) {
 			if (table.getItem(itemId) instanceof BeanItem) {
-				BeanItem beanItem = (BeanItem) table.getItem(itemId);
-				Property property = beanItem.getItemProperty(propertyName);
+				final BeanItem beanItem = (BeanItem) table.getItem(itemId);
+				final Property property = beanItem.getItemProperty(propertyName);
 				if (property != null && text.equals(property.toString())) {
 					return true;
 				}
@@ -72,10 +73,10 @@ public class VaadinComponentsUtil {
 		}
 		return false;
 	}
-	
-	public static void populateSelectType(Select selectType, List<UserDefinedField> listTypes) throws MiddlewareQueryException {
-		for (UserDefinedField listType : listTypes) {
-			String typeCode = listType.getFcode();
+
+	public static void populateSelectType(final Select selectType, final List<UserDefinedField> listTypes) throws MiddlewareQueryException {
+		for (final UserDefinedField listType : listTypes) {
+			final String typeCode = listType.getFcode();
 			selectType.addItem(typeCode);
 			selectType.setItemCaption(typeCode, listType.getFname());
 			// set "GERMPLASMLISTS" as the default value
