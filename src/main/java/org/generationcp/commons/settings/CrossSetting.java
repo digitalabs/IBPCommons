@@ -21,6 +21,7 @@ public class CrossSetting implements Serializable, PresetSetting {
 	private CrossNameSetting crossNameSetting;
 	private AdditionalDetailsSetting additionalDetailsSetting;
 	private boolean preservePlotDuplicates;
+	private boolean isUseManualSettingsForNaming;
 
 	public CrossSetting() {
 
@@ -77,6 +78,14 @@ public class CrossSetting implements Serializable, PresetSetting {
 
 	public void setPreservePlotDuplicates(boolean preservePlotDuplicates) {
 		this.preservePlotDuplicates = preservePlotDuplicates;
+	}
+
+	public boolean isUseManualSettingsForNaming() {
+		return this.isUseManualSettingsForNaming;
+	}
+
+	public void setIsUseManualSettingsForNaming(boolean isUseManualSettingsForNaming) {
+		this.isUseManualSettingsForNaming = isUseManualSettingsForNaming;
 	}
 
 	@Override
