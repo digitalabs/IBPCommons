@@ -11,14 +11,18 @@ public class RuleException extends Exception {
 
 	private Locale locale;
 
-	public RuleException(String message, Object[] objects, Locale locale) {
+	public RuleException(final String message, final Object[] objects, final Locale locale) {
 		super(message);
 		this.objects = objects;
 		this.locale = locale;
 	}
 
-	public RuleException(String message, Throwable cause) {
+	public RuleException(final String message, final Throwable cause) {
 		super(message, cause);
+	}
+
+	public RuleException(final String message) {
+		super(message);
 	}
 
 	public Object[] getObjects() {
