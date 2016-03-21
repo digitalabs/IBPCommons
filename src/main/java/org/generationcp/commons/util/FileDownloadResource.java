@@ -1,5 +1,5 @@
 /***************************************************************
- * Copyright (c) 2012, All Rights Reserved.
+ * F * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
  * 
@@ -70,7 +70,8 @@ public class FileDownloadResource extends FileResource {
 							this.getFilename());
 
 			// Those user agents that do not support the RFC 5987 encoding ignore filename when it occurs after filename.
-			ds.setParameter("Content-Disposition", "attachment; filename=" + this.filename + "; filename*=UTF-8''" + this.filename);
+			ds.setParameter("Content-Disposition", "attachment; filename=\"" + this.filename + "\"; filename*=\"UTF-8''" + this.filename
+					+ "\";");
 			ds.setCacheTime(this.getCacheTime());
 			return ds;
 		} catch (final FileNotFoundException e) {
