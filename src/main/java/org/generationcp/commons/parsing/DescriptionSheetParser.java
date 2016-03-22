@@ -117,7 +117,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		String listType = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listTypeColNo, 1);
 
 		if (!DescriptionSheetParser.TEMPLATE_LIST_TYPE.equalsIgnoreCase(listType)) {
-			throw new FileParsingException("Error parsing details : List type is invalid");
+			throw new FileParsingException("Error parsing details : Invalid list type. List type should be 'LST'.");
 		}
 
 		this.importedList.setName(listName);
