@@ -71,7 +71,7 @@ public class FileDownloadResource extends FileResource {
 					new DownloadStream(new FileInputStream(this.getSourceFile()), FileTypeResolver.getMIMEType(this.filename),
 							this.getFilename());
 
-			if (this.userAgent.indexOf("MSIE") != -1 || this.userAgent.indexOf("Trident") != -1) {
+			if (this.userAgent.indexOf("MSIE") != -1 || this.userAgent.indexOf("Trident") != -1 || this.userAgent.indexOf("Safari") != -1) {
 				// Internet Explorer has problems reading the Content-disposition header if it contains "filename*"
 				ds.setParameter("Content-Disposition", "attachment; filename=\"" + this.filename + "\";");
 			} else {
