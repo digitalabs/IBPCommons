@@ -36,7 +36,7 @@ public class GermplasmOriginParameterBuilderImpl implements GermplasmOriginParam
 		originGenerationParameters.setStudyName(workbook.getStudyName());
 		originGenerationParameters.setStudyType(workbook.getStudyDetails().getStudyType());
 		deriveLocation(workbook, originGenerationParameters, trialInstanceNumber);
-		deriveSeason(workbook, originGenerationParameters, replicationNumber);
+		deriveSeason(workbook, originGenerationParameters, trialInstanceNumber);
 		originGenerationParameters.setPlotNumber(plotNumber);
 		originGenerationParameters.setSelectionNumber(selectionNumber);
 		return originGenerationParameters;
