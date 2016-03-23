@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -31,6 +32,12 @@ public class FileUtils {
 
 	public static final String INVALID_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
 	public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
+
+	public static final String MIME_MS_EXCEL = "application/vnd.ms-excel";
+	public static final String MIME_CSV = "text/csv";
+	public static final String MIME_ZIP = "application/zip";
+	public static final String MIME_PDF = "application/pdf";
+	public static final String MIME_DEFAULT = "application/octet-stream";
 
 	private FileUtils() {
 		// hide public constructor for this utility class
@@ -204,6 +211,28 @@ public class FileUtils {
 			return "";
 		}
 		return filename;
+	}
+
+	/*
+	 * Gets the MIME Type of the file based on name
+	 */
+	public static String detectMimeType(String fileName) {
+
+		String extension = FilenameUtils.getExtension(fileName);
+
+		switch (extension) {
+			case "xls":
+				return MIME_MS_EXCEL;
+			case "xlsx":
+				return MIME_MS_EXCEL;
+			case "zip":
+				return MIME_ZIP;
+			case "pdf":
+				return MIME_PDF;
+			default:
+				return MIME_DEFAULT;
+		}
+
 	}
 
 }
