@@ -149,6 +149,11 @@ public class InternationalizableException extends RuntimeException implements In
 	 */
 	@Override
 	public void updateLabels() {
+		/**
+		 * Reasons for no method body and why can't we remove this method:
+		 * As this class implements InternationalizableComponent Interface, need to implement its methods.
+		 * InternationalizableComponent is also implemented by other classes so can't remove it.
+		 */
 	}
 
 	/*
