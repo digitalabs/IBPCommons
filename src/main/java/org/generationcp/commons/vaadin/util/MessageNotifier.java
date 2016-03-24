@@ -23,7 +23,6 @@ import com.vaadin.ui.Window.Notification;
 public class MessageNotifier {
 
 	private static final int POSITION = Notification.POSITION_TOP_RIGHT;
-	private static final int INDEFINITE_DELAY = -1; // Lets the notification window stay until the user clicks it
 	private static final int LONG_DELEY = 6000; // Lets the notification window stay until the user clicks it
 
 	private static final int DEFAULT_MESSAGE_DELAY = 3000;

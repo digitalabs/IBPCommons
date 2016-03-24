@@ -11,9 +11,6 @@
 
 package org.generationcp.commons.hibernate;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -23,17 +20,11 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase implements ManagerFactoryProvider {
-
-	private final static Logger LOG = LoggerFactory.getLogger(DynamicManagerFactoryProviderConcurrency.class);
-
-	protected Map<Long, String> cropNameCache = new HashMap<Long, String>();
 
 	public DynamicManagerFactoryProviderConcurrency() {
 

@@ -9,10 +9,6 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.ExcelWorkbookRow;
-import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.service.api.OntologyService;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -28,18 +24,6 @@ public class CodesSheetGenerator {
 	private static final String INFORMATION_TYPE = "Information Type";
 	private static final String FCODE = "fcode";
 	private static final String FNAME = "fname";
-
-	@Resource
-	private GermplasmDataManager germplasmDataManager;
-
-	@Resource
-	private ContextUtil contextUtil;
-
-	@Resource
-	private WorkbenchDataManager workbenchDataManager;
-
-	@Resource
-	private OntologyService ontologyService;
 
 	@Resource
 	private ListTypeRowGenerator listTypeRowGenerator;

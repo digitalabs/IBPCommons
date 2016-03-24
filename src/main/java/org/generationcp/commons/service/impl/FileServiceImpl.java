@@ -23,16 +23,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.service.FileService;
 import org.generationcp.middleware.util.ResourceFinder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanInitializationException;
 
 /**
  * The Class FileServiceImpl.
  */
 public class FileServiceImpl implements FileService {
-
-	private static final Logger LOG = LoggerFactory.getLogger(FileServiceImpl.class);
 
 	/** The upload directory. */
 	private final String uploadDirectory;
@@ -65,7 +61,7 @@ public class FileServiceImpl implements FileService {
 			file = new File(this.getFilePath(tempFileName));
 			file.createNewFile();
 			fos = new FileOutputStream(file);
-			int bytes = IOUtils.copy(userFile, fos);
+			IOUtils.copy(userFile, fos);
 
 		} finally {
 			IOUtils.closeQuietly(fos);
