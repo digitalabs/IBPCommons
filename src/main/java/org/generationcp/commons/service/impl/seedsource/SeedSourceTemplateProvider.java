@@ -5,6 +5,11 @@ import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyTemplateProvider;
 import org.generationcp.middleware.domain.oms.StudyType;
 
+/**
+ * Locates the key code templates for seed source (currently, from properties file, in future this may be loaded from database configuration
+ * service).
+ * 
+ */
 public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 
 	private GermplasmNamingProperties germplasmNamingProperties;

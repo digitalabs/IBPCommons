@@ -11,7 +11,9 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+/**
+ * Revolves Location value for Nurseries and Trials.
+ */
 public class LocationResolver implements KeyComponentValueResolver {
 
 	private Workbook workbook;

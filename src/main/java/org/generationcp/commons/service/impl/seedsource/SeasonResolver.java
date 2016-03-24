@@ -18,6 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+/**
+ * Revolves Season value for Nurseries and Trials.
+ */
 public class SeasonResolver implements KeyComponentValueResolver {
 
 	private Workbook workbook;
