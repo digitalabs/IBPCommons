@@ -5,11 +5,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
+import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
 import org.generationcp.commons.service.KeyComponentValueResolver;
-import org.generationcp.commons.service.KeyGenerationService;
-import org.generationcp.commons.service.KeyParametersProvider;
-import org.generationcp.commons.service.impl.KeyGenerationServiceImpl;
+import org.generationcp.commons.service.impl.KeyCodeGenerationServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
@@ -30,7 +29,7 @@ public class SeedSourceGenerator {
 	public String generateSeedSource(final Workbook workbook, final String instanceNumber, final String selectionNumber,
 			final String plotNumber, final String studyName) {
 
-		final KeyGenerationService service = new KeyGenerationServiceImpl();
+		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 
 		final KeyComponentValueResolver nameResolver = new KeyComponentValueResolver() {
 
@@ -71,24 +70,17 @@ public class SeedSourceGenerator {
 			}
 		};
 
-		final KeyParametersProvider keyParametersResolvers = new KeyParametersProvider() {
+		final Map<KeyComponent, KeyComponentValueResolver> paramerters = new HashMap<>();
+		paramerters.put(KeyComponent.NAME, nameResolver);
+		paramerters.put(KeyComponent.LOCATION, new LocationResolver(workbook, instanceNumber));
+		paramerters.put(KeyComponent.SEASON, new SeasonResolver(SeedSourceGenerator.this.ontologyVariableDataManager,
+				SeedSourceGenerator.this.contextUtil, workbook, instanceNumber));
+		paramerters.put(KeyComponent.PLOTNO, plotNumberResolver);
+		paramerters.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 
-			@Override
-			public Map<KeyComponent, KeyComponentValueResolver> getKeyParameterResolvers() {
-				final Map<KeyComponent, KeyComponentValueResolver> paramerters = new HashMap<>();
-				paramerters.put(KeyComponent.NAME, nameResolver);
-				paramerters.put(KeyComponent.LOCATION, new LocationResolver(workbook, instanceNumber));
-				paramerters.put(KeyComponent.SEASON, new SeasonResolver(SeedSourceGenerator.this.ontologyVariableDataManager,
-						SeedSourceGenerator.this.contextUtil, workbook, instanceNumber));
-				paramerters.put(KeyComponent.PLOTNO, plotNumberResolver);
-				paramerters.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
-				return paramerters;
-			}
-		};
-
-		return service.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties,
-				workbook.getStudyDetails().getStudyType(), this.contextUtil.getProjectInContext().getCropType().getCropName()),
-				keyParametersResolvers);
+		return service
+				.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
+						this.contextUtil.getProjectInContext().getCropType().getCropName()), paramerters);
 	}
 
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,

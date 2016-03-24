@@ -10,10 +10,9 @@ import java.util.regex.Pattern;
 
 import junit.framework.Assert;
 
+import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
 import org.generationcp.commons.service.KeyComponentValueResolver;
-import org.generationcp.commons.service.KeyGenerationService;
-import org.generationcp.commons.service.KeyParametersProvider;
 import org.generationcp.commons.service.KeyTemplateProvider;
 import org.junit.Test;
 
@@ -22,7 +21,7 @@ public class KeyGenerationsServiceImplTest {
 	@Test
 	public void testKeyGenerationService() {
 
-		KeyGenerationService service = new KeyGenerationServiceImpl();
+		KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 
 		KeyTemplateProvider inMemoryKeyTemplateProvider = new KeyTemplateProvider() {
 
@@ -71,19 +70,12 @@ public class KeyGenerationsServiceImplTest {
 			}
 		};
 
-		KeyParametersProvider inMemoryKeyParametersProvider = new KeyParametersProvider() {
+		Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
+		keyComponentValueResolvers.put(KeyComponent.LOCATION, locationValueResolver);
+		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
+		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 
-			@Override
-			public Map<KeyComponent, KeyComponentValueResolver> getKeyParameterResolvers() {
-				Map<KeyComponent, KeyComponentValueResolver> paramerters = new HashMap<>();
-				paramerters.put(KeyComponent.LOCATION, locationValueResolver);
-				paramerters.put(KeyComponent.PLOTNO, plotNumberResolver);
-				paramerters.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
-				return paramerters;
-			}
-		};
-
-		String businessKey = service.generateKey(inMemoryKeyTemplateProvider, inMemoryKeyParametersProvider);
+		String businessKey = service.generateKey(inMemoryKeyTemplateProvider, keyComponentValueResolvers);
 
 		Assert.assertEquals("INDIA-123-456", businessKey);
 	}
