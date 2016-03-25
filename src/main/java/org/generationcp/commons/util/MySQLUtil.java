@@ -28,10 +28,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.generationcp.commons.exceptions.SQLFileException;
 import org.slf4j.Logger;
@@ -179,7 +176,7 @@ public class MySQLUtil {
 		String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
 
 		List<String> command =
-				new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert", "--no-create-db",
+				new ArrayList<>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert", "--no-create-db",
 						"--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
 						"--user=" + this.username, database, "-r", backupFilename));
 
@@ -701,60 +698,5 @@ public class MySQLUtil {
 
 	public File createCurrentDbBackupFile(String databaseName) throws IOException, InterruptedException {
 		return this.backupDatabase(databaseName, this.getBackupFilename(databaseName, "system.sql", "temp"), true);
-	}
-
-	public void restoreDatabaseIfNotExists(String databaseName, String installationDirectory) {
-		try {
-			this.connect();
-			try {
-				this.executeQuery(this.connection, "USE " + databaseName);
-			} catch (Exception e) {
-				File backupFile = this.getLatestSystemBackupFile(installationDirectory, databaseName);
-				try {
-					this.executeQuery(this.connection, "DROP DATABASE IF EXISTS  " + databaseName);
-					this.executeQuery(this.connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
-					this.executeQuery(this.connection, "USE " + databaseName);
-					this.runScriptFromFile(databaseName, backupFile);
-				} catch (Exception e1) {
-					MySQLUtil.LOG.error(e.getMessage(), e1);
-				}
-			}
-		} catch (Exception e) {
-			MySQLUtil.LOG.error(e.getMessage(), e);
-		} finally {
-			this.disconnect();
-		}
-	}
-
-	private File getLatestSystemBackupFile(String installationDirectory, String databaseName) {
-		String backupFilenamePattern = databaseName + "_\\d+_\\d+_\\d+_system(.*).sql";
-		Pattern pattern = Pattern.compile(backupFilenamePattern);
-
-		File tempDirectory = new File(installationDirectory + "/" + "temp");
-		File[] filesInDir = tempDirectory.listFiles();
-		String restoreFilename = null;
-		for (File file : filesInDir) {
-			String filename = file.getName();
-			Matcher matcher = pattern.matcher(filename);
-			if (matcher.matches()) {
-				if (restoreFilename != null) {
-					StringTokenizer currentFilenameTokens = new StringTokenizer(filename.substring(databaseName.length()), "_");
-					StringTokenizer previousFilenameTokens = new StringTokenizer(restoreFilename.substring(databaseName.length()), "_");
-					while (currentFilenameTokens.hasMoreTokens()) {
-						String currentToken = currentFilenameTokens.nextToken();
-						if (previousFilenameTokens.hasMoreTokens() && !currentToken.contains("system.sql")) {
-							String previousToken = previousFilenameTokens.nextToken();
-							if (Integer.parseInt(currentToken) > Integer.parseInt(previousToken)) {
-								restoreFilename = filename;
-								break;
-							}
-						}
-					}
-				} else {
-					restoreFilename = filename;
-				}
-			}
-		}
-		return new File(tempDirectory + "/" + restoreFilename);
 	}
 }
