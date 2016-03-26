@@ -23,6 +23,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ScriptRunner {
 
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
@@ -31,6 +34,8 @@ public class ScriptRunner {
 
 	private final Connection connection;
 
+	public static final Logger LOG = LoggerFactory.getLogger(ScriptRunner.class);
+
 	private boolean stopOnError;
 	private boolean autoCommit;
 	private boolean sendFullScript;
@@ -38,7 +43,6 @@ public class ScriptRunner {
 	private boolean escapeProcessing = true;
 
 	private PrintWriter logWriter = new PrintWriter(System.out);
-	private PrintWriter errorLogWriter = new PrintWriter(System.err);
 
 	private String delimiter = ScriptRunner.DEFAULT_DELIMITER;
 	private boolean fullLineDelimiter = false;
@@ -87,10 +91,6 @@ public class ScriptRunner {
 		this.logWriter = logWriter;
 	}
 
-	public void setErrorLogWriter(PrintWriter errorLogWriter) {
-		this.errorLogWriter = errorLogWriter;
-	}
-
 	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
 	}
@@ -125,7 +125,7 @@ public class ScriptRunner {
 			this.checkForMissingLineTerminator(command);
 		} catch (Exception e) {
 			String message = "Error executing: " + command + ".  Cause: " + e;
-			this.printlnError(message);
+			ScriptRunner.LOG.error(e.getMessage(), e);
 			throw new RuntimeSqlException(message, e);
 		}
 	}
@@ -231,8 +231,7 @@ public class ScriptRunner {
 			try {
 				hasResults = statement.execute(sql);
 			} catch (SQLException e) {
-				String message = "Error executing: " + command + ".  Cause: " + e;
-				this.printlnError(message);
+				ScriptRunner.LOG.error(e.getMessage(), e);
 
 				// GCP-7192 Workaround for listnms
 				if (sql.contains("INSERT INTO `listnms` VALUES")) {
@@ -243,8 +242,7 @@ public class ScriptRunner {
 					try {
 						hasResults = statement.execute(sql);
 					} catch (SQLException e2) {
-						String message2 = "Error executing: " + command + ".  Cause: " + e;
-						this.printlnError(message2);
+						ScriptRunner.LOG.error(e2.getMessage(), e2);
 					}
 				}
 				// GCP-7192 Workaround for listnms
@@ -281,7 +279,7 @@ public class ScriptRunner {
 				}
 			}
 		} catch (SQLException e) {
-			this.printlnError("Error printing results: " + e.getMessage());
+			ScriptRunner.LOG.error(e.getMessage(), e);
 		}
 	}
 
@@ -298,12 +296,4 @@ public class ScriptRunner {
 			this.logWriter.flush();
 		}
 	}
-
-	private void printlnError(Object o) {
-		if (this.errorLogWriter != null) {
-			this.errorLogWriter.println(o);
-			this.errorLogWriter.flush();
-		}
-	}
-
 }
