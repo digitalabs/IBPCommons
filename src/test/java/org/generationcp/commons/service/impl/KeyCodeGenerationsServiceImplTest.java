@@ -2,13 +2,7 @@
 package org.generationcp.commons.service.impl;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import junit.framework.Assert;
 
 import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
@@ -16,10 +10,12 @@ import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.commons.service.KeyTemplateProvider;
 import org.junit.Test;
 
-public class KeyGenerationsServiceImplTest {
+import junit.framework.Assert;
+
+public class KeyCodeGenerationsServiceImplTest {
 
 	@Test
-	public void testKeyGenerationService() {
+	public void testGenerateKey() {
 
 		KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 
@@ -78,23 +74,5 @@ public class KeyGenerationsServiceImplTest {
 		String businessKey = service.generateKey(inMemoryKeyTemplateProvider, keyComponentValueResolvers);
 
 		Assert.assertEquals("INDIA-123-456", businessKey);
-	}
-
-	// Temporary test to build and test regex
-	@Test
-	public void testRegexCaptureReplace() {
-		String template = "[LOCATION]-[PLOT]-[LOCATION]";
-		Matcher matcher = Pattern.compile("(\\[LOCATION\\])").matcher(template);
-		System.out.println(matcher.replaceAll("India"));
-
-		// Find distinct plceholders
-		String mydata = "[LOCATION]-[PLOTNO]-[LOCATION]-[NAME]-[PLOTNO]";
-		Matcher m = Pattern.compile("\\[(.*?)\\]").matcher(mydata);
-		Set<String> allMatches = new HashSet<String>();
-
-		while (m.find()) {
-			allMatches.add(m.group());
-		}
-		System.out.println(allMatches);
 	}
 }
