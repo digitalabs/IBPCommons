@@ -47,7 +47,7 @@ public class GermplasmOriginParameterBuilderImplTest {
 	}
 
 	@Test
-	public void testBuildWhenAllRequiredInputIsAvailable() {
+	public void testBuildWhenAllRequiredInputIsAvailableNurseries() {
 
 		// Setup workbook
 		final Workbook workbook = new Workbook();
@@ -98,6 +98,73 @@ public class GermplasmOriginParameterBuilderImplTest {
 		Assert.assertEquals(selectionNumber, parameters.getSelectionNumber());
 	}
 	
+	@Test
+	public void testBuildWhenAllRequiredInputIsAvailableTrials() {
+
+		// Setup Trial workbook
+		Workbook workbook = new Workbook();
+		StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyType.T);
+		workbook.setStudyDetails(studyDetails);
+
+		final MeasurementVariable studyNameMV = new MeasurementVariable();
+		studyNameMV.setTermId(TermId.STUDY_NAME.getId());
+		studyNameMV.setValue("Study Name");
+		studyNameMV.setLabel(Workbook.STUDY_LABEL);
+
+		MeasurementVariable locationAbbrMV = new MeasurementVariable();
+		locationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
+		MeasurementData locationAbbrMD = new MeasurementData();
+		locationAbbrMD.setValue("MEX");
+		locationAbbrMD.setMeasurementVariable(locationAbbrMV);
+
+		MeasurementVariable seasonMV = new MeasurementVariable();
+		seasonMV.setTermId(TermId.SEASON_VAR.getId());
+		MeasurementData seasonMD = new MeasurementData();
+		seasonMD.setValue("Dry Season");
+		seasonMD.setMeasurementVariable(seasonMV);
+
+		workbook.setConditions(Lists.newArrayList(studyNameMV));
+
+		MeasurementVariable instanceNumberMV = new MeasurementVariable();
+		instanceNumberMV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		MeasurementData instanceNumberMD = new MeasurementData();
+		instanceNumberMD.setValue("1");
+		instanceNumberMD.setMeasurementVariable(instanceNumberMV);
+
+		MeasurementRow trialInstanceObservation = new MeasurementRow();
+		trialInstanceObservation.setDataList(Lists.newArrayList(instanceNumberMD, seasonMD, locationAbbrMD));
+
+		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
+
+		final Project testProject = new Project();
+		testProject.setUniqueID("e8e4be0a-5d63-452f-8fde-b1c794ec7b1a");
+		testProject.setCropType(new CropType("maize"));
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(testProject);
+		Mockito.when(this.contextUtil.getCurrentProgramUUID()).thenReturn(testProject.getUniqueID());
+
+		final Variable seasonVariable = new Variable();
+		final Scale seasonScale = new Scale();
+		final TermSummary seasonCategory = new TermSummary(10290, "Dry Season", "Dry Season");
+		seasonScale.addCategory(seasonCategory);
+		seasonVariable.setScale(seasonScale);
+		Mockito.when(
+				this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
+						Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(seasonVariable);
+
+		final String plotNumber = "1";
+		final String selectionNumber = "2";
+		final GermplasmOriginGenerationParameters parameters = this.builder.build(workbook, "1", "2", selectionNumber, plotNumber);
+		Assert.assertNotNull(parameters);
+		Assert.assertEquals(testProject.getCropType().getCropName(), parameters.getCrop());
+		Assert.assertEquals(studyNameMV.getValue(), parameters.getStudyName());
+		Assert.assertEquals(studyDetails.getStudyType(), parameters.getStudyType());
+		Assert.assertEquals(locationAbbrMD.getValue(), parameters.getLocation());
+		Assert.assertEquals(seasonCategory.getDefinition(), parameters.getSeason());
+		Assert.assertEquals(plotNumber, parameters.getPlotNumber());
+		Assert.assertEquals(selectionNumber, parameters.getSelectionNumber());
+	}
+
 	@Test
 	public void testBuildWhenAllRequiredInputIsAvailableCrossing() {
 
