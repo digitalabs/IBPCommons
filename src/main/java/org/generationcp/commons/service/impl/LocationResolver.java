@@ -1,4 +1,4 @@
-package org.generationcp.commons.service.impl.seedsource;
+package org.generationcp.commons.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.KeyComponentValueResolver;

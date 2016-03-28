@@ -1,4 +1,4 @@
-package org.generationcp.commons.service.impl.seedsource;
+package org.generationcp.commons.service.impl;
 
 import java.text.SimpleDateFormat;
 

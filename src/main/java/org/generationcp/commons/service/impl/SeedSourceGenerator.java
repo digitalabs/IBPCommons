@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl.seedsource;
+package org.generationcp.commons.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,6 @@ import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
 import org.generationcp.commons.service.KeyComponentValueResolver;
-import org.generationcp.commons.service.impl.KeyCodeGenerationServiceImpl;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;

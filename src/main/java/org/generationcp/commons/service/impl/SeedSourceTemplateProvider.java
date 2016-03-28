@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl.seedsource;
+package org.generationcp.commons.service.impl;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyTemplateProvider;
