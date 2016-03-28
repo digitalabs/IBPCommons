@@ -53,8 +53,9 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 		if (StringUtils.isBlank(location)) {
 			LOG.debug(
-					"No LOCATION_ABBR(8189) variable was found or it is present but no value is set, in study: {}. [LOCATION] will be defaulted to be null/empty.",
+					"No LOCATION_ABBR(8189) variable was found or it is present but no value is set, in study: {}. Resolving location value to be an empty string.",
 					this.workbook.getStudyDetails().getStudyName());
+			return "";
 		}
 
 		return location;
