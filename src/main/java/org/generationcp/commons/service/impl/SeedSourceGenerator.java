@@ -69,25 +69,24 @@ public class SeedSourceGenerator {
 			}
 		};
 
-		final Map<KeyComponent, KeyComponentValueResolver> paramerters = new HashMap<>();
-		paramerters.put(KeyComponent.NAME, nameResolver);
-		paramerters.put(KeyComponent.LOCATION, new LocationResolver(workbook, instanceNumber));
-		paramerters.put(KeyComponent.SEASON, new SeasonResolver(SeedSourceGenerator.this.ontologyVariableDataManager,
+		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
+		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
+		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(workbook, instanceNumber));
+		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(SeedSourceGenerator.this.ontologyVariableDataManager,
 				SeedSourceGenerator.this.contextUtil, workbook, instanceNumber));
-		paramerters.put(KeyComponent.PLOTNO, plotNumberResolver);
-		paramerters.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
+		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
+		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 
 		return service
 				.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
-						this.contextUtil.getProjectInContext().getCropType().getCropName()), paramerters);
+						this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
-
+		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
 		String femaleSeedSource = generateSeedSource(workbook, "1", null, femalePlotNo, femaleStudyName);
 		String maleSeedSource = generateSeedSource(workbook, "1", null, malePlotNo, maleStudyName);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
-
 }
