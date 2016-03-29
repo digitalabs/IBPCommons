@@ -62,9 +62,23 @@ public class UserTreeStateServiceImplTest {
 	}
 
 	@Test
-	public void testRetrieveSaveListItemsPreviouslySaved() {
+    public void testRetrieveSavedListItemsGermplasmList() {
+        testRetrieveSaveListItemsPreviouslySaved(GermplasmList.LIST_TYPE);
+    }
+
+    @Test
+    public void testRetrieveSavedListItemsAdvanceList() {
+        testRetrieveSaveListItemsPreviouslySaved(GermplasmList.ADVANCED_LIST_TYPE);
+    }
+
+    @Test
+    public void testRetrieveSavedListItemsCrossList() {
+        testRetrieveSaveListItemsPreviouslySaved(GermplasmList.CROSS_LIST_TYPE);
+    }
+
+	void testRetrieveSaveListItemsPreviouslySaved(final String listType) {
 		Mockito.when(germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(
-				constructDummyNestedGermplasmListFolder());
+				constructDummyNestedGermplasmListFolder(listType));
 
 		final List<String> expectedTreeState =
 				Arrays.asList(UserTreeStateService.USE_LAST_SAVED_MARKER, UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM,
@@ -77,7 +91,7 @@ public class UserTreeStateServiceImplTest {
 				expectedTreeState, actualState);
 	}
 
-	private GermplasmList constructDummyNestedGermplasmListFolder() {
+	private GermplasmList constructDummyNestedGermplasmListFolder(final String listType) {
 		final GermplasmList firstLevel = new GermplasmList(FIRST_LEVEL_FOLDER_ID);
 		firstLevel.setType(GermplasmList.FOLDER_TYPE);
 		final GermplasmList secondLevel = new GermplasmList(SECOND_LEVEL_FOLDER_ID);
@@ -85,7 +99,7 @@ public class UserTreeStateServiceImplTest {
 		secondLevel.setParent(firstLevel);
 
 		final GermplasmList actualList = new GermplasmList(TEST_LIST_ID);
-		actualList.setType(GermplasmList.LIST_TYPE);
+		actualList.setType(listType);
 		actualList.setParent(secondLevel);
 
 		return actualList;
