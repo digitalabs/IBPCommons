@@ -1,5 +1,5 @@
 /***************************************************************
- * Copyright (c) 2012, All Rights Reserved.
+ * F * Copyright (c) 2012, All Rights Reserved.
  * 
  * Generation Challenge Programme (GCP)
  * 
@@ -33,8 +33,9 @@ import com.vaadin.terminal.FileResource;
 public class FileDownloadResource extends FileResource {
 
 	private static final long serialVersionUID = 1L;
-	private String filename = "";
 	private static final Logger LOG = LoggerFactory.getLogger(FileDownloadResource.class);
+	private String filename = "";
+	private String userAgent = "";
 
 	/**
 	 * This resource can be used to stream a file and let the browser detect it as an attachment
@@ -42,9 +43,10 @@ public class FileDownloadResource extends FileResource {
 	 * @param sourceFile
 	 * @param application
 	 */
-	public FileDownloadResource(File sourceFile, Application application) {
+	public FileDownloadResource(File sourceFile, Application application, String userAgent) {
 		super(sourceFile, application);
 		this.setFilename(super.getFilename());
+		this.userAgent = userAgent;
 	}
 
 	@Override
@@ -69,8 +71,15 @@ public class FileDownloadResource extends FileResource {
 					new DownloadStream(new FileInputStream(this.getSourceFile()), FileTypeResolver.getMIMEType(this.filename),
 							this.getFilename());
 
-			// Those user agents that do not support the RFC 5987 encoding ignore filename when it occurs after filename.
-			ds.setParameter("Content-Disposition", "attachment; filename=" + this.filename + "; filename*=UTF-8''" + this.filename);
+			if (this.userAgent.indexOf("MSIE") != -1 || this.userAgent.indexOf("Trident") != -1) {
+				// Internet Explorer has problems reading the Content-disposition header if it contains "filename*"
+				ds.setParameter("Content-Disposition", "attachment; filename=\"" + this.filename + "\";");
+			} else {
+				// Those user agents that do not support the RFC 5987 encoding ignore "filename*" when it occurs after "filename".
+				ds.setParameter("Content-Disposition", "attachment; filename=\"" + this.filename + "\"; filename*=\"UTF-8''"
+						+ this.filename + "\";");
+			}
+
 			ds.setCacheTime(this.getCacheTime());
 			return ds;
 		} catch (final FileNotFoundException e) {
