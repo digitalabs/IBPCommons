@@ -32,8 +32,7 @@ public enum ColumnLabels {
 	, AMOUNT(TermId.AMOUNT_INVENTORY, "AMOUNT"), BULK_WITH(TermId.BULK_WITH, "BULK WITH"), BULK_COMPL(TermId.BULK_COMPL, "BULK COMPL?"), COMMENT(
 			TermId.COMMENT_INVENTORY, "COMMENT"), DUPLICATE(TermId.DUPLICATE, "DUPLICATE"), LOT_ID(TermId.LOT_ID_INVENTORY, "LOT_ID"), LOT_LOCATION(
 			TermId.LOT_LOCATION_INVENTORY, "LOCATION"), NEWLY_RESERVED(TermId.NEW_RESERVED_INVENTORY, "NEW_RES"), RESERVED(
-			TermId.RESERVED_INVENTORY, "RES"), TOTAL(TermId.TOTAL_INVENTORY, "TOTAL"), UNITS(
-			TermId.UNITS_INVENTORY, "UNITS")
+			TermId.RESERVED_INVENTORY, "RES"), TOTAL(TermId.TOTAL_INVENTORY, "TOTAL"), UNITS(TermId.UNITS_INVENTORY, "UNITS")
 
 	// GERMPLASM CHECK
 	, ENTRY_TYPE(TermId.ENTRY_TYPE, "CHECK TYPE");
@@ -43,12 +42,12 @@ public enum ColumnLabels {
 	private static final Map<String, ColumnLabels> lookup = new HashMap<>();
 
 	static {
-		for (ColumnLabels cl : EnumSet.allOf(ColumnLabels.class)) {
+		for (final ColumnLabels cl : EnumSet.allOf(ColumnLabels.class)) {
 			ColumnLabels.lookup.put(cl.getName(), cl);
 		}
 	}
 
-	private ColumnLabels(TermId termId, String name) {
+	private ColumnLabels(final TermId termId, final String name) {
 		this.name = name;
 		this.termId = termId;
 	}
@@ -62,10 +61,10 @@ public enum ColumnLabels {
 
 	}
 
-	public String getTermNameFromOntology(OntologyDataManager ontologyDataManager) {
+	public String getTermNameFromOntology(final OntologyDataManager ontologyDataManager) {
 		try {
 			if (this.termId != null) {
-				Term term = ontologyDataManager.getTermById(this.termId.getId());
+				final Term term = ontologyDataManager.getTermById(this.termId.getId());
 				if (term != null && !StringUtil.isEmpty(term.getName())) {
 					return term.getName();
 				} else {
@@ -75,12 +74,12 @@ public enum ColumnLabels {
 				return this.name;
 			}
 
-		} catch (MiddlewareQueryException ex) {
+		} catch (final MiddlewareQueryException ex) {
 			return this.name;
 		}
 	}
 
-	public static ColumnLabels get(String name) {
+	public static ColumnLabels get(final String name) {
 		return ColumnLabels.lookup.get(name);
 	}
 
