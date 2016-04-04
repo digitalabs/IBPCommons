@@ -8,7 +8,6 @@ import java.util.Map;
 import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 
 public enum ColumnLabels {
@@ -62,19 +61,14 @@ public enum ColumnLabels {
 	}
 
 	public String getTermNameFromOntology(final OntologyDataManager ontologyDataManager) {
-		try {
-			if (this.termId != null) {
-				final Term term = ontologyDataManager.getTermById(this.termId.getId());
-				if (term != null && !StringUtil.isEmpty(term.getName())) {
-					return term.getName();
-				} else {
-					return this.name;
-				}
+		if (this.termId != null) {
+			final Term term = ontologyDataManager.getTermById(this.termId.getId());
+			if (term != null && !StringUtil.isEmpty(term.getName())) {
+				return term.getName();
 			} else {
 				return this.name;
 			}
-
-		} catch (final MiddlewareQueryException ex) {
+		} else {
 			return this.name;
 		}
 	}
