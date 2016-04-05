@@ -1,9 +1,12 @@
 package org.generationcp.commons.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.slf4j.Logger;
@@ -16,9 +19,9 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(SeasonResolver.class);
 
-	public SeasonResolver(OntologyVariableDataManager ontologyVariableDataManager, ContextUtil contextUtil, Workbook workbook,
-			String instanceNumber) {
-		super(ontologyVariableDataManager, contextUtil, workbook, instanceNumber);
+	public SeasonResolver(OntologyVariableDataManager ontologyVariableDataManager, ContextUtil contextUtil, List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
+			final StudyType studyType) {
+		super(ontologyVariableDataManager, contextUtil, conditions, trailInstanceObservation, studyType);
 	}
 
 	@Override
@@ -32,8 +35,8 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 		SimpleDateFormat formatter = new SimpleDateFormat("YYYYMM");
 		String currentYearAndMonth = formatter.format(new java.util.Date());
 		LOG.debug(
-				"No Crop_season_Code(8371) variable was found or it is present but no value is set, in study: {}. Defaulting [SEASON] with: {}.",
-				this.workbook.getStudyDetails().getStudyName(), currentYearAndMonth);
+				"No Crop_season_Code(8371) variable was found or it is present but no value is set. Defaulting [SEASON] with: {}.",
+				currentYearAndMonth);
 		return currentYearAndMonth;
 	}
 }

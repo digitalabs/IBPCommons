@@ -67,8 +67,12 @@ public class ProjectPrefixResolverTest {
 
 		workbook.setConditions(Lists.newArrayList(measurementVariable));
 
+		MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
 		ProjectPrefixResolver
-				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook, null);
+				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				trailInstanceObservation, studyType);
 		String program = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in Nursery settings.",
 				PROJECT_CATEGORY_VALUE, program);
@@ -99,8 +103,11 @@ public class ProjectPrefixResolverTest {
 
 		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
 
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
 		ProjectPrefixResolver
-				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook, "1");
+				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				trialInstanceObservation, studyType);
 		String season = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in environment level settings.",
 				PROJECT_CATEGORY_VALUE, season);

@@ -1,12 +1,13 @@
 package org.generationcp.commons.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.oms.TermSummary;
@@ -15,18 +16,20 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 
 public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValueResolver{
 
-	protected Workbook workbook;
-	protected String instanceNumber;
-
 	protected OntologyVariableDataManager ontologyVariableDataManager;
 	protected ContextUtil contextUtil;
 
-	public CategoricalKeyCodeResolverBase(OntologyVariableDataManager ontologyVariableDataManager, ContextUtil contextUtil, Workbook workbook,
-			String instanceNumber) {
+	protected List<MeasurementVariable> conditions;
+	protected MeasurementRow trailInstanceObservation;
+	protected StudyType studyType;
+
+	public CategoricalKeyCodeResolverBase(OntologyVariableDataManager ontologyVariableDataManager, ContextUtil contextUtil, List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
+			final StudyType studyType) {
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.contextUtil = contextUtil;
-		this.workbook = workbook;
-		this.instanceNumber = instanceNumber;
+		this.studyType = studyType;
+		this.trailInstanceObservation = trailInstanceObservation;
+		this.conditions = conditions;
 	}
 
 	protected abstract TermId getKeyCodeId();
@@ -37,8 +40,16 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 	public String resolve() {
 		String abbreviation = "";
 
-		if (this.workbook.getStudyDetails().getStudyType() == StudyType.N) {
-			MeasurementVariable measurementVariable = this.workbook.findConditionById(getKeyCodeId().getId());
+		if(this.studyType == StudyType.N){
+			MeasurementVariable measurementVariable = null;
+
+			if (this.conditions != null) {
+				for (MeasurementVariable mv : this.conditions) {
+					if (mv.getTermId() == getKeyCodeId().getId()) {
+						measurementVariable = mv;
+					}
+				}
+			}
 
 			if(measurementVariable != null && StringUtils.isNotBlank(measurementVariable.getValue())){
 				Variable variable = this.ontologyVariableDataManager
@@ -52,11 +63,9 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 					}
 				}
 			}
-		} else if (this.workbook.getStudyDetails().getStudyType() == StudyType.T) {
-			MeasurementRow trialInstanceObservations =
-					this.workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(this.instanceNumber));
-			if (trialInstanceObservations != null) {
-				for (MeasurementData trialInstanceMeasurement : trialInstanceObservations.getDataList()) {
+		} else if (this.studyType == StudyType.T){
+			if (this.trailInstanceObservation != null) {
+				for (MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
 					if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == getKeyCodeId().getId()) {
 						abbreviation = trialInstanceMeasurement.getValue();
 						break;
