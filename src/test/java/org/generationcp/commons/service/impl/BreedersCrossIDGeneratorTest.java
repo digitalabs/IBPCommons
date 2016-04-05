@@ -1,5 +1,7 @@
 package org.generationcp.commons.service.impl;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
 import org.generationcp.commons.service.GermplasmNamingProperties;
@@ -118,7 +120,10 @@ public class BreedersCrossIDGeneratorTest {
 		String expectedBreedersCrossID = PROJECT_PREFIX_CATEGORY_VALUE + "-" + HABITAT_DESIGNATION_CATEGORY_VALUE + "-"
 				+ SEASON_CATEGORY_VALUE + "-" + locationMV.getValue();
 
-		String actualBreedersCrossID = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook, null);
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		MeasurementRow row = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		String actualBreedersCrossID = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
+				conditions, row);
 		Assert.assertEquals(expectedBreedersCrossID, actualBreedersCrossID);
 	}
 
@@ -169,7 +174,11 @@ public class BreedersCrossIDGeneratorTest {
 
 		String expectedBreedersCrossId = PROJECT_PREFIX_CATEGORY_VALUE + "-" + HABITAT_DESIGNATION_CATEGORY_VALUE + "-"
 				+ SEASON_CATEGORY_VALUE + "-" + instance1LocationAbbrMD.getValue();
-		String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook, "1");
+
+		List<MeasurementVariable> conditions = workbook.getConditions();
+
+		String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
+				conditions, instance1Measurements);
 		Assert.assertEquals(expectedBreedersCrossId, actualBreedersCrossId);
 	}
 }

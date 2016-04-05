@@ -67,8 +67,12 @@ public class HabitatDesignationResolverTest {
 
 		workbook.setConditions(Lists.newArrayList(measurementVariable));
 
+		MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
 		HabitatDesignationResolver
-				habitatDesignationResolver = new HabitatDesignationResolver(this.ontologyVariableDataManager, this.contextUtil, workbook, null);
+				habitatDesignationResolver = new HabitatDesignationResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				trailInstanceObservation, studyType);
 		String designation = habitatDesignationResolver.resolve();
 		Assert.assertEquals("Habitat Designation should be resolved to the value of Habitat_Designation variable value in Nursery settings.",
 				HABITAT_CATEGORY_VALUE, designation);
@@ -99,8 +103,11 @@ public class HabitatDesignationResolverTest {
 
 		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
 
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
 		HabitatDesignationResolver
-				habitatDesignationResolver = new HabitatDesignationResolver(this.ontologyVariableDataManager, this.contextUtil, workbook, "1");
+				habitatDesignationResolver = new HabitatDesignationResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				trialInstanceObservation, studyType);
 		String season = habitatDesignationResolver.resolve();
 		Assert.assertEquals("Habitat Designation should be resolved to the value of Habitat_Designation variable value in environment level settings.",
 				HABITAT_CATEGORY_VALUE, season);

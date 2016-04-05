@@ -2,6 +2,7 @@
 package org.generationcp.commons.service.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
@@ -9,7 +10,10 @@ import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
 import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.etl.Workbook;
+import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 
 public class SeedSourceGenerator {
@@ -69,11 +73,19 @@ public class SeedSourceGenerator {
 			}
 		};
 
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		MeasurementRow trailInstanceObservation = null;
+
+		if(studyType == StudyType.T){
+			trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(instanceNumber));
+		}
+
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
-		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(workbook, instanceNumber));
+		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(SeedSourceGenerator.this.ontologyVariableDataManager,
-				SeedSourceGenerator.this.contextUtil, workbook, instanceNumber));
+				SeedSourceGenerator.this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 
