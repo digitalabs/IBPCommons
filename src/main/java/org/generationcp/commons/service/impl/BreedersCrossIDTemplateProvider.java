@@ -19,9 +19,9 @@ public class BreedersCrossIDTemplateProvider implements KeyTemplateProvider{
 		String breedersCrossIDTemplate = "";
 
 		if (this.studyType.equals(StudyType.N)) {
-			breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDOriginNursery();
+			breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDNursery();
 		} else if (this.studyType.equals(StudyType.T)) {
-			breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDOriginTrial();
+			breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDTrial();
 		}
 		return breedersCrossIDTemplate;
 	}
