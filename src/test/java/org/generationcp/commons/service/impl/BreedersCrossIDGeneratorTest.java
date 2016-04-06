@@ -50,8 +50,8 @@ public class BreedersCrossIDGeneratorTest {
 		MockitoAnnotations.initMocks(this);
 
 		GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
-		germplasmNamingProperties.setBreedersCrossIDOriginNursery("[PROJECT_PREFIX]-[HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
-		germplasmNamingProperties.setBreedersCrossIDOriginTrial("[PROJECT_PREFIX]-[HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
+		germplasmNamingProperties.setBreedersCrossIDNursery("[PROJECT_PREFIX]-[HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
+		germplasmNamingProperties.setBreedersCrossIDTrial("[PROJECT_PREFIX]-[HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
 
 		this.breedersCrossIDGenerator =
 				new BreedersCrossIDGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil);

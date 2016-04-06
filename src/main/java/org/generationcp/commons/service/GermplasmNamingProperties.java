@@ -14,8 +14,8 @@ public class GermplasmNamingProperties {
 	private String germplasmOriginTrialsWheat;
 	private String germplasmOriginTrialsMaize;
 
-	private String breedersCrossIDOriginNursery;
-	private String breedersCrossIDOriginTrial;
+	private String breedersCrossIDNursery;
+	private String breedersCrossIDTrial;
 
 	public String getGermplasmOriginNurseriesDefault() {
 		return this.germplasmOriginNurseriesDefault;
@@ -65,20 +65,20 @@ public class GermplasmNamingProperties {
 		this.germplasmOriginTrialsMaize = germplasmOriginTrialsMaize;
 	}
 
-	public String getBreedersCrossIDOriginNursery(){
-		return this.breedersCrossIDOriginNursery;
+	public String getBreedersCrossIDNursery(){
+		return this.breedersCrossIDNursery;
 	}
 
-	public void setBreedersCrossIDOriginNursery(final String breedersCrossIDOriginNursery){
-		this.breedersCrossIDOriginNursery = breedersCrossIDOriginNursery;
+	public void setBreedersCrossIDNursery(final String breedersCrossIDNursery){
+		this.breedersCrossIDNursery = breedersCrossIDNursery;
 	}
 
-	public String getBreedersCrossIDOriginTrial(){
-		return this.breedersCrossIDOriginTrial;
+	public String getBreedersCrossIDTrial(){
+		return this.breedersCrossIDTrial;
 	}
 
-	public void setBreedersCrossIDOriginTrial(final String breedersCrossIDOriginTrial){
-		this.breedersCrossIDOriginTrial = breedersCrossIDOriginTrial;
+	public void setBreedersCrossIDTrial(final String breedersCrossIDTrial){
+		this.breedersCrossIDTrial = breedersCrossIDTrial;
 	}
 
 }
