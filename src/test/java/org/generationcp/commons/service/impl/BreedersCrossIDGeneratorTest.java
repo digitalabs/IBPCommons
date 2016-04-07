@@ -16,7 +16,9 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Before;
@@ -30,6 +32,9 @@ public class BreedersCrossIDGeneratorTest {
 
 	@Mock
 	private OntologyVariableDataManager ontologyVariableDataManager;
+
+	@Mock
+	private GermplasmDataManager germplasmDataManager;
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -54,7 +59,7 @@ public class BreedersCrossIDGeneratorTest {
 		germplasmNamingProperties.setBreedersCrossIDTrial("[PROJECT_PREFIX]-[HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
 
 		this.breedersCrossIDGenerator =
-				new BreedersCrossIDGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil);
+				new BreedersCrossIDGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil, this.germplasmDataManager);
 
 		Project testProject = new Project();
 		testProject.setUniqueID("e8e4be0a-5d63-452f-8fde-b1c794ec7b1a");
@@ -115,6 +120,14 @@ public class BreedersCrossIDGeneratorTest {
 		seasonMV.setTermId(TermId.SEASON_VAR.getId());
 		seasonMV.setValue(SEASON_CATEGORY_ID.toString());
 
+		Method breedingMethod = new Method();
+		breedingMethod.setMname("Single cross");
+		breedingMethod.setSnametype(5);
+		breedingMethod.setPrefix("pre");
+		breedingMethod.setSeparator("-");
+		breedingMethod.setCount("[CIMCRS]");
+		breedingMethod.setSuffix("suff");
+
 		workbook.setConditions(Lists.newArrayList(locationMV, projectPrefixMV, habitatDesignationMV, seasonMV));
 
 		String expectedBreedersCrossID = PROJECT_PREFIX_CATEGORY_VALUE + "-" + HABITAT_DESIGNATION_CATEGORY_VALUE + "-"
@@ -123,7 +136,7 @@ public class BreedersCrossIDGeneratorTest {
 		List<MeasurementVariable> conditions = workbook.getConditions();
 		MeasurementRow row = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		String actualBreedersCrossID = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, row);
+				conditions, row, breedingMethod);
 		Assert.assertEquals(expectedBreedersCrossID, actualBreedersCrossID);
 	}
 
@@ -170,6 +183,14 @@ public class BreedersCrossIDGeneratorTest {
 		instance1Measurements.setDataList(Lists.newArrayList(instance1InstanceNumberMD, instance1LocationAbbrMD,
 				instance1ProjectPrefixMD, instance1HabitatDesignationMD, instance1SeasonMD));
 
+		Method breedingMethod = new Method();
+		breedingMethod.setMname("Single cross");
+		breedingMethod.setSnametype(5);
+		breedingMethod.setPrefix("pre");
+		breedingMethod.setSeparator("-");
+		breedingMethod.setCount("[CIMCRS]");
+		breedingMethod.setSuffix("suff");
+
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
 		String expectedBreedersCrossId = PROJECT_PREFIX_CATEGORY_VALUE + "-" + HABITAT_DESIGNATION_CATEGORY_VALUE + "-"
@@ -178,7 +199,7 @@ public class BreedersCrossIDGeneratorTest {
 		List<MeasurementVariable> conditions = workbook.getConditions();
 
 		String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, instance1Measurements);
+				conditions, instance1Measurements, breedingMethod);
 		Assert.assertEquals(expectedBreedersCrossId, actualBreedersCrossId);
 	}
 }

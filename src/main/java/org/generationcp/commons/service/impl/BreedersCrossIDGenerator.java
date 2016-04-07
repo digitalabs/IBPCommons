@@ -12,23 +12,27 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.StudyType;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.pojos.Method;
 
 public class BreedersCrossIDGenerator {
 
 	private GermplasmNamingProperties germplasmNamingProperties;
 	private OntologyVariableDataManager ontologyVariableDataManager;
 	private ContextUtil contextUtil;
+	private GermplasmDataManager germplasmDataManager;
 
 	public BreedersCrossIDGenerator(GermplasmNamingProperties germplasmNamingProperties, OntologyVariableDataManager ontologyVariableDataManager,
-			ContextUtil contextUtil) {
+			ContextUtil contextUtil, GermplasmDataManager germplasmDataManager) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.contextUtil = contextUtil;
+		this.germplasmDataManager = germplasmDataManager;
 	}
 
 	public String generateBreedersCrossID(final StudyType studyType, final List<MeasurementVariable> conditions,
-			final MeasurementRow trailInstanceObservation) {
+			final MeasurementRow trailInstanceObservation, final Method breedingMethod) {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 
@@ -40,6 +44,10 @@ public class BreedersCrossIDGenerator {
 		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(BreedersCrossIDGenerator.this.ontologyVariableDataManager,
 				BreedersCrossIDGenerator.this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
+
+		//TODO add sequence number KeyComponent
+
+		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, breedingMethod, germplasmDataManager));
 
 		return service.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType),
 				keyComponentValueResolvers);
