@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
@@ -32,7 +33,7 @@ public class BreedersCrossIDGenerator {
 	}
 
 	public String generateBreedersCrossID(final StudyType studyType, final List<MeasurementVariable> conditions,
-			final MeasurementRow trailInstanceObservation, final Method breedingMethod) {
+			final MeasurementRow trailInstanceObservation, final Method breedingMethod, final ImportedGermplasm importedGermplasm) {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 
@@ -47,7 +48,7 @@ public class BreedersCrossIDGenerator {
 
 		//TODO add sequence number KeyComponent
 
-		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, breedingMethod, germplasmDataManager));
+		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, breedingMethod, importedGermplasm, germplasmDataManager));
 
 		return service.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType),
 				keyComponentValueResolvers);

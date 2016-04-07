@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
+import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
@@ -135,8 +136,10 @@ public class BreedersCrossIDGeneratorTest {
 
 		List<MeasurementVariable> conditions = workbook.getConditions();
 		MeasurementRow row = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
+
 		String actualBreedersCrossID = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, row, breedingMethod);
+				conditions, row, breedingMethod, importedGermplasm);
 		Assert.assertEquals(expectedBreedersCrossID, actualBreedersCrossID);
 	}
 
@@ -197,9 +200,10 @@ public class BreedersCrossIDGeneratorTest {
 				+ SEASON_CATEGORY_VALUE + "-" + instance1LocationAbbrMD.getValue();
 
 		List<MeasurementVariable> conditions = workbook.getConditions();
+		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
 		String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, instance1Measurements, breedingMethod);
+				conditions, instance1Measurements, breedingMethod, importedGermplasm);
 		Assert.assertEquals(expectedBreedersCrossId, actualBreedersCrossId);
 	}
 }
