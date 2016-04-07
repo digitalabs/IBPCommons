@@ -1,6 +1,7 @@
 package org.generationcp.commons.service.impl;
 
 import junit.framework.Assert;
+import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.pojos.Method;
 import org.junit.Test;
@@ -11,8 +12,9 @@ public class CrossTypeResolverTest {
 	public void testResolveForNurseryWithSingleCrossBreedingMethod(){
 		StudyType studyType = StudyType.N;
 		Method breedingMethod = this.generateBreedingMethod("Single cross");
+		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
-		String method = new CrossTypeResolver(studyType, breedingMethod, null).resolve();
+		String method = new CrossTypeResolver(studyType, breedingMethod, importedGermplasm, null).resolve();
 
 		Assert.assertEquals("S", method);
 	}
@@ -21,8 +23,9 @@ public class CrossTypeResolverTest {
 	public void testResolveForNurseryWithDoubleCrossBreedingMethod(){
 		StudyType studyType = StudyType.N;
 		Method breedingMethod = this.generateBreedingMethod("Double cross");
+		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
-		String method = new CrossTypeResolver(studyType, breedingMethod, null).resolve();
+		String method = new CrossTypeResolver(studyType, breedingMethod, importedGermplasm, null).resolve();
 
 		Assert.assertEquals("D", method);
 	}
