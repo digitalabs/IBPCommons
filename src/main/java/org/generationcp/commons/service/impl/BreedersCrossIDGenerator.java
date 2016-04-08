@@ -33,9 +33,23 @@ public class BreedersCrossIDGenerator {
 	}
 
 	public String generateBreedersCrossID(final StudyType studyType, final List<MeasurementVariable> conditions,
-			final MeasurementRow trailInstanceObservation, final Method breedingMethod, final ImportedGermplasm importedGermplasm) {
+			final MeasurementRow trailInstanceObservation, final Method breedingMethod, final ImportedGermplasm importedGermplasm,
+			final int selectionNumber) {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
+
+		final KeyComponentValueResolver selectionNumberResolver = new KeyComponentValueResolver() {
+
+			@Override
+			public String resolve() {
+				return String.valueOf(selectionNumber);
+			}
+
+			@Override
+			public boolean isOptional() {
+				return true;
+			}
+		};
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.PROJECT_PREFIX, new ProjectPrefixResolver(BreedersCrossIDGenerator.this.ontologyVariableDataManager,
@@ -45,9 +59,7 @@ public class BreedersCrossIDGenerator {
 		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(BreedersCrossIDGenerator.this.ontologyVariableDataManager,
 				BreedersCrossIDGenerator.this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
-
-		//TODO add sequence number KeyComponent
-
+		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, contextUtil, breedingMethod, importedGermplasm, germplasmDataManager));
 
 		return service.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType),
