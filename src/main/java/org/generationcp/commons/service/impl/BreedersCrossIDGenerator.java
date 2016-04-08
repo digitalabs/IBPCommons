@@ -48,7 +48,7 @@ public class BreedersCrossIDGenerator {
 
 		//TODO add sequence number KeyComponent
 
-		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, breedingMethod, importedGermplasm, germplasmDataManager));
+		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, contextUtil, breedingMethod, importedGermplasm, germplasmDataManager));
 
 		return service.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType),
 				keyComponentValueResolvers);
