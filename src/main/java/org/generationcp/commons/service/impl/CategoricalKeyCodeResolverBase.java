@@ -38,7 +38,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 
 	@Override
 	public String resolve() {
-		String abbreviation = "";
+		String resolvedValue = "";
 
 		if(this.studyType == StudyType.N){
 			MeasurementVariable measurementVariable = null;
@@ -58,7 +58,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 				for(TermSummary prefix : variable.getScale().getCategories()){
 					if (measurementVariable.getValue().equals(prefix.getId().toString())
 							|| measurementVariable.getValue().equals(prefix.getDefinition())) {
-						abbreviation = prefix.getDefinition();
+						resolvedValue = prefix.getDefinition();
 						break;
 					}
 				}
@@ -67,18 +67,18 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 			if (this.trailInstanceObservation != null) {
 				for (MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
 					if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == getKeyCodeId().getId()) {
-						abbreviation = trialInstanceMeasurement.getValue();
+						resolvedValue = trialInstanceMeasurement.getValue();
 						break;
 					}
 				}
 			}
 		}
 
-		if (StringUtils.isBlank(abbreviation)) {
-			abbreviation = getDefaultValue();
+		if (StringUtils.isBlank(resolvedValue)) {
+			resolvedValue = getDefaultValue();
 		}
 
-		return abbreviation;
+		return resolvedValue;
 	}
 
 	@Override
