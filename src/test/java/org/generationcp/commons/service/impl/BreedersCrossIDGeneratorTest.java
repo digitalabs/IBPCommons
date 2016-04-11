@@ -139,7 +139,7 @@ public class BreedersCrossIDGeneratorTest {
 		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
 		String actualBreedersCrossID = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, row, breedingMethod, importedGermplasm, 1);
+				conditions, row, breedingMethod, importedGermplasm);
 		Assert.assertEquals(expectedBreedersCrossID, actualBreedersCrossID);
 	}
 
@@ -203,7 +203,7 @@ public class BreedersCrossIDGeneratorTest {
 		ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 
 		String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, instance1Measurements, breedingMethod, importedGermplasm, 1);
+				conditions, instance1Measurements, breedingMethod, importedGermplasm);
 		Assert.assertEquals(expectedBreedersCrossId, actualBreedersCrossId);
 	}
 }
