@@ -10,11 +10,11 @@ import org.generationcp.middleware.pojos.Method;
 
 public class CrossTypeResolver implements KeyComponentValueResolver{
 
-	private static final String singleCross = "Single cross";
-	private static final String doubleCross = "Double cross";
-	private static final String maizeTopCross = "Test cross";
-	private static final String wheatTopCross = "Three-way cross";
-	private static final String backCross = "Backcross";
+	private static final String SINGLE_CROSS = "Single cross";
+	private static final String DOUBLE_CROSS = "Double cross";
+	private static final String TOP_CROSS_MAIZE = "Test cross";
+	private static final String TOP_CROSS_WHEAT = "Three-way cross";
+	private static final String BACK_CROSS = "Backcross";
 
 	protected StudyType studyType;
 	protected Method breedingMethod;
@@ -36,11 +36,11 @@ public class CrossTypeResolver implements KeyComponentValueResolver{
 
 		String cropName = this.contextUtil.getProjectInContext().getCropType().getCropName();
 
-		if(this.breedingMethod.getMname().equals(CrossTypeResolver.this.singleCross)){
+		if (this.breedingMethod.getMname().equals(CrossTypeResolver.SINGLE_CROSS)) {
 			crossTypeAbbreviation = "S";
-		} else if(this.breedingMethod.getMname().equals(CrossTypeResolver.this.doubleCross)){
+		} else if (this.breedingMethod.getMname().equals(CrossTypeResolver.DOUBLE_CROSS)) {
 			crossTypeAbbreviation = "D";
-		} else if(this.breedingMethod.getMname().equals(CrossTypeResolver.this.backCross)){
+		} else if (this.breedingMethod.getMname().equals(CrossTypeResolver.BACK_CROSS)) {
 			crossTypeAbbreviation = getRecurrentParentType(this.importedGermplasm);
 		} else if(this.isTopCrossMethod(cropName)){
 			crossTypeAbbreviation = "T";
@@ -75,8 +75,8 @@ public class CrossTypeResolver implements KeyComponentValueResolver{
 	}
 
 	private boolean isTopCrossMethod(final String cropName){
-		return cropName.equalsIgnoreCase("wheat") && this.breedingMethod.getMname().equals(CrossTypeResolver.this.wheatTopCross)
-				|| cropName.equalsIgnoreCase("maize") && this.breedingMethod.getMname().equals(CrossTypeResolver.this.maizeTopCross);
+		return cropName.equalsIgnoreCase("wheat") && this.breedingMethod.getMname().equals(CrossTypeResolver.TOP_CROSS_WHEAT)
+				|| cropName.equalsIgnoreCase("maize") && this.breedingMethod.getMname().equals(CrossTypeResolver.TOP_CROSS_MAIZE);
 	}
 
 	@Override
