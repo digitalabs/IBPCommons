@@ -52,12 +52,12 @@ public class BreedersCrossIDGenerator {
 		};
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
-		keyComponentValueResolvers.put(KeyComponent.PROJECT_PREFIX, new ProjectPrefixResolver(BreedersCrossIDGenerator.this.ontologyVariableDataManager,
-				BreedersCrossIDGenerator.this.contextUtil, conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.HABITAT_DESIGNATION, new HabitatDesignationResolver(BreedersCrossIDGenerator.this.ontologyVariableDataManager,
-				BreedersCrossIDGenerator.this.contextUtil, conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(BreedersCrossIDGenerator.this.ontologyVariableDataManager,
-				BreedersCrossIDGenerator.this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers.put(KeyComponent.PROJECT_PREFIX, new ProjectPrefixResolver(this.ontologyVariableDataManager,
+				this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers.put(KeyComponent.HABITAT_DESIGNATION, new HabitatDesignationResolver(this.ontologyVariableDataManager,
+						this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers.put(KeyComponent.SEASON,
+				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, contextUtil, breedingMethod, importedGermplasm, germplasmDataManager));
