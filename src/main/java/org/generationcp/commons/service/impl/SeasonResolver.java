@@ -31,7 +31,7 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 
 	@Override
 	protected boolean isAbbreviationRequired() {
-		return false;
+		return true;
 	}
 
 	@Override
