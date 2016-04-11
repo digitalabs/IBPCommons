@@ -26,6 +26,11 @@ public class ProjectPrefixResolver extends CategoricalKeyCodeResolverBase {
 	}
 
 	@Override
+	protected boolean isAbbreviationRequired() {
+		return true;
+	}
+
+	@Override
 	protected String getDefaultValue() {
 		LOG.debug(
 				"No Project_Prefix(3001) variable was found or it is present but no value is set."

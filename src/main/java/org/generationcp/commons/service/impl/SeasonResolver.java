@@ -30,6 +30,11 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 	}
 
 	@Override
+	protected boolean isAbbreviationRequired() {
+		return false;
+	}
+
+	@Override
 	protected String getDefaultValue() {
 		// Default the season to current year and month.
 		SimpleDateFormat formatter = new SimpleDateFormat("YYYYMM");

@@ -26,6 +26,11 @@ public class HabitatDesignationResolver extends CategoricalKeyCodeResolverBase{
 	}
 
 	@Override
+	protected boolean isAbbreviationRequired() {
+		return false;
+	}
+
+	@Override
 	protected String getDefaultValue() {
 		LOG.debug(
 				"No Habitat_Designation(3002) variable was found or it is present but no value is set."
