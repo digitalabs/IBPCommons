@@ -65,12 +65,9 @@ public enum ColumnLabels {
 			final Term term = ontologyDataManager.getTermById(this.termId.getId());
 			if (term != null && !StringUtil.isEmpty(term.getName())) {
 				return term.getName();
-			} else {
-				return this.name;
 			}
-		} else {
-			return this.name;
 		}
+		return this.name;
 	}
 
 	public static ColumnLabels get(final String name) {
