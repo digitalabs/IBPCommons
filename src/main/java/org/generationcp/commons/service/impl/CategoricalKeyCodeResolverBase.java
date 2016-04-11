@@ -34,6 +34,8 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 
 	protected abstract TermId getKeyCodeId();
 
+	protected abstract boolean isAbbreviationRequired();
+
 	protected abstract String getDefaultValue();
 
 	@Override
@@ -58,7 +60,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 				for(TermSummary prefix : variable.getScale().getCategories()){
 					if (measurementVariable.getValue().equals(prefix.getId().toString())
 							|| measurementVariable.getValue().equals(prefix.getDefinition())) {
-						resolvedValue = prefix.getDefinition();
+						resolvedValue = this.isAbbreviationRequired() ? prefix.getName() : prefix.getDefinition();
 						break;
 					}
 				}
