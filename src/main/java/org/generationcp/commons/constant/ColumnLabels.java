@@ -38,11 +38,11 @@ public enum ColumnLabels {
 
 	private TermId termId;
 	private String name;
-	private static final Map<String, ColumnLabels> lookup = new HashMap<>();
+	private static final Map<String, ColumnLabels> LOOKUP = new HashMap<>();
 
 	static {
 		for (final ColumnLabels cl : EnumSet.allOf(ColumnLabels.class)) {
-			ColumnLabels.lookup.put(cl.getName(), cl);
+			ColumnLabels.LOOKUP.put(cl.getName(), cl);
 		}
 	}
 
@@ -71,7 +71,7 @@ public enum ColumnLabels {
 	}
 
 	public static ColumnLabels get(final String name) {
-		return ColumnLabels.lookup.get(name);
+		return ColumnLabels.LOOKUP.get(name);
 	}
 
 }
