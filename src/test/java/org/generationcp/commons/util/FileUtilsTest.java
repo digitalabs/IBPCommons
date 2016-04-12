@@ -79,4 +79,20 @@ public class FileUtilsTest {
 		Assert.assertEquals("Should be the same character as the converted filename", convertedFilename,
 				FileUtils.encodeFilenameForDownload(filename));
 	}
+
+	public void testDetectMimeType() throws Exception {
+		String xlsMimeResult = FileUtils.detectMimeType("file.xls");
+		String xlsxMimeResult = FileUtils.detectMimeType("file.xlsx");
+		String zipMimeResult = FileUtils.detectMimeType("file.zip");
+		String pdfMimeResult = FileUtils.detectMimeType("file.pdf");
+		String defaultMimeResult = FileUtils.detectMimeType("file.bin");
+
+		Assert.assertEquals("Should return MIME_MS_EXCEL type", FileUtils.MIME_MS_EXCEL,xlsMimeResult);
+		Assert.assertEquals("Should return MIME_MS_EXCEL type", FileUtils.MIME_MS_EXCEL,xlsxMimeResult);
+		Assert.assertEquals("Should return MIME_ZIP type", FileUtils.MIME_ZIP,zipMimeResult);
+		Assert.assertEquals("Should return MIME_PDF type", FileUtils.MIME_PDF,pdfMimeResult);
+		Assert.assertEquals("Should return MIME_DEFAULT type", FileUtils.MIME_DEFAULT,defaultMimeResult);
+
+	}
+
 }

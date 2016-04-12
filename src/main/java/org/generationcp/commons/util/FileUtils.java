@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import javax.activation.MimetypesFileTypeMap;
+
 public class FileUtils {
 
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
@@ -230,7 +232,7 @@ public class FileUtils {
 			case "pdf":
 				return MIME_PDF;
 			default:
-				return MIME_DEFAULT;
+				return new MimetypesFileTypeMap().getContentType(fileName);
 		}
 
 	}
