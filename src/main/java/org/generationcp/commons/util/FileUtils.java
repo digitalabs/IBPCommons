@@ -1,12 +1,11 @@
 /*******************************************************************************
  * Copyright (c) 2013, All Rights Reserved.
- * 
+ *
  * Generation Challenge Programme (GCP)
- * 
- * 
+ *
+ *
  * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of Part F
  * of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- * 
  *******************************************************************************/
 
 package org.generationcp.commons.util;
@@ -20,26 +19,23 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import javax.activation.MimetypesFileTypeMap;
-
 public class FileUtils {
-
-	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
 	public static final String INVALID_CHARACTER_REGEX_PATTERN = "[\\\\/:*?|<>\"]";
 	public static final Character INVALID_FILE_CHARACTER_REPLACEMENT = '_';
-
 	public static final String MIME_MS_EXCEL = "application/vnd.ms-excel";
 	public static final String MIME_CSV = "text/csv";
 	public static final String MIME_ZIP = "application/zip";
 	public static final String MIME_PDF = "application/pdf";
 	public static final String MIME_DEFAULT = "application/octet-stream";
+	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
 
 	private FileUtils() {
 		// hide public constructor for this utility class
@@ -47,7 +43,7 @@ public class FileUtils {
 
 	/**
 	 * Delete the specified file recursively.
-	 * 
+	 *
 	 * @param path
 	 * @return
 	 * @throws FileNotFoundException
@@ -82,7 +78,7 @@ public class FileUtils {
 
 	/**
 	 * Removes all forbidden characters in a file name.
-	 * 
+	 *
 	 * @param fileName
 	 * @return
 	 */
@@ -102,7 +98,7 @@ public class FileUtils {
 
 	/**
 	 * Encodes the file name to ASCII String
-	 * 
+	 *
 	 * @param filename
 	 * @return
 	 */
@@ -166,7 +162,7 @@ public class FileUtils {
 
 	/**
 	 * Get filename Extension
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
@@ -187,7 +183,7 @@ public class FileUtils {
 
 	/**
 	 * Get filename Extension
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
@@ -197,7 +193,7 @@ public class FileUtils {
 
 	/**
 	 * Get filename Extension
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
