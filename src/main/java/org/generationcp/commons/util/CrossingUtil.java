@@ -18,6 +18,7 @@ import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+//FIXME this class should be refactored, methods should be tested with junit tests and made not static
 public class CrossingUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingUtil.class);
@@ -129,7 +130,7 @@ public class CrossingUtil {
 								fatherOfMale);
 
 					} catch (final MiddlewareQueryException e) {
-						CrossingUtil.LOG.error(e.toString() + "\n" + e.getStackTrace());
+						CrossingUtil.LOG.error(e.getMessage(), e);
 						return false;
 					}
 				}
@@ -181,10 +182,12 @@ public class CrossingUtil {
 	}
 
 	public static boolean isCimmytWheat(final String profile, final String crop) {
-		if (profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
-				&& CropEnum.WHEAT.toString().equalsIgnoreCase(crop)) {
-			return true;
-		}
-		return false;
+		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT) && CropEnum.WHEAT.toString()
+				.equalsIgnoreCase(crop);
+	}
+
+	public static boolean isCimmytMaize(final String profile, final String crop) {
+		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT) && CropEnum.MAIZE.toString()
+				.equalsIgnoreCase(crop);
 	}
 }
