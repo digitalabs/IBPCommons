@@ -23,16 +23,16 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	private GermplasmListManager germplasmListManager;
 
 	@Override
-	public List<String> getUserProgramTreeStateByUserIdProgramUuidAndType(int userId, String programUuid, String type) {
+	public List<String> getUserProgramTreeStateByUserIdProgramUuidAndType(final int userId, final String programUuid, final String type) {
 
 		return userProgramStateDataManager.getUserProgramTreeStateByUserIdProgramUuidAndType(userId, programUuid, type);
 
 	}
 
 	@Override
-	public List<String> getUserProgramTreeStateForSaveList(int userId, String programUuid) {
-		GermplasmList germplasmList = this.germplasmListManager.getLastSavedGermplasmListByUserId(userId, programUuid);
-        List<String> treeState;
+	public List<String> getUserProgramTreeStateForSaveList(final int userId, final String programUuid) {
+		final GermplasmList germplasmList = this.germplasmListManager.getLastSavedGermplasmListByUserId(userId, programUuid);
+        final List<String> treeState;
 
 		// if no lists have been saved yet, attempt to retrieve the user's tree navigation state
 		if (germplasmList == null) {
@@ -47,7 +47,7 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	}
 
 	@Override
-	public UserProgramTreeState saveOrUpdateUserProgramTreeState(int userId, String programUuid, String type, List<String> treeState) {
+	public UserProgramTreeState saveOrUpdateUserProgramTreeState(final int userId, final String programUuid, final String type, final List<String> treeState) {
 		return userProgramStateDataManager.saveOrUpdateUserProgramTreeState(userId, programUuid, type, treeState);
 	}
 
@@ -58,9 +58,9 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	 * @return
 	 */
 	protected List<String> computeTreeStateForSavedTree(final GermplasmList germplasmList) {
-		List<String> treeState = new ArrayList<>();
+		final List<String> treeState = new ArrayList<>();
 
-		GermplasmList current = germplasmList.isList() ? germplasmList.getParent() : germplasmList;
+        GermplasmList current = germplasmList.isFolder() ? germplasmList  : germplasmList.getParent();
 
 		while (current != null && current.getId() != 0) {
 			treeState.add(0, current.getId().toString());
