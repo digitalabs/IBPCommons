@@ -60,7 +60,7 @@ public class BreedersCrossIDGeneratorTest {
 		germplasmNamingProperties.setBreedersCrossIDTrial("[PROJECT_PREFIX]-[HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
 
 		this.breedersCrossIDGenerator =
-				new BreedersCrossIDGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil, this.germplasmDataManager);
+				new BreedersCrossIDGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil);
 
 		Project testProject = new Project();
 		testProject.setUniqueID("e8e4be0a-5d63-452f-8fde-b1c794ec7b1a");
