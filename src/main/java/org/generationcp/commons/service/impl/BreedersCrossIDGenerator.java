@@ -19,17 +19,15 @@ import org.generationcp.middleware.pojos.Method;
 
 public class BreedersCrossIDGenerator {
 
-	private GermplasmNamingProperties germplasmNamingProperties;
-	private OntologyVariableDataManager ontologyVariableDataManager;
-	private ContextUtil contextUtil;
-	private GermplasmDataManager germplasmDataManager;
+	private final GermplasmNamingProperties germplasmNamingProperties;
+	private final OntologyVariableDataManager ontologyVariableDataManager;
+	private final ContextUtil contextUtil;
 
-	public BreedersCrossIDGenerator(GermplasmNamingProperties germplasmNamingProperties, OntologyVariableDataManager ontologyVariableDataManager,
-			ContextUtil contextUtil, GermplasmDataManager germplasmDataManager) {
+	public BreedersCrossIDGenerator(final GermplasmNamingProperties germplasmNamingProperties, final OntologyVariableDataManager ontologyVariableDataManager,
+			final ContextUtil contextUtil) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.contextUtil = contextUtil;
-		this.germplasmDataManager = germplasmDataManager;
 	}
 
 	public String generateBreedersCrossID(final StudyType studyType, final List<MeasurementVariable> conditions,
@@ -45,7 +43,6 @@ public class BreedersCrossIDGenerator {
 		keyComponentValueResolvers.put(KeyComponent.SEASON,
 				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.CROSS_TYPE, new CrossTypeResolver(studyType, contextUtil, breedingMethod, importedGermplasm, germplasmDataManager));
 
 		return service.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType),
 				keyComponentValueResolvers);
