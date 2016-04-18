@@ -1,11 +1,12 @@
 package org.generationcp.commons.service.impl;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
@@ -16,33 +17,43 @@ import org.slf4j.LoggerFactory;
  */
 public class LocationResolver implements KeyComponentValueResolver {
 
-	private Workbook workbook;
-
-	private String instanceNumber;
+	protected List<MeasurementVariable> conditions;
+	protected MeasurementRow trailInstanceObservation;
+	protected StudyType studyType;
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocationResolver.class);
 
-	public LocationResolver(Workbook workbook, String instanceNumber) {
-		assert workbook != null : "Workbook is required to construct LocationResolver.";
-		this.workbook = workbook;
-		this.instanceNumber = instanceNumber;
+	public LocationResolver(List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
+			final StudyType studyType) {
+		this.studyType = studyType;
+		this.trailInstanceObservation = trailInstanceObservation;
+		this.conditions = conditions;
 	}
 
 	@Override
 	public String resolve() {
 		String location = "";
-		if (this.workbook.getStudyDetails().getStudyType() == StudyType.N) {
-			// For Nurseris, to populate LOCATION placeholder we look for LOCATION_ABBR(8189) variable in general settings.
-			MeasurementVariable locationAbbrVariable = this.workbook.findConditionById(TermId.LOCATION_ABBR.getId());
+
+		if(this.studyType == StudyType.N){
+
+			MeasurementVariable locationAbbrVariable = null;
+
+			Integer locationId = TermId.LOCATION_ABBR.getId();
+			if (this.conditions != null) {
+				for (MeasurementVariable mv : this.conditions) {
+					if (mv.getTermId() == locationId) {
+						locationAbbrVariable = mv;
+					}
+				}
+			}
 			if (locationAbbrVariable != null) {
 				location = locationAbbrVariable.getValue();
 			}
-		} else if (this.workbook.getStudyDetails().getStudyType() == StudyType.T) {
-			// For trials, we look for LOCATION_ABBR(8189) variable at trial instance/environment level.
-			MeasurementRow trialInstanceObservations =
-					this.workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(this.instanceNumber));
-			if (trialInstanceObservations != null) {
-				for (MeasurementData trialInstanceMeasurement : trialInstanceObservations.getDataList()) {
+
+		}else if(this.studyType == StudyType.T){
+
+			if (this.trailInstanceObservation != null) {
+				for (MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
 					if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == TermId.LOCATION_ABBR.getId()) {
 						location = trialInstanceMeasurement.getValue();
 						break;
@@ -53,8 +64,8 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 		if (StringUtils.isBlank(location)) {
 			LOG.debug(
-					"No LOCATION_ABBR(8189) variable was found or it is present but no value is set, in study: {}. Resolving location value to be an empty string.",
-					this.workbook.getStudyDetails().getStudyName());
+					"No LOCATION_ABBR(8189) variable was found or it is present but no value is set. "
+							+ "Resolving location value to be an empty string.");
 			return "";
 		}
 
