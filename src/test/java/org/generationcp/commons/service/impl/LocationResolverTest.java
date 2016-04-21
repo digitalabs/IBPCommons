@@ -1,6 +1,10 @@
 
 package org.generationcp.commons.service.impl;
 
+import java.util.List;
+
+import com.google.common.collect.Lists;
+import junit.framework.Assert;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
@@ -9,10 +13,6 @@ import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.junit.Test;
-
-import com.google.common.collect.Lists;
-
-import junit.framework.Assert;
 
 public class LocationResolverTest {
 
@@ -30,7 +30,10 @@ public class LocationResolverTest {
 
 		workbook.setConditions(Lists.newArrayList(locationMV));
 
-		String location = new LocationResolver(workbook, null).resolve();
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in Nursery settings.", "MEX",
 				location);
 	}
@@ -49,7 +52,10 @@ public class LocationResolverTest {
 
 		workbook.setConditions(Lists.newArrayList(locationMV));
 
-		String location = new LocationResolver(workbook, null).resolve();
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is present but has no value.", "",
 				location);
 	}
@@ -62,7 +68,10 @@ public class LocationResolverTest {
 		studyDetails.setStudyType(StudyType.N);
 		workbook.setStudyDetails(studyDetails);
 
-		String location = new LocationResolver(workbook, null).resolve();
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is not present.", "", location);
 	}
 
@@ -91,7 +100,10 @@ public class LocationResolverTest {
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		String location = new LocationResolver(workbook, "1").resolve();
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in environment level settings.",
 				"MEX",
 				location);
@@ -122,7 +134,11 @@ public class LocationResolverTest {
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		String location = new LocationResolver(workbook, "1").resolve();
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, trailInstanceObservation, studyType).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to an empty string when LOCATION_ABBR variable is present in environment level settings, but has no value.",
 				"",
@@ -137,7 +153,11 @@ public class LocationResolverTest {
 		studyDetails.setStudyType(StudyType.T);
 		workbook.setStudyDetails(studyDetails);
 
-		String location = new LocationResolver(workbook, "1").resolve();
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, trailInstanceObservation, studyType).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to an empty string when LOCATION_ABBR variable is not present in environment level settings.",
 				"", location);
