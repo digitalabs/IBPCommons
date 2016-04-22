@@ -17,10 +17,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.util.BitSet;
 import javax.activation.MimetypesFileTypeMap;
 
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +36,33 @@ public class FileUtils {
 	public static final String MIME_PDF = "application/pdf";
 	public static final String MIME_DEFAULT = "application/octet-stream";
 	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
+
+	/**
+	 * BitSet of www-form-url safe characters.
+	 */
+	static final BitSet WWW_FORM_URL = new BitSet(256);
+
+	// Static initializer for www_form_url
+	static {
+		// alpha characters
+		for (int i = 'a'; i <= 'z'; i++) {
+			WWW_FORM_URL.set(i);
+		}
+		for (int i = 'A'; i <= 'Z'; i++) {
+			WWW_FORM_URL.set(i);
+		}
+		// numeric characters
+		for (int i = '0'; i <= '9'; i++) {
+			WWW_FORM_URL.set(i);
+		}
+		// special chars
+		WWW_FORM_URL.set('-');
+		WWW_FORM_URL.set('_');
+		WWW_FORM_URL.set('.');
+		WWW_FORM_URL.set('*');
+		WWW_FORM_URL.set('/');
+		WWW_FORM_URL.set(':');
+	}
 
 	private FileUtils() {
 		// hide public constructor for this utility class
@@ -103,18 +130,12 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String encodeFilenameForDownload(String filename) {
-
-		try {
-
-			URI uri = new URI(null, null, sanitizeFileName(filename), null);
-
-			return uri.toASCIIString();
-
-		} catch (URISyntaxException e) {
-			FileUtils.LOG.error(e.getMessage(), e);
-
+		String encodedUrl = null;
+		if (filename != null) {
+			encodedUrl = new String(URLCodec.encodeUrl(WWW_FORM_URL,
+					filename.getBytes()));
 		}
-		return filename;
+		return encodedUrl;
 	}
 
 	public static byte[] contentsOfFile(File file) throws IOException {
@@ -194,7 +215,7 @@ public class FileUtils {
 	/**
 	 * Get filename Extension
 	 *
-	 * @param f
+	 * @param completeFileName
 	 * @return
 	 */
 	public static String getFilenameWithoutExtension(String completeFileName) {
