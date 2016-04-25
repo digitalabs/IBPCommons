@@ -56,8 +56,14 @@ public class BmsDateField extends DateField {
 
 	@Override
 	public void validate() {
-		super.validate();
-		Date date = (Date) this.getValue();
+
+		try {
+			super.validate();
+		} catch (final UnparsableDateString e) {
+			throw new InvalidValueException(BmsDateField.DEFAULT_LABEL + BmsDateField.INVALID_FORMAT);
+		}
+
+		final Date date = (Date) this.getValue();
 		if (date != null && !DateUtil.isValidYear(date)) {
 			throw new InvalidValueException(BmsDateField.INVALID_YEAR);
 		}
@@ -66,7 +72,7 @@ public class BmsDateField extends DateField {
 	@Override
 	public boolean isValid() {
 		boolean isValidYear = false;
-		Date date = (Date) this.getValue();
+		final Date date = (Date) this.getValue();
 		if (date != null && DateUtil.isValidYear(date)) {
 			isValidYear = true;
 		}
@@ -75,7 +81,7 @@ public class BmsDateField extends DateField {
 	}
 
 	@Override
-	public void paintContent(PaintTarget target) throws PaintException {
+	public void paintContent(final PaintTarget target) throws PaintException {
 		super.paintContent(target);
 		final Locale l = this.getLocale();
 		if (l != null) {
@@ -92,7 +98,7 @@ public class BmsDateField extends DateField {
 		this.paintCalendar(target);
 	}
 
-	private void paintCalendar(PaintTarget target) throws PaintException {
+	private void paintCalendar(final PaintTarget target) throws PaintException {
 		final Calendar calendar = this.getCalendar();
 		final Date currentDate = (Date) this.getValue();
 		for (int r = this.getResolution(); r <= DateField.RESOLUTION_YEAR; r++) {
@@ -100,7 +106,8 @@ public class BmsDateField extends DateField {
 		}
 	}
 
-	private void paintCalendarByResolution(PaintTarget target, int resolution, Calendar calendar, Date currentDate) throws PaintException {
+	private void paintCalendarByResolution(final PaintTarget target, final int resolution, final Calendar calendar, final Date currentDate)
+			throws PaintException {
 		switch (resolution) {
 			case RESOLUTION_MSEC:
 				this.addPaintTargetVariable(target, BmsDateField.MSEC, calendar.get(Calendar.MILLISECOND), currentDate);
@@ -129,16 +136,17 @@ public class BmsDateField extends DateField {
 		}
 	}
 
-	private void addPaintTargetVariable(PaintTarget target, String name, int value, Date currentDate) throws PaintException {
+	private void addPaintTargetVariable(final PaintTarget target, final String name, final int value, final Date currentDate)
+			throws PaintException {
 		target.addVariable(this, name, currentDate != null ? value : -1);
 	}
 
 	@Override
-	public void changeVariables(Object source, Map<String, Object> variables) {
+	public void changeVariables(final Object source, final Map<String, Object> variables) {
 		super.changeVariables(source, variables);
 		if (!this.isReadOnly() && this.hasDateChanges(variables)) {
 			final Date oldDate = (Date) this.getValue();
-			Date newDate = this.getNewDate(variables);
+			final Date newDate = this.getNewDate(variables);
 			this.dateString = (String) variables.get(BmsDateField.DATE_STRING);
 			if (newDate == null && this.dateString != null && !"".equals(this.dateString)) {
 				this.setValueAndRepaint(this.dateString, oldDate);
@@ -151,11 +159,11 @@ public class BmsDateField extends DateField {
 		this.fireEvents(variables);
 	}
 
-	private void setValueAndRepaint(String newValue, Date oldValue) {
+	private void setValueAndRepaint(final String newValue, final Date oldValue) {
 		try {
 			this.setValue(this.handleUnparsableDateString(this.dateString), true);
 
-		} catch (ConversionException e) {
+		} catch (final ConversionException e) {
 			BmsDateField.LOG.debug(e.getMessage(), e);
 			if (oldValue != null) {
 				this.setValue(null);
@@ -164,7 +172,7 @@ public class BmsDateField extends DateField {
 		this.requestRepaint();
 	}
 
-	private void fireEvents(Map<String, Object> variables) {
+	private void fireEvents(final Map<String, Object> variables) {
 		if (variables.containsKey(FocusEvent.EVENT_ID)) {
 			this.fireEvent(new FocusEvent(this));
 		}
@@ -173,7 +181,7 @@ public class BmsDateField extends DateField {
 		}
 	}
 
-	private boolean hasDateChanges(Map<String, Object> variables) {
+	private boolean hasDateChanges(final Map<String, Object> variables) {
 		boolean returnVal = false;
 		if (variables.containsKey(BmsDateField.YEAR) || variables.containsKey(BmsDateField.MONTH)
 				|| variables.containsKey(BmsDateField.DAY) || variables.containsKey(BmsDateField.HOUR)) {
@@ -185,17 +193,17 @@ public class BmsDateField extends DateField {
 		return returnVal;
 	}
 
-	private Date getNewDate(Map<String, Object> variables) {
-		int year = this.getVariableValue(variables, BmsDateField.YEAR);
-		int month = this.getVariableValue(variables, BmsDateField.MONTH);
-		int day = this.getVariableValue(variables, BmsDateField.DAY);
-		int hour = this.getVariableValue(variables, BmsDateField.HOUR);
-		int min = this.getVariableValue(variables, BmsDateField.MIN);
-		int sec = this.getVariableValue(variables, BmsDateField.SEC);
-		int msec = this.getVariableValue(variables, BmsDateField.MSEC);
+	private Date getNewDate(final Map<String, Object> variables) {
+		final int year = this.getVariableValue(variables, BmsDateField.YEAR);
+		final int month = this.getVariableValue(variables, BmsDateField.MONTH);
+		final int day = this.getVariableValue(variables, BmsDateField.DAY);
+		final int hour = this.getVariableValue(variables, BmsDateField.HOUR);
+		final int min = this.getVariableValue(variables, BmsDateField.MIN);
+		final int sec = this.getVariableValue(variables, BmsDateField.SEC);
+		final int msec = this.getVariableValue(variables, BmsDateField.MSEC);
 
 		if (this.hasDateChanges(year, month, day, hour, min, sec, msec)) {
-			Calendar cal = this.getCalendar();
+			final Calendar cal = this.getCalendar();
 			cal.set(Calendar.YEAR, year < 0 ? cal.get(Calendar.YEAR) : year);
 			cal.set(Calendar.MONTH, month < 0 ? cal.get(Calendar.MONTH) : month);
 			cal.set(Calendar.DAY_OF_MONTH, day < 0 ? cal.get(Calendar.DAY_OF_MONTH) : day);
@@ -209,7 +217,8 @@ public class BmsDateField extends DateField {
 		return null;
 	}
 
-	private boolean hasDateChanges(int year, int month, int day, int hour, int min, int sec, int msec) {
+	private boolean hasDateChanges(final int year, final int month, final int day, final int hour, final int min, final int sec,
+			final int msec) {
 		if (year >= 0 || month >= 0 || day >= 0) {
 			return true;
 		} else if (hour >= 0 || min >= 0 || sec >= 0 || msec >= 0) {
@@ -218,11 +227,11 @@ public class BmsDateField extends DateField {
 		return false;
 	}
 
-	private int getVariableValue(Map<String, Object> variables, String key) {
+	private int getVariableValue(final Map<String, Object> variables, final String key) {
 		if (!variables.containsKey(key) || variables.get(key) == null) {
 			return -1;
 		}
-		int value = ((Integer) variables.get(key)).intValue();
+		final int value = ((Integer) variables.get(key)).intValue();
 		if (BmsDateField.MONTH.equals(key)) {
 			return value - 1;
 		}
@@ -230,12 +239,12 @@ public class BmsDateField extends DateField {
 	}
 
 	public Calendar getCalendar() {
-		Calendar calendar = Calendar.getInstance(this.getLocale());
-		Date currentDate = (Date) this.getValue();
+		final Calendar calendar = Calendar.getInstance(this.getLocale());
+		final Date currentDate = (Date) this.getValue();
 		if (currentDate != null) {
 			calendar.setTime(currentDate);
 		}
-		TimeZone timezone = this.getTimeZone();
+		final TimeZone timezone = this.getTimeZone();
 		if (timezone != null) {
 			calendar.setTimeZone(timezone);
 		}
@@ -243,7 +252,7 @@ public class BmsDateField extends DateField {
 	}
 
 	@Override
-	protected void setInternalValue(Object newValue) {
+	protected void setInternalValue(final Object newValue) {
 		super.setInternalValue(newValue);
 		if (newValue != null) {
 			this.dateString = newValue.toString();
