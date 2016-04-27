@@ -8,7 +8,6 @@ import java.util.Map;
 import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 
 public enum ColumnLabels {
@@ -23,29 +22,31 @@ public enum ColumnLabels {
 			"LOCATIONS"), GID(TermId.GID, "GID"), MALE_PARENT(TermId.MALE_PARENT, "Male Parent"), MGID(TermId.MGID, "MGID"), PARENTAGE(
 			TermId.CROSS, "PARENTAGE"), PREFERRED_ID(TermId.PREFERRED_ID, "PREFERRED ID"), PREFERRED_NAME(TermId.PREFERRED_NAME,
 			"PREFERRED NAME"), SEED_RESERVATION(TermId.SEED_RESERVATION, "SEED RES"), SEED_SOURCE(TermId.SEED_SOURCE, "SEED SOURCE"), STOCKID(
-			TermId.STOCKID, "STOCKID"), TAG(null, "TAG")
+			TermId.STOCKID, "STOCKID"), TAG(null, "TAG"), GROUP_ID(TermId.GROUP_ID, "GROUP ID"),
+
+	// Trial things
+	TRIAL_INSTANCE(TermId.TRIAL_INSTANCE_FACTOR, "TRIAL_INSTANCE"), REP_NO(TermId.REP_NO, "REP_NO")
 
 	// INVENTORY TABLE COLUMNS
 	, AMOUNT(TermId.AMOUNT_INVENTORY, "AMOUNT"), BULK_WITH(TermId.BULK_WITH, "BULK WITH"), BULK_COMPL(TermId.BULK_COMPL, "BULK COMPL?"), COMMENT(
 			TermId.COMMENT_INVENTORY, "COMMENT"), DUPLICATE(TermId.DUPLICATE, "DUPLICATE"), LOT_ID(TermId.LOT_ID_INVENTORY, "LOT_ID"), LOT_LOCATION(
 			TermId.LOT_LOCATION_INVENTORY, "LOCATION"), NEWLY_RESERVED(TermId.NEW_RESERVED_INVENTORY, "NEW_RES"), RESERVED(
-			TermId.RESERVED_INVENTORY, "RES"), TOTAL(TermId.TOTAL_INVENTORY, "TOTAL"), UNITS(
-			TermId.UNITS_INVENTORY, "UNITS")
+			TermId.RESERVED_INVENTORY, "RES"), TOTAL(TermId.TOTAL_INVENTORY, "TOTAL"), UNITS(TermId.UNITS_INVENTORY, "UNITS")
 
 	// GERMPLASM CHECK
 	, ENTRY_TYPE(TermId.ENTRY_TYPE, "CHECK TYPE");
 
 	private TermId termId;
 	private String name;
-	private static final Map<String, ColumnLabels> lookup = new HashMap<>();
+	private static final Map<String, ColumnLabels> LOOKUP = new HashMap<>();
 
 	static {
-		for (ColumnLabels cl : EnumSet.allOf(ColumnLabels.class)) {
-			ColumnLabels.lookup.put(cl.getName(), cl);
+		for (final ColumnLabels cl : EnumSet.allOf(ColumnLabels.class)) {
+			ColumnLabels.LOOKUP.put(cl.getName(), cl);
 		}
 	}
 
-	private ColumnLabels(TermId termId, String name) {
+	private ColumnLabels(final TermId termId, final String name) {
 		this.name = name;
 		this.termId = termId;
 	}
@@ -59,26 +60,18 @@ public enum ColumnLabels {
 
 	}
 
-	public String getTermNameFromOntology(OntologyDataManager ontologyDataManager) {
-		try {
-			if (this.termId != null) {
-				Term term = ontologyDataManager.getTermById(this.termId.getId());
-				if (term != null && !StringUtil.isEmpty(term.getName())) {
-					return term.getName();
-				} else {
-					return this.name;
-				}
-			} else {
-				return this.name;
+	public String getTermNameFromOntology(final OntologyDataManager ontologyDataManager) {
+		if (this.termId != null) {
+			final Term term = ontologyDataManager.getTermById(this.termId.getId());
+			if (term != null && !StringUtil.isEmpty(term.getName())) {
+				return term.getName();
 			}
-
-		} catch (MiddlewareQueryException ex) {
-			return this.name;
 		}
+		return this.name;
 	}
 
-	public static ColumnLabels get(String name) {
-		return ColumnLabels.lookup.get(name);
+	public static ColumnLabels get(final String name) {
+		return ColumnLabels.LOOKUP.get(name);
 	}
 
 }

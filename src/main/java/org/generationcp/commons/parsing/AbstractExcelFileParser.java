@@ -2,6 +2,7 @@
 package org.generationcp.commons.parsing;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -24,7 +25,8 @@ public abstract class AbstractExcelFileParser<T> {
 	protected Workbook workbook;
 	protected String originalFilename;
 
-	public static final String FILE_INVALID = "common.error.invalid.file";
+	public static final String FILE_INVALID = "common.error.excel.invalid.format";
+	public static final String FILE_READ_ERROR = "common.error.excel.read.error";
 
 	protected static final String[] EXCEL_FILE_EXTENSIONS = new String[] {"xls", "xlsx"};
 
@@ -37,6 +39,22 @@ public abstract class AbstractExcelFileParser<T> {
 	public T parseFile(MultipartFile file, Map<String, Object> additionalParams) throws FileParsingException {
 		this.workbook = this.storeAndRetrieveWorkbook(file);
 		return this.parseWorkbook(this.workbook, additionalParams);
+	}
+
+	public T parseFile(String absoluteFilename, Map<String, Object> additionalParams) throws FileParsingException {
+		try {
+
+			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);
+			return this.parseWorkbook(this.workbook, additionalParams);
+
+		} catch (InvalidFormatException e) {
+			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
+		} catch (IOException e) {
+			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
+		}
+
 	}
 
 	public String[] getSupportedFileExtensions() {
@@ -56,9 +74,12 @@ public abstract class AbstractExcelFileParser<T> {
 			String serverFilename = this.fileService.saveTemporaryFile(multipartFile.getInputStream());
 
 			return this.fileService.retrieveWorkbook(serverFilename);
-		} catch (InvalidFormatException | IOException e) {
+		} catch (InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException("common.error.invalid.file");
+			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
+		} catch (IOException e) {
+			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
 		}
 	}
 
@@ -92,7 +113,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	/**
 	 * Wrapper to PoiUtil.getCellStringValue static call so we can stub the methods on unit tests
-	 *
+	 * 
 	 * @param sheetNo
 	 * @param rowNo
 	 * @param columnNo
@@ -105,7 +126,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	/**
 	 * Wrapper to PoiUtil.rowIsEmpty static call so we can stub the methods on unit tests
-	 *
+	 * 
 	 * @param sheetNo
 	 * @param rowNo
 	 * @param colCount

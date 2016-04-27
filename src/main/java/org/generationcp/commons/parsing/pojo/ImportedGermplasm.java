@@ -21,8 +21,12 @@ import org.generationcp.middleware.pojos.Name;
  */
 public class ImportedGermplasm implements Serializable {
 
+	public static final String GID_PENDING = "Pending";
+
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
+
+	private Integer crossListId;
 
 	/** The entry id. */
 	private Integer entryId;
@@ -43,7 +47,7 @@ public class ImportedGermplasm implements Serializable {
 	private String entryCode;
 
 	/** The check. */
-	private String check;
+	private String entryTypeValue;
 
 	/** The breeding method id. */
 	private Integer breedingMethodId;
@@ -56,17 +60,24 @@ public class ImportedGermplasm implements Serializable {
 
 	/** Germplasm's Number of Parents */
 	private Integer gnpgs;
+	
+	/** The maintenance group this germplasm belongs to */
+	private Integer mgid;
 
 	/** List of Names associated with the Germplasm */
 	private List<Name> names;
 
-	private Integer checkId;
+    private Integer entryTypeCategoricalID;
 
-	private String checkName;
+	private String entryTypeName;
 
 	private Integer index;
 
 	private String groupName;
+
+	private String trialInstanceNumber;
+	private String replicationNumber;
+    private String plotNumber;
 
 	public Integer getIndex() {
 		return this.index;
@@ -88,12 +99,12 @@ public class ImportedGermplasm implements Serializable {
 	 *
 	 * @param entryId the entry id
 	 * @param desig the desig
-	 * @param check the check
+	 * @param entryTypeValue the check
 	 */
-	public ImportedGermplasm(Integer entryId, String desig, String check) {
+	public ImportedGermplasm(Integer entryId, String desig, String entryTypeValue) {
 		this.entryId = entryId;
 		this.desig = desig;
-		this.check = check;
+		this.entryTypeValue = entryTypeValue;
 	}
 
 	/**
@@ -105,22 +116,22 @@ public class ImportedGermplasm implements Serializable {
 	 * @param cross the cross
 	 * @param source the source
 	 * @param entryCode the entry code
-	 * @param check the check
+	 * @param entryTypeValue the check
 	 */
-	public ImportedGermplasm(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String check) {
+	public ImportedGermplasm(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String entryTypeValue) {
 		this.entryId = entryId;
 		this.desig = desig;
 		this.gid = gid;
 		this.cross = cross;
 		this.source = source;
 		this.entryCode = entryCode;
-		this.check = check;
+		this.entryTypeValue = entryTypeValue;
 	}
 
-	public ImportedGermplasm(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String check,
+	public ImportedGermplasm(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String entryTypeValue,
 			Integer breedingMethodId) {
 
-		this(entryId, desig, gid, cross, source, entryCode, check);
+		this(entryId, desig, gid, cross, source, entryCode, entryTypeValue);
 		this.breedingMethodId = breedingMethodId;
 	}
 
@@ -237,17 +248,17 @@ public class ImportedGermplasm implements Serializable {
 	 *
 	 * @return the check
 	 */
-	public String getCheck() {
-		return this.check;
+	public String getEntryTypeValue() {
+		return this.entryTypeValue;
 	}
 
 	/**
 	 * Sets the check.
 	 *
-	 * @param check the new check
+	 * @param entryTypeValue the new check
 	 */
-	public void setCheck(String check) {
-		this.check = check;
+	public void setEntryTypeValue(String entryTypeValue) {
+		this.entryTypeValue = entryTypeValue;
 	}
 
 	/**
@@ -306,6 +317,16 @@ public class ImportedGermplasm implements Serializable {
 		this.gnpgs = gnpgs;
 	}
 
+	
+	public Integer getMgid() {
+		return mgid;
+	}
+
+	
+	public void setMgid(Integer mgid) {
+		this.mgid = mgid;
+	}
+
 	/**
 	 * @return the names
 	 */
@@ -321,57 +342,81 @@ public class ImportedGermplasm implements Serializable {
 	}
 
 	/**
-	 * @return the checkId
+	 * @return the entryTypeCategoricalID
 	 */
-	public Integer getCheckId() {
-		return this.checkId;
+	public Integer getEntryTypeCategoricalID() {
+		return this.entryTypeCategoricalID;
 	}
 
 	/**
-	 * @param checkId the checkId to set
+	 * @param entryTypeCategoricalID the entryTypeCategoricalID to set
 	 */
-	public void setCheckId(Integer checkId) {
-		this.checkId = checkId;
+	public void setEntryTypeCategoricalID(Integer entryTypeCategoricalID) {
+		this.entryTypeCategoricalID = entryTypeCategoricalID;
 	}
 
 	/**
-	 * @return the checkName
+	 * @return the entryTypeName
 	 */
-	public String getCheckName() {
-		return this.checkName;
+	public String getEntryTypeName() {
+		return this.entryTypeName;
 	}
 
 	/**
-	 * @param checkName the checkName to set
+	 * @param entryTypeName the entryTypeName to set
 	 */
-	public void setCheckName(String checkName) {
-		this.checkName = checkName;
+	public void setEntryTypeName(String entryTypeName) {
+		this.entryTypeName = entryTypeName;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+	public String getTrialInstanceNumber() {
+		return this.trialInstanceNumber;
+	}
+
+	public void setTrialInstanceNumber(String trialInstanceNumber) {
+		this.trialInstanceNumber = trialInstanceNumber;
+	}
+
+	public String getReplicationNumber() {
+		return this.replicationNumber;
+	}
+
+	public void setReplicationNumber(String replicationNumber) {
+		this.replicationNumber = replicationNumber;
+	}
+
+    public String getPlotNumber() {
+        return plotNumber;
+    }
+
+    public void setPlotNumber(String plotNumber) {
+        this.plotNumber = plotNumber;
+    }
+
+    /*
+         * (non-Javadoc)
+         *
+         * @see java.lang.Object#toString()
+         */
 	@Override
 	public String toString() {
 		return "ImportedGermplasm [entryId=" + this.entryId + ", desig=" + this.desig + ", gid=" + this.gid + ", cross=" + this.cross
-				+ ", source=" + this.source + ", entryCode=" + this.entryCode + ", check=" + this.check + ", breedingMethodId="
+				+ ", source=" + this.source + ", entryCode=" + this.entryCode + ", entryTypeValue=" + this.entryTypeValue + ", breedingMethodId="
 				+ this.breedingMethodId + ", gpid1=" + this.gpid1 + ", gpid2=" + this.gpid2 + ", gnpgs=" + this.gnpgs + ", names="
 				+ this.names + "]";
 	}
 
 	public ImportedGermplasm copy() {
 		ImportedGermplasm rec =
-				new ImportedGermplasm(this.entryId, this.desig, this.gid, this.cross, this.source, this.entryCode, this.check,
+				new ImportedGermplasm(this.entryId, this.desig, this.gid, this.cross, this.source, this.entryCode, this.entryTypeValue,
 						this.breedingMethodId);
 
 		rec.setGpid1(this.gpid1);
 		rec.setGpid2(this.gpid2);
 		rec.setGnpgs(this.gnpgs);
 		rec.setNames(this.names);
-		rec.setCheckId(this.checkId);
-		rec.setCheckName(this.checkName);
+		rec.setEntryTypeCategoricalID(this.entryTypeCategoricalID);
+		rec.setEntryTypeName(this.entryTypeName);
 		rec.setIndex(this.index);
 
 		return rec;
@@ -383,6 +428,14 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
+	}
+
+	public Integer getId() {
+		return this.crossListId;
+	}
+
+	public void setCrossListId(Integer crossListId) {
+		this.crossListId = crossListId;
 	}
 
 }

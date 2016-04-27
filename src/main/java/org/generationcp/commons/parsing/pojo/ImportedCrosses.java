@@ -31,6 +31,8 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public static final String PLOT_RECIP_PREFIX = "Plot Recip: ";
 	public static final String PEDIGREE_RECIP_PREFIX = "Pedigree Recip: ";
 
+	public static final String SEED_SOURCE_PENDING = "Pending";
+
 	private String notes;
 	private String seedsHarvested;
 	private String crossingDate;
@@ -142,7 +144,7 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		return "ImportedCrosses [entryId=" + this.getEntryId() + ", desig=" + this.getDesig() + ", maleDesig=" + this.maleDesig
 				+ ", femaleDesig=" + this.femaleDesig + ", maleGid=" + this.maleGid + ", femaleGid=" + this.femaleGid + ", gid="
 				+ this.getGid() + ", cross=" + this.getCross() + ", source=" + this.getSource() + ", entryCode=" + this.getEntryCode()
-				+ ", check=" + this.getCheck() + ", breedingMethodId=" + this.getBreedingMethodId() + ", gpid1=" + this.getGpid1()
+				+ ", check=" + this.getEntryTypeValue() + ", breedingMethodId=" + this.getBreedingMethodId() + ", gpid1=" + this.getGpid1()
 				+ ", gpid2=" + this.getGpid2() + ", gnpgs=" + this.getGnpgs() + ", names=" + this.getNames() + "]";
 	}
 
@@ -150,14 +152,14 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public ImportedCrosses copy() {
 		ImportedCrosses rec =
 				new ImportedCrosses(this.getEntryId(), this.getDesig(), this.getGid(), this.getCross(), this.getSource(),
-						this.getEntryCode(), this.getCheck(), this.getBreedingMethodId());
+						this.getEntryCode(), this.getEntryTypeValue(), this.getBreedingMethodId());
 
 		rec.setGpid1(this.getGpid1());
 		rec.setGpid2(this.getGpid2());
 		rec.setGnpgs(this.getGnpgs());
 		rec.setNames(this.getNames());
-		rec.setCheckId(this.getCheckId());
-		rec.setCheckName(this.getCheckName());
+		rec.setEntryTypeCategoricalID(this.getEntryTypeCategoricalID());
+		rec.setEntryTypeName(this.getEntryTypeName());
 		rec.setIndex(this.getIndex());
 		rec.setFemaleDesig(this.femaleDesig);
 		rec.setMaleDesig(this.femaleDesig);
