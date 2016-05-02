@@ -9,6 +9,7 @@ import junit.framework.Assert;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
@@ -20,13 +21,13 @@ public class CrossingUtilTest {
 
 	private final Integer methodId = 99;
 	private final Integer defaultTypeId = 5;
-	private GermplasmDataManagerImpl germplasmDataManager;
+	private GermplasmDataManager germplasmDataManager;
 	private List<Pair<Germplasm, Name>> germplasmPairs;
 	private Name name;
 
 	@Before
 	public void setUp() {
-		this.germplasmDataManager = Mockito.spy(new GermplasmDataManagerImpl());
+		this.germplasmDataManager = Mockito.mock(GermplasmDataManager.class);
 		germplasmPairs = new ArrayList<>();
 		this.name = new Name();
 		this.name.setTypeId(this.defaultTypeId);
