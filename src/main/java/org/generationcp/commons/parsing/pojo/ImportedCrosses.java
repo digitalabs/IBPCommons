@@ -313,6 +313,6 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	}
 
 	public boolean isBreedingMethodInformationAvailable() {
-		return (getBreedingMethodId() != null || getBreedingMethodId() != 0 || !StringUtils.isEmpty(getRawBreedingMethod()));
+		return ((getBreedingMethodId() != null && getBreedingMethodId() != 0) || !StringUtils.isEmpty(getRawBreedingMethod()));
 	}
 }
