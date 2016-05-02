@@ -4,6 +4,7 @@ package org.generationcp.commons.util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.commons.settings.BreedingMethodSetting;
@@ -12,6 +13,7 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Methods;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.CropType.CropEnum;
 import org.generationcp.middleware.service.pedigree.PedigreeFactory;
@@ -39,50 +41,60 @@ public class CrossingUtil {
 	public static Germplasm setCrossingBreedingMethod(final Germplasm child, final Germplasm female, final Germplasm male,
 			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale, final Germplasm fatherOfMale) {
 
+		child.setMethodId(
+				determineBreedingMethodBasedOnParentalLine(female, male, motherOfFemale, fatherOfFemale, motherOfMale, fatherOfMale));
+		return child;
+	}
+
+	public static Integer determineBreedingMethodBasedOnParentalLine(final Germplasm female, final Germplasm male,
+			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale, final Germplasm fatherOfMale) {
+		Integer methodId = null;
+
 		if (female != null && female.getGnpgs() < 0) {
 			if (male != null && male.getGnpgs() < 0) {
-				child.setMethodId(101);
+				methodId = Methods.SINGLE_CROSS.getMethodID();
 			} else {
-				if (male != null && male.getGnpgs() == 1) {
-					child.setMethodId(101);
-				} else if (male != null && male.getGnpgs() == 2) {
-					if (motherOfMale != null && motherOfMale.getGid() == female.getGid() || fatherOfMale != null
-							&& fatherOfMale.getGid() == female.getGid()) {
-						child.setMethodId(107);
-					} else {
-						child.setMethodId(102);
-					}
-				} else {
-					child.setMethodId(106);
-				}
+				methodId = determineCrossingMethod(male, female, motherOfMale, fatherOfMale);
 			}
 		} else {
 			if (male != null && male.getGnpgs() < 0) {
-				if (female != null && female.getGnpgs() == 1) {
-					child.setMethodId(101);
-				} else if (female != null && female.getGnpgs() == 2) {
-					if (motherOfFemale != null && motherOfFemale.getGid() == male.getGid() || fatherOfFemale != null
-							&& fatherOfFemale.getGid() == male.getGid()) {
-						child.setMethodId(107);
-					} else {
-						child.setMethodId(102);
-					}
-				} else {
-					child.setMethodId(106);
-				}
+				methodId = determineCrossingMethod(female, male, motherOfFemale, fatherOfFemale);
 			} else {
-				if (female != null && female.getMethodId() == 101 && male != null && male.getMethodId() == 101) {
-					child.setMethodId(103);
+				if (female != null && female.getMethodId() == Methods.SINGLE_CROSS.getMethodID() && male != null
+						&& male.getMethodId() == Methods.SINGLE_CROSS.getMethodID()) {
+					methodId = Methods.DOUBLE_CROSS.getMethodID();
 				} else {
-					child.setMethodId(106);
+					methodId = Methods.COMPLEX_CROSS.getMethodID();
 				}
 			}
 		}
 
-		if (child.getMethodId() == null) {
-			child.setMethodId(101);
+		// we default to using Single Cross as the breeding method in case it doesn't fit in into any of the previous scenarios
+		if (methodId == null) {
+			methodId = Methods.SINGLE_CROSS.getMethodID();
 		}
-		return child;
+
+		return methodId;
+	}
+
+	static Integer determineCrossingMethod(Germplasm parent1, Germplasm parent2, Germplasm motherOfParent1,
+			Germplasm fatherOfParent1) {
+
+		Integer methodId = null;
+		if (parent1 != null && parent1.getGnpgs() == 1) {
+			methodId = Methods.SINGLE_CROSS.getMethodID();
+		} else if (parent1 != null && parent1.getGnpgs() == 2) {
+			if ((motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid())) || (fatherOfParent1 != null
+					&& Objects.equals(fatherOfParent1.getGid(), parent2.getGid()))) {
+				methodId = Methods.BACKCROSS.getMethodID();
+			} else {
+				methodId = Methods.THREE_WAY_CROSS.getMethodID();
+			}
+		} else {
+			methodId = Methods.COMPLEX_CROSS.getMethodID();
+		}
+
+		return methodId;
 	}
 
 	/**
