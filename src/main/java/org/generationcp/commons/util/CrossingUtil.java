@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.generationcp.commons.settings.BreedingMethodSetting;
-import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -24,27 +22,6 @@ import org.slf4j.LoggerFactory;
 public class CrossingUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingUtil.class);
-
-	/**
-	 * Determines the proper crossing method for a germplasm based on how its parental lines have been created.
-	 *
-	 * @param child - the germplasm whose breeding method will be set
-	 * @param female - female parent
-	 * @param male - male parent
-	 * @param motherOfFemale - maternal female grand parent (mommy of female parent)
-	 * @param fatherOfFemale - maternal male grand parent (daddy of female parent)
-	 * @param motherOfMale - paternal female grand parent (mommy of male parent)
-	 * @param fatherOfMale - paternal male grand parent (daddy of male parent)
-	 * @return Germplasm - the parameter gc will be returned and its method id should have been set correctly
-	 * @throws MiddlewareQueryException
-	 */
-	public static Germplasm setCrossingBreedingMethod(final Germplasm child, final Germplasm female, final Germplasm male,
-			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale, final Germplasm fatherOfMale) {
-
-		child.setMethodId(
-				determineBreedingMethodBasedOnParentalLine(female, male, motherOfFemale, fatherOfFemale, motherOfMale, fatherOfMale));
-		return child;
-	}
 
 	public static Integer determineBreedingMethodBasedOnParentalLine(final Germplasm female, final Germplasm male,
 			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale, final Germplasm fatherOfMale) {
