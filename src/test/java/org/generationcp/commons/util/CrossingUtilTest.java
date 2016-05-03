@@ -55,6 +55,7 @@ public class CrossingUtilTest {
 
 		maleParent.setGnpgs(-1);
 
+		// aside from the male and female parent, the other parameters here are mocked to help indicate that we are not interested in the values of these parameters for this particular scenario
 		methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
 				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
 
@@ -63,28 +64,101 @@ public class CrossingUtilTest {
 	}
 
 	/**
-	 * Current rules expect a Single Cross breeding method when one (or both) parents have a GNPGS of -1 (signifying they do not have available parents)
-	 * and the other parent has a GNPGS of 1 (indicating it has a single parent)
+	 * Current rules expect a Double Cross breeding method when both parents have a GNPGS > 0  (signifying they both have parents)
+	 * and that each parent has Single Cross as a breeding method
 	 */
 	@Test
 	public void testDetermineBreedingMethodBasedOnParentalLineParentDoubleCross() {
 		Germplasm maleParent = new Germplasm();
 		maleParent.setGnpgs(1);
+		maleParent.setMethodId(Methods.SINGLE_CROSS.getMethodID());
 		Germplasm femaleParent = new Germplasm();
-		femaleParent.setGnpgs(-1);
+		femaleParent.setGnpgs(1);
+		femaleParent.setMethodId(Methods.SINGLE_CROSS.getMethodID());
 
 		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
 				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
 
-		Assert.assertEquals("Invalid method id computed using parental line", Methods.SINGLE_CROSS.getMethodID(), methodId);
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.DOUBLE_CROSS.getMethodID(), methodId);
+	}
 
+	/**
+	 * Current rules expect a back cross when one parent does not have parents (gnpgs < 0) which we'll call parent A,
+	 * and the other parent has 2 (gnpgs == 2) which we'll call parent B, The GID of either the father or the mother of parent B
+	 * must also be the same as the GID of parent A.
+	 */
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineBackCross() {
+		Integer maleParentGID = 1;
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGid(maleParentGID);
 		maleParent.setGnpgs(-1);
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(2);
+		Germplasm fatherOfFemale = new Germplasm();
+		fatherOfFemale.setGid(maleParentGID);
 
-		methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				fatherOfFemale, Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.BACKCROSS.getMethodID(), methodId);
+	}
+
+	/**
+	 * Current rules expect a back cross when one parent does not have parents (gnpgs < 0) which we'll call parent A,
+	 * and the other parent has 2 (gnpgs == 2) which we'll call parent B. Also, the GID of parent A must be different from either parent of parent B
+	 */
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineThreeWayCross() {
+		Integer maleParentGID = 1;
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGid(maleParentGID);
+		maleParent.setGnpgs(-1);
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(2);
+		Germplasm fatherOfFemale = new Germplasm();
+
+		// here we are just trying to emphasize that the gid of the father of the female germplasm is different from the germplasm of the male
+		fatherOfFemale.setGid(maleParentGID + 1);
+
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				fatherOfFemale, Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.THREE_WAY_CROSS.getMethodID(), methodId);
+	}
+
+	/**
+	 * One of the rules for complex cross is when both parents have parents (gnpgs > 0), and one OR both breeding methods are NOT single crosses
+	 */
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineComplexCrossBothGNPGSAboveZero() {
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGnpgs(1);
+		maleParent.setMethodId(Methods.BACKCROSS.getMethodID());
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(1);
+		femaleParent.setMethodId(Methods.SINGLE_CROSS.getMethodID());
+
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
 				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
 
-		Assert.assertEquals("Invalid method id computed using parental line", Methods.SINGLE_CROSS.getMethodID(), methodId);
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.COMPLEX_CROSS.getMethodID(), methodId);
+	}
 
+	/**
+	 * The other rule for complex cross is when one parent has no parent (gnpgs < 0), and the other parent has more than 2 (gnpgs > 2)
+	 */
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineComplexCrossOneGnpgsNegative() {
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGnpgs(-1);
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(3);
+
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.COMPLEX_CROSS.getMethodID(), methodId);
 	}
 
 	@Test
