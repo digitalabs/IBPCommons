@@ -12,6 +12,7 @@ import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
+import org.generationcp.middleware.pojos.Methods;
 import org.generationcp.middleware.pojos.Name;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,57 @@ public class CrossingUtilTest {
 		this.name.setTypeId(this.defaultTypeId);
 		Germplasm germplasm = new Germplasm();
 		germplasm.setMethodId(this.methodId);
-		germplasmPairs.add(new ImmutablePair<Germplasm, Name>(germplasm, name));
+		germplasmPairs.add(new ImmutablePair<>(germplasm, name));
+	}
+
+	/**
+	 * Current rules expect a Single Cross breeding method when one (or both) parents have a GNPGS of -1 (signifying they do not have available parents)
+	 * and the other parent has a GNPGS of 1 (indicating it has a single parent)
+	 */
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineParentSingleCross() {
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGnpgs(1);
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(-1);
+
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.SINGLE_CROSS.getMethodID(), methodId);
+
+		maleParent.setGnpgs(-1);
+
+		methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.SINGLE_CROSS.getMethodID(), methodId);
+
+	}
+
+	/**
+	 * Current rules expect a Single Cross breeding method when one (or both) parents have a GNPGS of -1 (signifying they do not have available parents)
+	 * and the other parent has a GNPGS of 1 (indicating it has a single parent)
+	 */
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineParentDoubleCross() {
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGnpgs(1);
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(-1);
+
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.SINGLE_CROSS.getMethodID(), methodId);
+
+		maleParent.setGnpgs(-1);
+
+		methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.SINGLE_CROSS.getMethodID(), methodId);
+
 	}
 
 	@Test
