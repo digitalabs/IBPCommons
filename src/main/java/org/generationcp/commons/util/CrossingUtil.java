@@ -18,7 +18,7 @@ import org.generationcp.middleware.service.pedigree.PedigreeFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//FIXME this class should be refactored, methods should be tested with junit tests and made not static
+// FIXME this class should be refactored, methods should be tested with junit tests and made not static
 public class CrossingUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingUtil.class);
@@ -54,15 +54,15 @@ public class CrossingUtil {
 		return methodId;
 	}
 
-	static Integer determineCrossingMethod(Germplasm parent1, Germplasm parent2, Germplasm motherOfParent1,
-			Germplasm fatherOfParent1) {
+	static Integer determineCrossingMethod(final Germplasm parent1, final Germplasm parent2, final Germplasm motherOfParent1,
+			final Germplasm fatherOfParent1) {
 
 		Integer methodId = null;
 		if (parent1 != null && parent1.getGnpgs() == 1) {
 			methodId = Methods.SINGLE_CROSS.getMethodID();
 		} else if (parent1 != null && parent1.getGnpgs() == 2) {
-			if ((motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid())) || (fatherOfParent1 != null
-					&& Objects.equals(fatherOfParent1.getGid(), parent2.getGid()))) {
+			if ((motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid()))
+					|| (fatherOfParent1 != null && Objects.equals(fatherOfParent1.getGid(), parent2.getGid()))) {
 				methodId = Methods.BACKCROSS.getMethodID();
 			} else {
 				methodId = Methods.THREE_WAY_CROSS.getMethodID();
@@ -105,12 +105,12 @@ public class CrossingUtil {
 	}
 
 	public static boolean isCimmytWheat(final String profile, final String crop) {
-		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT) && CropEnum.WHEAT.toString()
-				.equalsIgnoreCase(crop);
+		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
+				&& CropEnum.WHEAT.toString().equalsIgnoreCase(crop);
 	}
 
 	public static boolean isCimmytMaize(final String profile, final String crop) {
-		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT) && CropEnum.MAIZE.toString()
-				.equalsIgnoreCase(crop);
+		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
+				&& CropEnum.MAIZE.toString().equalsIgnoreCase(crop);
 	}
 }
