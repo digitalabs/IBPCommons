@@ -170,7 +170,7 @@ public class MySQLUtil {
 			this.connection.close();
 		} catch (SQLException e) {
 			// intentionally empty
-			MySQLUtil.LOG.debug("Error closing connection");
+			MySQLUtil.LOG.debug("Error closing connection : " + e.getMessage());
 		}
 	}
 
@@ -182,7 +182,13 @@ public class MySQLUtil {
 		String backupFilename = this.getBackupFilename(database, ".sql");
 		return this.backupDatabase(database, backupFilename, false);
 	}
-
+	
+	/**
+	 * Exports the crop database using mysqldump into a single file
+	 * 
+	 * The file is then concatenated with workbench data denoting the name of the program and most importantly the unique program id
+	 * 
+	 */
 	public File backupDatabase(String database, String backupFilename, boolean includeProcedures) throws IOException, InterruptedException {
 		if (database == null || backupFilename == null) {
 			return null;
@@ -211,11 +217,13 @@ public class MySQLUtil {
 		File file = new File(backupFilename);
 
 		// append program information to the backup file
-		// e.g. (2,2,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','maize','2016-01-01 23:26:53'),
+		// e.g. (2,9999,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','tutorial','2016-01-01 23:26:53');
+		// the '9999' and 'tutorial' keyword are placeholders for the restoration
 		if (file.exists()) {
 			String comment  = "-- This backup file is for crop type " + contextUtil.getProjectInContext().getCropType().getCropName() + "\n";
 			Files.write(Paths.get(backupFilename), comment.getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
+			Files.write(Paths.get(backupFilename), "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0');\n".getBytes(), StandardOpenOption.APPEND);
 			for (Project program : this.workbenchDataManager.getProjects()) {
 				if (program.getCropType().equals(this.contextUtil.getProjectInContext().getCropType())) {
 					StringBuilder sb = new StringBuilder();
@@ -226,6 +234,7 @@ public class MySQLUtil {
 					sb.append(program.getStartDate());
 					sb.append("','");
 					sb.append(program.getUniqueID());
+					// 'tutorial' crop will be replaced with the crop in context upon restore
 					sb.append("','tutorial','");
 					sb.append(program.getLastOpenDate());
 					sb.append("');\n");
@@ -312,6 +321,10 @@ public class MySQLUtil {
 
 			// after restore, restore from backup schema the users + persons table
 			this.addCurrentUserToRestoredPrograms(connection);
+			
+			// delete tutorial crop
+			this.executeQuery(connection, "USE workbench;");			
+			this.executeQuery(connection, "DELETE from `workbench_crop` where db_name='tutorial';");			
 
 		} catch (Exception e) {
 			// fail restore using the selected backup, reverting to previous DB..
