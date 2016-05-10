@@ -56,7 +56,7 @@ public abstract class AbstractCsvFileParser<T> {
 			String nextLine[];
 			Integer key = 0;
 			while ((nextLine = reader.readNext()) != null) {
-				//add empty array for whitespace lines 
+				//add empty array for whitespace lines for empty array list checking
 				if(!StringUtils.join(nextLine).trim().isEmpty()){
 					csvMap.put(key++, Arrays.asList(nextLine));
 				} else {
