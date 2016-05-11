@@ -31,7 +31,7 @@ public class SheetUtil {
 	 * Note, this method will not update any formula references.
 	 *
 	 * @param sheet
-	 * @param column
+	 * @param columnToDelete
 	 */
 	public static void deleteColumn(Sheet sheet, int columnToDelete) {
 		int maxColumn = 0;
@@ -106,7 +106,7 @@ public class SheetUtil {
 
 	public static String[] sheetsToArray(Workbook workbook) {
 
-		List<String> contents = new ArrayList<String>();
+		List<String> contents = new ArrayList<>();
 		int index = 0;
 		Sheet sheet = workbook.getSheetAt(index);
 		String cellvalue = "";
@@ -119,7 +119,7 @@ public class SheetUtil {
 						cellvalue = "";
 					}
 				} catch (Exception ec) {
-
+					SheetUtil.LOG.error(ec.getMessage(), ec);
 				}
 				contents.add(cellvalue);
 				index++;

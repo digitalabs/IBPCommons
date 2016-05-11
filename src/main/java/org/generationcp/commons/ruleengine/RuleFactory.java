@@ -4,16 +4,11 @@ package org.generationcp.commons.ruleengine;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.Resource;
 
 import org.generationcp.commons.ruleengine.provider.RuleConfigurationProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RuleFactory {
-
-	private static Logger LOG = LoggerFactory.getLogger(RuleFactory.class);
 
 	private Map<String, Rule> availableRules;
 

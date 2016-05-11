@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import au.com.bytecode.opencsv.CSVReader;
+import com.rits.cloning.Cloner;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.exceptions.BreedingViewInvalidFormatException;
 import org.generationcp.commons.service.BreedingViewImportService;
@@ -44,7 +46,6 @@ import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
-import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
 import org.generationcp.middleware.operation.builder.StandardVariableBuilder;
 import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
 import org.generationcp.middleware.pojos.dms.DmsProject;
@@ -52,10 +53,6 @@ import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
 import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.generationcp.middleware.util.DatasetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import au.com.bytecode.opencsv.CSVReader;
-
-import com.rits.cloning.Cloner;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
@@ -879,33 +876,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 
 		return newVariateNames;
-	}
-
-	/**
-	 * This method returns the ontology variable id from the database based from the propertyId, scaleId, methodId and programUUID
-	 *
-	 * @param propertyId
-	 * @param scaleId
-	 * @param methodId
-	 * @param programUUID
-	 * @return ontology variable id
-	 */
-	private Integer findOntologyVariableId(final int propertyId, final int scaleId, final Integer methodId, final String programUUID) {
-		Integer ontologyVariableId = null;
-
-		final VariableFilter filterOpts = new VariableFilter();
-		filterOpts.setProgramUuid(programUUID);
-		filterOpts.addPropertyId(propertyId);
-		filterOpts.addMethodId(methodId);
-		filterOpts.addScaleId(scaleId);
-
-		final List<org.generationcp.middleware.domain.ontology.Variable> variableList =
-				this.ontologyVariableDataManager.getWithFilter(filterOpts);
-		if (variableList != null && !variableList.isEmpty()) {
-			final org.generationcp.middleware.domain.ontology.Variable variable = variableList.get(0);
-			ontologyVariableId = variable.getId();
-		}
-		return ontologyVariableId;
 	}
 
 	/**

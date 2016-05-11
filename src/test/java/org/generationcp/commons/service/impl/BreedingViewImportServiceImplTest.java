@@ -4,8 +4,8 @@ package org.generationcp.commons.service.impl;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import com.rits.cloning.Cloner;
 import junit.framework.Assert;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -26,8 +26,6 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.domain.ontology.VariableType;
-import org.generationcp.middleware.helper.VariableInfo;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -41,9 +39,12 @@ import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
-
-import com.rits.cloning.Cloner;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 public class BreedingViewImportServiceImplTest {
 
@@ -64,9 +65,9 @@ public class BreedingViewImportServiceImplTest {
 	private final String ERROR_ESTIMATE = "ERROR ESTIMATE";
 	private final int ERROR_ESTIMATE_ID = 16095;
 
-	List<DMSVariableType> factorVariableTypes = new ArrayList<DMSVariableType>();
-	List<DMSVariableType> variateVariableTypes = new ArrayList<DMSVariableType>();
-	List<DMSVariableType> meansVariateVariableTypes = new ArrayList<DMSVariableType>();
+	List<DMSVariableType> factorVariableTypes = new ArrayList<>();
+	List<DMSVariableType> variateVariableTypes = new ArrayList<>();
+	List<DMSVariableType> meansVariateVariableTypes = new ArrayList<>();
 
 	@Mock
 	StudyDataManager studyDataManager;
@@ -87,9 +88,6 @@ public class BreedingViewImportServiceImplTest {
 	TrialEnvironments trialEnvironments;
 	@Mock
 	TrialEnvironment trialEnvironment;
-
-	Map<String, ArrayList<String>> meansInput;
-	Map<String, Map<String, ArrayList<String>>> summaryStatisticsInput;
 
 	@InjectMocks
 	BreedingViewImportServiceImpl service = new BreedingViewImportServiceImpl();

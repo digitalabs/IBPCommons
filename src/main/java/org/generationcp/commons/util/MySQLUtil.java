@@ -31,10 +31,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.generationcp.commons.exceptions.SQLFileException;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -182,12 +179,12 @@ public class MySQLUtil {
 		String backupFilename = this.getBackupFilename(database, ".sql");
 		return this.backupDatabase(database, backupFilename, false);
 	}
-	
+
 	/**
 	 * Exports the crop database using mysqldump into a single file
-	 * 
+	 *
 	 * The file is then concatenated with workbench data denoting the name of the program and most importantly the unique program id
-	 * 
+	 *
 	 */
 	public File backupDatabase(String database, String backupFilename, boolean includeProcedures) throws IOException, InterruptedException {
 		if (database == null || backupFilename == null) {
@@ -196,7 +193,7 @@ public class MySQLUtil {
 
 		String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
 
-		List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
+		List<String> command = new ArrayList<>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
 				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
 				"--user=" + this.username, database, "-r", backupFilename));
 
@@ -321,10 +318,10 @@ public class MySQLUtil {
 
 			// after restore, restore from backup schema the users + persons table
 			this.addCurrentUserToRestoredPrograms(connection);
-			
+
 			// delete tutorial crop
-			this.executeQuery(connection, "USE workbench;");			
-			this.executeQuery(connection, "DELETE from `workbench_crop` where db_name='tutorial';");			
+			this.executeQuery(connection, "USE workbench;");
+			this.executeQuery(connection, "DELETE from `workbench_crop` where db_name='tutorial';");
 
 		} catch (Exception e) {
 			// fail restore using the selected backup, reverting to previous DB..

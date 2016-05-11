@@ -2,7 +2,6 @@
 package org.generationcp.commons.spring.util;
 
 import java.util.Date;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,8 +12,6 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.util.WebUtils;
 
 /**
@@ -22,8 +19,6 @@ import org.springframework.web.util.WebUtils;
  * Villafuerte Date: 1/20/2015 Time: 5:14 PM
  */
 public class ContextUtil {
-
-	static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
 
 	@Resource
 	private HttpServletRequest request;

@@ -23,7 +23,6 @@ import com.vaadin.ui.Window.Notification;
 public class MessageNotifier {
 
 	private static final int POSITION = Notification.POSITION_TOP_RIGHT;
-	private static final int INDEFINITE_DELAY = -1; // Lets the notification window stay until the user clicks it
 	private static final int LONG_DELEY = 6000; // Lets the notification window stay until the user clicks it
 
 	private static final int DEFAULT_MESSAGE_DELAY = 3000;
@@ -99,7 +98,6 @@ public class MessageNotifier {
 	 * Show error for required fields.
 	 *
 	 * @param window the window
-	 * @param caption the caption
 	 * @param description the description
 	 */
 	public static void showRequiredFieldError(Window window, String description) {
@@ -109,21 +107,6 @@ public class MessageNotifier {
 	@Deprecated
 	public static void showError(Window window, String caption, String description, int position) {
 		MessageNotifier.showError(window, caption, description);
-	}
-
-	/**
-	 * Show tray notification.
-	 *
-	 * @param window the window
-	 * @param caption the caption
-	 * @param description the description
-	 */
-	public static void showTrayNotification(Window window, String caption, String description) {
-		Notification notification = new Notification(caption, Notification.TYPE_TRAY_NOTIFICATION);
-		notification.setDescription(description == null ? "" : "</br>" + description);
-		notification.setDelayMsec(MessageNotifier.DEFAULT_MESSAGE_DELAY);
-		notification.setPosition(MessageNotifier.POSITION);
-		window.showNotification(notification);
 	}
 
 }

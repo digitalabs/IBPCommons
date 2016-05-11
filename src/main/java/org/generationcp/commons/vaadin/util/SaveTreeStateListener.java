@@ -1,17 +1,19 @@
 package org.generationcp.commons.vaadin.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.vaadin.ui.Tree;
 import com.vaadin.ui.TreeTable;
 import com.vaadin.ui.Window;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 /**
  * Created by Daniel Villafuerte on 6/2/2015.
@@ -23,6 +25,8 @@ public class SaveTreeStateListener implements Window.CloseListener {
     private Tree sourceTree;
     private String treeType;
     private String rootItem;
+
+	private static final Logger LOG = LoggerFactory.getLogger(SaveTreeStateListener.class);
 
     @Autowired
     private ContextUtil contextUtil;
@@ -50,7 +54,7 @@ public class SaveTreeStateListener implements Window.CloseListener {
         try {
             userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentWorkbenchUserId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
         } catch (MiddlewareQueryException e1) {
-            e1.printStackTrace();
+			SaveTreeStateListener.LOG.error(e1.getMessage(), e);
         }
     }
 
