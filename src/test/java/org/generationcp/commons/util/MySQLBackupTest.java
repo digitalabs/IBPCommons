@@ -38,11 +38,6 @@ public class MySQLBackupTest {
 	}
 
 	@Test
-	public void testBackupLocal() throws IOException, InterruptedException {
-		MySQLBackupTest.backupFile = MySQLBackupTest.mysqlBackup.backupDatabase("ibdbv1_groundnut_local");
-	}
-
-	@Test
 	public void testRestore() throws Exception {
 		MySQLBackupTest.mysqlBackup.restoreDatabase("ibdbv1_groundnut_local", MySQLBackupTest.backupFile, null);
 	}
