@@ -173,15 +173,6 @@ public class MySQLUtil {
 			MySQLUtil.LOG.debug("Error closing connection : " + e.getMessage());
 		}
 	}
-
-	public File backupDatabase(String database) throws IOException, InterruptedException {
-		if (database == null) {
-			return null;
-		}
-
-		String backupFilename = this.getBackupFilename(database, ".sql");
-		return this.backupDatabase(database, backupFilename, false);
-	}
 	
 	/**
 	 * Exports the crop database using mysqldump into a single file
@@ -245,20 +236,6 @@ public class MySQLUtil {
 		}
 
 		return file.exists() ? file.getAbsoluteFile() : null;
-	}
-
-	public File[] backupDatabases(String... databases) throws IOException, InterruptedException {
-		if (databases == null || databases.length == 0) {
-			return new File[0];
-		}
-
-		File[] backupFiles = new File[databases.length];
-
-		for (int i = 0; i < databases.length; i++) {
-			backupFiles[i] = this.backupDatabase(databases[i]);
-		}
-
-		return backupFiles;
 	}
 
 	public void restoreDatabase(String databaseName, File backupFile, Callable<Boolean> preRestoreTasks) throws Exception {
@@ -640,21 +617,13 @@ public class MySQLUtil {
 		}
 	}
 
-	protected String getBackupFilename(String databaseName, String suffix) {
-		DateFormat format = DateUtil.getSimpleDateFormat("yyyyMMdd_hhmmss_SSS");
-		String timestamp = format.format(new Date());
+	public String getBackupFilename(final String databaseName, final String suffix, final String customDir) {
+		final DateFormat format = DateUtil.getSimpleDateFormat("yyyyMMdd_hhmmss_SSS");
+		final String timestamp = format.format(new Date());
 
-		String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
-		return StringUtil.joinIgnoreEmpty(File.separator, new File(this.backupDir).getAbsolutePath(), name);
-	}
+		final String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
 
-	protected String getBackupFilename(String databaseName, String suffix, String customDir) {
-		DateFormat format = DateUtil.getSimpleDateFormat("yyyyMMdd_hhmmss_SSS");
-		String timestamp = format.format(new Date());
-
-		String name = StringUtil.joinIgnoreEmpty("_", databaseName, timestamp, suffix);
-
-		File bacKupCustomDir = new File(new File(customDir).getAbsolutePath());
+		final File bacKupCustomDir = new File(new File(customDir).getAbsolutePath());
 		if (!bacKupCustomDir.exists() || !bacKupCustomDir.isDirectory()) {
 			bacKupCustomDir.mkdirs();
 		}
