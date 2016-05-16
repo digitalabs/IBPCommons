@@ -18,7 +18,7 @@ import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerThreadProvider;
-import org.generationcp.middleware.hibernate.XADatasourceUtilities;
+import org.generationcp.middleware.hibernate.DatasourceUtilities;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -55,7 +55,7 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 		final String databaseName = project.getDatabaseName();
 
 		final SessionFactory applicableCropSessionFactory =
-				(SessionFactory) this.applicationContext.getBean(XADatasourceUtilities.computeSessionFactoryName(databaseName));
+				(SessionFactory) this.applicationContext.getBean(DatasourceUtilities.computeSessionFactoryName(databaseName));
 
 		final ManagerFactory factory = new ManagerFactory();
 		factory.setSessionProvider(new HibernateSessionPerThreadProvider(applicableCropSessionFactory));
