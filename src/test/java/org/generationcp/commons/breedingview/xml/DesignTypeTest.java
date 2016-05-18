@@ -24,19 +24,19 @@ public class DesignTypeTest {
     @Test
     public void testDesignTypeFromString() {
 
-       Assert.assertEquals(DesignType.RANDOMIZED_BLOCK_DESIGN, DesignType.fromString(DesignType.RANDOMIZED_BLOCK_DESIGN.getName()));
-       Assert.assertEquals(DesignType.INCOMPLETE_BLOCK_DESIGN, DesignType.fromString(DesignType.INCOMPLETE_BLOCK_DESIGN.getName()));
-       Assert.assertEquals(DesignType.RESOLVABLE_INCOMPLETE_BLOCK_DESIGN, DesignType.fromString(DesignType.RESOLVABLE_INCOMPLETE_BLOCK_DESIGN.getName()));
-       Assert.assertEquals(DesignType.ROW_COLUMN_DESIGN, DesignType.fromString(DesignType.ROW_COLUMN_DESIGN.getName()));
-       Assert.assertEquals(DesignType.RESOLVABLE_ROW_COLUMN_DESIGN, DesignType.fromString(DesignType.RESOLVABLE_ROW_COLUMN_DESIGN.getName()));
-       Assert.assertEquals(DesignType.P_REP_DESIGN, DesignType.fromString(DesignType.P_REP_DESIGN.getName()));
+       Assert.assertEquals(DesignType.RANDOMIZED_BLOCK_DESIGN, DesignType.getDesignTypeByName(DesignType.RANDOMIZED_BLOCK_DESIGN.getName()));
+       Assert.assertEquals(DesignType.INCOMPLETE_BLOCK_DESIGN, DesignType.getDesignTypeByName(DesignType.INCOMPLETE_BLOCK_DESIGN.getName()));
+       Assert.assertEquals(DesignType.RESOLVABLE_INCOMPLETE_BLOCK_DESIGN, DesignType.getDesignTypeByName(DesignType.RESOLVABLE_INCOMPLETE_BLOCK_DESIGN.getName()));
+       Assert.assertEquals(DesignType.ROW_COLUMN_DESIGN, DesignType.getDesignTypeByName(DesignType.ROW_COLUMN_DESIGN.getName()));
+       Assert.assertEquals(DesignType.RESOLVABLE_ROW_COLUMN_DESIGN, DesignType.getDesignTypeByName(DesignType.RESOLVABLE_ROW_COLUMN_DESIGN.getName()));
+       Assert.assertEquals(DesignType.P_REP_DESIGN, DesignType.getDesignTypeByName(DesignType.P_REP_DESIGN.getName()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDesignTypeFromStringException() {
 
         // This will throw an exception because an empty string doesn't match any of the enum constants in DesignType.
-        DesignType.fromString("");
+        DesignType.getDesignTypeByName("");
 
     }
 
