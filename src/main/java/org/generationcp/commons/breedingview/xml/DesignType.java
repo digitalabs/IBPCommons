@@ -26,4 +26,28 @@ public enum DesignType {
 	public String getName() {
 		return this.name;
 	}
+
+	public static DesignType fromString(String name) {
+
+		for (DesignType designType: DesignType.values()){
+			if (designType.getName().equals(name)) {
+				return designType;
+			}
+		}
+
+		// if there is no match found in enum constants, throw an exception
+		throw new IllegalArgumentException("No DesignType constant found for name: \"" + name + "\"");
+	}
+
+	public String resolveDesignTypeNameForBreedingView() {
+
+		if (this.name.equals(DesignType.INCOMPLETE_BLOCK_DESIGN.getName())) {
+			return DesignType.RESOLVABLE_INCOMPLETE_BLOCK_DESIGN.getName();
+		} else if (this.name.equals(DesignType.ROW_COLUMN_DESIGN.getName())) {
+			return DesignType.RESOLVABLE_ROW_COLUMN_DESIGN.getName();
+		} else {
+			return this.name;
+		}
+
+	}
 }
