@@ -27,7 +27,12 @@ public enum DesignType {
 		return this.name;
 	}
 
-	public static DesignType fromString(String name) {
+	/**
+	 * Gets the design type by name.
+	 * @param name
+	 * @return
+     */
+	public static DesignType getDesignTypeByName(String name) {
 
 		for (DesignType designType: DesignType.values()){
 			if (designType.getName().equals(name)) {
@@ -39,6 +44,10 @@ public enum DesignType {
 		throw new IllegalArgumentException("No DesignType constant found for name: \"" + name + "\"");
 	}
 
+	/**
+	 * Gets the design type name to be used in Breeding View application.
+	 * @return
+     */
 	public String resolveDesignTypeNameForBreedingView() {
 
 		if (this.name.equals(DesignType.INCOMPLETE_BLOCK_DESIGN.getName())) {
