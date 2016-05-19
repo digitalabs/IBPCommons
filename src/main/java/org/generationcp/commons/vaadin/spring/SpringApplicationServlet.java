@@ -47,6 +47,11 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 		super.init(config);
 
 		String name = config.getInitParameter("applicationBeanName");
+
+		if(name == null && config.getServletName().equalsIgnoreCase("MainApplicationGPSB")){
+			name = "application_gpsb";
+		}
+
 		this.name = name == null ? SpringApplicationServlet.DEFAULT_APP_BEAN_NAME : name;
 	}
 
