@@ -148,6 +148,14 @@ public class MySQLUtil {
 		this.connection = connection;
 	}
 
+	public ContextUtil getContextUtil() {
+		return this.contextUtil;
+	}
+
+	public void setContextUtil(ContextUtil contextUtil) {
+		this.contextUtil = contextUtil;
+	}
+
 	public void connect() throws SQLException {
 		// load the JDBC driver
 		if (this.mysqlDriver != null) {
@@ -211,7 +219,8 @@ public class MySQLUtil {
 		// e.g. (2,9999,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','tutorial','2016-01-01 23:26:53');
 		// the '9999' and 'tutorial' keyword are placeholders for the restoration
 		if (file.exists()) {
-			String comment  = "-- This backup file is for crop type " + contextUtil.getProjectInContext().getCropType().getCropName() + "\n";
+			String comment  = "-- This backup file is for crop type " + this.contextUtil.getProjectInContext().getCropType().getCropName
+					() + "\n";
 			Files.write(Paths.get(backupFilename), comment.getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0');\n".getBytes(), StandardOpenOption.APPEND);
