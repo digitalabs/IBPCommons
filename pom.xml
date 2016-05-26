@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
 	<artifactId>ibpcommons</artifactId>
-        <version>4.0.0.BETA.11</version>
+        <version>4.0.0.BETA.12</version>
 	<packaging>jar</packaging>
 	<name>Commons</name>
 
@@ -26,6 +26,7 @@
 		<spring.version>3.2.11.RELEASE</spring.version>
 		<spring.security.version>3.2.5.RELEASE</spring.security.version>
 		<atomikos.version>3.9.3</atomikos.version>
+		<envConfig>${user.name}</envConfig>
 	</properties>
 
 	<dependencies>
@@ -248,8 +249,32 @@
 	</scm>
 
 	<build>
+		<filters>
+			<filter>../BMSConfig/${envConfig}/application.properties</filter>
+			<filter>../BMSConfig/${envConfig}/test.properties</filter>
+		</filters>
+		<testResources>
+			<testResource>
+				<filtering>true</filtering>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</testResource>
+			<testResource>
+				<filtering>false</filtering>
+				<directory>src/test/resources</directory>
+				<includes>
+					<include>**</include>
+				</includes>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</testResource>
+		</testResources>
 		<resources>
 			<resource>
+				<filtering>false</filtering>
 				<directory>src/main/webapp</directory>
 			</resource>
 			<resource>

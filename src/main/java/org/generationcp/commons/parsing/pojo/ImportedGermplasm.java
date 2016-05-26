@@ -77,6 +77,7 @@ public class ImportedGermplasm implements Serializable {
 
 	private String trialInstanceNumber;
 	private String replicationNumber;
+    private String plotNumber;
 
 	public Integer getIndex() {
 		return this.index;
@@ -384,11 +385,19 @@ public class ImportedGermplasm implements Serializable {
 		this.replicationNumber = replicationNumber;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
+    public String getPlotNumber() {
+        return plotNumber;
+    }
+
+    public void setPlotNumber(String plotNumber) {
+        this.plotNumber = plotNumber;
+    }
+
+    /*
+         * (non-Javadoc)
+         *
+         * @see java.lang.Object#toString()
+         */
 	@Override
 	public String toString() {
 		return "ImportedGermplasm [entryId=" + this.entryId + ", desig=" + this.desig + ", gid=" + this.gid + ", cross=" + this.cross
