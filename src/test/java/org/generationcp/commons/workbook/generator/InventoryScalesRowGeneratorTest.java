@@ -4,8 +4,8 @@ package org.generationcp.commons.workbook.generator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.generationcp.commons.data.initializer.ScaleTestDataInitializer;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
+import org.generationcp.middleware.data.initializer.ScaleTestDataInitializer;
 import org.generationcp.middleware.service.api.OntologyService;
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,10 +30,13 @@ public class InventoryScalesRowGeneratorTest {
 
 	@InjectMocks
 	InventoryScalesRowGenerator inventoryScalesRowGenerator;
-
+	
+	private ScaleTestDataInitializer scaleTestDataInitializer;
+	
 	@Before
 	public void setUp() {
-		Mockito.when(this.ontologyService.getAllInventoryScales()).thenReturn(ScaleTestDataInitializer.createScaleList());
+		this.scaleTestDataInitializer = new ScaleTestDataInitializer();
+		Mockito.when(this.ontologyService.getAllInventoryScales()).thenReturn(this.scaleTestDataInitializer.createScaleList());
 	}
 
 	@Test
