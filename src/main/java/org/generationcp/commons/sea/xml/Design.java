@@ -17,9 +17,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.generationcp.commons.breedingview.xml.Blocks;
+import org.generationcp.commons.breedingview.xml.ColPos;
 import org.generationcp.commons.breedingview.xml.Columns;
 import org.generationcp.commons.breedingview.xml.Plot;
 import org.generationcp.commons.breedingview.xml.Replicates;
+import org.generationcp.commons.breedingview.xml.RowPos;
 import org.generationcp.commons.breedingview.xml.Rows;
 
 public class Design implements Serializable {
@@ -32,6 +34,7 @@ public class Design implements Serializable {
 	private Rows rows;
 	private Columns columns;
 	private Plot plot;
+	private ColPos colPos;
 
 	@XmlAttribute
 	public String getType() {
@@ -85,6 +88,26 @@ public class Design implements Serializable {
 
 	public void setPlot(Plot plot) {
 		this.plot = plot;
+	}
+
+	@XmlElement(name = "RowPos")
+	public RowPos getRowPos() {
+		return rowPos;
+	}
+
+	public void setRowPos(RowPos rowPos) {
+		this.rowPos = rowPos;
+	}
+
+	private RowPos rowPos;
+
+	@XmlElement(name = "ColPos")
+	public ColPos getColPos() {
+		return colPos;
+	}
+
+	public void setColPos(ColPos colPos) {
+		this.colPos = colPos;
 	}
 
 }
