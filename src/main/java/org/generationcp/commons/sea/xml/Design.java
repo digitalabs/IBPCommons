@@ -41,7 +41,7 @@ public class Design implements Serializable {
 		return this.type;
 	}
 
-	public void setType(String type) {
+	public void setType(final String type) {
 		this.type = type;
 	}
 
@@ -50,7 +50,7 @@ public class Design implements Serializable {
 		return this.replicates;
 	}
 
-	public void setReplicates(Replicates replicates) {
+	public void setReplicates(final Replicates replicates) {
 		this.replicates = replicates;
 	}
 
@@ -59,7 +59,7 @@ public class Design implements Serializable {
 		return this.blocks;
 	}
 
-	public void setBlocks(Blocks blocks) {
+	public void setBlocks(final Blocks blocks) {
 		this.blocks = blocks;
 	}
 
@@ -68,7 +68,7 @@ public class Design implements Serializable {
 		return this.rows;
 	}
 
-	public void setRows(Rows rows) {
+	public void setRows(final Rows rows) {
 		this.rows = rows;
 	}
 
@@ -77,7 +77,7 @@ public class Design implements Serializable {
 		return this.columns;
 	}
 
-	public void setColumns(Columns columns) {
+	public void setColumns(final Columns columns) {
 		this.columns = columns;
 	}
 
@@ -86,7 +86,7 @@ public class Design implements Serializable {
 		return this.plot;
 	}
 
-	public void setPlot(Plot plot) {
+	public void setPlot(final Plot plot) {
 		this.plot = plot;
 	}
 
@@ -95,7 +95,7 @@ public class Design implements Serializable {
 		return rowPos;
 	}
 
-	public void setRowPos(RowPos rowPos) {
+	public void setRowPos(final RowPos rowPos) {
 		this.rowPos = rowPos;
 	}
 
@@ -106,7 +106,7 @@ public class Design implements Serializable {
 		return colPos;
 	}
 
-	public void setColPos(ColPos colPos) {
+	public void setColPos(final ColPos colPos) {
 		this.colPos = colPos;
 	}
 
