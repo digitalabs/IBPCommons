@@ -10,7 +10,7 @@
  *
  **************************************************************/
 
-package org.generationcp.commons.breedingview.xml.test;
+package org.generationcp.commons.breedingview.xml;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,18 +18,6 @@ import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.generationcp.commons.breedingview.xml.Blocks;
-import org.generationcp.commons.breedingview.xml.BreedingViewProject;
-import org.generationcp.commons.breedingview.xml.BreedingViewProjectType;
-import org.generationcp.commons.breedingview.xml.Columns;
-import org.generationcp.commons.breedingview.xml.Data;
-import org.generationcp.commons.breedingview.xml.Environment;
-import org.generationcp.commons.breedingview.xml.EnvironmentLabel;
-import org.generationcp.commons.breedingview.xml.Genotypes;
-import org.generationcp.commons.breedingview.xml.Phenotypic;
-import org.generationcp.commons.breedingview.xml.Replicates;
-import org.generationcp.commons.breedingview.xml.Rows;
-import org.generationcp.commons.breedingview.xml.Trait;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
