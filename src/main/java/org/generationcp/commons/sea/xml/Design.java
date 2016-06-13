@@ -17,9 +17,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.generationcp.commons.breedingview.xml.Blocks;
+import org.generationcp.commons.breedingview.xml.ColPos;
 import org.generationcp.commons.breedingview.xml.Columns;
 import org.generationcp.commons.breedingview.xml.Plot;
 import org.generationcp.commons.breedingview.xml.Replicates;
+import org.generationcp.commons.breedingview.xml.RowPos;
 import org.generationcp.commons.breedingview.xml.Rows;
 
 public class Design implements Serializable {
@@ -32,13 +34,14 @@ public class Design implements Serializable {
 	private Rows rows;
 	private Columns columns;
 	private Plot plot;
+	private ColPos colPos;
 
 	@XmlAttribute
 	public String getType() {
 		return this.type;
 	}
 
-	public void setType(String type) {
+	public void setType(final String type) {
 		this.type = type;
 	}
 
@@ -47,7 +50,7 @@ public class Design implements Serializable {
 		return this.replicates;
 	}
 
-	public void setReplicates(Replicates replicates) {
+	public void setReplicates(final Replicates replicates) {
 		this.replicates = replicates;
 	}
 
@@ -56,7 +59,7 @@ public class Design implements Serializable {
 		return this.blocks;
 	}
 
-	public void setBlocks(Blocks blocks) {
+	public void setBlocks(final Blocks blocks) {
 		this.blocks = blocks;
 	}
 
@@ -65,7 +68,7 @@ public class Design implements Serializable {
 		return this.rows;
 	}
 
-	public void setRows(Rows rows) {
+	public void setRows(final Rows rows) {
 		this.rows = rows;
 	}
 
@@ -74,7 +77,7 @@ public class Design implements Serializable {
 		return this.columns;
 	}
 
-	public void setColumns(Columns columns) {
+	public void setColumns(final Columns columns) {
 		this.columns = columns;
 	}
 
@@ -83,8 +86,28 @@ public class Design implements Serializable {
 		return this.plot;
 	}
 
-	public void setPlot(Plot plot) {
+	public void setPlot(final Plot plot) {
 		this.plot = plot;
+	}
+
+	@XmlElement(name = "RowPos")
+	public RowPos getRowPos() {
+		return rowPos;
+	}
+
+	public void setRowPos(final RowPos rowPos) {
+		this.rowPos = rowPos;
+	}
+
+	private RowPos rowPos;
+
+	@XmlElement(name = "ColPos")
+	public ColPos getColPos() {
+		return colPos;
+	}
+
+	public void setColPos(final ColPos colPos) {
+		this.colPos = colPos;
 	}
 
 }
