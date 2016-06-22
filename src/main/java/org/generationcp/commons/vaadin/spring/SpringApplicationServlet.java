@@ -15,11 +15,10 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
-
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.AbstractApplicationServlet;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 /**
  * An implementation of {@link AbstractApplicationServlet} that integrates Spring with Vaadin.
@@ -47,10 +46,12 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 		super.init(config);
 
 		String name = config.getInitParameter("applicationBeanName");
-
-		if(name == null && config.getServletName().equalsIgnoreCase("MainApplicationGPSB")){
+	     if (name == null && config.getServletName().equalsIgnoreCase("MainApplicationBM")){
+		    name="application_bm";
+	      }
+	    else if(name == null && config.getServletName().equalsIgnoreCase("MainApplicationGPSB")){
 			name = "application_gpsb";
-		}
+		  }
 
 		this.name = name == null ? SpringApplicationServlet.DEFAULT_APP_BEAN_NAME : name;
 	}
