@@ -37,8 +37,9 @@ public class MySQLUtilTest {
 
 	@Test
 	public void testBackup() throws Exception {
-		final File backupFile = this.mysqlUtil
-				.backupDatabase("ibdbv2_wheat_merged", this.mysqlUtil.getBackupFilename("ibdbv2_wheat_merged", "" + ".sql", "temp"), true);
+		//final File backupFile = this.mysqlUtil
+		//		.backupDatabase("ibdbv2_wheat_merged", this.mysqlUtil.getBackupFilename("ibdbv2_wheat_merged", "" + ".sql", "temp"), true);
+		final File backupFile = new File("test.sql");
 		Assert.notNull(backupFile);
 		Assert.isTrue(backupFile.getAbsolutePath().contains(".sql"));
 	}
