@@ -31,7 +31,7 @@ public class BulkComplValidator extends ParsingValidator {
 			if (StringUtils.isEmpty(bulkWithValue)) {
 				return false;
 			}
-			if (!BulkComplValidator.VALID_VALUE.equals(bulkCompValue)) {
+			if (!BulkComplValidator.VALID_VALUE.equalsIgnoreCase(bulkCompValue)) {
 				return false;
 			}
 		} else if (!StringUtils.isEmpty(bulkWithValue)) {

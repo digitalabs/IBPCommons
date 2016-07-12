@@ -4,6 +4,7 @@ package org.generationcp.commons.parsing;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.generationcp.commons.service.FileService;
 import org.slf4j.Logger;
@@ -51,11 +53,15 @@ public abstract class AbstractCsvFileProcessor<T> {
 
 
 			CSVReader reader = new CSVReader(new FileReader(this.csvFile));
-
 			String nextLine[];
 			Integer key = 0;
 			while ((nextLine = reader.readNext()) != null) {
-				csvMap.put(key++, Arrays.asList(nextLine));
+				//add empty array for whitespace lines for empty array list checking
+				if(!StringUtils.join(nextLine).trim().isEmpty()){
+					csvMap.put(key++, Arrays.asList(nextLine));
+				} else {
+					csvMap.put(key++, new ArrayList<String>());
+				}
 			}
 
 			reader.close();
