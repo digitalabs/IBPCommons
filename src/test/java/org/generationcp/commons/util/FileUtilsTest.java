@@ -73,10 +73,26 @@ public class FileUtilsTest {
 	@Test
 	public void testEncodeFilenameForDownload() {
 
-		String filename = "testFilename<>";
-		String convertedFilename = "testFilename__";
+		String filename = "你好abcABCæøåÆØÅäöüïëêîâéíáóúýñ½§!:*?|<>,\"/\\\\#¤%&()=`@£$€{[]}+´¨^~'-_,;";
+		String convertedFilename = "%E4%BD%A0%E5%A5%BDabcABC%C3%A6%C3%B8%C3%A5%C3%86%C3%98%C3%85%C3%A4%C3%B6%C3%BC%C3%AF%C3%AB%C3%AA%C3%AE%C3%A2%C3%A9%C3%AD%C3%A1%C3%B3%C3%BA%C3%BD%C3%B1%C2%BD%C2%A7%21:*%3F%7C%3C%3E%2C%22/%5C%5C%23%C2%A4%25%26%28%29%3D%60%40%C2%A3%24%E2%82%AC%7B%5B%5D%7D%2B%C2%B4%C2%A8%5E%7E%27-_%2C%3B";
 
 		Assert.assertEquals("Should be the same character as the converted filename", convertedFilename,
 				FileUtils.encodeFilenameForDownload(filename));
 	}
+
+	public void testDetectMimeType() throws Exception {
+		String xlsMimeResult = FileUtils.detectMimeType("file.xls");
+		String xlsxMimeResult = FileUtils.detectMimeType("file.xlsx");
+		String zipMimeResult = FileUtils.detectMimeType("file.zip");
+		String pdfMimeResult = FileUtils.detectMimeType("file.pdf");
+		String defaultMimeResult = FileUtils.detectMimeType("file.bin");
+
+		Assert.assertEquals("Should return MIME_MS_EXCEL type", FileUtils.MIME_MS_EXCEL,xlsMimeResult);
+		Assert.assertEquals("Should return MIME_MS_EXCEL type", FileUtils.MIME_MS_EXCEL,xlsxMimeResult);
+		Assert.assertEquals("Should return MIME_ZIP type", FileUtils.MIME_ZIP,zipMimeResult);
+		Assert.assertEquals("Should return MIME_PDF type", FileUtils.MIME_PDF,pdfMimeResult);
+		Assert.assertEquals("Should return MIME_DEFAULT type", FileUtils.MIME_DEFAULT,defaultMimeResult);
+
+	}
+
 }
