@@ -14,6 +14,7 @@ package org.generationcp.commons.parsing.pojo;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.middleware.pojos.ListDataProject;
 
 /**
@@ -311,4 +312,7 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		this.femaleStudyName = femaleStudyName;
 	}
 
+	public boolean isBreedingMethodInformationAvailable() {
+		return ((getBreedingMethodId() != null && getBreedingMethodId() != 0) || !StringUtils.isEmpty(getRawBreedingMethod()));
+	}
 }
