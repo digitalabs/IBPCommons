@@ -23,9 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import au.com.bytecode.opencsv.CSVReader;
 
-public abstract class AbstractCsvFileParser<T> {
+public abstract class AbstractCsvFileProcessor<T> {
 
-	private static final Logger LOG = LoggerFactory.getLogger(AbstractCsvFileParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractCsvFileProcessor.class);
 
 	protected String originalFilename;
 
@@ -89,7 +89,7 @@ public abstract class AbstractCsvFileParser<T> {
 			return this.fileService.retrieveFileFromFileName(serverFilename);
 
 		} catch (InvalidFormatException | IOException e) {
-			AbstractCsvFileParser.LOG.debug(e.getMessage(), e);
+			AbstractCsvFileProcessor.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(this.messageSource.getMessage("common.error.file.not.csv", null, Locale.ENGLISH));
 		}
 	}
@@ -99,7 +99,7 @@ public abstract class AbstractCsvFileParser<T> {
 
 		String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
 
-		if (AbstractCsvFileParser.CSV_FILE_EXTENSION.equalsIgnoreCase(extension)) {
+		if (AbstractCsvFileProcessor.CSV_FILE_EXTENSION.equalsIgnoreCase(extension)) {
 			extensionCheckResult = true;
 		}
 
