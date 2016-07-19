@@ -59,6 +59,10 @@ public class GermplasmExportedWorkbook {
 
 	// Factor
 	public static final String FACTOR = "FACTOR";
+	
+	// Codes
+	public static final String USER = "USER";
+	public static final String BREEDING_METHOD = "BREEDING METHOD";
 
 	private ExcelCellStyleBuilder sheetStyles;
 	private CellStyle textStyle;
