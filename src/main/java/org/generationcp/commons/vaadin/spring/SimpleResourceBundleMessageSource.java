@@ -28,10 +28,6 @@ public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSour
 
 	private Locale locale;
 
-	public SimpleResourceBundleMessageSource() {
-		System.out.println("SimpleResourceBundleMessageSource");
-	}
-	
 	public Locale getLocale() {
 		return this.locale;
 	}
