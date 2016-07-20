@@ -13,8 +13,6 @@
 package org.generationcp.commons.vaadin.spring;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -30,27 +28,16 @@ public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSour
 
 	private Locale locale;
 
-	private final List<SimpleResourceBundleMessageSourceListener> listeners = new LinkedList<SimpleResourceBundleMessageSourceListener>();
-
+	public SimpleResourceBundleMessageSource() {
+		System.out.println("SimpleResourceBundleMessageSource");
+	}
+	
 	public Locale getLocale() {
 		return this.locale;
 	}
 
 	public void setLocale(Locale locale) {
-		Locale oldLocale = this.locale;
-
 		this.locale = locale;
-
-		// notify listeners that the locale has changed
-		this.notifyLocaleChanged(oldLocale, locale);
-	}
-
-	public void addListener(SimpleResourceBundleMessageSourceListener listener) {
-		this.listeners.add(listener);
-	}
-
-	public void removeListener(SimpleResourceBundleMessageSourceListener listener) {
-		this.listeners.remove(listener);
 	}
 
 	public String getMessage(String code) {
@@ -105,9 +92,4 @@ public class SimpleResourceBundleMessageSource extends ResourceBundleMessageSour
 		table.setColumnHeader(propertyId, this.getMessage(messageCode.name()));
 	}
 
-	private void notifyLocaleChanged(Locale oldLocale, Locale newLocale) {
-		for (SimpleResourceBundleMessageSourceListener listener : this.listeners) {
-			listener.localeChanged(oldLocale, newLocale);
-		}
-	}
 }
