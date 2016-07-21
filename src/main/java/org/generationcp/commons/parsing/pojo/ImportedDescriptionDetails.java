@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Created by cyrus on 4/24/15.
- */
 public class ImportedDescriptionDetails implements Serializable {
 
 	/**
@@ -89,7 +86,7 @@ public class ImportedDescriptionDetails implements Serializable {
 		return this.filename;
 	}
 
-	public void setFilename(String filename) {
+	public void setFilename(final String filename) {
 		this.filename = filename;
 	}
 
@@ -97,7 +94,7 @@ public class ImportedDescriptionDetails implements Serializable {
 		return this.name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		this.name = name;
 	}
 
@@ -105,7 +102,7 @@ public class ImportedDescriptionDetails implements Serializable {
 		return this.title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -113,7 +110,7 @@ public class ImportedDescriptionDetails implements Serializable {
 		return this.type;
 	}
 
-	public void setType(String type) {
+	public void setType(final String type) {
 		this.type = type;
 	}
 
@@ -121,7 +118,7 @@ public class ImportedDescriptionDetails implements Serializable {
 		return this.date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(final Date date) {
 		this.date = date;
 	}
 
@@ -130,15 +127,15 @@ public class ImportedDescriptionDetails implements Serializable {
 	 *
 	 * @param importedFactor the imported factor
 	 */
-	public void addImportedFactor(ImportedFactor importedFactor) {
+	public void addImportedFactor(final ImportedFactor importedFactor) {
 		this.importedFactors.add(importedFactor);
 	}
 
-	public void addImportedCondition(ImportedCondition importedCondition) {
+	public void addImportedCondition(final ImportedCondition importedCondition) {
 		this.importedConditions.add(importedCondition);
 	}
 
-	public void addImportedConstant(ImportedConstant importedConstant) {
+	public void addImportedConstant(final ImportedConstant importedConstant) {
 		this.importedConstants.add(importedConstant);
 	}
 
@@ -147,7 +144,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	 *
 	 * @param importedVariate the imported variate
 	 */
-	public void addImportedVariate(ImportedVariate importedVariate) {
+	public void addImportedVariate(final ImportedVariate importedVariate) {
 		this.importedVariates.add(importedVariate);
 	}
 
