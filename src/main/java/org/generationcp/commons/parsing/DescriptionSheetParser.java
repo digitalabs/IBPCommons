@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extends AbstractExcelFileParser<T> {
 
 	public static final int DESCRIPTION_SHEET_NO = 0;
-	public static final int CONDITION_ROW_NO = 5;
+	public static final int CONDITION_ROW_NO = 4;
 	public static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(DescriptionSheetParser.class);
@@ -66,7 +66,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 
 	public DescriptionSheetParser(T importedList) {
 		this.importedList = importedList;
-		this.doParseDetails = this.doParseConditions = this.doParseFactors = this.doParseConstants = this.doParseVariates = true;
+		this.doParseDetails = this.doParseConditions = this.doParseFactors = this.doParseVariates = true;
 	}
 
 	public void parseDescriptionSheet() throws FileParsingException, ParseException {
@@ -127,7 +127,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	}
 
 	protected void parseConditions() {
-		// condition headers start at row = 5 (+ 1 : count starts from 0 )
+		// condition headers start at row = 4 (5 - 1 : count starts from 0 )
 		this.currentRow = DescriptionSheetParser.CONDITION_ROW_NO;
 
 		if (!this.isConditionHeadersInvalid(DescriptionSheetParser.CONDITION_ROW_NO) && this.importFileIsValid) {
