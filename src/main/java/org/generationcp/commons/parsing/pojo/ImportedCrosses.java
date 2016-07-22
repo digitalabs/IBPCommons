@@ -35,7 +35,6 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public static final String SEED_SOURCE_PENDING = "Pending";
 
 	private String notes;
-	private String seedsHarvested;
 	private String crossingDate;
 	private String rawBreedingMethod;
 
@@ -122,10 +121,9 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
 	}
 
-	public void setOptionalFields(String rawBreedingMethod, String crossingDate, String seedsHarvested, String notes) {
+	public void setOptionalFields(String rawBreedingMethod, String crossingDate, String notes) {
 		this.rawBreedingMethod = rawBreedingMethod;
 		this.crossingDate = crossingDate;
-		this.seedsHarvested = seedsHarvested;
 		this.notes = notes;
 	}
 
@@ -208,14 +206,6 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
-	}
-
-	public String getSeedsHarvested() {
-		return this.seedsHarvested;
-	}
-
-	public void setSeedsHarvested(String seedsHarvested) {
-		this.seedsHarvested = seedsHarvested;
 	}
 
 	public String getCrossingDate() {
