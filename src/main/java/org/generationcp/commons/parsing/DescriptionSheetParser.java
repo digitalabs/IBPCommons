@@ -8,12 +8,10 @@ import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.parsing.pojo.ImportedCondition;
-import org.generationcp.commons.parsing.pojo.ImportedConstant;
 import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.commons.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,25 +59,22 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	private final boolean doParseDetails;
 	private final boolean doParseConditions;
 	private final boolean doParseFactors;
-	private final boolean doParseConstants;
 	private final boolean doParseVariates;
 
 	public DescriptionSheetParser(final T importedList) {
 		this.importedList = importedList;
 		this.doParseDetails = true;
 		this.doParseConditions = true;
-		this.doParseConstants = true;
 		this.doParseFactors = true;
 		this.doParseVariates = true;
 	}
 
 	private void parseDescriptionSheet() throws FileParsingException, ParseException {
-		this.parseDescriptionSheet(this.doParseDetails, this.doParseConditions, this.doParseFactors, this.doParseConstants,
-				this.doParseVariates);
+		this.parseDescriptionSheet(this.doParseDetails, this.doParseConditions, this.doParseFactors, this.doParseVariates);
 	}
 
 	private void parseDescriptionSheet(final boolean doParseDetails, final boolean doParseConditions, final boolean doParseFactors,
-			final boolean doParseConstants, final boolean doParseVariates) throws FileParsingException, ParseException {
+			final boolean doParseVariates) throws FileParsingException, ParseException {
 
 		if (doParseDetails) {
 			this.parseListDetails();
@@ -91,10 +86,6 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 
 		if (doParseFactors) {
 			this.parseFactors();
-		}
-
-		if (doParseConstants) {
-			this.parseConstants();
 		}
 
 		if (doParseVariates) {
@@ -111,11 +102,11 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 
 		final int listDateColNo = DescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
 
-		final String listDateNotParsed = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
-		if (StringUtil.isEmpty(listDateNotParsed)) {
+		final Double listDateNotParsed = this.getCellNumericValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
+		if (listDateNotParsed.equals(0d)) {
 			listDate = DateUtil.getCurrentDate();
 		} else {
-			listDate = DateUtil.parseDate(listDateNotParsed);
+			listDate = DateUtil.parseDate(String.valueOf(listDateNotParsed.intValue()));
 		}
 
 		this.importedList.setName(listName);
@@ -177,35 +168,6 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 
 		} else {
 			throw new FileParsingException("Error parsing on factors header: Incorrect headers for factors.");
-		}
-
-		while (this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
-				DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
-			this.currentRow++;
-		}
-	}
-
-	private void parseConstants() throws FileParsingException {
-		if (!this.isConstantsHeaderInvalid(this.currentRow)) {
-			this.currentRow++;
-			while (!this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
-					DescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
-				this.importedList.addImportedConstant(
-						new ImportedConstant(this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
-								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
-								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
-								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
-								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
-								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5),
-								this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6)));
-
-				this.currentRow++;
-			}
-			this.currentRow++;
-
-		} else {
-			// Incorrect headers for factors.
-			throw new FileParsingException("Error parsing on constants header: Incorrect headers for constants.");
 		}
 
 		while (this.isRowEmpty(DescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
