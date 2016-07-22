@@ -24,7 +24,7 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 	private static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(DescriptionSheetParser.class);
-	private static final String TEMPLATE_LIST_TYPE = "LST";
+	private static final String TEMPLATE_LIST_TYPE = "CROSS";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
 
@@ -110,7 +110,6 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		final String labelId = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, 2, 0);
 
 		final int listDateColNo = DescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
-		final int listTypeColNo = DescriptionSheetParser.LIST_TYPE.equalsIgnoreCase(labelId) ? 2 : 3;
 
 		final String listDateNotParsed = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 		if (StringUtil.isEmpty(listDateNotParsed)) {
@@ -118,15 +117,11 @@ public class DescriptionSheetParser<T extends ImportedDescriptionDetails> extend
 		} else {
 			listDate = DateUtil.parseDate(listDateNotParsed);
 		}
-		final String listType = this.getCellStringValue(DescriptionSheetParser.DESCRIPTION_SHEET_NO, listTypeColNo, 1);
-
-		if (!DescriptionSheetParser.TEMPLATE_LIST_TYPE.equalsIgnoreCase(listType)) {
-			throw new FileParsingException("Error parsing details : Invalid list type. List type should be 'LST'.");
-		}
 
 		this.importedList.setName(listName);
 		this.importedList.setTitle(listTitle);
-		this.importedList.setType(listType);
+		// The list type for the crosses import will always be CROSS list type
+		this.importedList.setType(DescriptionSheetParser.TEMPLATE_LIST_TYPE);
 		this.importedList.setDate(listDate);
 	}
 

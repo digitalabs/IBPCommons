@@ -17,6 +17,7 @@ public class DescriptionSheetParserTest {
 
 	private final static String CROSSES_LIST_NO_LIST_DATE = "CrossesListNoListDate.xls";
 	private final static String CROSSES_LIST = "CrossesList.xls";
+	public static final String CROSS_LIST_TYPE = "CROSS";
 
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
 	private final DescriptionSheetParser<ImportedCrossesList> descriptionSheetParser = new DescriptionSheetParser<>(this.crossesList);
@@ -45,6 +46,12 @@ public class DescriptionSheetParserTest {
 	public void testEmptyListDate() throws ParseException, FileParsingException {
 		this.descriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
 		Assert.assertTrue(this.descriptionSheetParser.getImportedList().getDate().after(this.today));
+	}
+
+	@Test
+	public void testListType() throws ParseException, FileParsingException {
+		this.descriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
+		Assert.assertTrue(this.descriptionSheetParser.getImportedList().getType().equals(CROSS_LIST_TYPE));
 	}
 
 	@Test
