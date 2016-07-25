@@ -36,12 +36,12 @@ public abstract class AbstractExcelFileParser<T> {
 	@Resource
 	protected MessageSource messageSource;
 
-	public T parseFile(MultipartFile file, Map<String, Object> additionalParams) throws FileParsingException {
+	public T parseFile(final MultipartFile file, final Map<String, Object> additionalParams) throws FileParsingException {
 		this.workbook = this.storeAndRetrieveWorkbook(file);
 		return this.parseWorkbook(this.workbook, additionalParams);
 	}
 
-	public T parseFile(String absoluteFilename, Map<String, Object> additionalParams) throws FileParsingException {
+	public T parseFile(final String absoluteFilename, final Map<String, Object> additionalParams) throws FileParsingException {
 		try {
 
 			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);

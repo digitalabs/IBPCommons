@@ -32,13 +32,16 @@ public class ImportedDescriptionDetails implements Serializable {
 	protected List<ImportedCondition> importedConditions = new ArrayList<>();
 
 	/** The imported factors. */
-	protected List<ImportedFactor> importedFactors = new ArrayList<>();;
+	protected List<ImportedFactor> importedFactors = new ArrayList<>();
 
 	/** The imported variates. */
-	protected List<ImportedVariate> importedVariates = new ArrayList<>();;
+	protected List<ImportedVariate> importedVariates = new ArrayList<>();
 
 	/** The imported constants */
-	protected List<ImportedConstant> importedConstants = new ArrayList<>();;
+	protected List<ImportedConstant> importedConstants = new ArrayList<>();
+
+	/** The owner of the list */
+	private Integer userId;
 
 	public ImportedDescriptionDetails() {
 	}
@@ -152,4 +155,11 @@ public class ImportedDescriptionDetails implements Serializable {
 		return this.getImportedFactors().size() + this.getImportedVariates().size();
 	}
 
+	public Integer getUserId() {
+		return this.userId;
+	}
+
+	public void setUserId(final Integer userId) {
+		this.userId = userId;
+	}
 }

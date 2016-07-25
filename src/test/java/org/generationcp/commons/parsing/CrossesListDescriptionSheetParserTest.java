@@ -5,6 +5,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.manager.UserDataManagerImpl;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,8 +23,9 @@ public class CrossesListDescriptionSheetParserTest {
 	private static final String LIST_DATE_IN_XLS_TEST_FILE = "20160722";
 
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
+	private final UserDataManager userDataManager = new UserDataManagerImpl();
 	private final CrossesListDescriptionSheetParser<ImportedCrossesList>
-			crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList);
+			crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
 	private Workbook workbookNoListDate;
 	private Workbook workbook;
 	private Date today;

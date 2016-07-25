@@ -12,6 +12,7 @@ import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.manager.api.UserDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,8 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private static final String TEMPLATE_LIST_TYPE = "CROSS";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
+	public static final String EMPTY_STRING = "";
+
 
 	private enum DescriptionHeaders {
 		CONDITION("CONDITION"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD"), DATA_TYPE("DATA TYPE"), VALUE(
@@ -61,12 +64,15 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private final boolean doParseFactors;
 	private final boolean doParseVariates;
 
-	public CrossesListDescriptionSheetParser(final T importedList) {
+	private final UserDataManager userDataManager;
+
+	public CrossesListDescriptionSheetParser(final T importedList, final UserDataManager userDataManager) {
 		this.importedList = importedList;
 		this.doParseDetails = true;
 		this.doParseConditions = true;
 		this.doParseFactors = true;
 		this.doParseVariates = true;
+		this.userDataManager = userDataManager;
 	}
 
 	private void parseDescriptionSheet() throws FileParsingException, ParseException {
@@ -102,6 +108,10 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 
 		final int listDateColNo = CrossesListDescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
 
+		//TODO Add check of the row label name and add validation message
+		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
+		final String[] names = listUserName.split("\\s+");
+
 		final Double listDateNotParsed = this.getCellNumericValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 		if (listDateNotParsed.equals(0d)) {
 			listDate = DateUtil.getCurrentDate();
@@ -114,6 +124,14 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		// The list type for the crosses import will always be CROSS list type
 		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
 		this.importedList.setDate(listDate);
+		//TODO trow Exception if could not find User by id. No such user
+		if (names.length == 2) {
+			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], EMPTY_STRING, names[1]).getId());
+		} else if (names.length == 3) {
+			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], names[1], names[2]).getId());
+		} else {
+			//TODO throw exception - wrong name
+		}
 	}
 
 	private void parseConditions() {
