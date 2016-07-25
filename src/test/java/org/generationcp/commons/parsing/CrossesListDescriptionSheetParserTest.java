@@ -7,14 +7,21 @@ import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.manager.UserDataManagerImpl;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.Person;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.OngoingStubbing;
 
 import java.io.File;
 import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 
+@RunWith(MockitoJUnitRunner.class)
 public class CrossesListDescriptionSheetParserTest {
 
 	private final static String CROSSES_LIST_NO_LIST_DATE = "CrossesListNoListDate.xls";
@@ -23,15 +30,26 @@ public class CrossesListDescriptionSheetParserTest {
 	private static final String LIST_DATE_IN_XLS_TEST_FILE = "20160722";
 
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
-	private final UserDataManager userDataManager = new UserDataManagerImpl();
-	private final CrossesListDescriptionSheetParser<ImportedCrossesList>
+
+	@Mock
+	private UserDataManager userDataManager;
+
+	private CrossesListDescriptionSheetParser<ImportedCrossesList>
 			crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
+
 	private Workbook workbookNoListDate;
 	private Workbook workbook;
 	private Date today;
 
 	@Before
 	public void setUp() throws Exception {
+		final Person personTest = new Person("Test", "Test", "Test");
+		personTest.setId(1);
+		Mockito.when(this.userDataManager.getPersonByName(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+						.thenReturn(personTest);
+
+		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
+
 		this.today = new Date();
 		final URL crossesListWithoutDateURL = ClassLoader.getSystemClassLoader().getResource(CROSSES_LIST_NO_LIST_DATE);
 		if (crossesListWithoutDateURL != null) {
