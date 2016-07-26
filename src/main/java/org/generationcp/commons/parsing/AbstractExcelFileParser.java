@@ -124,8 +124,8 @@ public abstract class AbstractExcelFileParser<T> {
 		return null == out ? "" : out;
 	}
 	
-	public int getRowLastColumn(final int sheetNo, final int rowNo) {
-		return this.workbook.getSheetAt(sheetNo).getRow(rowNo).getLastCellNum();
+	public int getLastCellNum(final int sheetNo, final int rowNo) {
+		return PoiUtil.getLastCellNum(this.workbook.getSheetAt(sheetNo), rowNo);
 	}
 
 	/**
