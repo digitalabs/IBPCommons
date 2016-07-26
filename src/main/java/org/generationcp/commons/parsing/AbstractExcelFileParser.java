@@ -123,6 +123,10 @@ public abstract class AbstractExcelFileParser<T> {
 		final String out = null == columnNo ? "" : PoiUtil.getCellStringValue(this.workbook, sheetNo, rowNo, columnNo);
 		return null == out ? "" : out;
 	}
+	
+	public int getRowLastColumn(final int sheetNo, final int rowNo) {
+		return this.workbook.getSheetAt(sheetNo).getRow(rowNo).getLastCellNum();
+	}
 
 	/**
 	 * Wrapper to PoiUtil.getCellNumericValue static call so we can stub the methods on unit tests
