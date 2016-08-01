@@ -1,6 +1,8 @@
 
 package org.generationcp.commons.context;
 
+import java.util.Objects;
+
 /**
  * POJO used to expose context information (typically from the Workbench).
  *
@@ -34,4 +36,25 @@ public class ContextInfo {
 		return this.authToken;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+
+		if (o == this) {
+			return true;
+		}
+		
+		if (!(o instanceof ContextInfo)) {
+			return false;
+		}
+		
+		final ContextInfo other = (ContextInfo) o;
+		return Objects.equals(this.loggedInUserId, other.loggedInUserId)
+				&& Objects.equals(this.loggedInUserId, other.selectedProjectId)
+				&& Objects.equals(this.authToken, other.authToken);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.loggedInUserId, this.loggedInUserId, this.authToken);
+	}
 }

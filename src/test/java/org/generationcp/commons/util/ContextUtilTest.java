@@ -154,4 +154,11 @@ public class ContextUtilTest {
 				ContextUtil.getCurrentWorkbenchUsername(this.workbenchDataManager, this.request));
 
 	}
+
+	@Test
+	public void testGetUserById() throws Exception {
+		final int testUserId = 5;
+		ContextUtil.getUserById(workbenchDataManager, testUserId);
+		Mockito.verify(workbenchDataManager).getUserById(5);
+	}
 }
