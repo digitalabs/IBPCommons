@@ -53,7 +53,7 @@ public class ContextUtil {
 
 	public int getCurrentUserLocalId() throws MiddlewareQueryException {
 		ContextInfo contextInfo = this.getContextInfoFromSession();
-		return this.workbenchDataManager.getLocalIbdbUserId(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+		return this.workbenchDataManager.getLocalIbdbUserId(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId());
 	}
 
 	public int getCurrentWorkbenchUserId() throws MiddlewareQueryException {
