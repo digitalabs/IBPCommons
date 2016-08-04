@@ -54,11 +54,8 @@ public class BmsDateFieldTest {
 		try {
 			dateField.validate();
 		} catch (InvalidValueException e) {
-			isValid = false;
+			Assert.fail("The date should be valid since the year is equal to 1900.");
 		}
-
-		Assert.assertFalse("Expecting a false return value when the year is less than 1900.", isValid);
-	}
 
 		// current date
 		date = new Date();
@@ -67,22 +64,22 @@ public class BmsDateFieldTest {
 		try {
 			dateField.validate();
 		} catch (InvalidValueException e) {
-			isValid = false;
+			Assert.fail("The date should be valid since the year is greater than 1900.");
 		}
-
-		Assert.assertTrue("Expecting a true return value when the year is equal to 1900.", isValid);
-
-		// Greater than 1900
-		date.setYear(114); // 2014
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Test
+	public void testValidateWithError() {
+		date.setYear(-1); // 1899
 		dateField.setValue(date);
-
-		isValid = true;
+		
 		try {
 			dateField.validate();
+			Assert.fail("The date should be invalid since the year is less than 1900.");
 		} catch (InvalidValueException e) {
-			isValid = false;
+			String errorMessage = e.getMessage();
+			Assert.assertEquals("The error message should be " + BmsDateField.INVALID_YEAR, BmsDateField.INVALID_YEAR, errorMessage);
 		}
-
-		Assert.assertTrue("Expecting a true return value when the year greater than 1900.", isValid);
 	}
 }
