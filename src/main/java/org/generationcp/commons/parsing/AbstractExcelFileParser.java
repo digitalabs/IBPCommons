@@ -36,12 +36,12 @@ public abstract class AbstractExcelFileParser<T> {
 	@Resource
 	protected MessageSource messageSource;
 
-	public T parseFile(MultipartFile file, Map<String, Object> additionalParams) throws FileParsingException {
+	public T parseFile(final MultipartFile file, final Map<String, Object> additionalParams) throws FileParsingException {
 		this.workbook = this.storeAndRetrieveWorkbook(file);
 		return this.parseWorkbook(this.workbook, additionalParams);
 	}
 
-	public T parseFile(String absoluteFilename, Map<String, Object> additionalParams) throws FileParsingException {
+	public T parseFile(final String absoluteFilename, final Map<String, Object> additionalParams) throws FileParsingException {
 		try {
 
 			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);
@@ -83,15 +83,15 @@ public abstract class AbstractExcelFileParser<T> {
 		}
 	}
 
-	protected boolean isFileExtensionSupported(String filename) {
+	protected boolean isFileExtensionSupported(final String filename) {
 		boolean extensionCheckResult = false;
 
-		String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
+		final String extension = filename.substring(filename.lastIndexOf(".") + 1, filename.length());
 
-		String[] supportedExtensions = this.getSupportedFileExtensions();
+		final String[] supportedExtensions = this.getSupportedFileExtensions();
 		assert supportedExtensions != null && supportedExtensions.length > 0;
 
-		for (String supported : supportedExtensions) {
+		for (final String supported : supportedExtensions) {
 			if (supported.equalsIgnoreCase(extension)) {
 				extensionCheckResult = true;
 				break;
@@ -101,7 +101,7 @@ public abstract class AbstractExcelFileParser<T> {
 		return extensionCheckResult;
 	}
 
-	protected boolean isHeaderInvalid(int headerNo, int sheetNumber, String[] headers) {
+	protected boolean isHeaderInvalid(final int headerNo, final int sheetNumber, final String[] headers) {
 		boolean isInvalid = false;
 
 		for (int i = 0; i < headers.length; i++) {
@@ -114,25 +114,41 @@ public abstract class AbstractExcelFileParser<T> {
 	/**
 	 * Wrapper to PoiUtil.getCellStringValue static call so we can stub the methods on unit tests
 	 * 
-	 * @param sheetNo
-	 * @param rowNo
-	 * @param columnNo
-	 * @return
+	 * @param sheetNo number of excel sheet
+	 * @param rowNo number of excel row
+	 * @param columnNo number of excel column
+	 * @return cell string value
 	 */
-	public String getCellStringValue(int sheetNo, int rowNo, Integer columnNo) {
-		String out = null == columnNo ? "" : PoiUtil.getCellStringValue(this.workbook, sheetNo, rowNo, columnNo);
+	public String getCellStringValue(final int sheetNo, final int rowNo, final Integer columnNo) {
+		final String out = null == columnNo ? "" : PoiUtil.getCellStringValue(this.workbook, sheetNo, rowNo, columnNo);
 		return null == out ? "" : out;
+	}
+	
+	public int getLastCellNum(final int sheetNo, final int rowNo) {
+		return PoiUtil.getLastCellNum(this.workbook.getSheetAt(sheetNo), rowNo);
+	}
+
+	/**
+	 * Wrapper to PoiUtil.getCellNumericValue static call so we can stub the methods on unit tests
+	 *
+	 * @param sheetNo number of excel sheet
+	 * @param rowNo number of excel row
+	 * @param columnNo number of excel column
+	 * @return cell numeric value
+	 */
+	public Double getCellNumericValue(final int sheetNo, final int rowNo, final Integer columnNo) {
+		return PoiUtil.getCellNumericValue(this.workbook, sheetNo, rowNo, columnNo);
 	}
 
 	/**
 	 * Wrapper to PoiUtil.rowIsEmpty static call so we can stub the methods on unit tests
 	 * 
-	 * @param sheetNo
-	 * @param rowNo
+	 * @param sheetNo number of excel sheet
+	 * @param rowNo number of excel row
 	 * @param colCount
-	 * @return
+	 * @return true if row is empty
 	 */
-	public boolean isRowEmpty(int sheetNo, int rowNo, int colCount) {
+	public boolean isRowEmpty(final int sheetNo, final int rowNo, final int colCount) {
 		return PoiUtil.rowIsEmpty(this.workbook.getSheetAt(sheetNo), rowNo, 0, colCount - 1);
 	}
 

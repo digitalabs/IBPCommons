@@ -26,6 +26,13 @@ public class ExcelWorkbookRow {
 		this.createCellRange(descriptionSheet, 3, 6, textStyle, defaultText);
 	}
 
+	public void writeListDetailsRow(final Sheet descriptionSheet, final String labelName, final long number, final String defaultText,
+			final CellStyle labelStyle, final CellStyle textStyle) {
+		this.createCell(0, labelStyle, labelName);
+		this.createCellRange(descriptionSheet, 1, 2, textStyle, number);
+		this.createCellRange(descriptionSheet, 3, 6, textStyle, defaultText);
+	}
+
 	public Cell createCell(final int column, final CellStyle cellStyle, final String value) {
 		final HSSFCell cell = this.row.createCell(column);
 		cell.setCellStyle(cellStyle);
@@ -49,6 +56,22 @@ public class ExcelWorkbookRow {
 
 	public Cell createCellRange(final Sheet sheet, final int start, final int end, final CellStyle cellStyle,
 			final String value) {
+
+		for (int x = start; x <= end; x++) {
+			final HSSFCell cell = this.row.createCell(x);
+			cell.setCellStyle(cellStyle);
+		}
+
+		sheet.addMergedRegion(new CellRangeAddress(this.row.getRowNum(), this.row.getRowNum(), start, end));
+
+		final HSSFCell cell = this.row.getCell(start);
+		cell.setCellValue(value);
+
+		return cell;
+	}
+
+	public Cell createCellRange(final Sheet sheet, final int start, final int end, final CellStyle cellStyle,
+			final long value) {
 
 		for (int x = start; x <= end; x++) {
 			final HSSFCell cell = this.row.createCell(x);
