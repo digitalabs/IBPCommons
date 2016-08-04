@@ -5,12 +5,22 @@ import java.util.Date;
 
 import org.generationcp.commons.vaadin.ui.fields.BmsDateField;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.vaadin.data.Validator.InvalidValueException;
 
 public class BmsDateFieldTest {
-
+	
+	private static BmsDateField dateField;
+	private static Date date;
+	
+	@BeforeClass
+	public static void beforeClass() {
+		dateField = new BmsDateField();
+		date = new Date();
+	}
+	
 	@SuppressWarnings("deprecation")
 	@Test
 	public void testIsValidMethodReturnsFalseWhenYearIsLessThan1900() {
