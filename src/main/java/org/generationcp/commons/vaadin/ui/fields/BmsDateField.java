@@ -29,7 +29,7 @@ public class BmsDateField extends DateField {
 	private static final long serialVersionUID = 8109945056202208596L;
 	private static final String DEFAULT_LABEL = "Date";
 	private static final String INVALID_FORMAT = " must be specified in the YYYY-MM-DD format";
-	private static final String INVALID_YEAR = "Year must be between 1900 and 9999";
+	public static final String INVALID_YEAR = "Year must be between 1900 and 9999";
 	private static final String MSEC = "msec";
 	private static final String SEC = "sec";
 	private static final String MIN = "min";
