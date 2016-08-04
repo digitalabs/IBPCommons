@@ -28,6 +28,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	protected List<ImportedCrosses> importedCrosses;
 
 	protected Set<String> errorMessages = new HashSet<>();
+	protected Set<String> warningMessages = new HashSet<>();
 
 	/**
 	 * Instantiates a new imported crosses list.
@@ -82,6 +83,14 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 
 	public void addErrorMessages(String errorMsg) {
 		this.errorMessages.add(errorMsg);
+	}
+
+	public Set<String> getWarningMessages() {
+		return this.warningMessages;
+	}
+
+	public void addWarningMessages(String warningMsg) {
+		this.warningMessages.add(warningMsg);
 	}
 
 	public boolean hasPlotDuplicate() {
