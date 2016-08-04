@@ -23,35 +23,26 @@ public class BmsDateFieldTest {
 	
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testIsValidMethodReturnsFalseWhenYearIsLessThan1900() {
-		// input
-		Date date = new Date();
+	public void testIsValidFalse() {
 		date.setYear(-1); // 1899
-
-		BmsDateField dateField = new BmsDateField();
 		dateField.setValue(date);
 
-		Assert.assertFalse("Expecting a false return value when the year is less than 1900.", dateField.isValid());
+		Assert.assertFalse("The date should be valid since the year is less than 1900.", dateField.isValid());
 	}
 
 	@SuppressWarnings("deprecation")
 	@Test
-	public void testIsValidMethodReturnsTrueWhenYearIsGreaterThanOrEqualTo1900() {
-		// input
-		BmsDateField dateField = new BmsDateField();
-		Date date = new Date();
-
-		// Equal to 1900
+	public void testIsValidTrue() {
 		date.setYear(0); // 1900
 		dateField.setValue(date);
 
-		Assert.assertTrue("Expecting a true return value when the year is equal to 1900.", dateField.isValid());
+		Assert.assertTrue("The date should be valid since the year is equal to 1900.", dateField.isValid());
 
-		// Greater than 1900
-		date.setYear(114); // 2014
+		// current date
+		date = new Date();
 		dateField.setValue(date);
 
-		Assert.assertTrue("Expecting a true return value when the year greater than 1900.", dateField.isValid());
+		Assert.assertTrue("The date should be valid since the year greater than 1900.", dateField.isValid());
 	}
 
 	@SuppressWarnings("deprecation")
