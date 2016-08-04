@@ -39,6 +39,11 @@ public class BulkComplValidatorTest {
 		Assert.assertTrue(this.validator.isParsedValueValid("Y", "SID1-2"));
 	}
 
+    @Test
+    public void testIsParsedValueValid_WithBulkWithValue_ValidValueLowerCase() {
+        Assert.assertTrue(this.validator.isParsedValueValid("y", "SID1-2"));
+    }
+
 	@Test
 	public void testIsParsedValueValid_WithBulkWithValue_NullValue() {
 		Assert.assertFalse(this.validator.isParsedValueValid(null, "SID1-2"));
