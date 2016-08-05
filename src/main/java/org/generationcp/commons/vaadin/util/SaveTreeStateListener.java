@@ -48,7 +48,7 @@ public class SaveTreeStateListener implements Window.CloseListener {
         List<String> itemIds = getExpandedIds();
 
         try {
-            userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentWorkbenchUserId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
+            userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentUserLocalId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
         } catch (MiddlewareQueryException e1) {
             e1.printStackTrace();
         }
