@@ -1,14 +1,8 @@
 
 package org.generationcp.commons.parsing;
 
-/**
- * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 2/25/2015 Time: 11:04 AM
- */
 public class FileParsingException extends Exception {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -1094438052651480748L;
 	private final String message;
 	private final int errorRowIndex;

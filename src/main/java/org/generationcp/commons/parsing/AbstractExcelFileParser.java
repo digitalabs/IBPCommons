@@ -36,21 +36,23 @@ public abstract class AbstractExcelFileParser<T> {
 	@Resource
 	protected MessageSource messageSource;
 
-	public T parseFile(final MultipartFile file, final Map<String, Object> additionalParams) throws FileParsingException {
+	public T parseFile(final MultipartFile file, final Map<String, Object> additionalParams)
+			throws FileParsingException {
 		this.workbook = this.storeAndRetrieveWorkbook(file);
 		return this.parseWorkbook(this.workbook, additionalParams);
 	}
 
-	public T parseFile(final String absoluteFilename, final Map<String, Object> additionalParams) throws FileParsingException {
+	public T parseFile(final String absoluteFilename, final Map<String, Object> additionalParams)
+			throws FileParsingException {
 		try {
 
 			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);
 			return this.parseWorkbook(this.workbook, additionalParams);
 
-		} catch (InvalidFormatException e) {
+		} catch (final InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
 		}
@@ -61,9 +63,10 @@ public abstract class AbstractExcelFileParser<T> {
 		return AbstractExcelFileParser.EXCEL_FILE_EXTENSIONS;
 	}
 
-	public abstract T parseWorkbook(Workbook workbook, Map<String, Object> additionalParams) throws FileParsingException;
+	public abstract T parseWorkbook(Workbook workbook, Map<String, Object> additionalParams)
+			throws FileParsingException;
 
-	public Workbook storeAndRetrieveWorkbook(MultipartFile multipartFile) throws FileParsingException {
+	public Workbook storeAndRetrieveWorkbook(final MultipartFile multipartFile) throws FileParsingException {
 		try {
 			this.originalFilename = multipartFile.getOriginalFilename();
 
@@ -71,13 +74,13 @@ public abstract class AbstractExcelFileParser<T> {
 				throw new InvalidFormatException("Unsupported file format");
 			}
 
-			String serverFilename = this.fileService.saveTemporaryFile(multipartFile.getInputStream());
+			final String serverFilename = this.fileService.saveTemporaryFile(multipartFile.getInputStream());
 
 			return this.fileService.retrieveWorkbook(serverFilename);
-		} catch (InvalidFormatException e) {
+		} catch (final InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
 		}

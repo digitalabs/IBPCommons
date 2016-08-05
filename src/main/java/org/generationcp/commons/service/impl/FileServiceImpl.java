@@ -111,8 +111,8 @@ public class FileServiceImpl implements FileService {
 	 * @see org.generationcp.commons.service.FileService#retrieveWorkbook(java.lang.String)
 	 */
 	@Override
-	public Workbook retrieveWorkbook(String currentFilename) throws IOException, InvalidFormatException {
-		File workbookFile = new File(this.getFilePath(currentFilename));
+	public Workbook retrieveWorkbook(final String currentFilename) throws IOException, InvalidFormatException {
+		final File workbookFile = new File(this.getFilePath(currentFilename));
 
 		return WorkbookFactory.create(workbookFile);
 

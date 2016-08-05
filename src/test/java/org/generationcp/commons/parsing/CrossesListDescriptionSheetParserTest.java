@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.middleware.manager.UserDataManagerImpl;
+import org.generationcp.middleware.exceptions.PersonNotFoundException;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.junit.Before;
@@ -14,7 +14,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 
 import java.io.File;
 import java.net.URL;
@@ -66,19 +65,19 @@ public class CrossesListDescriptionSheetParserTest {
 	}
 
 	@Test
-	public void testEmptyListDate() throws ParseException, FileParsingException {
+	public void testEmptyListDate() throws ParseException, FileParsingException, PersonNotFoundException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
 		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().after(this.today));
 	}
 
 	@Test
-	public void testListType() throws ParseException, FileParsingException {
+	public void testListType() throws ParseException, FileParsingException, PersonNotFoundException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
 		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType().equals(CROSS_LIST_TYPE));
 	}
 
 	@Test
-	public void testWithListDate() throws ParseException, FileParsingException {
+	public void testWithListDate() throws ParseException, FileParsingException, PersonNotFoundException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbook, null);
 		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().equals(DateUtil.parseDate(LIST_DATE_IN_XLS_TEST_FILE)));
 	}

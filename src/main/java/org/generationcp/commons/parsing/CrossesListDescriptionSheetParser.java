@@ -12,6 +12,7 @@ import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.exceptions.PersonNotFoundException;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,12 +76,12 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		this.userDataManager = userDataManager;
 	}
 
-	private void parseDescriptionSheet() throws FileParsingException, ParseException {
+	private void parseDescriptionSheet() throws FileParsingException, ParseException, PersonNotFoundException {
 		this.parseDescriptionSheet(this.doParseDetails, this.doParseConditions, this.doParseFactors, this.doParseVariates);
 	}
 
 	private void parseDescriptionSheet(final boolean doParseDetails, final boolean doParseConditions, final boolean doParseFactors,
-			final boolean doParseVariates) throws FileParsingException, ParseException {
+			final boolean doParseVariates) throws FileParsingException, ParseException, PersonNotFoundException {
 
 		if (doParseDetails) {
 			this.parseListDetails();
@@ -99,7 +100,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		}
 	}
 
-	private void parseListDetails() throws FileParsingException, ParseException {
+	private void parseListDetails() throws FileParsingException, ParseException, PersonNotFoundException {
 		final Date listDate;
 		final String listName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 0, 1);
 		final String listTitle = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
@@ -124,13 +125,12 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		// The list type for the crosses import will always be CROSS list type
 		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
 		this.importedList.setDate(listDate);
-		//TODO trow Exception if could not find User by id. No such user
 		if (names.length == 2) {
 			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], EMPTY_STRING, names[1]).getId());
 		} else if (names.length == 3) {
 			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], names[1], names[2]).getId());
 		} else {
-			//TODO throw exception - wrong name
+			throw new PersonNotFoundException("Could not find the User by Name. The Name is " + listUserName);
 		}
 	}
 
@@ -253,7 +253,8 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	@Override
-	public T parseWorkbook(final Workbook workbook, final Map<String, Object> addtlParams) throws FileParsingException {
+	public T parseWorkbook(final Workbook workbook, final Map<String, Object> addtlParams)
+			throws FileParsingException {
 		try {
 			this.workbook = workbook;
 
@@ -263,6 +264,9 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 			CrossesListDescriptionSheetParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, new Object[] {},
 					Locale.getDefault()));
+		} catch (final PersonNotFoundException e) {
+			CrossesListDescriptionSheetParser.LOG.debug(e.getMessage(), e);
+			throw new FileParsingException(e.getMessage());
 		}
 	}
 }
