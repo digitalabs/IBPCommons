@@ -33,9 +33,9 @@ public class ContextFilter implements Filter {
 		if (!ContextUtil.isStaticResourceRequest(request.getRequestURI())) {
 			ContextInfo requestContextInfo = ContextUtil.getContextInfoFromRequest(request);
 
-			if (requestContextInfo.getSelectedProjectId() != null && requestContextInfo.getloggedInUserId() != null) {
+			if (requestContextInfo.getSelectedProjectId() != null && requestContextInfo.getLoggedInUserId() != null) {
 				WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, requestContextInfo);
-				response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, requestContextInfo.getloggedInUserId().toString()));
+				response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, requestContextInfo.getLoggedInUserId().toString()));
 				response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, requestContextInfo.getSelectedProjectId()
 						.toString()));
 				response.addCookie(new Cookie(ContextConstants.PARAM_AUTH_TOKEN, requestContextInfo.getAuthToken()));

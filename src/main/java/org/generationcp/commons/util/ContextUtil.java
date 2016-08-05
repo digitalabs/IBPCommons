@@ -81,7 +81,7 @@ public class ContextUtil {
 
 		if (contextInfo != null) {
 			resolvedFromSessionContext = true;
-			currentWorkbenchUserId = contextInfo.getloggedInUserId();
+			currentWorkbenchUserId = contextInfo.getLoggedInUserId();
 		} else if (userIdCookie != null) {
 			currentWorkbenchUserId = Integer.parseInt(userIdCookie.getValue());
 		} else {
@@ -112,8 +112,9 @@ public class ContextUtil {
 			if (matchedUsers != null && !matchedUsers.isEmpty()) {
 				user = matchedUsers.get(0);
 			}
-		} else if (contextInfo.getloggedInUserId() != null) {
-			user = getUserById(workbenchDataManager, contextInfo.getloggedInUserId());
+
+		} else if (contextInfo.getLoggedInUserId() != null) {
+			user = getUserById(workbenchDataManager, contextInfo.getLoggedInUserId());
 		} else {
 			// resolve from cookie or session
 			user = getUserById(workbenchDataManager, ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request));
@@ -129,8 +130,10 @@ public class ContextUtil {
 
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
 			return userName;
-		} else if (contextInfo.getloggedInUserId() != null) {
-			userName = getUserById(workbenchDataManager, contextInfo.getloggedInUserId()).getName();
+
+		} else if (contextInfo.getLoggedInUserId() != null) {
+			userName = getUserById(workbenchDataManager, contextInfo.getLoggedInUserId()).getName();
+
 		} else {
 			// resolve from cookie or session
 			userName = getUserById(workbenchDataManager, ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request)).getName();
@@ -167,7 +170,7 @@ public class ContextUtil {
 
 	public static String getContextParameterString(ContextInfo contextInfo) {
 		if (contextInfo != null) {
-			return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+			return ContextUtil.getContextParameterString(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId());
 		}
 		return "";
 	}

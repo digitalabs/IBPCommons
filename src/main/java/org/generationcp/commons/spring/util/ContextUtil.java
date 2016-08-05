@@ -59,6 +59,7 @@ public class ContextUtil {
 		return org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
 	}
 
+
 	public int getCurrentUserLocalId() {
 		final ContextInfo contextInfo = this.getContextInfoFromSession();
 		try {
@@ -68,7 +69,7 @@ public class ContextUtil {
 
 						@Override
 						public Integer call() {
-							return ContextUtil.this.workbenchDataManager.getLocalIbdbUserId(contextInfo.getloggedInUserId(),
+							return ContextUtil.this.workbenchDataManager.getLocalIbdbUserId(contextInfo.getLoggedInUserId(),
 									contextInfo.getSelectedProjectId());
 
 						}
@@ -82,6 +83,7 @@ public class ContextUtil {
 			throw new IllegalStateException("Unable to retrive local id for logged in user id '%s' and project '%s'."
 					+ " Please contact administrator for further information.");
 		}
+
 	}
 
 	public int getCurrentWorkbenchUserId() throws MiddlewareQueryException {

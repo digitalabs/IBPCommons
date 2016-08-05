@@ -339,4 +339,12 @@ public abstract class StringUtil {
 		}
 		return "";
 	}
+	
+	public static String replaceInvalidChacaracterFileName(String param, final String character) {
+		String validar[] = {"&gt;","&lt;","&quot;","\\","\"","/",":","*","?","<",">","|",","};
+		for (int i = 0; i < validar.length; i++) {
+			param = StringUtils.replace(param, validar[i], character);
+		}
+		return param;
+	}
 }
