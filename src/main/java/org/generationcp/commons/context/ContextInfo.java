@@ -22,7 +22,7 @@ public class ContextInfo {
 		this(userId, selectedProjectId, "");
 	}
 
-	public Integer getloggedInUserId() {
+	public Integer getLoggedInUserId() {
 		return this.loggedInUserId;
 	}
 
