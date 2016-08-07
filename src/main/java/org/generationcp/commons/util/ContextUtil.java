@@ -31,9 +31,15 @@ public class ContextUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
 	
 	
-	private static Cache<Long, Project> projects = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
+	/**
+	 * Main goal prevent excessive querying to retrieve project information.
+	 */
+	private static Cache<Long, Project> projectsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
 	
-	private static Cache<Integer, User> users = CacheBuilder.newBuilder().maximumSize(100).
+	/**
+	 * Main goal prevent excessive querying to retrieve user information information.
+	 */
+	private static Cache<Integer, User> usersCache = CacheBuilder.newBuilder().maximumSize(100).
 			expireAfterWrite(60, TimeUnit.MINUTES).build();
 
 	
@@ -46,8 +52,8 @@ public class ContextUtil {
 		if(contextInfo != null) {
 			Long selectedProjectId = contextInfo.getSelectedProjectId();
 			
-			if(selectedProjectId !=null && projects.asMap().containsKey(selectedProjectId)) {
-				return projects.asMap().get(selectedProjectId);
+			if(selectedProjectId !=null && projectsCache.asMap().containsKey(selectedProjectId)) {
+				return projectsCache.asMap().get(selectedProjectId);
 			}
 		}
 		
@@ -64,7 +70,7 @@ public class ContextUtil {
 		if (project != null) {
 			ContextUtil.LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId() + ". Resolved "
 					+ (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
-			projects.put(project.getProjectId(), project);
+			projectsCache.put(project.getProjectId(), project);
 			return project;
 		}
 
@@ -227,7 +233,7 @@ public class ContextUtil {
 	
 	static User getUserById(final WorkbenchDataManager workbenchDataManager, final Integer userId) {
 		final FunctionBasedGuavaCacheLoader<Integer, User> cacheLoader =
-				new FunctionBasedGuavaCacheLoader<Integer, User>(users, new Function<Integer, User>() {
+				new FunctionBasedGuavaCacheLoader<Integer, User>(usersCache, new Function<Integer, User>() {
 
 					@Override
 					public User apply(Integer key) {

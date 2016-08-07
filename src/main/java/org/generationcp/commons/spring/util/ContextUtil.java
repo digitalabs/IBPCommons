@@ -36,8 +36,11 @@ public class ContextUtil {
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
 
+	/**
+	 * Main goal is to prevent excessive queries to get local user names.
+	 */
 	private static Cache<CropBasedContextInfo, Integer> localUserCache =
-			CacheBuilder.newBuilder().maximumSize(1000).expireAfterWrite(60, TimeUnit.MINUTES).build();
+			CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(10, TimeUnit.MINUTES).build();
 
 	public String getCurrentProgramUUID() {
 		Project program = org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
