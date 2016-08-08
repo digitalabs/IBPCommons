@@ -28,6 +28,9 @@ import com.google.common.cache.CacheBuilder;
  */
 public class ContextUtil {
 
+	private static final String NO_LOCAL_USER_ID_FOUND_MESSAGE = "Unable to retrive local id for logged in user id '%s' and project '%s'."
+			+ " Please contact administrator for further information.";
+
 	static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
 
 	@Resource
@@ -37,7 +40,7 @@ public class ContextUtil {
 	private WorkbenchDataManager workbenchDataManager;
 
 	/**
-	 * Main goal is to prevent excessive queries to get local user names.
+	 * Main goal is to prevent excessive queries to get local user names. This is a global cache that will expire every 10 minutes.
 	 */
 	private static Cache<CropBasedContextInfo, Integer> localUserCache =
 			CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(10, TimeUnit.MINUTES).build();
@@ -66,25 +69,22 @@ public class ContextUtil {
 	public int getCurrentUserLocalId() {
 		final ContextInfo contextInfo = this.getContextInfoFromSession();
 		try {
-			Project projectInContext = getProjectInContext();
-			Integer localUserId = localUserCache.get(new CropBasedContextInfo(contextInfo, projectInContext.getCropType().getCropName()),
+			final Project projectInContext = getProjectInContext();
+			// Use function based cache loader here
+			final Integer localUserId = localUserCache.get(new CropBasedContextInfo(contextInfo, projectInContext.getCropType().getCropName()),
 					new Callable<Integer>() {
-
 						@Override
 						public Integer call() {
 							return ContextUtil.this.workbenchDataManager.getLocalIbdbUserId(contextInfo.getLoggedInUserId(),
 									contextInfo.getSelectedProjectId());
-
 						}
 					});
 			if (localUserId != null) {
 				return localUserId.intValue();
 			}
-			throw new IllegalStateException("Unable to retrive local id for logged in user id '%s' and project '%s'."
-					+ " Please contact administrator for further information.");
+			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE);
 		} catch (ExecutionException e) {
-			throw new IllegalStateException("Unable to retrive local id for logged in user id '%s' and project '%s'."
-					+ " Please contact administrator for further information.");
+			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE);
 		}
 
 	}

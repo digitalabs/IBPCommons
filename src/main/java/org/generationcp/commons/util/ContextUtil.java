@@ -34,12 +34,12 @@ public class ContextUtil {
 	/**
 	 * Main goal prevent excessive querying to retrieve project information.
 	 */
-	private static Cache<Long, Project> projectsCache = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
+	private static final Cache<Long, Project> PROJECTS_CACHE = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
 	
 	/**
 	 * Main goal prevent excessive querying to retrieve user information information.
 	 */
-	private static Cache<Integer, User> usersCache = CacheBuilder.newBuilder().maximumSize(100).
+	private static final Cache<Integer, User> USERS_CACHE = CacheBuilder.newBuilder().maximumSize(100).
 			expireAfterWrite(60, TimeUnit.MINUTES).build();
 
 	
@@ -52,8 +52,8 @@ public class ContextUtil {
 		if(contextInfo != null) {
 			Long selectedProjectId = contextInfo.getSelectedProjectId();
 			
-			if(selectedProjectId !=null && projectsCache.asMap().containsKey(selectedProjectId)) {
-				return projectsCache.asMap().get(selectedProjectId);
+			if(selectedProjectId !=null && PROJECTS_CACHE.asMap().containsKey(selectedProjectId)) {
+				return PROJECTS_CACHE.asMap().get(selectedProjectId);
 			}
 		}
 		
@@ -70,7 +70,7 @@ public class ContextUtil {
 		if (project != null) {
 			ContextUtil.LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId() + ". Resolved "
 					+ (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
-			projectsCache.put(project.getProjectId(), project);
+			PROJECTS_CACHE.put(project.getProjectId(), project);
 			return project;
 		}
 
@@ -233,7 +233,7 @@ public class ContextUtil {
 	
 	static User getUserById(final WorkbenchDataManager workbenchDataManager, final Integer userId) {
 		final FunctionBasedGuavaCacheLoader<Integer, User> cacheLoader =
-				new FunctionBasedGuavaCacheLoader<Integer, User>(usersCache, new Function<Integer, User>() {
+				new FunctionBasedGuavaCacheLoader<Integer, User>(USERS_CACHE, new Function<Integer, User>() {
 
 					@Override
 					public User apply(Integer key) {
