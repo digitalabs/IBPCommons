@@ -43,6 +43,9 @@ public class ImportedDescriptionDetails implements Serializable {
 	/** The owner of the list */
 	private Integer userId;
 
+	/** The name of the study the data is imported to */
+	private String studyName;
+
 	public ImportedDescriptionDetails() {
 	}
 
@@ -161,5 +164,13 @@ public class ImportedDescriptionDetails implements Serializable {
 
 	public void setUserId(final Integer userId) {
 		this.userId = userId;
+	}
+
+	public String getStudyName() {
+		return this.studyName;
+	}
+
+	public void setStudyName(final String studyName) {
+		this.studyName = studyName;
 	}
 }

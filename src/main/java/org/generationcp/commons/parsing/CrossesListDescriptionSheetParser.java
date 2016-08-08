@@ -12,6 +12,7 @@ import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.exceptions.PersonNotFoundException;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.slf4j.Logger;
@@ -113,6 +114,16 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
 		final String[] names = listUserName.split("\\s+");
 
+		//TODO Add check of the row label name and add validation message
+		final String studyName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 6, 6);
+
+		if (!StringUtil.isEmpty(studyName)){
+			this.importedList.setStudyName(studyName);
+		} else {
+			//TODO Localise
+			throw new FileParsingException("No study name is supplied in the import file.");
+		}
+
 		final Double listDateNotParsed = this.getCellNumericValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 		if (listDateNotParsed.equals(0d)) {
 			listDate = DateUtil.getCurrentDate();
@@ -130,6 +141,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		} else if (names.length == 3) {
 			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], names[1], names[2]).getId());
 		} else {
+			//TODO Localise
 			throw new PersonNotFoundException("Could not find the User by Name. The Name is " + listUserName);
 		}
 	}
