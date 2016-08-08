@@ -5,23 +5,39 @@ import java.util.Objects;
 
 import org.generationcp.commons.context.ContextInfo;
 
+/**
+ * Class is essentially a key to enable us to cache local user ids.
+ *
+ */
 public class CropBasedContextInfo {
 
-	private final ContextInfo contextInfo;
+	private ContextInfo contextInfo;
 
-	private final String cropName;
+	private String cropName;
 
+	public CropBasedContextInfo() {
+		
+	}
+	
 	public CropBasedContextInfo(ContextInfo contextInfo, String cropName) {
 		this.contextInfo = contextInfo;
 		this.cropName = cropName;
 	}
 
 	public ContextInfo getContextInfo() {
-		return this.contextInfo;
+		return contextInfo;
+	}
+
+	public void setContextInfo(ContextInfo contextInfo) {
+		this.contextInfo = contextInfo;
 	}
 
 	public String getCropName() {
-		return this.cropName;
+		return cropName;
+	}
+
+	public void setCropName(String cropName) {
+		this.cropName = cropName;
 	}
 
 	@Override
