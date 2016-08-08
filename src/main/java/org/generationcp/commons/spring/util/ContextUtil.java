@@ -70,7 +70,6 @@ public class ContextUtil {
 		final ContextInfo contextInfo = this.getContextInfoFromSession();
 		try {
 			final Project projectInContext = getProjectInContext();
-			// Use function based cache loader here
 			final Integer localUserId = localUserCache.get(new CropBasedContextInfo(contextInfo, projectInContext.getCropType().getCropName()),
 					new Callable<Integer>() {
 						@Override
