@@ -16,16 +16,16 @@ public class CropBasedContextInfo {
 	private String cropName;
 
 	public CropBasedContextInfo() {
-		
+
 	}
-	
+
 	public CropBasedContextInfo(ContextInfo contextInfo, String cropName) {
 		this.contextInfo = contextInfo;
 		this.cropName = cropName;
 	}
 
 	public ContextInfo getContextInfo() {
-		return contextInfo;
+		return this.contextInfo;
 	}
 
 	public void setContextInfo(ContextInfo contextInfo) {
@@ -33,7 +33,7 @@ public class CropBasedContextInfo {
 	}
 
 	public String getCropName() {
-		return cropName;
+		return this.cropName;
 	}
 
 	public void setCropName(String cropName) {
