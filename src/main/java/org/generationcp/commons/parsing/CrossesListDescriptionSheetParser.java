@@ -13,6 +13,7 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.manager.api.UserDataManager;
+import org.generationcp.middleware.pojos.Person;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -110,8 +111,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 
 		//TODO Add check of the row label name and add validation message
 		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
-		final String[] names = listUserName.split("\\s+");
-
+		
 		final Double listDateNotParsed = this.getCellNumericValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 		if (listDateNotParsed.equals(0d)) {
 			listDate = DateUtil.getCurrentDate();
@@ -125,12 +125,11 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
 		this.importedList.setDate(listDate);
 		//TODO trow Exception if could not find User by id. No such user
-		if (names.length == 2) {
-			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], EMPTY_STRING, names[1]).getId());
-		} else if (names.length == 3) {
-			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], names[1], names[2]).getId());
+		Person person = this.userDataManager.getPersonByFullName(listUserName.trim());
+		if (person != null) {
+			this.importedList.setUserId(person.getId());
 		} else {
-			//TODO throw exception - wrong name
+			throw new FileParsingException("The List User is invalid. See valid list user names on Codes sheet or leave it blank");
 		}
 	}
 
