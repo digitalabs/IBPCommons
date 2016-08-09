@@ -31,10 +31,9 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	public static final String LIST_TYPE = "LIST TYPE";
 	public static final String EMPTY_STRING = "";
 
-
 	private enum DescriptionHeaders {
-		CONDITION("CONDITION"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD"), DATA_TYPE("DATA TYPE"), VALUE(
-				"VALUE"), FACTOR("FACTOR"), CONSTANT("CONSTANT"), VARIATE("VARIATE");
+		CONDITION("CONDITION"), DESCRIPTION("DESCRIPTION"), PROPERTY("PROPERTY"), SCALE("SCALE"), METHOD("METHOD"), DATA_TYPE(
+				"DATA TYPE"), VALUE("VALUE"), FACTOR("FACTOR"), CONSTANT("CONSTANT"), VARIATE("VARIATE");
 
 		private final String label;
 
@@ -105,13 +104,13 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private void parseListDetails() throws FileParsingException, ParseException {
 		final String listName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 0, 1);
 		this.importedList.setName(listName);
-		
+
 		final String listTitle = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
 		this.importedList.setTitle(listTitle);
-		
+
 		// The list type for the crosses import will always be CROSS list type
 		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
-		
+
 		final String labelId = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 2, 0);
 		final int listDateColNo = CrossesListDescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
 		final Date listDate;
@@ -122,18 +121,18 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 			listDate = DateUtil.parseDate(String.valueOf(listDateNotParsed.intValue()));
 		}
 		this.importedList.setDate(listDate);
-		
+
 		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
 		this.validateListUserName(listUserName.trim());
 	}
 
 	void validateListUserName(final String listUserName) throws FileParsingException {
-		if(StringUtils.isNotEmpty(listUserName)){
-			Person person = this.userDataManager.getPersonByFullName(listUserName);
+		if (StringUtils.isNotEmpty(listUserName)) {
+			final Person person = this.userDataManager.getPersonByFullName(listUserName);
 			if (person != null) {
 				this.importedList.setUserId(person.getId());
 			} else {
-				throw new FileParsingException(INVALID_LIST_USER);
+				throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
 			}
 		}
 	}
@@ -147,14 +146,14 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 
 			while (!this.isRowEmpty(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
 					CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
-				this.importedList.addImportedCondition(new ImportedCondition(this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6), ""));
+				this.importedList.addImportedCondition(new ImportedCondition(
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 6), ""));
 
 				this.currentRow++;
 			}
@@ -173,13 +172,13 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 
 			while (!this.isRowEmpty(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
 					CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
-				final ImportedFactor factor =
-						new ImportedFactor(this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
-								this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
-								this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
-								this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
-								this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
-								this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), "");
+				final ImportedFactor factor = new ImportedFactor(
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5), "");
 
 				this.importedList.addImportedFactor(factor);
 
@@ -203,13 +202,13 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 			this.currentRow++;
 			while (!this.isRowEmpty(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow,
 					CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_COL_SIZE)) {
-				this.importedList.addImportedVariate(new ImportedVariate(this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4), this.getCellStringValue(
-						CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5)));
+				this.importedList.addImportedVariate(new ImportedVariate(
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 0),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 1),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 2),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 3),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 4),
+						this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, this.currentRow, 5)));
 				this.currentRow++;
 			}
 
@@ -219,10 +218,9 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	private boolean isConditionHeadersInvalid(final int conditionHeaderRowNo) {
-		final String[] headers =
-				{DescriptionHeaders.CONDITION.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(),
-						DescriptionHeaders.PROPERTY.getLabel(), DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(),
-						DescriptionHeaders.DATA_TYPE.getLabel(), DescriptionHeaders.VALUE.getLabel()};
+		final String[] headers = {DescriptionHeaders.CONDITION.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(),
+				DescriptionHeaders.PROPERTY.getLabel(), DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(),
+				DescriptionHeaders.DATA_TYPE.getLabel(), DescriptionHeaders.VALUE.getLabel()};
 
 		return this.isHeaderInvalid(conditionHeaderRowNo, CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, headers);
 	}
@@ -236,10 +234,9 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	private boolean isConstantsHeaderInvalid(final int constantHeaderRowNo) {
-		final String[] headers =
-				{DescriptionHeaders.CONSTANT.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(), DescriptionHeaders.PROPERTY.getLabel(),
-						DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(), DescriptionHeaders.DATA_TYPE.getLabel(),
-						DescriptionHeaders.VALUE.getLabel()};
+		final String[] headers = {DescriptionHeaders.CONSTANT.getLabel(), DescriptionHeaders.DESCRIPTION.getLabel(),
+				DescriptionHeaders.PROPERTY.getLabel(), DescriptionHeaders.SCALE.getLabel(), DescriptionHeaders.METHOD.getLabel(),
+				DescriptionHeaders.DATA_TYPE.getLabel(), DescriptionHeaders.VALUE.getLabel()};
 
 		return this.isHeaderInvalid(constantHeaderRowNo, CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, headers);
 	}
@@ -265,8 +262,8 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 			return this.importedList;
 		} catch (final ParseException e) {
 			CrossesListDescriptionSheetParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, new Object[] {},
-					Locale.getDefault()));
+			throw new FileParsingException(
+					this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, new Object[] {}, Locale.getDefault()));
 		}
 	}
 }

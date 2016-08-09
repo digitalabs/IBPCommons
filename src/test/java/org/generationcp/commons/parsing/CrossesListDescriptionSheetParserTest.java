@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.parsing;
 
 import java.io.File;
@@ -14,6 +15,7 @@ import org.generationcp.middleware.pojos.Person;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -33,8 +35,8 @@ public class CrossesListDescriptionSheetParserTest {
 	@Mock
 	private UserDataManager userDataManager;
 
-	private CrossesListDescriptionSheetParser<ImportedCrossesList>
-			crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
+	private CrossesListDescriptionSheetParser<ImportedCrossesList> crossesListDescriptionSheetParser =
+			new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
 
 	private Workbook workbookNoListDate;
 	private Workbook workbook;
@@ -44,19 +46,19 @@ public class CrossesListDescriptionSheetParserTest {
 	public void setUp() throws Exception {
 		final Person personTest = new Person("Test", "Test", "Test");
 		personTest.setId(1);
-		Mockito.when(this.userDataManager.getPersonByFullName(Mockito.anyString()))
-						.thenReturn(personTest);
+		Mockito.when(this.userDataManager.getPersonByFullName(Matchers.anyString())).thenReturn(personTest);
 
 		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
 
 		this.today = new Date();
-		final URL crossesListWithoutDateURL = ClassLoader.getSystemClassLoader().getResource(CROSSES_LIST_NO_LIST_DATE);
+		final URL crossesListWithoutDateURL =
+				ClassLoader.getSystemClassLoader().getResource(CrossesListDescriptionSheetParserTest.CROSSES_LIST_NO_LIST_DATE);
 		if (crossesListWithoutDateURL != null) {
 			final File workbookFile1 = new File(crossesListWithoutDateURL.toURI());
 			assert workbookFile1.exists();
 			this.workbookNoListDate = WorkbookFactory.create(workbookFile1);
 		}
-		final URL crossesListURL = ClassLoader.getSystemClassLoader().getResource(CROSSES_LIST);
+		final URL crossesListURL = ClassLoader.getSystemClassLoader().getResource(CrossesListDescriptionSheetParserTest.CROSSES_LIST);
 		if (crossesListURL != null) {
 			final File workbookFile2 = new File(crossesListURL.toURI());
 			assert workbookFile2.exists();
@@ -73,33 +75,35 @@ public class CrossesListDescriptionSheetParserTest {
 	@Test
 	public void testListType() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType().equals(CROSS_LIST_TYPE));
+		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType()
+				.equals(CrossesListDescriptionSheetParserTest.CROSS_LIST_TYPE));
 	}
 
 	@Test
 	public void testWithListDate() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbook, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().equals(DateUtil.parseDate(LIST_DATE_IN_XLS_TEST_FILE)));
+		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate()
+				.equals(DateUtil.parseDate(CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE)));
 	}
-	
+
 	@Test
 	public void testValidateListUserNameWithoutError() {
-		try{
+		try {
 			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
-		} catch(FileParsingException e){
+		} catch (final FileParsingException e) {
 			Assert.fail("There should be no error.");
 		}
 	}
-	
+
 	@Test
 	public void testValidateListUserNameWithError() {
-		Mockito.when(this.userDataManager.getPersonByFullName(Mockito.anyString()))
-		.thenReturn(null);
-		try{
+		Mockito.when(this.userDataManager.getPersonByFullName(Matchers.anyString())).thenReturn(null);
+		try {
 			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
 			Assert.fail("There should an error since the method getPersonByFullName returned null.");
-		} catch(FileParsingException e){
-			Assert.assertEquals("The error message should be " + CrossesListDescriptionSheetParser.INVALID_LIST_USER, CrossesListDescriptionSheetParser.INVALID_LIST_USER, e.getMessage());
+		} catch (final FileParsingException e) {
+			Assert.assertEquals("The error message should be " + CrossesListDescriptionSheetParser.INVALID_LIST_USER,
+					CrossesListDescriptionSheetParser.INVALID_LIST_USER, e.getMessage());
 		}
 	}
 }
