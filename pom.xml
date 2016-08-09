@@ -186,6 +186,13 @@
 			<version>1.0.8</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<dependency>
+			<groupId>uk.co.jemos.podam</groupId>
+			<artifactId>podam</artifactId>
+			<version>5.4.1.RELEASE</version>
+			<scope>test</scope>
+		</dependency>		
 
 		<!-- Mockito -->
 		<dependency>
