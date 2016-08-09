@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.parsing.pojo.ImportedCondition;
 import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
@@ -122,15 +123,17 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		this.importedList.setDate(listDate);
 		
 		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
-		this.validateListUserName(listUserName);
+		this.validateListUserName(listUserName.trim());
 	}
 
 	private void validateListUserName(final String listUserName) throws FileParsingException {
-		Person person = this.userDataManager.getPersonByFullName(listUserName.trim());
-		if (person != null) {
-			this.importedList.setUserId(person.getId());
-		} else {
-			throw new FileParsingException("The List User is invalid. See valid list user names on Codes sheet or leave it blank");
+		if(StringUtils.isNotEmpty(listUserName)){
+			Person person = this.userDataManager.getPersonByFullName(listUserName);
+			if (person != null) {
+				this.importedList.setUserId(person.getId());
+			} else {
+				throw new FileParsingException("The List User is invalid. See valid list user names on Codes sheet or leave it blank");
+			}
 		}
 	}
 
