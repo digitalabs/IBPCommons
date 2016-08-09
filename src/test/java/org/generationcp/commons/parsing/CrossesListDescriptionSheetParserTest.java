@@ -1,11 +1,14 @@
 package org.generationcp.commons.parsing;
 
-import junit.framework.Assert;
+import java.io.File;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.Date;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.middleware.manager.UserDataManagerImpl;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.junit.Before;
@@ -14,12 +17,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 
-import java.io.File;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.Date;
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrossesListDescriptionSheetParserTest {
@@ -45,7 +44,7 @@ public class CrossesListDescriptionSheetParserTest {
 	public void setUp() throws Exception {
 		final Person personTest = new Person("Test", "Test", "Test");
 		personTest.setId(1);
-		Mockito.when(this.userDataManager.getPersonByName(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+		Mockito.when(this.userDataManager.getPersonByFullName(Mockito.anyString()))
 						.thenReturn(personTest);
 
 		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
@@ -82,5 +81,25 @@ public class CrossesListDescriptionSheetParserTest {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbook, null);
 		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().equals(DateUtil.parseDate(LIST_DATE_IN_XLS_TEST_FILE)));
 	}
-
+	
+	@Test
+	public void testValidateListUserNameWithoutError() {
+		try{
+			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
+		} catch(FileParsingException e){
+			Assert.fail("There should be no error.");
+		}
+	}
+	
+	@Test
+	public void testValidateListUserNameWithError() {
+		Mockito.when(this.userDataManager.getPersonByFullName(Mockito.anyString()))
+		.thenReturn(null);
+		try{
+			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
+			Assert.fail("There should an error since the method getPersonByFullName returned null.");
+		} catch(FileParsingException e){
+			Assert.assertEquals("The error message should be " + CrossesListDescriptionSheetParser.INVALID_LIST_USER, CrossesListDescriptionSheetParser.INVALID_LIST_USER, e.getMessage());
+		}
+	}
 }
