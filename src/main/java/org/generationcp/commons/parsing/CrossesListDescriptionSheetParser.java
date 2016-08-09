@@ -101,30 +101,31 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	private void parseListDetails() throws FileParsingException, ParseException {
-		final Date listDate;
 		final String listName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 0, 1);
-		final String listTitle = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
-
-		final String labelId = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 2, 0);
-
-		final int listDateColNo = CrossesListDescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
-
-		//TODO Add check of the row label name and add validation message
-		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
+		this.importedList.setName(listName);
 		
+		final String listTitle = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
+		this.importedList.setTitle(listTitle);
+		
+		// The list type for the crosses import will always be CROSS list type
+		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
+		
+		final String labelId = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 2, 0);
+		final int listDateColNo = CrossesListDescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
+		final Date listDate;
 		final Double listDateNotParsed = this.getCellNumericValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
 		if (listDateNotParsed.equals(0d)) {
 			listDate = DateUtil.getCurrentDate();
 		} else {
 			listDate = DateUtil.parseDate(String.valueOf(listDateNotParsed.intValue()));
 		}
-
-		this.importedList.setName(listName);
-		this.importedList.setTitle(listTitle);
-		// The list type for the crosses import will always be CROSS list type
-		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
 		this.importedList.setDate(listDate);
-		//TODO trow Exception if could not find User by id. No such user
+		
+		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
+		this.validateListUserName(listUserName);
+	}
+
+	private void validateListUserName(final String listUserName) throws FileParsingException {
 		Person person = this.userDataManager.getPersonByFullName(listUserName.trim());
 		if (person != null) {
 			this.importedList.setUserId(person.getId());
