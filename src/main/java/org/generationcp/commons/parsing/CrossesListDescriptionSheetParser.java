@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDetails> extends AbstractExcelFileParser<T> {
 
-	static final String INVALID_LIST_USER = "The List User is invalid. See valid list user names on Codes sheet or leave it blank";
+	static final String INVALID_LIST_USER = "The List User's value is invalid. See valid list user names on Codes sheet or leave it blank";
 	private static final int DESCRIPTION_SHEET_NO = 0;
 	private static final int CONDITION_ROW_NO = 4;
 	private static final int DESCRIPTION_SHEET_COL_SIZE = 8;
