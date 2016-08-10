@@ -83,7 +83,7 @@ public class ContextUtil {
 			}
 			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE);
 		} catch (ExecutionException e) {
-			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE);
+			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE, e);
 		}
 
 	}
