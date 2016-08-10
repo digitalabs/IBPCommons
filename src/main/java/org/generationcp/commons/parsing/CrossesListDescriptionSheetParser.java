@@ -14,7 +14,7 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,9 +128,9 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 
 	void validateListUserName(final String listUserName) throws FileParsingException {
 		if (StringUtils.isNotEmpty(listUserName)) {
-			final Person person = this.userDataManager.getPersonByFullName(listUserName);
-			if (person != null) {
-				this.importedList.setUserId(person.getId());
+			final User user = this.userDataManager.getUserByFullname(listUserName);
+			if (user != null) {
+				this.importedList.setUserId(user.getUserid());
 			} else {
 				throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
 			}

@@ -11,7 +11,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,9 +44,9 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Before
 	public void setUp() throws Exception {
-		final Person personTest = new Person("Test", "Test", "Test");
-		personTest.setId(1);
-		Mockito.when(this.userDataManager.getPersonByFullName(Matchers.anyString())).thenReturn(personTest);
+		final User userTest = new User();
+		userTest.setUserid(1);
+		Mockito.when(this.userDataManager.getUserByFullname(Matchers.anyString())).thenReturn(userTest);
 
 		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
 
@@ -97,7 +97,7 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Test
 	public void testValidateListUserNameWithError() {
-		Mockito.when(this.userDataManager.getPersonByFullName(Matchers.anyString())).thenReturn(null);
+		Mockito.when(this.userDataManager.getUserByFullname(Matchers.anyString())).thenReturn(null);
 		try {
 			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
 			Assert.fail("There should an error since the method getPersonByFullName returned null.");
