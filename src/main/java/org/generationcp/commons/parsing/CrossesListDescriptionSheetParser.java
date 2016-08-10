@@ -29,6 +29,8 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
 	public static final String EMPTY_STRING = "";
+	private static final String NO_STUDY_NAME_ERROR = "common.error.file.import.no.study.name";
+	private static final String PERSON_NOT_FOUND_ERROR = "common.error.file.import.person.not.found";
 
 
 	private enum DescriptionHeaders {
@@ -120,8 +122,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		if (!StringUtil.isEmpty(studyName)){
 			this.importedList.setStudyName(studyName);
 		} else {
-			//TODO Localise
-			throw new FileParsingException("No study name is supplied in the import file.");
+			throw new FileParsingException(this.messageSource.getMessage(NO_STUDY_NAME_ERROR, null, Locale.ENGLISH));
 		}
 
 		final Double listDateNotParsed = this.getCellNumericValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, listDateColNo, 1);
@@ -141,8 +142,8 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		} else if (names.length == 3) {
 			this.importedList.setUserId(this.userDataManager.getPersonByName(names[0], names[1], names[2]).getId());
 		} else {
-			//TODO Localise
-			throw new PersonNotFoundException("Could not find the User by Name. The Name is " + listUserName);
+			throw new PersonNotFoundException(this.messageSource.getMessage(PERSON_NOT_FOUND_ERROR, null, Locale.ENGLISH) + " " +
+					listUserName);
 		}
 	}
 
