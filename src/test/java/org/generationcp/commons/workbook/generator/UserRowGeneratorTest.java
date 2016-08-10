@@ -5,10 +5,10 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.generationcp.commons.data.initializer.ProjectTestDataInitializer;
-import org.generationcp.commons.data.initializer.UserTestDataInitializer;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.PersonTestDataInitializer;
+import org.generationcp.middleware.data.initializer.UserTestDataInitializer;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,11 +40,14 @@ public class UserRowGeneratorTest {
 	
 	private PersonTestDataInitializer personTDI;
 	
+	private UserTestDataInitializer userTDI;
+	
 	@Before
 	public void setUp() {
 		this.personTDI = new PersonTestDataInitializer();
+		this.userTDI = new UserTestDataInitializer();
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
-		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(UserTestDataInitializer.createUserList());
+		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userTDI.createUserList());
 		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(this.personTDI.createPerson());
 	}
 
