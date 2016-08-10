@@ -1,17 +1,17 @@
 package org.generationcp.commons.vaadin.util;
 
-import com.vaadin.ui.Tree;
-import com.vaadin.ui.TreeTable;
-import com.vaadin.ui.Window;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import com.vaadin.ui.Tree;
+import com.vaadin.ui.TreeTable;
+import com.vaadin.ui.Window;
 
 /**
  * Created by Daniel Villafuerte on 6/2/2015.
