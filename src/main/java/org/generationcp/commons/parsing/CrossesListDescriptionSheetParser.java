@@ -23,7 +23,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossesListDescriptionSheetParser.class);
-	private static final String TEMPLATE_LIST_TYPE = "CROSS";
+	private static final String TEMPLATE_LIST_TYPE = "F1";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
 	public static final String EMPTY_STRING = "";
