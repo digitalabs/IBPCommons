@@ -66,19 +66,19 @@ public class CrossesListDescriptionSheetParserTest {
 	@Test
 	public void testEmptyListDate() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().after(this.today));
+		Assert.assertTrue("The list date should be " + this.today, this.crossesListDescriptionSheetParser.getImportedList().getDate().after(this.today));
 	}
 
 	@Test
 	public void testListType() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType().equals(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE));
+		Assert.assertTrue("The list type should be " + CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE, this.crossesListDescriptionSheetParser.getImportedList().getType().equals(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE));
 	}
 
 	@Test
 	public void testWithListDate() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbook, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().equals(DateUtil.parseDate(LIST_DATE_IN_XLS_TEST_FILE)));
+		Assert.assertTrue("The list date should be " + LIST_DATE_IN_XLS_TEST_FILE, this.crossesListDescriptionSheetParser.getImportedList().getDate().equals(DateUtil.parseDate(LIST_DATE_IN_XLS_TEST_FILE)));
 	}
 
 }
