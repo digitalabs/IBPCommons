@@ -1,11 +1,14 @@
 package org.generationcp.commons.parsing;
 
-import junit.framework.Assert;
+import java.io.File;
+import java.net.URL;
+import java.text.ParseException;
+import java.util.Date;
+
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
-import org.generationcp.middleware.manager.UserDataManagerImpl;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.junit.Before;
@@ -14,19 +17,14 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.mockito.stubbing.OngoingStubbing;
 
-import java.io.File;
-import java.net.URL;
-import java.text.ParseException;
-import java.util.Date;
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrossesListDescriptionSheetParserTest {
 
 	private final static String CROSSES_LIST_NO_LIST_DATE = "CrossesListNoListDate.xls";
 	private final static String CROSSES_LIST = "CrossesList.xls";
-	private static final String CROSS_LIST_TYPE = "CROSS";
 	private static final String LIST_DATE_IN_XLS_TEST_FILE = "20160722";
 
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
@@ -74,7 +72,7 @@ public class CrossesListDescriptionSheetParserTest {
 	@Test
 	public void testListType() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType().equals(CROSS_LIST_TYPE));
+		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType().equals(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE));
 	}
 
 	@Test
