@@ -12,6 +12,7 @@ import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,6 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossesListDescriptionSheetParser.class);
-	static final String TEMPLATE_LIST_TYPE = "F1";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
 	public static final String EMPTY_STRING = "";
@@ -122,7 +122,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		this.importedList.setName(listName);
 		this.importedList.setTitle(listTitle);
 		// The list type for the crosses import will always be CROSS list type
-		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
+		this.importedList.setType(GermplasmListType.F1.name());
 		this.importedList.setDate(listDate);
 		//TODO trow Exception if could not find User by id. No such user
 		if (names.length == 2) {

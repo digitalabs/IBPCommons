@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.junit.Before;
@@ -76,9 +77,9 @@ public class CrossesListDescriptionSheetParserTest {
 	@Test
 	public void testListType() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue("The list type should be " + CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE,
+		Assert.assertTrue("The list type should be " + GermplasmListType.F1.name(),
 				this.crossesListDescriptionSheetParser.getImportedList().getType()
-						.equals(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE));
+						.equals(GermplasmListType.F1.name()));
 	}
 
 	@Test
