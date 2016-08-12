@@ -12,7 +12,7 @@ import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.Person;
+import org.generationcp.middleware.pojos.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,10 +44,9 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Before
 	public void setUp() throws Exception {
-		final Person personTest = new Person("Test", "Test", "Test");
-		personTest.setId(1);
-		Mockito.when(this.userDataManager.getPersonByName(Matchers.anyString(), Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(personTest);
+		final User userTest = new User();
+		userTest.setUserid(1);
+		Mockito.when(this.userDataManager.getUserByFullname(Matchers.anyString())).thenReturn(userTest);
 
 		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
 
@@ -90,4 +89,24 @@ public class CrossesListDescriptionSheetParserTest {
 						.equals(DateUtil.parseDate(CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE)));
 	}
 
+	@Test
+	public void testValidateListUserNameWithoutError() {
+		try {
+			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
+		} catch (final FileParsingException e) {
+			Assert.fail("There should be no error.");
+		}
+	}
+
+	@Test
+	public void testValidateListUserNameWithError() {
+		Mockito.when(this.userDataManager.getUserByFullname(Matchers.anyString())).thenReturn(null);
+		try {
+			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
+			Assert.fail("There should an error since the method getPersonByFullName returned null.");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals("The error message should be " + CrossesListDescriptionSheetParser.INVALID_LIST_USER,
+					CrossesListDescriptionSheetParser.INVALID_LIST_USER, e.getMessage());
+		}
+	}
 }
