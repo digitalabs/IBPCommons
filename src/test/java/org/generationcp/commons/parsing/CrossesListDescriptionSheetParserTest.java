@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.User;
 import org.junit.Before;
@@ -27,7 +28,6 @@ public class CrossesListDescriptionSheetParserTest {
 
 	private final static String CROSSES_LIST_NO_LIST_DATE = "CrossesListNoListDate.xls";
 	private final static String CROSSES_LIST = "CrossesList.xls";
-	private static final String CROSS_LIST_TYPE = "CROSS";
 	private static final String LIST_DATE_IN_XLS_TEST_FILE = "20160722";
 
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
@@ -69,21 +69,24 @@ public class CrossesListDescriptionSheetParserTest {
 	@Test
 	public void testEmptyListDate() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate().after(this.today));
+		Assert.assertTrue("The list date should be " + this.today,
+				this.crossesListDescriptionSheetParser.getImportedList().getDate().after(this.today));
 	}
 
 	@Test
 	public void testListType() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getType()
-				.equals(CrossesListDescriptionSheetParserTest.CROSS_LIST_TYPE));
+		Assert.assertTrue("The list type should be " + GermplasmListType.F1.name(),
+				this.crossesListDescriptionSheetParser.getImportedList().getType()
+						.equals(GermplasmListType.F1.name()));
 	}
 
 	@Test
 	public void testWithListDate() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbook, null);
-		Assert.assertTrue(this.crossesListDescriptionSheetParser.getImportedList().getDate()
-				.equals(DateUtil.parseDate(CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE)));
+		Assert.assertTrue("The list date should be " + CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE,
+				this.crossesListDescriptionSheetParser.getImportedList().getDate()
+						.equals(DateUtil.parseDate(CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE)));
 	}
 
 	@Test

@@ -13,6 +13,7 @@ import org.generationcp.commons.parsing.pojo.ImportedDescriptionDetails;
 import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private static final int DESCRIPTION_SHEET_COL_SIZE = 8;
 
 	private static final Logger LOG = LoggerFactory.getLogger(CrossesListDescriptionSheetParser.class);
-	private static final String TEMPLATE_LIST_TYPE = "CROSS";
 	public static final String LIST_DATE = "LIST DATE";
 	public static final String LIST_TYPE = "LIST TYPE";
 	public static final String EMPTY_STRING = "";
@@ -108,8 +108,8 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		final String listTitle = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 1, 1);
 		this.importedList.setTitle(listTitle);
 
-		// The list type for the crosses import will always be CROSS list type
-		this.importedList.setType(CrossesListDescriptionSheetParser.TEMPLATE_LIST_TYPE);
+		// The list type for the crosses import will always be F1 list type
+		this.importedList.setType(GermplasmListType.F1.name());
 
 		final String labelId = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 2, 0);
 		final int listDateColNo = CrossesListDescriptionSheetParser.LIST_DATE.equalsIgnoreCase(labelId) ? 2 : 3;
@@ -120,6 +120,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		} else {
 			listDate = DateUtil.parseDate(String.valueOf(listDateNotParsed.intValue()));
 		}
+		
 		this.importedList.setDate(listDate);
 
 		final String listUserName = this.getCellStringValue(CrossesListDescriptionSheetParser.DESCRIPTION_SHEET_NO, 5, 6);
