@@ -85,7 +85,7 @@ public class ContextUtilTest {
 		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(contextInfo);
 		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
 
-		Assert.assertEquals(contextInfo.getloggedInUserId(), ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request));
+		Assert.assertEquals(contextInfo.getLoggedInUserId(), ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request));
 
 		Mockito.verify(this.workbenchDataManager, Mockito.never()).getWorkbenchRuntimeData();
 	}
@@ -138,7 +138,7 @@ public class ContextUtilTest {
 		Mockito.when(this.workbenchDataManager.getProjectById(1L)).thenReturn(ContextUtilTest.testProject);
 
 		Assert.assertNotNull(ContextUtil.getContextInfoFromRequest(this.request));
-		Assert.assertEquals(Integer.valueOf(1), ContextUtil.getContextInfoFromRequest(this.request).getloggedInUserId());
+		Assert.assertEquals(Integer.valueOf(1), ContextUtil.getContextInfoFromRequest(this.request).getLoggedInUserId());
 		Assert.assertEquals(Long.valueOf(1L), ContextUtil.getContextInfoFromRequest(this.request).getSelectedProjectId());
 		Assert.assertEquals(ContextUtilTest.SAMPLE_AUTH_TOKEN, ContextUtil.getContextInfoFromRequest(this.request).getAuthToken());
 	}
@@ -153,5 +153,12 @@ public class ContextUtilTest {
 		Assert.assertEquals(SecurityUtil.decodeToken(ContextUtilTest.SAMPLE_AUTH_TOKEN),
 				ContextUtil.getCurrentWorkbenchUsername(this.workbenchDataManager, this.request));
 
+	}
+
+	@Test
+	public void testGetUserById() throws Exception {
+		final int testUserId = 5;
+		ContextUtil.getUserById(workbenchDataManager, testUserId);
+		Mockito.verify(workbenchDataManager).getUserById(5);
 	}
 }

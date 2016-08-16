@@ -1,8 +1,8 @@
 
 package org.generationcp.commons.util;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -16,16 +16,33 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.util.cache.FunctionBasedGuavaCacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.WebUtils;
+
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class ContextUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
 	
-	private static HashMap<Long, Project> projects = new HashMap<Long, Project>();
+	
+	/**
+	 * Main goal prevent excessive querying to retrieve project information.
+	 */
+	private static final Cache<Long, Project> PROJECTS_CACHE = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
+	
+	/**
+	 * Main goal prevent excessive querying to retrieve user information information.
+	 */
+	private static final Cache<Integer, User> USERS_CACHE = CacheBuilder.newBuilder().maximumSize(100).
+			expireAfterWrite(60, TimeUnit.MINUTES).build();
 
+	
 	public static Project getProjectInContext(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
 			throws MiddlewareQueryException {
 
@@ -34,8 +51,9 @@ public class ContextUtil {
 		
 		if(contextInfo != null) {
 			Long selectedProjectId = contextInfo.getSelectedProjectId();
-			if(selectedProjectId !=null && projects.containsKey(selectedProjectId)) {
-				return projects.get(selectedProjectId);
+			
+			if(selectedProjectId !=null && PROJECTS_CACHE.asMap().containsKey(selectedProjectId)) {
+				return PROJECTS_CACHE.asMap().get(selectedProjectId);
 			}
 		}
 		
@@ -52,7 +70,7 @@ public class ContextUtil {
 		if (project != null) {
 			ContextUtil.LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId() + ". Resolved "
 					+ (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
-			projects.put(project.getProjectId(), project);
+			PROJECTS_CACHE.put(project.getProjectId(), project);
 			return project;
 		}
 
@@ -69,7 +87,7 @@ public class ContextUtil {
 
 		if (contextInfo != null) {
 			resolvedFromSessionContext = true;
-			currentWorkbenchUserId = contextInfo.getloggedInUserId();
+			currentWorkbenchUserId = contextInfo.getLoggedInUserId();
 		} else if (userIdCookie != null) {
 			currentWorkbenchUserId = Integer.parseInt(userIdCookie.getValue());
 		} else {
@@ -84,7 +102,9 @@ public class ContextUtil {
 
 		throw new MiddlewareQueryException("Could not resolve current user id in Workbench.");
 	}
+	
 
+	
 	public static User getCurrentWorkbenchUser(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
 			throws MiddlewareQueryException {
 		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
@@ -98,11 +118,12 @@ public class ContextUtil {
 			if (matchedUsers != null && !matchedUsers.isEmpty()) {
 				user = matchedUsers.get(0);
 			}
-		} else if (contextInfo.getloggedInUserId() != null) {
-			user = workbenchDataManager.getUserById(contextInfo.getloggedInUserId());
+
+		} else if (contextInfo.getLoggedInUserId() != null) {
+			user = getUserById(workbenchDataManager, contextInfo.getLoggedInUserId());
 		} else {
 			// resolve from cookie or session
-			user = workbenchDataManager.getUserById(ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request));
+			user = getUserById(workbenchDataManager, ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request));
 		}
 
 		return user;
@@ -115,11 +136,13 @@ public class ContextUtil {
 
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
 			return userName;
-		} else if (contextInfo.getloggedInUserId() != null) {
-			userName = workbenchDataManager.getUserById(contextInfo.getloggedInUserId()).getName();
+
+		} else if (contextInfo.getLoggedInUserId() != null) {
+			userName = getUserById(workbenchDataManager, contextInfo.getLoggedInUserId()).getName();
+
 		} else {
 			// resolve from cookie or session
-			userName = workbenchDataManager.getUserById(ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request)).getName();
+			userName = getUserById(workbenchDataManager, ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request)).getName();
 		}
 
 		return userName;
@@ -153,7 +176,7 @@ public class ContextUtil {
 
 	public static String getContextParameterString(ContextInfo contextInfo) {
 		if (contextInfo != null) {
-			return ContextUtil.getContextParameterString(contextInfo.getloggedInUserId(), contextInfo.getSelectedProjectId());
+			return ContextUtil.getContextParameterString(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId());
 		}
 		return "";
 	}
@@ -206,6 +229,25 @@ public class ContextUtil {
 			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
 					new ContextInfo(userId, projectId,
 							authToken));
+	}
+	
+	static User getUserById(final WorkbenchDataManager workbenchDataManager, final Integer userId) {
+		final FunctionBasedGuavaCacheLoader<Integer, User> cacheLoader =
+				new FunctionBasedGuavaCacheLoader<Integer, User>(USERS_CACHE, new Function<Integer, User>() {
+
+					@Override
+					public User apply(Integer key) {
+						return workbenchDataManager.getUserById(key);
+					}
+				});
+		
+		final Optional<User> loadedUserId = cacheLoader.get(userId);
+
+		if (loadedUserId.isPresent()) {
+			return loadedUserId.get();
+		}
+		
+		return null;
 	}
 
 }
