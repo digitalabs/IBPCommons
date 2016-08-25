@@ -15,7 +15,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.generationcp.middleware.pojos.ListDataProject;
 
 /**
  * The Class ImportedCrosses.
@@ -105,20 +104,14 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		super(entryId, desig, gid, cross, source, entryCode, check);
 	}
 
-	public ImportedCrosses(ListDataProject femaleListData, ListDataProject maleListData, String femaleStudyName, String maleStudyName,
+	public ImportedCrosses(String femaleStudyName, String maleStudyName,
 			String femalePlotNo, String malePlotNo, int entryId) {
-		this.setFemaleDesig(femaleListData.getDesignation());
-		this.setMaleDesig(maleListData.getDesignation());
-		this.setFemaleGid(femaleListData.getGermplasmId().toString());
-		this.setMaleGid(maleListData.getGermplasmId().toString());
 		this.setFemalePlotNo(femalePlotNo);
 		this.setMalePlotNo(malePlotNo);
 		this.setEntryId(entryId);
 		this.setMaleStudyName(maleStudyName);
 		this.setFemaleStudyName(femaleStudyName);
 
-		// Parentage: "female designation / male designation"
-		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
 	}
 
 	public void setOptionalFields(String rawBreedingMethod, Integer crossingDate, String notes) {
