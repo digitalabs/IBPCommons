@@ -47,6 +47,12 @@ public class SpringApplicationServlet extends AbstractApplicationServlet {
 		super.init(config);
 
 		String name = config.getInitParameter("applicationBeanName");
+        //Added code to identify  GermplasmStudyBrowser's beans and load bean as per context.
+		//bean defination is added in workbench's applicationcontext.xml
+		if(name == null && config.getServletName().equalsIgnoreCase("MainApplicationGPSB")){
+			name = "application_gpsb";
+		}
+
 		this.name = name == null ? SpringApplicationServlet.DEFAULT_APP_BEAN_NAME : name;
 	}
 
