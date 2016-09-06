@@ -90,19 +90,6 @@ public class ContextUtilTest {
 		Mockito.verify(this.workbenchDataManager, Mockito.never()).getWorkbenchRuntimeData();
 	}
 
-	@Test
-	public void testCurrentWorkbenchUserIdFallsBackToOldMethod() throws MiddlewareQueryException {
-		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
-		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
-		WorkbenchRuntimeData workbenchRuntimeData = new WorkbenchRuntimeData();
-		workbenchRuntimeData.setUserId(1);
-		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(workbenchRuntimeData);
-
-		Assert.assertEquals(workbenchRuntimeData.getUserId(),
-				ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request));
-
-		Mockito.verify(this.workbenchDataManager).getWorkbenchRuntimeData();
-	}
 
 	@Test(expected = MiddlewareQueryException.class)
 	public void testExceptionIsThrownWhenWorkbenchUserCannotBeResolved() throws MiddlewareQueryException {

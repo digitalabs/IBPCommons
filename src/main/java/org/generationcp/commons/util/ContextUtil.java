@@ -90,8 +90,6 @@ public class ContextUtil {
 			currentWorkbenchUserId = contextInfo.getLoggedInUserId();
 		} else if (userIdCookie != null) {
 			currentWorkbenchUserId = Integer.parseInt(userIdCookie.getValue());
-		} else {
-			currentWorkbenchUserId = workbenchDataManager.getWorkbenchRuntimeData().getUserId();
 		}
 
 		if (currentWorkbenchUserId != null) {
