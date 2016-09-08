@@ -20,11 +20,15 @@ public class LogoutUtil {
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		securityContext.setAuthentication((Authentication)null);
 
-		for(Cookie requestCookie : request.getCookies()) {
-			Cookie cookie = new Cookie(requestCookie.getName(), (String)null);
-			cookie.setMaxAge(0);
-			cookie.setPath(getCookiePath(request));
-			response.addCookie(cookie);
+		Cookie[] cookies = request.getCookies();
+
+		if(cookies != null){
+			for(Cookie requestCookie : cookies) {
+				Cookie cookie = new Cookie(requestCookie.getName(), (String)null);
+				cookie.setMaxAge(0);
+				cookie.setPath(getCookiePath(request));
+				response.addCookie(cookie);
+			}
 		}
 
 		SecurityContextHolder.clearContext();
