@@ -37,9 +37,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.generationcp.commons.exceptions.SQLFileException;
+import org.generationcp.commons.security.Role;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -306,7 +309,7 @@ public class MySQLUtil {
 			this.runScriptFromFile(databaseName, backupFile);
 
 			// after restore, restore from backup schema the users + persons table
-			this.addCurrentUserToRestoredPrograms(connection);
+			this.addCurrentAndAdminUsersToRestoredPrograms(connection);
 			
 			// delete tutorial crop
 			this.executeQuery(connection, "USE workbench;");			
@@ -406,22 +409,42 @@ public class MySQLUtil {
 		}
 	}
 
-	protected void addCurrentUserToRestoredPrograms(final Connection connection) {
+	protected void addCurrentAndAdminUsersToRestoredPrograms(final Connection connection) {
 		int currentUserId = this.contextUtil.getCurrentWorkbenchUserId();
+		List<User> users = workbenchDataManager.getAllUsers();
 		try {
 			this.executeQuery(connection, "USE workbench");
+			//fetch programs that have been restored
 			List<String> programIds = this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where user_id = '9999';");
+			// for each restored program
 			for (String programKey : programIds) {
-				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
-				this.executeQuery(connection,
-						"INSERT into workbench_project_user_info values (null," + programKey + "," + currentUserId + ",NOW())");
-				this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
+				// add current user
+				addUserToProgram(currentUserId, programKey);
+				for (User user : users) {
+					// add all ADMIN USERS
+					if(user.getUserid().intValue() != currentUserId) {
+  					for (UserRole userRole : user.getRoles()) {
+  						if(userRole.getRole().equals("ADMIN")){
+  							addUserToProgram(user.getUserid(), programKey);
+  						}
+  					}
+					}
+				}
+				// set the crop to the current crop in context
 				this.executeQuery(connection, "UPDATE workbench_project set crop_type = '" + this.contextUtil.getProjectInContext().getCropType().getCropName() + "' where project_id = " + programKey + ";");
 			}
+			// current user owns the program
 			this.executeQuery(connection, "UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
 		} catch (SQLException e) {
 			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
 		}
+	}
+	
+	protected void addUserToProgram(int userId, String programKey) throws SQLException {
+  		this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + "," + userId + ",1)");
+  		this.executeQuery(connection,
+  				"INSERT into workbench_project_user_info values (null," + programKey + "," + userId + ",NOW())");
+  		this.executeQuery(connection, "INSERT into workbench_ibdb_user_map values (null," + userId + "," + programKey + ",1)");		
 	}
 
 	protected void alterListNmsTable(final Connection connection, final String databaseName) {
