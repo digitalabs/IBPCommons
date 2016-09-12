@@ -35,10 +35,20 @@ public class ContextFilter implements Filter {
 
 			if (requestContextInfo.getSelectedProjectId() != null && requestContextInfo.getLoggedInUserId() != null) {
 				WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO, requestContextInfo);
-				response.addCookie(new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, requestContextInfo.getLoggedInUserId().toString()));
-				response.addCookie(new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, requestContextInfo.getSelectedProjectId()
-						.toString()));
-				response.addCookie(new Cookie(ContextConstants.PARAM_AUTH_TOKEN, requestContextInfo.getAuthToken()));
+				String contextPath = request.getContextPath();
+
+				Cookie loggedInUserCookie = new Cookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, requestContextInfo.getLoggedInUserId().toString());
+				Cookie selectedProjectIdCookie = new Cookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, requestContextInfo.getSelectedProjectId()
+						.toString());
+				Cookie authTokenCookie = new Cookie(ContextConstants.PARAM_AUTH_TOKEN, requestContextInfo.getAuthToken());
+
+				loggedInUserCookie.setPath(contextPath);
+				selectedProjectIdCookie.setPath(contextPath);
+				authTokenCookie.setPath(contextPath);
+
+				response.addCookie(loggedInUserCookie);
+				response.addCookie(selectedProjectIdCookie);
+				response.addCookie(authTokenCookie);
 			}
 
 			else {
