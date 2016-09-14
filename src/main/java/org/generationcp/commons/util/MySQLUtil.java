@@ -66,7 +66,7 @@ public class MySQLUtil {
 
 	private String backupDir;
 
-	private String mysqlDriver = "com.mysql.jdbc.Driver";
+	private String mysqlDriver = "org.mariadb.jdbc.Driver";
 	private String mysqlHost;
 	private int mysqlPort = 3306;
 	private String username;

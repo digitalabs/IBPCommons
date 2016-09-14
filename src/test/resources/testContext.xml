@@ -21,7 +21,7 @@
     <mockito:mock class="org.generationcp.commons.spring.util.ContextUtil" id="contextUtil"/>
 
     <bean id="mysqlUtil" class="org.generationcp.commons.util.MySQLUtil">
-        <property name="mysqlDriver" value="com.mysql.jdbc.Driver" />
+        <property name="mysqlDriver" value="org.mariadb.jdbc.Driver" />
         <property name="mysqlDumpPath" value="${workbench.mysqlDumpPath}" />
         <property name="mysqlPath" value="${workbench.mysqlExePath}" />
         <property name="mysqlHost" value="${db.host}" />
