@@ -120,7 +120,7 @@ public class ToolLicenseUtil {
 		final Date expirationDate = this.getExpirationDate(licenseInfo);
 		licenseInfo.setExpirationDate(expirationDate);
 		
-		return this.workbenchDataManager.updateToolLicenseInfo(licenseInfo);
+		return this.workbenchDataManager.saveOrUpdateToolLicenseInfo(licenseInfo);
 	}
 
 	private Date getExpirationDate(final ToolLicenseInfo licenseInfo) {
