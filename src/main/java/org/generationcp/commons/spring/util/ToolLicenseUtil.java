@@ -11,8 +11,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,9 +28,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 
 /**
  * This is a spring bean managed utility for getting information about licenses of tools used in BMS
@@ -58,17 +56,13 @@ public class ToolLicenseUtil {
 		return ToolLicenseUtil.instance;
 	}
 
-	/**
-	 * Main goal is to prevent excessive queries to get local user names. This is a global cache that will expire every 10 minutes.
-	 */
-	private static Cache<String, ToolLicenseInfo> toolLicenseCache = CacheBuilder.newBuilder().maximumSize(500)
-			.expireAfterWrite(10, TimeUnit.MINUTES).build();
+	// just use a standard Java map as there only few records that are needed to be cached
+	public static Map<String, ToolLicenseInfo> toolLicenseCache = new HashMap<>();
 
 	public void loadToolLicenseCache() {
 		this.buildToolLicenseCache();
-		final ConcurrentMap<String, ToolLicenseInfo> toolLicenseMap = ToolLicenseUtil.toolLicenseCache.asMap();
-		for (final String toolName : toolLicenseMap.keySet()) {
-			ToolLicenseInfo licenseInfo = toolLicenseMap.get(toolName);
+		for (final String toolName : ToolLicenseUtil.toolLicenseCache.keySet()) {
+			ToolLicenseInfo licenseInfo = ToolLicenseUtil.toolLicenseCache.get(toolName);
 			if (licenseInfo != null && this.isOutdated(licenseInfo)) {
 				licenseInfo = this.updateLicenseInfoBasedOnLicenseFile(licenseInfo);
 				ToolLicenseUtil.toolLicenseCache.put(toolName, licenseInfo);
@@ -76,7 +70,7 @@ public class ToolLicenseUtil {
 		}
 	}
 
-	private boolean isOutdated(final ToolLicenseInfo licenseInfo) {
+	public boolean isOutdated(final ToolLicenseInfo licenseInfo) {
 		final String licensePath = this.getLicensePath(licenseInfo);
 		if (!licenseInfo.getLicensePath().equals(licensePath)) {
 			return true;
@@ -95,7 +89,7 @@ public class ToolLicenseUtil {
 		if (ToolLicenseUtil.toolLicenseCache == null) {
 			this.buildToolLicenseCache();
 		}
-		ToolLicenseInfo licenseInfo = ToolLicenseUtil.toolLicenseCache.getIfPresent(toolName);
+		ToolLicenseInfo licenseInfo = ToolLicenseUtil.toolLicenseCache.get(toolName);
 		if (licenseInfo == null) {
 			licenseInfo = this.getLicenseInfoByToolName(toolName);
 		}
@@ -132,7 +126,7 @@ public class ToolLicenseUtil {
 		return expirationDate;
 	}
 
-	private Date parseLicenseAndGetExpirationDate(final File file, final ToolLicenseInfo licenseInfo) {
+	public Date parseLicenseAndGetExpirationDate(final File file, final ToolLicenseInfo licenseInfo) {
 		Date expirationDate = null;
 		final String[] fileContent = this.getFileContent(file);
 		if (fileContent == null || fileContent.length == 0) {
@@ -204,7 +198,7 @@ public class ToolLicenseUtil {
 		return fileContent.toArray(new String[fileContent.size()]);
 	}
 
-	private String getLicenseHash(final String licensePath) {
+	public String getLicenseHash(final String licensePath) {
 		FileInputStream fis = null;
 		String md5 = null;
 		try {
@@ -293,4 +287,13 @@ public class ToolLicenseUtil {
 		final Date expirationDate = licenseInfo.getExpirationDate();
 		return this.daysBeforeExpiration(expirationDate);
 	}
+
+	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
+		this.workbenchDataManager = workbenchDataManager;
+	}
+
+	public void setWorkbenchInstallationDirectory(final String workbenchInstallationDirectory) {
+		this.workbenchInstallationDirectory = workbenchInstallationDirectory;
+	}
+
 }
