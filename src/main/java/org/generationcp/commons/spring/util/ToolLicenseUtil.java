@@ -63,29 +63,29 @@ public class ToolLicenseUtil {
 	 */
 	private static Cache<String, ToolLicenseInfo> toolLicenseCache = CacheBuilder.newBuilder().maximumSize(500)
 			.expireAfterWrite(10, TimeUnit.MINUTES).build();
-	
+
 	public void loadToolLicenseCache() {
 		this.buildToolLicenseCache();
-		ConcurrentMap<String, ToolLicenseInfo> toolLicenseMap = ToolLicenseUtil.toolLicenseCache.asMap();
-		for (String toolName : toolLicenseMap.keySet()) {
+		final ConcurrentMap<String, ToolLicenseInfo> toolLicenseMap = ToolLicenseUtil.toolLicenseCache.asMap();
+		for (final String toolName : toolLicenseMap.keySet()) {
 			ToolLicenseInfo licenseInfo = toolLicenseMap.get(toolName);
-			if(licenseInfo != null && isOutdated(licenseInfo)) {
+			if (licenseInfo != null && this.isOutdated(licenseInfo)) {
 				licenseInfo = this.updateLicenseInfoBasedOnLicenseFile(licenseInfo);
 				ToolLicenseUtil.toolLicenseCache.put(toolName, licenseInfo);
 			}
 		}
 	}
 
-	private boolean isOutdated(ToolLicenseInfo licenseInfo) {
-		String licensePath = getLicensePath(licenseInfo);
-		if(!licenseInfo.getLicensePath().equals(licensePath)) {
+	private boolean isOutdated(final ToolLicenseInfo licenseInfo) {
+		final String licensePath = this.getLicensePath(licenseInfo);
+		if (!licenseInfo.getLicensePath().equals(licensePath)) {
 			return true;
 		}
-		if(StringUtils.isEmpty(licenseInfo.getLicenseHash())) {
+		if (StringUtils.isEmpty(licenseInfo.getLicenseHash())) {
 			return true;
 		}
-		String md5 = this.getLicenseHash(licensePath);
-		if(!licenseInfo.getLicenseHash().equals(md5)) {
+		final String md5 = this.getLicenseHash(licensePath);
+		if (!licenseInfo.getLicenseHash().equals(md5)) {
 			return true;
 		}
 		return false;
@@ -99,7 +99,7 @@ public class ToolLicenseUtil {
 		if (licenseInfo == null) {
 			licenseInfo = this.getLicenseInfoByToolName(toolName);
 		}
-		if (licenseInfo != null && isOutdated(licenseInfo)) {
+		if (licenseInfo != null && this.isOutdated(licenseInfo)) {
 			licenseInfo = this.updateLicenseInfoBasedOnLicenseFile(licenseInfo);
 			ToolLicenseUtil.toolLicenseCache.put(licenseInfo.getTool().getToolName(), licenseInfo);
 		}
@@ -119,7 +119,7 @@ public class ToolLicenseUtil {
 
 		final Date expirationDate = this.getExpirationDate(licenseInfo);
 		licenseInfo.setExpirationDate(expirationDate);
-		
+
 		return this.workbenchDataManager.saveOrUpdateToolLicenseInfo(licenseInfo);
 	}
 
@@ -247,50 +247,50 @@ public class ToolLicenseUtil {
 			ToolLicenseUtil.toolLicenseCache.put(toolLicenseInfo.getTool().getToolName(), toolLicenseInfo);
 		}
 	}
-	
+
 	public boolean isExpired(final Date expirationDate) {
 		final Date currentDate = DateUtil.getCurrentDateWithZeroTime();
-		if(expirationDate !=null && currentDate.compareTo(expirationDate) >= 0) {
+		if (expirationDate != null && currentDate.compareTo(expirationDate) >= 0) {
 			return true;
 		}
 		return false;
 	}
-	
+
 	public boolean isExpiringWithinThirtyDays(final Date expirationDate) {
-		if(expirationDate != null) {
-			int daysBeforeExpiration = daysBeforeExpiration(expirationDate);
-			if(daysBeforeExpiration <= 30 && daysBeforeExpiration > 0) {
+		if (expirationDate != null) {
+			final int daysBeforeExpiration = this.daysBeforeExpiration(expirationDate);
+			if (daysBeforeExpiration <= 30 && daysBeforeExpiration > 0) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	public int daysBeforeExpiration(final Date expirationDate) {
-		if(expirationDate != null) {
+		if (expirationDate != null) {
 			final Date currentDate = DateUtil.getCurrentDateWithZeroTime();
-			long msBeforeExpiration = expirationDate.getTime() - currentDate.getTime();
-			long daysBeforeExpiration = TimeUnit.DAYS.convert(msBeforeExpiration, TimeUnit.MILLISECONDS);
-		    return new Long(daysBeforeExpiration).intValue();
+			final long msBeforeExpiration = expirationDate.getTime() - currentDate.getTime();
+			final long daysBeforeExpiration = TimeUnit.DAYS.convert(msBeforeExpiration, TimeUnit.MILLISECONDS);
+			return new Long(daysBeforeExpiration).intValue();
 		}
 		return 0;
 	}
-	
-	public boolean isToolExpired(String toolName) {
+
+	public boolean isToolExpired(final String toolName) {
 		final ToolLicenseInfo licenseInfo = this.getLicenseInfo(toolName);
 		final Date expirationDate = licenseInfo.getExpirationDate();
-		return isExpired(expirationDate);
+		return this.isExpired(expirationDate);
 	}
-	
-	public boolean isToolExpiringWithinThirtyDays(String toolName) {
+
+	public boolean isToolExpiringWithinThirtyDays(final String toolName) {
 		final ToolLicenseInfo licenseInfo = this.getLicenseInfo(toolName);
 		final Date expirationDate = licenseInfo.getExpirationDate();
-		return isExpiringWithinThirtyDays(expirationDate);
+		return this.isExpiringWithinThirtyDays(expirationDate);
 	}
-	
-	public int daysBeforeToolExpiration(String toolName) {
+
+	public int daysBeforeToolExpiration(final String toolName) {
 		final ToolLicenseInfo licenseInfo = this.getLicenseInfo(toolName);
 		final Date expirationDate = licenseInfo.getExpirationDate();
-		return daysBeforeExpiration(expirationDate);
+		return this.daysBeforeExpiration(expirationDate);
 	}
 }
