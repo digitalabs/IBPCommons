@@ -168,9 +168,6 @@ public class ToolLicenseUtilTest {
 				outdatedExpirationDate);
 	}
 
-	// final Date actualExpirationDate = toolLicenseUtil.parseLicenseAndGetExpirationDate(new File(actualLicensePath),
-	// actualToolLicenseInfo);
-
 	private ToolLicenseInfo mockGetToolLicenseInfoByToolName(final String toolName) {
 		final ToolLicenseInfo toolLicenseInfo = this.toolLicenseInfoInitializer.createToolLicenseInfo(toolName);
 		toolLicenseInfo.setLicenseInfoId(1);
