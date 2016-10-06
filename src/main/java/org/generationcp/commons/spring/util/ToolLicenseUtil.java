@@ -117,7 +117,7 @@ public class ToolLicenseUtil {
 		return this.workbenchDataManager.saveOrUpdateToolLicenseInfo(licenseInfo);
 	}
 
-	private Date getExpirationDate(final ToolLicenseInfo licenseInfo) {
+	public Date getExpirationDate(final ToolLicenseInfo licenseInfo) {
 		Date expirationDate = null;
 		final File file = new File(licenseInfo.getLicensePath());
 		if (file.exists()) {

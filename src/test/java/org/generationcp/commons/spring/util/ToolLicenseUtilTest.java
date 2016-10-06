@@ -51,7 +51,7 @@ public class ToolLicenseUtilTest {
 		this.bvLicenseFile = this.copyBvLicenseFileInsideWBInstallationDir(sampleBVLicenseFile);
 		this.sampleBVLicenseExpirationDate = this.createBVLicenseExpirationDate();
 	}
-	
+
 	@After
 	public void cleanup() {
 		this.bvLicenseFile.delete();
@@ -142,6 +142,16 @@ public class ToolLicenseUtilTest {
 	}
 
 	private void mockSaveOrUpdateToolLicenseInfo(final ToolLicenseInfo toolLicenseInfo) {
+		final String licensePath =
+				this.toolLicenseInfoInitializer.getLicensePathFromWBInstallationDir(toolLicenseInfo.getTool().getToolName());
+		toolLicenseInfo.setLicensePath(licensePath);
+
+		final String licenseHash = ToolLicenseUtilTest.toolLicenseUtil.getLicenseHash(licensePath);
+		toolLicenseInfo.setLicenseHash(licenseHash);
+
+		final Date expirationDate = ToolLicenseUtilTest.toolLicenseUtil.getExpirationDate(toolLicenseInfo);
+		toolLicenseInfo.setExpirationDate(expirationDate);
+
 		Mockito.doReturn(toolLicenseInfo).when(this.workbenchDataManager).saveOrUpdateToolLicenseInfo(toolLicenseInfo);
 	}
 
