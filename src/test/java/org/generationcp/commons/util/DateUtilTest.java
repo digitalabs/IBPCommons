@@ -601,4 +601,17 @@ public class DateUtilTest {
 		expectedDaysInMonth = 28;
 		Assert.assertEquals("Expected " + expectedDaysInMonth + " but got " + actualDaysInMonth, expectedDaysInMonth, actualDaysInMonth);
 	}
+	
+	@Test
+	public void testGetCurrentDateWithZeroTime() {
+		Date currentDate = DateUtil.getCurrentDateWithZeroTime();
+		Calendar calendar = DateUtil.getCalendarInstance();
+		calendar.setTime(currentDate);
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		Assert.assertEquals("The hour should be 0", 0, hour);
+		int minute = calendar.get(Calendar.MINUTE);
+		Assert.assertEquals("The minute should be 0", 0, minute);
+		int second = calendar.get(Calendar.SECOND);
+		Assert.assertEquals("The hour should be 0", 0, second);
+	}
 }
