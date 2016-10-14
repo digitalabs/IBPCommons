@@ -105,7 +105,9 @@ public class MessageNotifier {
 	public static void showRequiredFieldError(Window window, String description) {
 		MessageNotifier.showError(window, "Invalid Input", description);
 	}
-
+	public static void showRefreshListError(Window window, String description) {
+		MessageNotifier.showError(window, "Error", description);
+	}
 	@Deprecated
 	public static void showError(Window window, String caption, String description, int position) {
 		MessageNotifier.showError(window, caption, description);
