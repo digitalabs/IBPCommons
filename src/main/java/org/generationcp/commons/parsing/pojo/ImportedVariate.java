@@ -20,8 +20,8 @@ public class ImportedVariate implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** The variate. */
-	private String variate;
+	/** The name. */
+	private String name;
 
 	/** The description. */
 	private String description;
@@ -54,15 +54,15 @@ public class ImportedVariate implements Serializable {
 	/**
 	 * Instantiates a new imported variate.
 	 *
-	 * @param variate the variate
+	 * @param name the name
 	 * @param description the description
 	 * @param property the property
 	 * @param scale the scale
 	 * @param method the method
 	 * @param dataType the data type
 	 */
-	public ImportedVariate(String variate, String description, String property, String scale, String method, String dataType) {
-		this.variate = variate;
+	public ImportedVariate(String name, String description, String property, String scale, String method, String dataType) {
+		this.name = name;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -83,7 +83,7 @@ public class ImportedVariate implements Serializable {
 	 */
 	public ImportedVariate(String variate, String description, String property, String scale, String method, String dataType,
 			String sampleLevel) {
-		this.variate = variate;
+		this.name = variate;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -93,21 +93,21 @@ public class ImportedVariate implements Serializable {
 	}
 
 	/**
-	 * Gets the variate.
+	 * Gets the name
 	 *
 	 * @return the variate
 	 */
-	public String getVariate() {
-		return this.variate;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * Sets the variate.
+	 * Sets the name
 	 *
-	 * @param variate the new variate
+	 * @param name the new variate
 	 */
-	public void setVariate(String variate) {
-		this.variate = variate;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**

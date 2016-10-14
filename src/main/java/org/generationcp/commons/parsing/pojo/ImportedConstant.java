@@ -20,8 +20,8 @@ public class ImportedConstant implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** The constant. */
-	private String constant;
+	/** The name. */
+	private String name;
 
 	/** The description. */
 	private String description;
@@ -54,7 +54,7 @@ public class ImportedConstant implements Serializable {
 	/**
 	 * Instantiates a new imported constant.
 	 *
-	 * @param constant the constant
+	 * @param name the name
 	 * @param description the description
 	 * @param property the property
 	 * @param scale the scale
@@ -62,8 +62,8 @@ public class ImportedConstant implements Serializable {
 	 * @param dataType the data type
 	 * @param value the value
 	 */
-	public ImportedConstant(String constant, String description, String property, String scale, String method, String dataType, String value) {
-		this.constant = constant;
+	public ImportedConstant(String name, String description, String property, String scale, String method, String dataType, String value) {
+		this.name = name;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -86,7 +86,7 @@ public class ImportedConstant implements Serializable {
 	 */
 	public ImportedConstant(String constant, String description, String property, String scale, String method, String dataType,
 			String value, String sampleLevel) {
-		this.constant = constant;
+		this.name = constant;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -97,21 +97,21 @@ public class ImportedConstant implements Serializable {
 	}
 
 	/**
-	 * Gets the constant.
+	 * Gets the name
 	 *
 	 * @return the constant
 	 */
-	public String getConstant() {
-		return this.constant;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * Sets the constant.
+	 * Sets the name
 	 *
-	 * @param constant the new constant
+	 * @param name the new constant
 	 */
-	public void setConstant(String constant) {
-		this.constant = constant;
+	public void setConstant(String name) {
+		this.name = name;
 	}
 
 	/**

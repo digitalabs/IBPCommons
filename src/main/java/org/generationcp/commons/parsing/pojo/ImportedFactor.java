@@ -20,8 +20,8 @@ public class ImportedFactor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** The factor. */
-	private String factor;
+	/** The name. */
+	private String name;
 
 	/** The description. */
 	private String description;
@@ -53,7 +53,7 @@ public class ImportedFactor implements Serializable {
 	/**
 	 * Instantiates a new imported factor.
 	 *
-	 * @param factor the factor
+	 * @param name the factor name
 	 * @param description the description
 	 * @param property the property
 	 * @param scale the scale
@@ -61,8 +61,8 @@ public class ImportedFactor implements Serializable {
 	 * @param dataType the data type
 	 * @param label the label
 	 */
-	public ImportedFactor(String factor, String description, String property, String scale, String method, String dataType, String label) {
-		this.factor = factor;
+	public ImportedFactor(String name, String description, String property, String scale, String method, String dataType, String label) {
+		this.name = name;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -85,7 +85,7 @@ public class ImportedFactor implements Serializable {
 	 */
 	public ImportedFactor(String factor, String description, String property, String scale, String method, String dataType,
 			String nestedIn, String label) {
-		this.factor = factor;
+		this.name = factor;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -96,21 +96,21 @@ public class ImportedFactor implements Serializable {
 	}
 
 	/**
-	 * Gets the factor.
+	 * Gets the name.
 	 *
 	 * @return the factor
 	 */
-	public String getFactor() {
-		return this.factor;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * Sets the factor.
+	 * Sets the name.
 	 *
-	 * @param factor the new factor
+	 * @param name the new name
 	 */
-	public void setFactor(String factor) {
-		this.factor = factor;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**

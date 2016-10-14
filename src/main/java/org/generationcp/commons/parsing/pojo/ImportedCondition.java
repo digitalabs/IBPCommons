@@ -20,8 +20,8 @@ public class ImportedCondition implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	/** The condition. */
-	private String condition;
+	/** The name. */
+	private String name;
 
 	/** The description. */
 	private String description;
@@ -54,7 +54,7 @@ public class ImportedCondition implements Serializable {
 	/**
 	 * Instantiates a new imported condition.
 	 *
-	 * @param condition the condition
+	 * @param name the name
 	 * @param description the description
 	 * @param property the property
 	 * @param scale the scale
@@ -63,9 +63,9 @@ public class ImportedCondition implements Serializable {
 	 * @param value the value
 	 * @param label the label
 	 */
-	public ImportedCondition(String condition, String description, String property, String scale, String method, String dataType,
+	public ImportedCondition(String name, String description, String property, String scale, String method, String dataType,
 			String value, String label) {
-		this.condition = condition;
+		this.name = name;
 		this.description = description;
 		this.property = property;
 		this.scale = scale;
@@ -76,21 +76,21 @@ public class ImportedCondition implements Serializable {
 	}
 
 	/**
-	 * Gets the condition.
+	 * Gets the condition name
 	 *
-	 * @return the condition
+	 * @return the condition name
 	 */
-	public String getCondition() {
-		return this.condition;
+	public String getName() {
+		return this.name;
 	}
 
 	/**
-	 * Sets the condition.
+	 * Sets the name.
 	 *
-	 * @param condition the new condition
+	 * @param name the new name
 	 */
-	public void setCondition(String condition) {
-		this.condition = condition;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	/**
