@@ -3,6 +3,7 @@ package org.generationcp.commons.security;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.middleware.util.StringUtil;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,11 +16,12 @@ public class BMSPreAuthorizeUtil {
 	public static void preAuthorize(final String configuredRoles) {
 
 		final Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
-		final List<String> permittedRoleList = Lists.newArrayList(configuredRoles.split(","));
 
-		if (permittedRoleList.isEmpty()) {
+		if (StringUtils.isEmpty(configuredRoles)) {
 			throw new AccessDeniedException("No role is configured to access this link");
 		}
+
+		final List<String> permittedRoleList = Lists.newArrayList(configuredRoles.split(","));
 
 		for (final GrantedAuthority grantedAuthority : authorities) {
 			final String authority = grantedAuthority.getAuthority();
