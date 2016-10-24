@@ -30,6 +30,7 @@ public class DesignTypeTest {
        Assert.assertEquals(DesignType.ROW_COLUMN_DESIGN, DesignType.getDesignTypeByName(DesignType.ROW_COLUMN_DESIGN.getName()));
        Assert.assertEquals(DesignType.RESOLVABLE_ROW_COLUMN_DESIGN, DesignType.getDesignTypeByName(DesignType.RESOLVABLE_ROW_COLUMN_DESIGN.getName()));
        Assert.assertEquals(DesignType.P_REP_DESIGN, DesignType.getDesignTypeByName(DesignType.P_REP_DESIGN.getName()));
+       Assert.assertEquals(DesignType.AUGMENTED_RANDOMIZED_BLOCK, DesignType.getDesignTypeByName(DesignType.AUGMENTED_RANDOMIZED_BLOCK.getName()));
     }
 
     @Test(expected = IllegalArgumentException.class)

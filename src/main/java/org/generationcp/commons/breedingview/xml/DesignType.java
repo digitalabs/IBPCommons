@@ -16,6 +16,8 @@ public enum DesignType {
 	RANDOMIZED_BLOCK_DESIGN("Randomized block design"), INCOMPLETE_BLOCK_DESIGN("Incomplete block design"), RESOLVABLE_INCOMPLETE_BLOCK_DESIGN(
 			"Resolvable incomplete block design"), ROW_COLUMN_DESIGN("Row-column design"), RESOLVABLE_ROW_COLUMN_DESIGN(
 			"Resolvable row-column design"), P_REP_DESIGN("P-rep design");
+			// Augmented design is just a variation of the Incomplete Block Design type.
+			AUGMENTED_RANDOMIZED_BLOCK("Incomplete block design");
 
 	private final String name;
 
