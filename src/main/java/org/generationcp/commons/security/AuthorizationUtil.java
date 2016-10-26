@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.google.common.collect.Lists;
 
-public class BMSPreAuthorizeUtil {
+public class AuthorizationUtil {
 
 	public static void preAuthorize(final String configuredRoles) {
 

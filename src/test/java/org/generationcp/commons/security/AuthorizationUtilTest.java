@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
 
-public class BMSPreAuthorizeUtilTest {
+public class AuthorizationUtilTest {
 
 	private UsernamePasswordAuthenticationToken loggedInUser;
 
@@ -20,7 +20,7 @@ public class BMSPreAuthorizeUtilTest {
 		this.loggedInUser = new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
 		try {
-			BMSPreAuthorizeUtil.preAuthorize("Admin");
+			AuthorizationUtil.preAuthorize("Admin");
 		} catch (AccessDeniedException e) {
 			Assert.fail("Access Import germplsm link should not throw Access Denied exception.");
 		}
@@ -33,7 +33,7 @@ public class BMSPreAuthorizeUtilTest {
 		this.loggedInUser = new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
 		try {
-			BMSPreAuthorizeUtil.preAuthorize("Admin");
+			AuthorizationUtil.preAuthorize("Admin");
 		} catch (AccessDeniedException e) {
 			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
 		}
@@ -46,7 +46,7 @@ public class BMSPreAuthorizeUtilTest {
 		this.loggedInUser = new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
 		try {
-			BMSPreAuthorizeUtil.preAuthorize(null);
+			AuthorizationUtil.preAuthorize(null);
 		} catch (AccessDeniedException e) {
 			Assert.assertEquals("Access Denied. No role is configured to access this functionality.", e.getMessage());
 		}
