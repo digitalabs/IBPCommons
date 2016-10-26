@@ -35,7 +35,7 @@ public class BMSPreAuthorizeUtilTest {
 		try {
 			BMSPreAuthorizeUtil.preAuthorize("Admin");
 		} catch (AccessDeniedException e) {
-			Assert.assertEquals("You have not authorized role to access this link", e.getMessage());
+			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
 		}
 	}
 
@@ -48,7 +48,7 @@ public class BMSPreAuthorizeUtilTest {
 		try {
 			BMSPreAuthorizeUtil.preAuthorize(null);
 		} catch (AccessDeniedException e) {
-			Assert.assertEquals("No role is configured to access this link", e.getMessage());
+			Assert.assertEquals("Access Denied. No role is configured to access this functionality.", e.getMessage());
 		}
 	}
 

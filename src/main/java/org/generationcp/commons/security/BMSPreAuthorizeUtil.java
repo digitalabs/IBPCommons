@@ -18,7 +18,7 @@ public class BMSPreAuthorizeUtil {
 		final Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
 
 		if (StringUtils.isEmpty(configuredRoles)) {
-			throw new AccessDeniedException("No role is configured to access this link");
+			throw new AccessDeniedException("Access Denied. No role is configured to access this functionality.");
 		}
 
 		final List<String> permittedRoleList = Lists.newArrayList(configuredRoles.split(","));
@@ -26,7 +26,7 @@ public class BMSPreAuthorizeUtil {
 		for (final GrantedAuthority grantedAuthority : authorities) {
 			final String authority = grantedAuthority.getAuthority();
 			if (!StringUtil.containsIgnoreCase(permittedRoleList, authority.split(SecurityUtil.ROLE_PREFIX)[1])) {
-				throw new AccessDeniedException("You have not authorized role to access this link");
+				throw new AccessDeniedException("Access Denied. User does not have appropriate role to access the functionality.");
 			}
 
 		}
