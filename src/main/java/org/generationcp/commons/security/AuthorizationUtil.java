@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.generationcp.middleware.util.StringUtil;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.google.common.collect.Lists;
 
@@ -15,7 +14,7 @@ public class AuthorizationUtil {
 
 	public static void preAuthorize(final String configuredRoles) {
 
-		final Collection<? extends GrantedAuthority> authorities = SecurityContextHolder.getContext().getAuthentication().getAuthorities();
+		final Collection<? extends GrantedAuthority> authorities = SecurityUtil.getLoggedInUserRoles();
 
 		if (StringUtils.isEmpty(configuredRoles)) {
 			throw new AccessDeniedException("Access Denied. No role is configured to access this functionality.");
