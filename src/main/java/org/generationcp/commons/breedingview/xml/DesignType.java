@@ -1,28 +1,33 @@
 /***************************************************************
  * Copyright (c) 2012, All Rights Reserved.
- *
+ * <p/>
  * Generation Challenge Programme (GCP)
  *
  * @author Kevin L. Manansala
- *
- *         This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of
- *         Part F of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
- *
+ * <p/>
+ * This software is licensed for use under the terms of the GNU General Public License (http://bit.ly/8Ztv8M) and the provisions of
+ * Part F of the Generation Challenge Programme Amended Consortium Agreement (http://bit.ly/KQX1nL)
  **************************************************************/
 
 package org.generationcp.commons.breedingview.xml;
 
 public enum DesignType {
-	RANDOMIZED_BLOCK_DESIGN("Randomized block design"), INCOMPLETE_BLOCK_DESIGN("Incomplete block design"), RESOLVABLE_INCOMPLETE_BLOCK_DESIGN(
-			"Resolvable incomplete block design"), ROW_COLUMN_DESIGN("Row-column design"), RESOLVABLE_ROW_COLUMN_DESIGN(
-			"Resolvable row-column design"), P_REP_DESIGN("P-rep design");
+	RANDOMIZED_BLOCK_DESIGN("Randomized block design"), RESOLVABLE_INCOMPLETE_BLOCK_DESIGN(
+			"Resolvable incomplete block design"), RESOLVABLE_ROW_COLUMN_DESIGN("Resolvable row-column design"), P_REP_DESIGN(
+			"P-rep design"),
+	// Augmented design is just a variation of the Incomplete Block Design type.
+	AUGMENTED_RANDOMIZED_BLOCK("Incomplete block design");
 
 	private final String name;
 
-	private DesignType(String name) {
+	private DesignType(final String name) {
 		this.name = name;
 	}
 
+	/**
+	 * The name of the design that the system sends to Breeding View. This name is constant and defined by the Breeding View application.
+	 * @return
+	 */
 	public String getName() {
 		return this.name;
 	}
@@ -31,10 +36,10 @@ public enum DesignType {
 	 * Gets the design type by name.
 	 * @param name
 	 * @return
-     */
-	public static DesignType getDesignTypeByName(String name) {
+	 */
+	public static DesignType getDesignTypeByName(final String name) {
 
-		for (DesignType designType: DesignType.values()){
+		for (final DesignType designType : DesignType.values()) {
 			if (designType.getName().equals(name)) {
 				return designType;
 			}
@@ -44,19 +49,4 @@ public enum DesignType {
 		throw new IllegalArgumentException("No DesignType constant found for name: \"" + name + "\"");
 	}
 
-	/**
-	 * Gets the design type name to be used in Breeding View application.
-	 * @return
-     */
-	public String resolveDesignTypeNameForBreedingView() {
-
-		if (this.name.equals(DesignType.INCOMPLETE_BLOCK_DESIGN.getName())) {
-			return DesignType.RESOLVABLE_INCOMPLETE_BLOCK_DESIGN.getName();
-		} else if (this.name.equals(DesignType.ROW_COLUMN_DESIGN.getName())) {
-			return DesignType.RESOLVABLE_ROW_COLUMN_DESIGN.getName();
-		} else {
-			return this.name;
-		}
-
-	}
 }
