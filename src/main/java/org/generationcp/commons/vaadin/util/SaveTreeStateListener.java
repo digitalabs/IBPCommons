@@ -19,7 +19,6 @@ import com.vaadin.ui.Window;
 @Configurable
 public class SaveTreeStateListener implements Window.CloseListener {
 
-    static final String DEFAULT_STATE_SAVED_FOR_GERMPLASM_LIST = "Lists";
 	private TreeTable sourceTable;
     private Tree sourceTree;
     private String treeType;
@@ -47,12 +46,6 @@ public class SaveTreeStateListener implements Window.CloseListener {
     @Override
     public void windowClose(Window.CloseEvent e) {
         List<String> itemIds = getExpandedIds();
-        if(itemIds == null) {
-        	itemIds = new ArrayList<>();
-        }
-        if(itemIds.isEmpty()) {
-        	itemIds.add(DEFAULT_STATE_SAVED_FOR_GERMPLASM_LIST);
-        }
         this.userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentUserLocalId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
     }
 
