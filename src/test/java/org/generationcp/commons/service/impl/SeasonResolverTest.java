@@ -34,7 +34,8 @@ public class SeasonResolverTest {
 	private ContextUtil contextUtil;
 
 	private static final Integer SEASON_CATEGORY_ID = 10290;
-	private static final String SEASON_CATEGORY_VALUE = "Dry Season";
+	private static final String SEASON_CATEGORY_NAME_VALUE = "1";
+	private static final String SEASON_CATEGORY_DESCRIPTION_VALUE = "Dry Season";
 
 	@Before
 	public void setUp() {
@@ -48,7 +49,7 @@ public class SeasonResolverTest {
 
 		Variable seasonVariable = new Variable();
 		Scale seasonScale = new Scale();
-		TermSummary seasonCategory = new TermSummary(SEASON_CATEGORY_ID, SEASON_CATEGORY_VALUE, SEASON_CATEGORY_VALUE);
+		TermSummary seasonCategory = new TermSummary(SEASON_CATEGORY_ID, SEASON_CATEGORY_NAME_VALUE, SEASON_CATEGORY_DESCRIPTION_VALUE);
 		seasonScale.addCategory(seasonCategory);
 		seasonVariable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
@@ -76,7 +77,7 @@ public class SeasonResolverTest {
 				trailInstanceObservation, studyType);
 		String season = seasonResolver.resolve();
 		Assert.assertEquals("Season should be resolved to the value of Crop_season_Code variable value in Nursery settings.",
-				SEASON_CATEGORY_VALUE, season);
+				SEASON_CATEGORY_NAME_VALUE, season);
 
 	}
 
@@ -142,7 +143,7 @@ public class SeasonResolverTest {
 		MeasurementVariable instance1SeasonMV = new MeasurementVariable();
 		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
 		MeasurementData instance1SeasonMD = new MeasurementData();
-		instance1SeasonMD.setValue(SEASON_CATEGORY_VALUE);
+		instance1SeasonMD.setValue(SEASON_CATEGORY_NAME_VALUE);
 		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
 
 		MeasurementVariable instance1MV = new MeasurementVariable();
@@ -162,7 +163,7 @@ public class SeasonResolverTest {
 				trialInstanceObservation, studyType);
 		String season = seasonResolver.resolve();
 		Assert.assertEquals("Season should be resolved to the value of Crop_season_Code variable value in environment level settings.",
-				SEASON_CATEGORY_VALUE, season);
+				SEASON_CATEGORY_NAME_VALUE, season);
 	}
 
 	@Test
