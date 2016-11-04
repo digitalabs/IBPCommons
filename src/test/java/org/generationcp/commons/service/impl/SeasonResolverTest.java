@@ -1,10 +1,14 @@
 package org.generationcp.commons.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.data.initializer.ValueReferenceTestDataInitializer;
+import org.generationcp.middleware.domain.dms.ValueReference;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
@@ -26,6 +30,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class SeasonResolverTest {
+
+	private ValueReferenceTestDataInitializer valueReferenceTestDataInitializer;
 
 	@Mock
 	private OntologyVariableDataManager ontologyVariableDataManager;
@@ -54,6 +60,8 @@ public class SeasonResolverTest {
 		seasonVariable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
 				Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(seasonVariable);
+
+		this.valueReferenceTestDataInitializer = new ValueReferenceTestDataInitializer();
 	}
 
 	@Test
@@ -142,8 +150,9 @@ public class SeasonResolverTest {
 
 		MeasurementVariable instance1SeasonMV = new MeasurementVariable();
 		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
+		instance1SeasonMV.setPossibleValues(this.createTestPossibleValuesForSeasonVariable());
 		MeasurementData instance1SeasonMD = new MeasurementData();
-		instance1SeasonMD.setValue(SEASON_CATEGORY_NAME_VALUE);
+		instance1SeasonMD.setValue(SEASON_CATEGORY_DESCRIPTION_VALUE);
 		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
 
 		MeasurementVariable instance1MV = new MeasurementVariable();
@@ -223,5 +232,12 @@ public class SeasonResolverTest {
 		Assert.assertEquals(
 				"Season should be defaulted to current year and month when Crop_season_Code variable is not present in environment level settings.",
 				currentYearAndMonth, season);
+	}
+
+
+	private List<ValueReference> createTestPossibleValuesForSeasonVariable() {
+		final List<ValueReference> possibleValues = new ArrayList<>();
+		possibleValues.add(this.valueReferenceTestDataInitializer.createValueReference(SEASON_CATEGORY_ID, SEASON_CATEGORY_NAME_VALUE, SEASON_CATEGORY_DESCRIPTION_VALUE));
+		return possibleValues;
 	}
 }
