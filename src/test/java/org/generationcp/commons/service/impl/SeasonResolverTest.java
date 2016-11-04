@@ -148,21 +148,21 @@ public class SeasonResolverTest {
 		studyDetails.setStudyType(StudyType.T);
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1SeasonMV = new MeasurementVariable();
-		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
-		instance1SeasonMV.setPossibleValues(this.createTestPossibleValuesForSeasonVariable());
+		MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();
+		firstInstanceSeasonMeasurementVariable.setTermId(TermId.SEASON_VAR.getId());
+		firstInstanceSeasonMeasurementVariable.setPossibleValues(this.createTestPossibleValuesForSeasonVariable());
 		MeasurementData instance1SeasonMD = new MeasurementData();
 		instance1SeasonMD.setValue(SEASON_CATEGORY_DESCRIPTION_VALUE);
-		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
+		instance1SeasonMD.setMeasurementVariable(firstInstanceSeasonMeasurementVariable);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
-		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
-		instance1MD.setValue("1");
-		instance1MD.setMeasurementVariable(instance1MV);
+		MeasurementVariable firstInstanceMeasurementVariable = new MeasurementVariable();
+		firstInstanceMeasurementVariable.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		MeasurementData firstInstanceMeasurementData = new MeasurementData();
+		firstInstanceMeasurementData.setValue("1");
+		firstInstanceMeasurementData.setMeasurementVariable(firstInstanceMeasurementVariable);
 
 		MeasurementRow trialInstanceObservation = new MeasurementRow();
-		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1SeasonMD));
+		trialInstanceObservation.setDataList(Lists.newArrayList(firstInstanceMeasurementData, instance1SeasonMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
 
@@ -182,20 +182,20 @@ public class SeasonResolverTest {
 		studyDetails.setStudyType(StudyType.T);
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1SeasonMV = new MeasurementVariable();
-		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
+		MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();
+		firstInstanceSeasonMeasurementVariable.setTermId(TermId.SEASON_VAR.getId());
 		MeasurementData instance1SeasonMD = new MeasurementData();
 		// Variable present but has no value
-		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
+		instance1SeasonMD.setMeasurementVariable(firstInstanceSeasonMeasurementVariable);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
-		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
-		instance1MD.setValue("1");
-		instance1MD.setMeasurementVariable(instance1MV);
+		MeasurementVariable firstInstanceMeasurementVariable = new MeasurementVariable();
+		firstInstanceMeasurementVariable.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		MeasurementData firstInstanceMeasurementData = new MeasurementData();
+		firstInstanceMeasurementData.setValue("1");
+		firstInstanceMeasurementData.setMeasurementVariable(firstInstanceMeasurementVariable);
 
 		MeasurementRow trialInstanceObservation = new MeasurementRow();
-		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1SeasonMD));
+		trialInstanceObservation.setDataList(Lists.newArrayList(firstInstanceMeasurementData, instance1SeasonMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
 
