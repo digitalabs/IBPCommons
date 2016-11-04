@@ -3,6 +3,7 @@ package org.generationcp.commons.service.impl;
 import java.util.List;
 
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.StudyType;
@@ -36,5 +37,10 @@ public class HabitatDesignationResolver extends CategoricalKeyCodeResolverBase{
 				"No Habitat_Designation(3002) variable was found or it is present but no value is set."
 						+ "Resolving Habitat value to be an empty string.");
 		return "";
+	}
+
+	@Override
+	protected String getValueFromTrialInstanceMeasurementData(final MeasurementData measurementData) {
+		return measurementData.getValue();
 	}
 }
