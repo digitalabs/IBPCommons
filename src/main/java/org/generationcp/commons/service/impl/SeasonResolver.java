@@ -11,6 +11,7 @@ import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
