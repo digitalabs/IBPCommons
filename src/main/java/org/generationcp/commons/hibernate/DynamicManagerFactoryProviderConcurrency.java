@@ -61,7 +61,10 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 		factory.setSessionProvider(new HibernateSessionPerThreadProvider(applicableCropSessionFactory));
 		factory.setDatabaseName(databaseName);
 		factory.setCropName(project.getCropType().getCropName());
+
 		ContextHolder.setCurrentCrop(project.getCropType().getCropName());
+		ContextHolder.setCurrentProgram(project.getUniqueID());
+
 		factory.setPedigreeProfile(this.pedigreeProfile);
 		return factory;
 
