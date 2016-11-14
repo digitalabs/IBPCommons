@@ -224,23 +224,21 @@ public class MySQLUtil {
 			Files.write(Paths.get(backupFilename), comment.getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0');\n".getBytes(), StandardOpenOption.APPEND);
-			for (Project program : this.workbenchDataManager.getProjects()) {
-				if (program.getCropType().equals(this.contextUtil.getProjectInContext().getCropType())) {
-					StringBuilder sb = new StringBuilder();
-					// sorry magic number here, will be replaced on restoration
-					sb.append("INSERT into `workbench_project` values (null, 9999, '");
-					sb.append(program.getProjectName());
-					sb.append("','");
-					sb.append(program.getStartDate());
-					sb.append("','");
-					sb.append(program.getUniqueID());
-					// 'tutorial' crop will be replaced with the crop in context upon restore
-					sb.append("','tutorial','");
-					sb.append(program.getLastOpenDate());
-					sb.append("');\n");
-					MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
-					Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
-				}
+			for (Project program : this.workbenchDataManager.getProjectsByCrop(this.contextUtil.getProjectInContext().getCropType())) {
+				StringBuilder sb = new StringBuilder();
+				// sorry magic number here, will be replaced on restoration
+				sb.append("INSERT into `workbench_project` values (null, 9999, '");
+				sb.append(program.getProjectName());
+				sb.append("','");
+				sb.append(program.getStartDate());
+				sb.append("','");
+				sb.append(program.getUniqueID());
+				// 'tutorial' crop will be replaced with the crop in context upon restore
+				sb.append("','tutorial','");
+				sb.append(program.getLastOpenDate());
+				sb.append("');\n");
+				MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
+				Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
 			}
 		}
 
