@@ -38,6 +38,8 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 
 	protected abstract String getDefaultValue();
 
+	protected abstract String getValueFromTrialInstanceMeasurementData(MeasurementData measurementData);
+
 	@Override
 	public String resolve() {
 		String resolvedValue = "";
@@ -69,7 +71,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 			if (this.trailInstanceObservation != null) {
 				for (MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
 					if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == getKeyCodeId().getId()) {
-						resolvedValue = trialInstanceMeasurement.getValue();
+						resolvedValue = getValueFromTrialInstanceMeasurementData(trialInstanceMeasurement);
 						break;
 					}
 				}
