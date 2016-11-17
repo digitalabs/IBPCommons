@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.service.impl;
 
 import java.util.List;
@@ -12,6 +13,10 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+
 /**
  * Revolves Location value for Nurseries and Trials.
  */
@@ -23,7 +28,7 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocationResolver.class);
 
-	public LocationResolver(List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
+	public LocationResolver(final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
 			final StudyType studyType) {
 		this.studyType = studyType;
 		this.trailInstanceObservation = trailInstanceObservation;
@@ -34,13 +39,13 @@ public class LocationResolver implements KeyComponentValueResolver {
 	public String resolve() {
 		String location = "";
 
-		if(this.studyType == StudyType.N){
+		if (this.studyType == StudyType.N) {
 
 			MeasurementVariable locationAbbrVariable = null;
 
-			Integer locationId = TermId.LOCATION_ABBR.getId();
+			final Integer locationId = TermId.LOCATION_ABBR.getId();
 			if (this.conditions != null) {
-				for (MeasurementVariable mv : this.conditions) {
+				for (final MeasurementVariable mv : this.conditions) {
 					if (mv.getTermId() == locationId) {
 						locationAbbrVariable = mv;
 					}
@@ -50,22 +55,30 @@ public class LocationResolver implements KeyComponentValueResolver {
 				location = locationAbbrVariable.getValue();
 			}
 
-		}else if(this.studyType == StudyType.T){
+		} else if (this.studyType == StudyType.T) {
 
 			if (this.trailInstanceObservation != null) {
-				for (MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
-					if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == TermId.LOCATION_ABBR.getId()) {
-						location = trialInstanceMeasurement.getValue();
-						break;
-					}
+				final ImmutableMap<Integer, MeasurementData> dataListMap =
+						Maps.uniqueIndex(this.trailInstanceObservation.getDataList(), new Function<MeasurementData, Integer>() {
+
+							@Override
+							public Integer apply(final MeasurementData measurementData) {
+								return measurementData.getMeasurementVariable().getTermId();
+							}
+						});
+				if (dataListMap.containsKey(TermId.LOCATION_ABBR.getId())) {
+					location = dataListMap.get(TermId.LOCATION_ABBR.getId()).getValue();
+				} else if (dataListMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
+					location = dataListMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
+				} else {
+					location = dataListMap.get(TermId.TRIAL_INSTANCE_FACTOR.getId()).getValue();
 				}
 			}
 		}
 
 		if (StringUtils.isBlank(location)) {
-			LOG.debug(
-					"No LOCATION_ABBR(8189) variable was found or it is present but no value is set. "
-							+ "Resolving location value to be an empty string.");
+			LocationResolver.LOG.debug("No LOCATION_ABBR(8189) variable was found or it is present but no value is set. "
+					+ "Resolving location value to be an empty string.");
 			return "";
 		}
 
