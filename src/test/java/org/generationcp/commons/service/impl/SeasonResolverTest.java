@@ -314,7 +314,43 @@ public class SeasonResolverTest {
 
 	}
 
+	@Test
+	public void testResolveForTrialWithSeasonVariableConditions() {
+		Workbook workbook = new Workbook();
+		StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyType.T);
+		workbook.setStudyDetails(studyDetails);
 
+		MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();
+		firstInstanceSeasonMeasurementVariable.setTermId(TermId.SEASON_VAR.getId());
+		firstInstanceSeasonMeasurementVariable.setPossibleValues(this.createTestPossibleValuesForSeasonVariable());
+		MeasurementData instance1SeasonMD = new MeasurementData();
+		instance1SeasonMD.setValue(SEASON_CATEGORY_DESCRIPTION_VALUE);
+		instance1SeasonMD.setMeasurementVariable(firstInstanceSeasonMeasurementVariable);
+
+		MeasurementVariable firstInstanceMeasurementVariable = new MeasurementVariable();
+		firstInstanceMeasurementVariable.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		MeasurementData firstInstanceMeasurementData = new MeasurementData();
+		firstInstanceMeasurementData.setValue("1");
+		firstInstanceMeasurementData.setMeasurementVariable(firstInstanceMeasurementVariable);
+
+		MeasurementRow trialInstanceObservation = new MeasurementRow();
+		trialInstanceObservation.setDataList(Lists.newArrayList(firstInstanceMeasurementData, instance1SeasonMD));
+		
+		List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
+		conditions.add(firstInstanceSeasonMeasurementVariable);
+		conditions.add(firstInstanceMeasurementVariable);
+		workbook.setConditions(conditions);
+
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		SeasonResolver seasonResolver = new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				trialInstanceObservation, studyType);
+		String season = seasonResolver.resolve();
+		Assert.assertEquals("Season should be resolved to the value of Crop_season_Code variable value in environment level settings.",
+				SEASON_CATEGORY_NAME_VALUE, season);
+	}
+	
 	private List<ValueReference> createTestPossibleValuesForSeasonVariable() {
 		final List<ValueReference> possibleValues = new ArrayList<>();
 		possibleValues.add(this.valueReferenceTestDataInitializer.createValueReference(SEASON_CATEGORY_ID, SEASON_CATEGORY_NAME_VALUE, SEASON_CATEGORY_DESCRIPTION_VALUE));

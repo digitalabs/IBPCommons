@@ -2,6 +2,10 @@ package org.generationcp.commons.service.impl;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
@@ -102,6 +106,43 @@ public class ProjectPrefixResolverTest {
 		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1ProgramMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
+
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		ProjectPrefixResolver
+				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				trialInstanceObservation, studyType);
+		String season = projectPrefixResolver.resolve();
+		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in environment level settings.",
+				PROJECT_CATEGORY_VALUE, season);
+	}
+	
+	@Test
+	public void testResolveForTrialWithProgramVariableConditions() {
+		Workbook workbook = new Workbook();
+		StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyType.T);
+		workbook.setStudyDetails(studyDetails);
+
+		MeasurementVariable instance1ProgramMV = new MeasurementVariable();
+		instance1ProgramMV.setTermId(TermId.PROJECT_PREFIX.getId());
+		MeasurementData instance1ProgramMD = new MeasurementData();
+		instance1ProgramMD.setValue(PROJECT_CATEGORY_VALUE);
+		instance1ProgramMD.setMeasurementVariable(instance1ProgramMV);
+
+		MeasurementVariable instance1MV = new MeasurementVariable();
+		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		MeasurementData instance1MD = new MeasurementData();
+		instance1MD.setValue("1");
+		instance1MD.setMeasurementVariable(instance1MV);
+
+		MeasurementRow trialInstanceObservation = new MeasurementRow();
+		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1ProgramMD));
+
+		List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
+		conditions.add(instance1MV);
+		conditions.add(instance1ProgramMV);
+		workbook.setConditions(conditions );
 
 		StudyType studyType = workbook.getStudyDetails().getStudyType();
 

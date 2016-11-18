@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.service.impl;
 
 import java.util.List;
@@ -16,8 +17,8 @@ public class ProjectPrefixResolver extends CategoricalKeyCodeResolverBase {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProjectPrefixResolver.class);
 
-	public ProjectPrefixResolver(OntologyVariableDataManager ontologyVariableDataManager, ContextUtil contextUtil, List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
-			final StudyType studyType) {
+	public ProjectPrefixResolver(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
+			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyType studyType) {
 		super(ontologyVariableDataManager, contextUtil, conditions, trailInstanceObservation, studyType);
 	}
 
@@ -33,13 +34,18 @@ public class ProjectPrefixResolver extends CategoricalKeyCodeResolverBase {
 
 	@Override
 	protected String getDefaultValue() {
-		LOG.debug(
-				"No Project_Prefix(3001) variable was found or it is present but no value is set."
-						+ "Resolving Program value to be an empty string.");
+		ProjectPrefixResolver.LOG.debug("No Project_Prefix(3001) variable was found or it is present but no value is set."
+				+ "Resolving Program value to be an empty string.");
 		return "";
 	}
+
 	@Override
 	protected String getValueFromTrialInstanceMeasurementData(final MeasurementData measurementData) {
 		return measurementData.getValue();
+	}
+
+	@Override
+	protected String getValueFromTrialConditions(final MeasurementVariable trialCondition) {
+		return trialCondition.getValue();
 	}
 }
