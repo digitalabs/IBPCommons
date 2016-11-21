@@ -126,19 +126,14 @@ public class ProjectPrefixResolverTest {
 
 		MeasurementVariable instance1ProgramMV = new MeasurementVariable();
 		instance1ProgramMV.setTermId(TermId.PROJECT_PREFIX.getId());
-		MeasurementData instance1ProgramMD = new MeasurementData();
-		instance1ProgramMD.setValue(PROJECT_CATEGORY_VALUE);
-		instance1ProgramMD.setMeasurementVariable(instance1ProgramMV);
-
+		instance1ProgramMV.setValue(PROJECT_CATEGORY_VALUE);
+		
 		MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
-		instance1MD.setValue("1");
-		instance1MD.setMeasurementVariable(instance1MV);
-
-		MeasurementRow trialInstanceObservation = new MeasurementRow();
-		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1ProgramMD));
-
+		instance1MV.setValue("1");
+		
+		MeasurementRow trialInstanceObservation = null;
+		
 		List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
 		conditions.add(instance1MV);
 		conditions.add(instance1ProgramMV);

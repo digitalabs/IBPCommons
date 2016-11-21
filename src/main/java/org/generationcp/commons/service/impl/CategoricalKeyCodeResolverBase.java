@@ -79,7 +79,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 					}
 				}
 			}
-			if (this.conditions != null) {
+			if (StringUtils.isBlank(resolvedValue) && this.conditions != null) {
 				for (final MeasurementVariable trialCondition : this.conditions) {
 					if (trialCondition.getTermId() == this.getKeyCodeId().getId()) {
 						resolvedValue = this.getValueFromTrialConditions(trialCondition);

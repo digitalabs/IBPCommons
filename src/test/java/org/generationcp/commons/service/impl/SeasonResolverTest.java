@@ -324,19 +324,14 @@ public class SeasonResolverTest {
 		MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();
 		firstInstanceSeasonMeasurementVariable.setTermId(TermId.SEASON_VAR.getId());
 		firstInstanceSeasonMeasurementVariable.setPossibleValues(this.createTestPossibleValuesForSeasonVariable());
-		MeasurementData instance1SeasonMD = new MeasurementData();
-		instance1SeasonMD.setValue(SEASON_CATEGORY_DESCRIPTION_VALUE);
-		instance1SeasonMD.setMeasurementVariable(firstInstanceSeasonMeasurementVariable);
+		firstInstanceSeasonMeasurementVariable.setValue(SEASON_CATEGORY_DESCRIPTION_VALUE);
 
 		MeasurementVariable firstInstanceMeasurementVariable = new MeasurementVariable();
 		firstInstanceMeasurementVariable.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData firstInstanceMeasurementData = new MeasurementData();
-		firstInstanceMeasurementData.setValue("1");
-		firstInstanceMeasurementData.setMeasurementVariable(firstInstanceMeasurementVariable);
-
-		MeasurementRow trialInstanceObservation = new MeasurementRow();
-		trialInstanceObservation.setDataList(Lists.newArrayList(firstInstanceMeasurementData, instance1SeasonMD));
+		firstInstanceMeasurementVariable.setValue("1");
 		
+		MeasurementRow trialInstanceObservation = null;
+				
 		List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
 		conditions.add(firstInstanceSeasonMeasurementVariable);
 		conditions.add(firstInstanceMeasurementVariable);

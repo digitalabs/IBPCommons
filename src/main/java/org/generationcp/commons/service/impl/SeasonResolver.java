@@ -72,7 +72,10 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 
 	@Override
 	protected String getValueFromTrialConditions(final MeasurementVariable variable) {
-		return this.getValue(variable.getValue(), variable.getPossibleValues());
+		if (TermId.SEASON_VAR.getId() == variable.getTermId()) {
+			return this.getValue(variable.getValue(), variable.getPossibleValues());
+		}
+		return "";
 	}
 
 	private String getValue(final String value, final List<ValueReference> possibleValues) {

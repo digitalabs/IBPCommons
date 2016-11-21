@@ -126,18 +126,13 @@ public class HabitatDesignationResolverTest {
 
 		MeasurementVariable instance1HabitatMV = new MeasurementVariable();
 		instance1HabitatMV.setTermId(TermId.HABITAT_DESIGNATION.getId());
-		MeasurementData instance1Habitat = new MeasurementData();
-		instance1Habitat.setValue(HABITAT_CATEGORY_VALUE);
-		instance1Habitat.setMeasurementVariable(instance1HabitatMV);
+		instance1HabitatMV.setValue(HABITAT_CATEGORY_VALUE);
 
 		MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
-		instance1MD.setValue("1");
-		instance1MD.setMeasurementVariable(instance1MV);
-
-		MeasurementRow trialInstanceObservation = new MeasurementRow();
-		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1Habitat));
+		instance1MV.setValue("1");
+		
+		MeasurementRow trialInstanceObservation = null;
 
 		List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
 		conditions.add(instance1MV);
