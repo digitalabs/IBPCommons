@@ -55,6 +55,12 @@ public class LocationResolver implements KeyComponentValueResolver {
 				location = locationAbbrVariable.getValue();
 			}
 
+			if (StringUtils.isBlank(location)) {
+				LocationResolver.LOG.debug(
+						"No LOCATION_ABBR(8189) found in nursery. Or it is present but no value is set. Resolving location value to be an empty string.");
+				return "";
+			}
+
 		} else if (this.studyType == StudyType.T) {
 
 			if (this.trailInstanceObservation != null) {
@@ -74,13 +80,12 @@ public class LocationResolver implements KeyComponentValueResolver {
 					location = dataListMap.get(TermId.TRIAL_INSTANCE_FACTOR.getId()).getValue();
 				}
 			}
-		}
-
-		if (StringUtils.isBlank(location)) {
-			LocationResolver.LOG
-					.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found or it is present but no value is set. "
-					+ "Resolving location value to be an empty string.");
-			return "";
+			if (StringUtils.isBlank(location)) {
+				LocationResolver.LOG
+						.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in trial. Or it is present but no value is set. "
+								+ "Resolving location value to be an empty string.");
+				return "";
+			}
 		}
 
 		return location;
