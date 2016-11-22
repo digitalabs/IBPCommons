@@ -245,7 +245,7 @@ public class LocationResolverTest {
 		StudyType studyType = workbook.getStudyDetails().getStudyType();
 
 		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
-		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in environment level settings.",
+		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in environment level settings.",
 				trialLocation,
 				location);
 	}
