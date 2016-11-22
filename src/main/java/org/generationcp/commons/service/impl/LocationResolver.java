@@ -77,7 +77,8 @@ public class LocationResolver implements KeyComponentValueResolver {
 		}
 
 		if (StringUtils.isBlank(location)) {
-			LocationResolver.LOG.debug("No LOCATION_ABBR(8189) variable was found or it is present but no value is set. "
+			LocationResolver.LOG
+					.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found or it is present but no value is set. "
 					+ "Resolving location value to be an empty string.");
 			return "";
 		}
