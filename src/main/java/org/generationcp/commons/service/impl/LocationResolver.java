@@ -41,24 +41,23 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 		if (this.studyType == StudyType.N) {
 
-			MeasurementVariable locationAbbrVariable = null;
-
-			final Integer locationId = TermId.LOCATION_ABBR.getId();
 			if (this.conditions != null) {
-				for (final MeasurementVariable mv : this.conditions) {
-					if (mv.getTermId() == locationId) {
-						locationAbbrVariable = mv;
-					}
-				}
-			}
-			if (locationAbbrVariable != null) {
-				location = locationAbbrVariable.getValue();
-			}
+				final ImmutableMap<Integer, MeasurementVariable> conditionsMap =
+						Maps.uniqueIndex(this.conditions, new Function<MeasurementVariable, Integer>() {
 
-			if (StringUtils.isBlank(location)) {
-				LocationResolver.LOG.debug(
-						"No LOCATION_ABBR(8189) found in nursery. Or it is present but no value is set. Resolving location value to be an empty string.");
-				return "";
+							@Override
+							public Integer apply(final MeasurementVariable measurementVariable) {
+								return measurementVariable.getTermId();
+							}
+						});
+
+				if (conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
+					location = conditionsMap.get(TermId.LOCATION_ABBR.getId()).getValue();
+				} else if (conditionsMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
+					location = conditionsMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
+				} else {
+					location = conditionsMap.get(TermId.TRIAL_INSTANCE_FACTOR.getId()).getValue();
+				}
 			}
 
 		} else if (this.studyType == StudyType.T) {
@@ -72,6 +71,7 @@ public class LocationResolver implements KeyComponentValueResolver {
 								return measurementData.getMeasurementVariable().getTermId();
 							}
 						});
+
 				if (dataListMap.containsKey(TermId.LOCATION_ABBR.getId())) {
 					location = dataListMap.get(TermId.LOCATION_ABBR.getId()).getValue();
 				} else if (dataListMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
@@ -80,12 +80,13 @@ public class LocationResolver implements KeyComponentValueResolver {
 					location = dataListMap.get(TermId.TRIAL_INSTANCE_FACTOR.getId()).getValue();
 				}
 			}
-			if (StringUtils.isBlank(location)) {
-				LocationResolver.LOG
-						.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in trial. Or it is present but no value is set. "
-								+ "Resolving location value to be an empty string.");
-				return "";
-			}
+		}
+
+		if (StringUtils.isBlank(location)) {
+			LocationResolver.LOG
+					.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in " + this.studyType.getLabel() + ". Or it is present but no value is set. "
+							+ "Resolving location value to be an empty string.");
+			return "";
 		}
 
 		return location;

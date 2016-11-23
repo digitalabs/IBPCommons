@@ -48,7 +48,6 @@ public class LocationResolverTest {
 
 		MeasurementVariable locationMV = new MeasurementVariable();
 		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
-		// No value
 
 		workbook.setConditions(Lists.newArrayList(locationMV));
 
@@ -73,6 +72,91 @@ public class LocationResolverTest {
 
 		String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is not present.", "", location);
+	}
+
+	@Test
+	public void testResolveForNurseryWithLocationAbbreviationAndLocationName() {
+		final String locationAbbr = "MEX";
+		final String nurseryLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
+
+		Workbook workbook = new Workbook();
+		StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyType.N);
+		workbook.setStudyDetails(studyDetails);
+
+		MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
+		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
+		instance1LocationAbbrMV.setValue(locationAbbr);
+
+		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
+		instance1LocationNameMV.setValue(nurseryLocation);
+
+		MeasurementVariable instance1MV = new MeasurementVariable();
+		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		instance1MV.setValue("1");
+
+		workbook.setConditions(Lists.newArrayList(instance1LocationAbbrMV, instance1LocationNameMV, instance1MV));
+
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, null, studyType).resolve();
+		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in nursery settings.",
+				locationAbbr,
+				location);
+	}
+
+	@Test
+	public void testResolveForNurseryWithoutLocationVariable() {
+		final String trialInstance = "1";
+
+		Workbook workbook = new Workbook();
+		StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyType.N);
+		workbook.setStudyDetails(studyDetails);
+
+		MeasurementVariable instance1MV = new MeasurementVariable();
+		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		instance1MV.setValue("1");
+
+		workbook.setConditions(Lists.newArrayList(instance1MV));
+
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, null, studyType).resolve();
+		Assert.assertEquals(
+				"Location should be defaulted to TRIAL_INSTANCE when LOCATION_ABBR and LOCATION_NAME variables are not present in nursery settings.",
+				trialInstance, location);
+	}
+
+	@Test
+	public void testResolveForNurseryWithLocationName() {
+		final String nurseryLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
+
+		Workbook workbook = new Workbook();
+		StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyType.N);
+		workbook.setStudyDetails(studyDetails);
+
+		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
+		instance1LocationNameMV.setValue(nurseryLocation);
+
+		MeasurementVariable instance1MV = new MeasurementVariable();
+		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		instance1MV.setValue("1");
+
+		workbook.setConditions(Lists.newArrayList(instance1LocationNameMV, instance1MV));
+
+		List<MeasurementVariable> conditions = workbook.getConditions();
+		StudyType studyType = workbook.getStudyDetails().getStudyType();
+
+		String location = new LocationResolver(conditions, null, studyType).resolve();
+		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in nursery settings.",
+				nurseryLocation,
+				location);
 	}
 
 	@Test
