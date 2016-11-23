@@ -39,18 +39,20 @@ public class LocationResolver implements KeyComponentValueResolver {
 	public String resolve() {
 		String location = "";
 
+		ImmutableMap<Integer, MeasurementVariable> conditionsMap = null;
+		if (this.conditions != null) {
+			conditionsMap = Maps.uniqueIndex(this.conditions, new Function<MeasurementVariable, Integer>() {
+
+				@Override
+				public Integer apply(final MeasurementVariable measurementVariable) {
+					return measurementVariable.getTermId();
+				}
+			});
+		}
+
 		if (this.studyType == StudyType.N) {
 
-			if (this.conditions != null) {
-				final ImmutableMap<Integer, MeasurementVariable> conditionsMap =
-						Maps.uniqueIndex(this.conditions, new Function<MeasurementVariable, Integer>() {
-
-							@Override
-							public Integer apply(final MeasurementVariable measurementVariable) {
-								return measurementVariable.getTermId();
-							}
-						});
-
+			if (conditionsMap != null) {
 				if (conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
 					location = conditionsMap.get(TermId.LOCATION_ABBR.getId()).getValue();
 				} else if (conditionsMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
@@ -74,9 +76,15 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 				if (dataListMap.containsKey(TermId.LOCATION_ABBR.getId())) {
 					location = dataListMap.get(TermId.LOCATION_ABBR.getId()).getValue();
+				} else if (conditionsMap != null && conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
+					location = conditionsMap.get(TermId.LOCATION_ABBR.getId()).getValue();
 				} else if (dataListMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
 					location = dataListMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
-				} else {
+				} else if (conditionsMap != null && conditionsMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
+					location = conditionsMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
+				}
+
+				if (StringUtils.isBlank(location) ) {
 					location = dataListMap.get(TermId.TRIAL_INSTANCE_FACTOR.getId()).getValue();
 				}
 			}
