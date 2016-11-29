@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class BackCrossSuffixRule extends ProcessCodeOrderedRule<CrossingRuleExecutionContext> {
 
 	static final String KEY = "BACKCROSSSUFFIX";
-	static final String MALE_RECURRENT_SUFFIX = "BM";
-	static final String FEMALE_RECURRENT_SUFFIX = "BF";
+	static final String MALE_RECURRENT_SUFFIX = "M";
+	static final String FEMALE_RECURRENT_SUFFIX = "F";
 	static final String PROCESS_CODE = "[BC]";
 
 	@Override
