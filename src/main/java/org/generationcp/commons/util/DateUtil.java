@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.generationcp.commons.constant.VaadinMessage;
 import org.generationcp.commons.exceptions.InvalidDateException;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -398,5 +399,10 @@ public class DateUtil {
 			daysInMonth = 31;
 		}
 		return daysInMonth;
+	}
+	
+	public static Date getCurrentDateWithZeroTime() {
+		final Date currentDate = getCurrentDate();
+		return DateUtils.truncate(currentDate, java.util.Calendar.DAY_OF_MONTH);
 	}
 }
