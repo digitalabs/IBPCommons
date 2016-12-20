@@ -285,4 +285,32 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 	public Table getTable() {
 		return this.transactionDetailsTabel;
 	}
+
+	public Label getLotIdLabel() {
+		return lotIdLabel;
+	}
+
+	public Label getLocation() {
+		return location;
+	}
+
+	public Label getScale() {
+		return scale;
+	}
+
+	public Label getActualBalance() {
+		return actualBalance;
+	}
+
+	public Label getAvailableBalance() {
+		return availableBalance;
+	}
+
+	public VerticalLayout getPanelContentLayout() {
+		return panelContentLayout;
+	}
+
+	public void setLotDetails(LotDetails lotDetails) {
+		this.lotDetails = lotDetails;
+	}
 }
