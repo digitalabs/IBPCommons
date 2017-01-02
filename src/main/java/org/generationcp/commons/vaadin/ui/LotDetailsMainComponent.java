@@ -58,4 +58,9 @@ public class LotDetailsMainComponent extends VerticalLayout implements Initializ
 	public void updateLabels() {
 
 	}
+
+	public List<LotDetails> getLotDetails() {
+		return lotDetails;
+	}
+
 }
