@@ -321,6 +321,20 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))) {
+				listEntry.createCell(j).setCellValue(data.getGroupId());
+				j++;
+			}
+
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
+				//TODO : BMS-3374 need to check for stockID
+				listEntry.createCell(j).setCellValue(data.getStockIDs());
+				j++;
+			}
+
+
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
 				listEntry.createCell(j).setCellValue(data.getCheckTypeDescription());
@@ -527,6 +541,31 @@ public class GermplasmExportedWorkbook {
 			}
 		}
 
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))) {
+
+			final Variable groupId = (Variable) columnTermMap.get(ColumnLabels.GROUP_ID.getTermId().getId());
+			final ExcelWorkbookRow groupIdRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
+
+			if (groupId != null) {
+				groupIdRow.writeStandardVariableToRow(labelStyleFactor, this.textStyle, groupId);
+				groupIdRow.createCell(8, this.textStyle, "Group ID of a germplasm");
+			}
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
+
+			final Variable stockId = (Variable) columnTermMap.get(ColumnLabels.STOCKID.getTermId().getId());
+			final ExcelWorkbookRow stockIdRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
+
+			if (stockId != null) {
+				stockIdRow.writeStandardVariableToRow(labelStyleFactor, this.textStyle, stockId);
+				stockIdRow.createCell(9, this.textStyle, "ID of an inventory deposit");
+			}
+		}
+
+
 		return actualRow;
 	}
 
@@ -689,6 +728,23 @@ public class GermplasmExportedWorkbook {
 			sourceCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GROUP_ID, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.STOCKID, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
 
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
