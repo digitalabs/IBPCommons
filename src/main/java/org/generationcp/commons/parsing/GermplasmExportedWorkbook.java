@@ -47,7 +47,6 @@ public class GermplasmExportedWorkbook {
 	public static final String SCALE = "SCALE";
 	public static final String METHOD = "METHOD";
 	public static final String DATA_TYPE = "DATA TYPE";
-	public static final String NESTED_IN = "NESTED IN";
 	public static final String VALUE = "VALUE";
 	public static final String COMMENTS = "COMMENTS";
 	public static final String INVENTORY = "INVENTORY";
