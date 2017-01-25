@@ -321,15 +321,14 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))) {
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUPGID))
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUPGID))) {
 				listEntry.createCell(j).setCellValue(data.getGroupId());
 				j++;
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
-				//TODO : BMS-3374 need to check for stockID
 				listEntry.createCell(j).setCellValue(data.getStockIDs());
 				j++;
 			}
@@ -541,10 +540,10 @@ public class GermplasmExportedWorkbook {
 			}
 		}
 
-		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUPGID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUPGID))) {
 
-			final Variable groupId = (Variable) columnTermMap.get(ColumnLabels.GROUP_ID.getTermId().getId());
+			final Variable groupId = (Variable) columnTermMap.get(ColumnLabels.GROUPGID.getTermId().getId());
 			final ExcelWorkbookRow groupIdRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 
 			if (groupId != null) {
@@ -729,10 +728,10 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUP_ID))) {
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUPGID))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUPGID))) {
 			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
-			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GROUP_ID, columnTermMap));
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GROUPGID, columnTermMap));
 			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
