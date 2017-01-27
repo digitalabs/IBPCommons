@@ -52,6 +52,9 @@ public class ImportedGermplasm implements Serializable {
 	/** The breeding method id. */
 	private Integer breedingMethodId;
 
+	/** The breeding method name. */
+	private String breedingMethodName;
+
 	/** Germplasm's GPID1 */
 	private Integer gpid1;
 
@@ -276,6 +279,20 @@ public class ImportedGermplasm implements Serializable {
 	}
 
 	/**
+	 * @return the breeding method name
+	 */
+	public String getBreedingMethodName() {
+		return breedingMethodName;
+	}
+
+	/**
+	 * @param breedingMethodName the breeding method name to set
+	 */
+	public void setBreedingMethodName(String breedingMethodName) {
+		this.breedingMethodName = breedingMethodName;
+	}
+
+	/**
 	 * @return the gpid1
 	 */
 	public Integer getGpid1() {
@@ -437,5 +454,4 @@ public class ImportedGermplasm implements Serializable {
 	public void setCrossListId(Integer crossListId) {
 		this.crossListId = crossListId;
 	}
-
 }
