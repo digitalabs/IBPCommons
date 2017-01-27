@@ -218,7 +218,7 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 
 	/**
 	 * Retrieves the breeding method of this cross. Note that this breeding method is unprocessed, its possible that this might not exists
-	 * in the methods table at all to process the method, retrive the method from the database and set this.breedingMethodId
+	 * in the methods table at all to process the method, retrieve the method from the database and set this.breedingMethodId
 	 *
 	 * @return
 	 */
