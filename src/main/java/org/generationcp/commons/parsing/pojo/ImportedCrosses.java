@@ -58,6 +58,10 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	 */
 	private String maleGid;
 
+  	private String femalePedigree;
+
+  	private String malePedigree;
+
 	private String duplicate;
 
 	private String femalePlotNo;
@@ -71,6 +75,10 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	private String femaleStudyName;
 	
 	private Set<Integer> duplicateEntries;
+
+    private String femaleCross;
+
+  	private String maleCross;
 
 	/**
 	 * Instantiates a new imported germplasm.
@@ -144,7 +152,9 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 				+ ", femaleDesig=" + this.femaleDesig + ", maleGid=" + this.maleGid + ", femaleGid=" + this.femaleGid + ", gid="
 				+ this.getGid() + ", cross=" + this.getCross() + ", source=" + this.getSource() + ", entryCode=" + this.getEntryCode()
 				+ ", check=" + this.getEntryTypeValue() + ", breedingMethodId=" + this.getBreedingMethodId() + ", gpid1=" + this.getGpid1()
-				+ ", gpid2=" + this.getGpid2() + ", gnpgs=" + this.getGnpgs() + ", names=" + this.getNames() + "]";
+				+ ", gpid2=" + this.getGpid2() + ", gnpgs=" + this.getGnpgs() + ", names=" + this.getNames() + ", malePedigree: "
+	  			+ this.getMalePedigree() + " , femalePedigree: " + this.getFemalePedigree() + ", maleCross: , " + this.getMaleCross() +""
+				+ ", femaleCross: " + this.getFemaleCross() + "]";
 	}
 
 	@Override
@@ -164,7 +174,8 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		rec.setMaleDesig(this.femaleDesig);
 		rec.setFemaleGid(this.femaleGid);
 		rec.setMaleGid(this.femaleGid);
-
+		rec.setFemalePedigree(this.getFemalePedigree());
+	  	rec.setMalePedigree(this.getMalePedigree());
 		return rec;
 	}
 
@@ -305,4 +316,38 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public boolean isBreedingMethodInformationAvailable() {
 		return ((getBreedingMethodId() != null && getBreedingMethodId() != 0) || !StringUtils.isEmpty(getRawBreedingMethod()));
 	}
+
+	public String getFemalePedigree() {
+	  return femalePedigree;
+	}
+
+	public void setFemalePedigree(final String femalePedigree) {
+	  this.femalePedigree = femalePedigree;
+	}
+
+	public String getMalePedigree() {
+	  return malePedigree;
+	}
+
+	public void setMalePedigree(final String malePedigree) {
+	  this.malePedigree = malePedigree;
+	}
+
+  public String getFemaleCross() {
+	return femaleCross;
+  }
+
+  public ImportedCrosses setFemaleCross(final String femaleCross) {
+	this.femaleCross = femaleCross;
+	return this;
+  }
+
+  public String getMaleCross() {
+	return maleCross;
+  }
+
+  public ImportedCrosses setMaleCross(final String maleCross) {
+	this.maleCross = maleCross;
+	return this;
+  }
 }
