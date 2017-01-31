@@ -72,7 +72,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		final File newFile = new File(fileNameFullPath);
 
 		final CSVWriter writer =
-				new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',', CSVWriter.NO_QUOTE_CHARACTER);
+				new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
 
 		// feed in your array (or convert your data to an array)
 		final List<String[]> rowValues = new ArrayList<>();
@@ -95,8 +95,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 				final ExportColumnValue exportColumnValue = exportColumnMap.get(exportColumnHeader.getId());
 				String colName = "";
 				if (exportColumnValue != null) {
-					final String value = exportColumnValue.getValue();
-					colName = StringUtil.cleanNameValueCommas(value);
+					colName = exportColumnValue.getValue();
 				}
 				values.add(colName);
 			}
@@ -108,7 +107,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		final List<String> values = new ArrayList<>();
 		for (final ExportColumnHeader exportColumnHeader : exportColumnHeaders) {
 			if (exportColumnHeader.isDisplay()) {
-				values.add(StringUtil.cleanNameValueCommas(exportColumnHeader.getName()));
+				values.add(exportColumnHeader.getName());
 			}
 		}
 		return values.toArray(new String[values.size()]);
