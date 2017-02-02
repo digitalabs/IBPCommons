@@ -13,7 +13,7 @@ public class BreedingMethodSetting implements Serializable {
 
 	private Integer methodId;
 	private boolean isBasedOnStatusOfParentalLines;
-  	private boolean basedOnImportFile;
+	private boolean basedOnImportFile;
 
 	public BreedingMethodSetting() {
 
@@ -23,7 +23,7 @@ public class BreedingMethodSetting implements Serializable {
 		super();
 		this.methodId = methodId;
 		this.isBasedOnStatusOfParentalLines = isBasedOnStatusOfParentalLines;
-	  	this.basedOnImportFile = basedOnImportFile;
+		this.basedOnImportFile = basedOnImportFile;
 	}
 
 	@XmlAttribute
@@ -76,7 +76,7 @@ public class BreedingMethodSetting implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (this.isBasedOnStatusOfParentalLines ? 1231 : 1237);
-  	    result = prime * result + (this.basedOnImportFile ? 1231 : 1237);
+		result = prime * result + (this.basedOnImportFile ? 1231 : 1237);
 		result = prime * result + (this.methodId == null ? 0 : this.methodId.hashCode());
 		return result;
 	}
