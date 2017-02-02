@@ -53,7 +53,7 @@ public class BreedingMethodSetting implements Serializable {
 	  this.basedOnImportFile = basedOnImportFile;
 	}
 
-    @Override
+	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
 			return false;
