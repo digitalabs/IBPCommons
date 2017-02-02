@@ -58,9 +58,9 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	 */
 	private String maleGid;
 
-  	private String femalePedigree;
+	private String femalePedigree;
 
-  	private String malePedigree;
+	private String malePedigree;
 
 	private String duplicate;
 
@@ -71,7 +71,7 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	private String duplicatePrefix;
 
 	private String maleStudyName;
-	
+
 	private String femaleStudyName;
 
 	private Set<Integer> duplicateEntries;
