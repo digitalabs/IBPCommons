@@ -73,12 +73,12 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	private String maleStudyName;
 	
 	private String femaleStudyName;
-	
+
 	private Set<Integer> duplicateEntries;
 
-    private String femaleCross;
+	private String femaleCross;
 
-  	private String maleCross;
+	private String maleCross;
 
 	/**
 	 * Instantiates a new imported germplasm.
