@@ -333,21 +333,21 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	  this.malePedigree = malePedigree;
 	}
 
-  public String getFemaleCross() {
-	return femaleCross;
-  }
+	public String getFemaleCross() {
+		return femaleCross;
+	}
 
-  public ImportedCrosses setFemaleCross(final String femaleCross) {
-	this.femaleCross = femaleCross;
-	return this;
-  }
+	public ImportedCrosses setFemaleCross(final String femaleCross) {
+		this.femaleCross = femaleCross;
+		return this;
+	}
 
-  public String getMaleCross() {
-	return maleCross;
-  }
+	public String getMaleCross() {
+		return maleCross;
+	}
 
-  public ImportedCrosses setMaleCross(final String maleCross) {
-	this.maleCross = maleCross;
-	return this;
-  }
+	public ImportedCrosses setMaleCross(final String maleCross) {
+		this.maleCross = maleCross;
+		return this;
+	}
 }
