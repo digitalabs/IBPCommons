@@ -333,13 +333,6 @@ public abstract class StringUtil {
 		return sb.toString();
 	}
 
-	public static String cleanNameValueCommas(final String param) {
-		if (param != null) {
-			return param.replaceAll(",", "_");
-		}
-		return "";
-	}
-	
 	public static String replaceInvalidChacaracterFileName(String param, final String character) {
 		String validar[] = {"&gt;","&lt;","&quot;","\\","\"","/",":","*","?","<",">","|",","};
 		for (int i = 0; i < validar.length; i++) {
