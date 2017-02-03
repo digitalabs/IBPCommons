@@ -37,7 +37,7 @@ public enum ColumnLabels {
 			TermId.RESERVED_INVENTORY, "RES"), TOTAL(TermId.TOTAL_INVENTORY, "AVAILABLE"), UNITS(TermId.UNITS_INVENTORY, "UNITS")
 
 	// GERMPLASM CHECK
-	, ENTRY_TYPE(TermId.ENTRY_TYPE, "CHECK TYPE");
+	, ENTRY_TYPE(TermId.ENTRY_TYPE, "CHECK TYPE"), GROUPGID(TermId.GROUPGID, "GROUPGID"),;
 
 	private TermId termId;
 	private String name;

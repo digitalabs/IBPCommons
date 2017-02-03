@@ -82,6 +82,12 @@ public class ImportedGermplasm implements Serializable {
 	private String replicationNumber;
     private String plotNumber;
 
+	/** GroupId associated with Germplsm **/
+	private Integer groupId;
+
+	/** StockIDs associated with Germplsm **/
+	private String stockIDs;
+
 	public Integer getIndex() {
 		return this.index;
 	}
@@ -453,5 +459,21 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setCrossListId(Integer crossListId) {
 		this.crossListId = crossListId;
+	}
+
+	public Integer getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
+
+	public String getStockIDs() {
+		return stockIDs;
+	}
+
+	public void setStockIDs(String stockIDs) {
+		this.stockIDs = stockIDs;
 	}
 }

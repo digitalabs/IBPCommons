@@ -161,27 +161,6 @@ public class GermplasmExportServiceImplTest {
 		Assert.assertEquals("Should have the same size of column names", actualData.length, this.columnsHeaders.size());
 	}
 
-	@Test
-	public void testCleanNameValueCommasWithNoComma() {
-		final String param = "Test Value";
-		Assert.assertEquals("Should be still the same string since there is no comma character",
-				StringUtil.cleanNameValueCommas(param), param);
-	}
-
-	@Test
-	public void testCleanNameValueCommasWithAComma() {
-		final String param = "Test, Value";
-		final String paramNew = "Test_ Value";
-		Assert.assertEquals("The comma character in the string should be change to a _ character",
-				StringUtil.cleanNameValueCommas(param), paramNew);
-	}
-
-	@Test
-	public void testCleanNameValueCommasWithNullParameter() {
-		Assert.assertEquals("Should be empty string since param passed was null", StringUtil.cleanNameValueCommas(null),
-				"");
-	}
-
 	private List<Map<Integer, ExportColumnValue>> generateSampleExportColumns(final int rows, final int columnHeaders) {
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
 		for (int i = 0; i < rows; i++) {

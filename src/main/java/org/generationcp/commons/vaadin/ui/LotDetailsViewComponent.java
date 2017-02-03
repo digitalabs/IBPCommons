@@ -134,21 +134,30 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		this.actualBalanceLabel.setDebugId("actualBalance");
 		this.actualBalanceLabel.addStyleName("bold");
 
-		String actualBalance = "";
-		if (lotDetails.getActualLotBalance() != null) {
-			actualBalance = lotDetails.getActualLotBalance() + lotDetails.getLotScaleNameAbbr();
+		String lotScaleAbbr = "";
+
+		if (lotDetails.getLotScaleNameAbbr() != null) {
+			lotScaleAbbr = lotDetails.getLotScaleNameAbbr();
 		}
-		this.actualBalance = new Label(actualBalance);
+
+		StringBuilder actualBalance = new StringBuilder("");
+		if (lotDetails.getActualLotBalance() != null) {
+			actualBalance.append(lotDetails.getActualLotBalance());
+			actualBalance.append(lotScaleAbbr);
+		}
+
+		this.actualBalance = new Label(actualBalance.toString());
 
 		this.availableBalanceLabel = new Label(LotDetailsViewComponent.AVAILABLE_BALANCE);
 		this.availableBalanceLabel.setDebugId("availableBalance");
 		this.availableBalanceLabel.addStyleName(LotDetailsViewComponent.BOLD);
 
-		String availableBalance = "";
+		StringBuilder availableBalance = new StringBuilder("");
 		if (lotDetails.getAvailableLotBalance() != null) {
-			availableBalance = lotDetails.getAvailableLotBalance() + lotDetails.getLotScaleNameAbbr();
+			availableBalance.append(lotDetails.getAvailableLotBalance());
+			availableBalance.append(lotScaleAbbr);
 		}
-		this.availableBalance = new Label(availableBalance);
+		this.availableBalance = new Label(availableBalance.toString());
 
 		this.idLabel = new Label(" " + lotDetails.getLotId());
 		idLabel.addStyleName(LotDetailsViewComponent.BOLD);
@@ -198,7 +207,12 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 		newItem.getItemProperty(LotDetailsViewComponent.DATE).setValue(transaction.getDate());
 		newItem.getItemProperty(LotDetailsViewComponent.TYPE).setValue(transaction.getLotStatus());
-		newItem.getItemProperty(LotDetailsViewComponent.AMOUNT).setValue(transaction.getQuantity() + lotDetails.getLotScaleNameAbbr());
+		String lotScaleAbbr = "";
+
+		if (lotDetails.getLotScaleNameAbbr() != null) {
+			lotScaleAbbr = lotDetails.getLotScaleNameAbbr();
+		}
+		newItem.getItemProperty(LotDetailsViewComponent.AMOUNT).setValue(transaction.getQuantity() + lotScaleAbbr);
 		newItem.getItemProperty(LotDetailsViewComponent.SEED_SOURCE).setValue("");
 		newItem.getItemProperty(LotDetailsViewComponent.LIST_NAME).setValue(transaction.getListName());
 		newItem.getItemProperty(LotDetailsViewComponent.USER).setValue(transaction.getUser());

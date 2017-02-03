@@ -36,9 +36,7 @@ public class CrossNameServiceTest {
 	}
 
 	@Test
-	public void testNextNumberInSequenceEmptyStartSequence() {
-		nameSetting.setStartNumber(null);
-
+	public void getNextSequenceNumberForCrossName_Should_Return_Sequence_Number_Provided_By_GermplasmDataManager() {
 		Mockito.when(germplasmDataManager.getNextSequenceNumberForCrossName(Mockito.anyString())).thenReturn(TEST_CROSS_SEQUENCE);
 
 		Integer nextSequenceNumber = unitUnderTest.getNextNumberInSequence(nameSetting);
@@ -49,13 +47,15 @@ public class CrossNameServiceTest {
 	}
 
 	@Test
-	public void testNextNumberInSequenceWithStartNumber() {
-		nameSetting.setStartNumber(TEST_CROSS_SEQUENCE_NUMBER);
+	public void getNextSequenceNumberForCrossName_Should_Return_Sequence_Number_Provided_By_GermplasmDataManager_Ignoring_StartNumber() {
+		nameSetting.setStartNumber(1);
+
+		Mockito.when(germplasmDataManager.getNextSequenceNumberForCrossName(Mockito.anyString())).thenReturn(TEST_CROSS_SEQUENCE);
 
 		Integer nextSequenceNumber = unitUnderTest.getNextNumberInSequence(nameSetting);
-		Assert.assertEquals("Service should return the user provided start number as next number in sequence", TEST_CROSS_SEQUENCE_NUMBER,
+		Assert.assertEquals( "Service should return the sequence number provided by germplasm data manager ",  TEST_CROSS_SEQUENCE_NUMBER,
 				nextSequenceNumber);
-		Mockito.verify(germplasmDataManager, Mockito.never()).getNextSequenceNumberForCrossName(Mockito.anyString());
+		Mockito.verify(germplasmDataManager).getNextSequenceNumberForCrossName(Mockito.anyString());
 	}
 
 	@Test

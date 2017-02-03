@@ -78,6 +78,8 @@ public class GermplasmExportTestHelper {
 			germplasmListData.setInventoryInfo(inventoryInfo);
 			germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
 			germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
+			germplasmListData.setGroupId(ColumnLabels.GROUPGID.getTermId().getId());
+			germplasmListData.setStockIDs(ColumnLabels.STOCKID.getName() + x);
 			germplasmListData.setGid(x);
 			entries.add(germplasmListData);
 		}
@@ -94,6 +96,8 @@ public class GermplasmExportTestHelper {
 		visibleColumnMap.put(String.valueOf(ColumnLabels.DESIGNATION.getTermId().getId()), true);
 		visibleColumnMap.put(String.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()), true);
 		visibleColumnMap.put(String.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.GROUPGID.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.STOCKID.getTermId().getId()), true);
 
 		return visibleColumnMap;
 	}
@@ -119,6 +123,12 @@ public class GermplasmExportTestHelper {
 						"Assigned", DataType.CHARACTER_VARIABLE));
 		termMap.put(TermId.SEED_SOURCE.getId(),
 				createVariable(TermId.SEED_SOURCE.getId(), "SEED_SOURCE", "Seed source - Selected (Code)", "Seed source", "Code",
+						"Selected", DataType.CHARACTER_VARIABLE));
+		termMap.put(TermId.GROUPGID.getId(),
+				createVariable(TermId.GROUPGID.getId(), "GROUPGID", "Group GID", "GroupGID", "Code",
+						"Selected", DataType.CHARACTER_VARIABLE));
+		termMap.put(TermId.STOCKID.getId(),
+				createVariable(TermId.STOCKID.getId(), "STOCKID", "StockID of Germplasm", "StockID", "Code",
 						"Selected", DataType.CHARACTER_VARIABLE));
 
 		return termMap;
