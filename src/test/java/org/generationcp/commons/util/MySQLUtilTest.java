@@ -15,7 +15,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.util.Assert;
+import org.junit.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/testContext.xml"})
@@ -39,9 +39,12 @@ public class MySQLUtilTest {
 	 * This is a completely redundant test but it must run or the whole class will fail - THIS TEST NEEDS REWRITING
 	 */
 	@Test
-	public void testBackup() throws Exception {
-		final File backupFile = new File("test.sql");
-		Assert.notNull(backupFile);
-		Assert.isTrue(backupFile.getAbsolutePath().contains(".sql"));
+	public void testBackupDatabase() throws Exception {
+		final String backupFilename = this.mysqlUtil.getBackupFilename("database", ".sql", "temp");
+		final File backupFile = this.mysqlUtil.backupDatabase("database", backupFilename, true);
+		
+		Assert.assertNotNull("The backup file should not be null", backupFile);
+		Assert.assertTrue("The absolute path should contain '" + backupFilename + "'", backupFile.getAbsolutePath().contains(backupFilename));
+		Mockito.verify(this.project, Mockito.times(3)).getCropType();
 	}
 }
