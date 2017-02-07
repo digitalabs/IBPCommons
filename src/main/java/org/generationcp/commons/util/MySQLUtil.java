@@ -226,7 +226,7 @@ public class MySQLUtil {
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
 			
 			// 'tutorial' values will be replaced with the proper ones from the crop in context upon restore
-			final String workbenchCropValues = "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0', '" + this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix() +"');\n";
+			final String workbenchCropValues = "INSERT into `workbench_crop` (`crop_name`, `db_name`, `schema_version`, `plot_code_prefix`) values ('tutorial','tutorial','4.0.0', '" + this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix() +"');\n";
 			Files.write(Paths.get(backupFilename), workbenchCropValues.getBytes(),
 					StandardOpenOption.APPEND);
 			
