@@ -224,8 +224,12 @@ public class MySQLUtil {
 					"-- This backup file is for crop type " + this.contextUtil.getProjectInContext().getCropType().getCropName() + "\n";
 			Files.write(Paths.get(backupFilename), comment.getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
-			Files.write(Paths.get(backupFilename), "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0');\n".getBytes(),
+			
+			// 'tutorial' values will be replaced with the proper ones from the crop in context upon restore
+			final String workbenchCropValues = "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0', '" + this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix() +"');\n";
+			Files.write(Paths.get(backupFilename), workbenchCropValues.getBytes(),
 					StandardOpenOption.APPEND);
+			
 			for (final Project program : this.workbenchDataManager
 					.getProjectsByCrop(this.contextUtil.getProjectInContext().getCropType())) {
 				final StringBuilder sb = new StringBuilder();
