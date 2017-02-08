@@ -326,12 +326,6 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
-				listEntry.createCell(j).setCellValue(data.getStockIDs());
-				j++;
-			}
-
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
@@ -551,19 +545,6 @@ public class GermplasmExportedWorkbook {
 			}
 		}
 
-		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
-
-			final Variable stockId = (Variable) columnTermMap.get(ColumnLabels.STOCKID.getTermId().getId());
-			final ExcelWorkbookRow stockIdRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
-
-			if (stockId != null) {
-				stockIdRow.writeStandardVariableToRow(labelStyleFactor, this.textStyle, stockId);
-				stockIdRow.createCell(9, this.textStyle, "ID of an inventory deposit");
-			}
-		}
-
-
 		return actualRow;
 	}
 
@@ -734,15 +715,6 @@ public class GermplasmExportedWorkbook {
 			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
-
-		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.STOCKID))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.STOCKID))) {
-			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
-			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.STOCKID, columnTermMap));
-			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-			columnIndex++;
-		}
-
 
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
