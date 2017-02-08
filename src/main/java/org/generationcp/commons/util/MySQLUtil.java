@@ -234,7 +234,7 @@ public class MySQLUtil {
 					.getProjectsByCrop(this.contextUtil.getProjectInContext().getCropType())) {
 				final StringBuilder sb = new StringBuilder();
 				// sorry magic number here, will be replaced on restoration
-				sb.append("INSERT into `workbench_project` values (null, 9999, '");
+				sb.append("INSERT into `workbench_project` (`project_id`, `user_id`, `project_name`, `start_date`, `project_uuid`, `crop_type`, `last_open_date`) values (null, 9999, '");
 				sb.append(program.getProjectName());
 				sb.append("','");
 				sb.append(program.getStartDate());
