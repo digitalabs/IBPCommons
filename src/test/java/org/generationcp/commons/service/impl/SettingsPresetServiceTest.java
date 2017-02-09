@@ -82,7 +82,7 @@ public class SettingsPresetServiceTest {
 		CrossSetting setting = new CrossSetting();
 		setting.setName(SettingsPresetServiceTest.TEST_SETTING_NAME);
 
-		BreedingMethodSetting methodSetting = new BreedingMethodSetting(SettingsPresetServiceTest.TEST_BREEDING_METHOD_ID, false);
+		BreedingMethodSetting methodSetting = new BreedingMethodSetting(SettingsPresetServiceTest.TEST_BREEDING_METHOD_ID, false, false);
 		setting.setBreedingMethodSetting(methodSetting);
 
 		CrossNameSetting nameSetting = new CrossNameSetting();
