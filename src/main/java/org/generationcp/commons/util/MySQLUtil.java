@@ -190,26 +190,9 @@ public class MySQLUtil {
 	 */
 	public File backupDatabase(final String database, final String backupFilename, final boolean includeProcedures)
 			throws IOException, InterruptedException {
-		if (database == null || backupFilename == null) {
-			return null;
-		}
-
-		final String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
-
-		final List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
-				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost,
-				"--port=" + this.mysqlPort, "--user=" + this.username, database, "-r", backupFilename));
-
-		if (includeProcedures) {
-			command.add(1, "--routines");
-		}
-
-		if (!StringUtil.isEmpty(this.password)) {
-			command.add(1, "--password=" + this.password);
-		}
-
+		final List<String> command = buildCommandStringList(database, backupFilename, includeProcedures);
 		final ProcessBuilder pb = new ProcessBuilder(command);
-
+		
 		final Process process = pb.start();
 		this.readProcessInputAndErrorStream(process);
 		process.waitFor();
@@ -232,24 +215,51 @@ public class MySQLUtil {
 			
 			for (final Project program : this.workbenchDataManager
 					.getProjectsByCrop(this.contextUtil.getProjectInContext().getCropType())) {
-				final StringBuilder sb = new StringBuilder();
-				// sorry magic number here, will be replaced on restoration
-				sb.append("INSERT into `workbench_project` (`project_id`, `user_id`, `project_name`, `start_date`, `project_uuid`, `crop_type`, `last_open_date`) values (null, 9999, '");
-				sb.append(program.getProjectName());
-				sb.append("','");
-				sb.append(program.getStartDate());
-				sb.append("','");
-				sb.append(program.getUniqueID());
-				// 'tutorial' crop will be replaced with the crop in context upon restore
-				sb.append("','tutorial','");
-				sb.append(program.getLastOpenDate());
-				sb.append("');\n");
-				MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
+				final StringBuilder sb = buildProjectQueryString(program);
 				Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
 			}
 		}
 
 		return file.exists() ? file.getAbsoluteFile() : null;
+	}
+
+	StringBuilder buildProjectQueryString(final Project program) {
+		final StringBuilder sb = new StringBuilder();
+		// sorry magic number here, will be replaced on restoration
+		sb.append("INSERT into `workbench_project` (`project_id`, `user_id`, `project_name`, `start_date`, `project_uuid`, `crop_type`, `last_open_date`) values (null, 9999, '");
+		sb.append(program.getProjectName());
+		sb.append("','");
+		sb.append(program.getStartDate());
+		sb.append("','");
+		sb.append(program.getUniqueID());
+		// 'tutorial' crop will be replaced with the crop in context upon restore
+		sb.append("','tutorial','");
+		sb.append(program.getLastOpenDate());
+		sb.append("');\n");
+		MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
+		return sb;
+	}
+
+	List<String> buildCommandStringList(final String database, final String backupFilename,
+			final boolean includeProcedures) {
+		if (database == null || backupFilename == null) {
+			return null;
+		}
+
+		final String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
+
+		final List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
+				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost,
+				"--port=" + this.mysqlPort, "--user=" + this.username, database, "-r", backupFilename));
+
+		if (includeProcedures) {
+			command.add(1, "--routines");
+		}
+
+		if (!StringUtil.isEmpty(this.password)) {
+			command.add(1, "--password=" + this.password);
+		}
+		return command;
 	}
 
 	public void restoreDatabase(final String databaseName, final File backupFile, final Callable<Boolean> preRestoreTasks)
