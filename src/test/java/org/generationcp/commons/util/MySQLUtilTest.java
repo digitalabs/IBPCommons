@@ -1,29 +1,33 @@
 package org.generationcp.commons.util;
 
-import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.generationcp.middleware.pojos.workbench.CropType;
+import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.junit.Assert;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath*:/testContext.xml"})
 public class MySQLUtilTest {
-
-	@Mock
+	private static final String DATABASE = "ibdbv2_maize_merged";
+	private static final String BACKUP_FILENAME = "C:\\GCP\\Commons\\temp\\ibdbv2_maize_merged_20170209_033042_735_.sql";
+	private static final String ABSOLUTE_PATH = "C:\\BMS4\\infrastructure\\mysql\\bin\\mysqldump.exe";
+	
 	private Project project;
-
+	
+	private ProjectTestDataInitializer projectTestDataInitializer;
+	
 	@Autowired
 	@InjectMocks
 	private MySQLUtil mysqlUtil;
@@ -31,20 +35,64 @@ public class MySQLUtilTest {
 	@Before
 	public void setup() throws SQLException, ClassNotFoundException {
 		MockitoAnnotations.initMocks(this);
-		Mockito.doReturn(this.project).when(this.mysqlUtil.getContextUtil()).getProjectInContext();
-		Mockito.doReturn(new CropType("maize")).when(this.project).getCropType();
+		this.projectTestDataInitializer = new ProjectTestDataInitializer();
+		this.project = this.projectTestDataInitializer.createProject();
 	}
 	
-	/*
-	 * This is a completely redundant test but it must run or the whole class will fail - THIS TEST NEEDS REWRITING
-	 */
 	@Test
-	public void testBackupDatabase() throws Exception {
-		final String backupFilename = this.mysqlUtil.getBackupFilename("database", ".sql", "temp");
-		final File backupFile = this.mysqlUtil.backupDatabase("database", backupFilename, true);
+	public void testBuildProjectQueryString() {
+		final String projectQueryString = this.mysqlUtil.buildProjectQueryString(project).toString();
+		final String expectedQueryString = "INSERT into `workbench_project` (`project_id`, `user_id`, `project_name`, `start_date`, `project_uuid`, `crop_type`, `last_open_date`) values (null, 9999, '" + project.getProjectName() + "','" + project.getStartDate() + "','" + project.getUniqueID() + "','tutorial','" + project.getLastOpenDate() + "');\n";
+		Assert.assertEquals(expectedQueryString, projectQueryString);
+	}
+	
+	@Test
+	public void testbuildCommandStringListIncludeProceduresAndWithPassword(){
+		final String password = "password";
+		this.mysqlUtil.setPassword(password);
+		List<String> commandStringList = this.mysqlUtil.buildCommandStringList(DATABASE, BACKUP_FILENAME, true);
 		
-		Assert.assertNotNull("The backup file should not be null", backupFile);
-		Assert.assertTrue("The absolute path should contain '" + backupFilename + "'", backupFile.getAbsolutePath().contains(backupFilename));
-		Mockito.verify(this.project, Mockito.times(3)).getCropType();
+		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(ABSOLUTE_PATH, "--password=" + password, "--routines", "--complete-insert", "--extended-insert",
+				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlUtil.getMysqlHost(),
+				"--port=" + this.mysqlUtil.getMysqlPort(), "--user=" + this.mysqlUtil.getUsername(), DATABASE, "-r", BACKUP_FILENAME));
+		
+		int i=0;
+		for(String value: commandStringList){
+			final String expectedValue = expectedCommandList.get(i++);
+			Assert.assertEquals("The value should be " + expectedValue, expectedValue, value);
+		}
+	}
+	
+	@Test
+	public void testbuildCommandStringListWithPassword(){
+		final String password = "password";
+		this.mysqlUtil.setPassword(password);
+		List<String> commandStringList = this.mysqlUtil.buildCommandStringList(DATABASE, BACKUP_FILENAME, false);
+		
+		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(ABSOLUTE_PATH, "--password=" + password, "--complete-insert", "--extended-insert",
+				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlUtil.getMysqlHost(),
+				"--port=" + this.mysqlUtil.getMysqlPort(), "--user=" + this.mysqlUtil.getUsername(), DATABASE, "-r", BACKUP_FILENAME));
+		
+		int i=0;
+		for(String value: commandStringList){
+			final String expectedValue = expectedCommandList.get(i++);
+			Assert.assertEquals("The value should be " + expectedValue, expectedValue, value);
+		}
+	}
+	
+	@Test
+	public void testbuildCommandStringListIncludeProceduresAndNoPassword(){
+		this.mysqlUtil.setPassword("");
+		List<String> commandStringList = this.mysqlUtil.buildCommandStringList(DATABASE, BACKUP_FILENAME, true);
+		
+		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(ABSOLUTE_PATH, "--routines", "--complete-insert", "--extended-insert",
+				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlUtil.getMysqlHost(),
+				"--port=" + this.mysqlUtil.getMysqlPort(), "--user=" + this.mysqlUtil.getUsername(), DATABASE, "-r", BACKUP_FILENAME));
+		
+		int i=0;
+		for(String value: commandStringList){
+			final String expectedValue = expectedCommandList.get(i++);
+			Assert.assertEquals("The value should be " + expectedValue, expectedValue, value);
+		}
 	}
 }
