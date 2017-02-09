@@ -1,5 +1,6 @@
 package org.generationcp.commons.util;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,8 +23,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class MySQLUtilTest {
 	private static final String DATABASE = "ibdbv2_maize_merged";
 	private static final String BACKUP_FILENAME = "C:\\GCP\\Commons\\temp\\ibdbv2_maize_merged_20170209_033042_735_.sql";
-	private static final String ABSOLUTE_PATH = "C:\\BMS4\\infrastructure\\mysql\\bin\\mysqldump.exe";
-	
+
 	private Project project;
 	
 	private ProjectTestDataInitializer projectTestDataInitializer;
@@ -52,7 +52,8 @@ public class MySQLUtilTest {
 		this.mysqlUtil.setPassword(password);
 		List<String> commandStringList = this.mysqlUtil.buildCommandStringList(DATABASE, BACKUP_FILENAME, true);
 		
-		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(ABSOLUTE_PATH, "--password=" + password, "--routines", "--complete-insert", "--extended-insert",
+		final String mysqlDumpAbsolutePath = new File(this.mysqlUtil.getMysqlDumpPath()).getAbsolutePath();;
+		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--password=" + password, "--routines", "--complete-insert", "--extended-insert",
 				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlUtil.getMysqlHost(),
 				"--port=" + this.mysqlUtil.getMysqlPort(), "--user=" + this.mysqlUtil.getUsername(), DATABASE, "-r", BACKUP_FILENAME));
 		
@@ -69,7 +70,8 @@ public class MySQLUtilTest {
 		this.mysqlUtil.setPassword(password);
 		List<String> commandStringList = this.mysqlUtil.buildCommandStringList(DATABASE, BACKUP_FILENAME, false);
 		
-		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(ABSOLUTE_PATH, "--password=" + password, "--complete-insert", "--extended-insert",
+		final String mysqlDumpAbsolutePath = new File(this.mysqlUtil.getMysqlDumpPath()).getAbsolutePath();;
+		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--password=" + password, "--complete-insert", "--extended-insert",
 				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlUtil.getMysqlHost(),
 				"--port=" + this.mysqlUtil.getMysqlPort(), "--user=" + this.mysqlUtil.getUsername(), DATABASE, "-r", BACKUP_FILENAME));
 		
@@ -85,7 +87,8 @@ public class MySQLUtilTest {
 		this.mysqlUtil.setPassword("");
 		List<String> commandStringList = this.mysqlUtil.buildCommandStringList(DATABASE, BACKUP_FILENAME, true);
 		
-		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(ABSOLUTE_PATH, "--routines", "--complete-insert", "--extended-insert",
+		final String mysqlDumpAbsolutePath = new File(this.mysqlUtil.getMysqlDumpPath()).getAbsolutePath();
+		final List<String> expectedCommandList = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--routines", "--complete-insert", "--extended-insert",
 				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlUtil.getMysqlHost(),
 				"--port=" + this.mysqlUtil.getMysqlPort(), "--user=" + this.mysqlUtil.getUsername(), DATABASE, "-r", BACKUP_FILENAME));
 		
