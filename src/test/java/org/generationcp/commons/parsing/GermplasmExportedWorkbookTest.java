@@ -145,8 +145,8 @@ public class GermplasmExportedWorkbookTest {
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.GROUPGID.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getNumericCellValue() + " equals to " + listData.getGroupId()
-						+ " but didn't.", row.getCell(columnIndex).getNumericCellValue(), listData.getGroupId().doubleValue());
+				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getGroupId()
+						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getGroupId().toString());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.STOCKID.getId()))) {

@@ -322,7 +322,8 @@ public class GermplasmExportedWorkbook {
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GROUPGID))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GROUPGID))) {
-				listEntry.createCell(j).setCellValue(data.getGroupId());
+				String groupId = data.getGroupId() == 0 ? "-" : data.getGroupId().toString();
+				listEntry.createCell(j).setCellValue(groupId);
 				j++;
 			}
 

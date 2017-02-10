@@ -80,7 +80,7 @@ public class ImportedGermplasm implements Serializable {
     private String plotNumber;
 
 	/** GroupId associated with Germplsm **/
-	private Integer groupId;
+	private String groupId;
 
 	/** StockIDs associated with Germplsm **/
 	private String stockIDs;
@@ -444,11 +444,11 @@ public class ImportedGermplasm implements Serializable {
 		this.crossListId = crossListId;
 	}
 
-	public Integer getGroupId() {
+	public String getGroupId() {
 		return groupId;
 	}
 
-	public void setGroupId(Integer groupId) {
+	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
 
