@@ -40,19 +40,19 @@ public class UserRowGeneratorTest {
 
 	@InjectMocks
 	private UserRowGenerator userRowGenerator;
-	
+
 	private PersonTestDataInitializer personTestDataInitializer;
-	
+
 	private UserTestDataInitializer userTestDataInitializer;
-	
+
 	private List<User> userList;
-	
+
 	@Before
 	public void setUp() {
 		this.personTestDataInitializer = new PersonTestDataInitializer();
 		this.userTestDataInitializer = new UserTestDataInitializer();
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
-		
+
 		this.userList = this.userTestDataInitializer.createUserList();
 		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userList);
 		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(this.personTestDataInitializer.createPerson());
@@ -69,26 +69,26 @@ public class UserRowGeneratorTest {
 		Assert.assertEquals("Third cell's content should be 1", UserRowGeneratorTest.USER_ID, row.getCell(2).toString());
 		Assert.assertEquals("Fourth cell's content should be Test Person", UserRowGeneratorTest.TEST_PERSON, row.getCell(3).toString());
 	}
-	
+
 	@Test
 	public void testGetFname() {
 		// Test data - Make user id not equal to person id
-		User user = this.userList.get(0);
+		final User user = this.userList.get(0);
 		final int personId = user.getUserid() + 1;
 		user.setPersonid(personId);
-		
+
 		this.userRowGenerator.getFname(user);
-		
+
 		// Verify that person id, not user id, was the one used to get Person record
 		Mockito.verify(this.workbenchDataManager).getPersonById(personId);
 	}
-	
+
 	@Test
 	public void testGetFcode() {
 		final User user = this.userList.get(0);
-		
+
 		final String fcode = this.userRowGenerator.getFcode(user);
-		
+
 		Assert.assertEquals(user.getUserid().toString(), fcode);
 	}
 }
