@@ -242,10 +242,6 @@ public class MySQLUtil {
 
 	List<String> buildCommandStringList(final String database, final String backupFilename,
 			final boolean includeProcedures) {
-		if (database == null || backupFilename == null) {
-			return null;
-		}
-
 		final String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
 
 		final List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
