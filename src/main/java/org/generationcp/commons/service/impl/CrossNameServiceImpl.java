@@ -1,13 +1,18 @@
 
 package org.generationcp.commons.service.impl;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.CrossNameService;
 import org.generationcp.commons.settings.CrossNameSetting;
+import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
  * Utility class for generating next cross name / number given CrossNameSetting object
@@ -21,6 +26,9 @@ public class CrossNameServiceImpl implements CrossNameService {
 	@Autowired
 	private GermplasmDataManager germplasmDataManager;
 
+	@Resource
+	private MessageSource messageSource;
+
 	private Integer nextNumberInSequence = 1;
 
 	/**
@@ -31,10 +39,23 @@ public class CrossNameServiceImpl implements CrossNameService {
 	 * @throws MiddlewareQueryException
 	 */
 	@Override
-	public String getNextNameInSequence(CrossNameSetting setting) throws MiddlewareQueryException {
-		this.nextNumberInSequence = this.getNextNumberInSequence(setting);
+	public String getNextNameInSequence(CrossNameSetting setting) throws MiddlewareException {
 
-		return this.buildNextNameInSequence(this.nextNumberInSequence, setting);
+		Integer nextNumberInSequence = this.getNextNumberInSequence(setting);
+
+		Integer optionalStartNumber = setting.getStartNumber();
+
+		if(optionalStartNumber != null && optionalStartNumber > 0 && nextNumberInSequence > optionalStartNumber) {
+			final String invalidStatingNumberErrorMessage = this.messageSource.getMessage("error.not.valid.starting.sequence",
+					new Object[] {nextNumberInSequence - 1}, LocaleContextHolder.getLocale());
+			throw new MiddlewareException(invalidStatingNumberErrorMessage);
+		}
+
+		if(optionalStartNumber != null && nextNumberInSequence < optionalStartNumber) {
+			nextNumberInSequence = optionalStartNumber;
+		}
+
+		return this.buildNextNameInSequence(nextNumberInSequence, setting);
 	}
 
 	/**
@@ -47,19 +68,9 @@ public class CrossNameServiceImpl implements CrossNameService {
 	@Override
 	public Integer getNextNumberInSequence(CrossNameSetting setting) throws MiddlewareQueryException {
 		String lastPrefixUsed = this.buildPrefixString(setting);
-		this.nextNumberInSequence = 1;
-
-		Integer startNumber = setting.getStartNumber();
-		if (startNumber != null && startNumber > 0) {
-			this.nextNumberInSequence = startNumber;
-		} else {
-			String nextSequenceNumberString =
-					this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.toUpperCase().trim());
-			this.nextNumberInSequence = Integer.parseInt(nextSequenceNumberString);
-		}
-
-		return this.nextNumberInSequence;
-
+		String nextSequenceNumberString =
+				this.germplasmDataManager.getNextSequenceNumberForCrossName(lastPrefixUsed.toUpperCase().trim());
+		return Integer.parseInt(nextSequenceNumberString);
 	}
 
 	String buildPrefixString(CrossNameSetting setting) {

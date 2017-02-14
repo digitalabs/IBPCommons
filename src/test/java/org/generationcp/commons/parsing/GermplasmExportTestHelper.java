@@ -97,7 +97,6 @@ public class GermplasmExportTestHelper {
 		visibleColumnMap.put(String.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()), true);
 		visibleColumnMap.put(String.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()), true);
 		visibleColumnMap.put(String.valueOf(ColumnLabels.GROUPGID.getTermId().getId()), true);
-		visibleColumnMap.put(String.valueOf(ColumnLabels.STOCKID.getTermId().getId()), true);
 
 		return visibleColumnMap;
 	}

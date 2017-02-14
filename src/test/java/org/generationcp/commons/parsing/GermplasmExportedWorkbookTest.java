@@ -96,10 +96,6 @@ public class GermplasmExportedWorkbookTest {
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.get(String.valueOf(TermId.STOCKID.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to STOCKID but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "STOCKID");
-		}
 
 		// Assert Row Values
 		int rowIndex = 1;
@@ -149,10 +145,7 @@ public class GermplasmExportedWorkbookTest {
 						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getGroupId().toString());
 				columnIndex++;
 			}
-			if (visibleColumnMap.get(String.valueOf(TermId.STOCKID.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getStockIDs()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getStockIDs());
-			}
+
 			rowIndex++;
 		}
 	}
