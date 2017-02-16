@@ -13,7 +13,6 @@ package org.generationcp.commons.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -168,8 +167,8 @@ public class MySQLUtil {
 
 		// connect
 		if (this.mysqlHost != null) {
-			this.connection = DriverManager.getConnection("jdbc:mysql://" + this.mysqlHost + ":" + this.mysqlPort + "/", this.username,
-					this.password);
+			this.connection = DriverManager.getConnection("jdbc:mysql://" + this.mysqlHost + ":" + this.mysqlPort + "/",
+					this.username, this.password);
 		}
 	}
 
@@ -185,7 +184,8 @@ public class MySQLUtil {
 	/**
 	 * Exports the crop database using mysqldump into a single file
 	 *
-	 * The file is then concatenated with workbench data denoting the name of the program and most importantly the unique program id
+	 * The file is then concatenated with workbench data denoting the name of
+	 * the program and most importantly the unique program id
 	 *
 	 */
 	public File backupDatabase(final String database, final String backupFilename, final boolean includeProcedures)
@@ -194,20 +194,7 @@ public class MySQLUtil {
 			return null;
 		}
 
-		final String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
-
-		final List<String> command = new ArrayList<String>(Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert",
-				"--no-create-db", "--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost,
-				"--port=" + this.mysqlPort, "--user=" + this.username, database, "-r", backupFilename));
-
-		if (includeProcedures) {
-			command.add(1, "--routines");
-		}
-
-		if (!StringUtil.isEmpty(this.password)) {
-			command.add(1, "--password=" + this.password);
-		}
-
+		final List<String> command = this.buildCommandStringList(database, backupFilename, includeProcedures);
 		final ProcessBuilder pb = new ProcessBuilder(command);
 
 		final Process process = pb.start();
@@ -217,30 +204,26 @@ public class MySQLUtil {
 		final File file = new File(backupFilename);
 
 		// append program information to the backup file
-		// e.g. (2,9999,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','tutorial','2016-01-01 23:26:53');
-		// the '9999' and 'tutorial' keyword are placeholders for the restoration
+		// e.g.
+		// (2,9999,'MaizeProgramName','2015-12-06','78160def-b016-4071-b1c8-336f5c8b77b6','tutorial','2016-01-01
+		// 23:26:53');
+		// the '9999' and 'tutorial' keyword are placeholders for the
+		// restoration
 		if (file.exists()) {
-			final String comment =
-					"-- This backup file is for crop type " + this.contextUtil.getProjectInContext().getCropType().getCropName() + "\n";
+			final String comment = "-- This backup file is for crop type "
+					+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "\n";
 			Files.write(Paths.get(backupFilename), comment.getBytes(), StandardOpenOption.APPEND);
 			Files.write(Paths.get(backupFilename), "USE workbench;\n".getBytes(), StandardOpenOption.APPEND);
-			Files.write(Paths.get(backupFilename), "INSERT into `workbench_crop` values ('tutorial','tutorial','4.0.0');\n".getBytes(),
-					StandardOpenOption.APPEND);
+
+			// 'tutorial' values will be replaced with the proper ones from the
+			// crop in context upon restore
+			final String workbenchCropValues = "INSERT into `workbench_crop` (`crop_name`, `db_name`, `schema_version`, `plot_code_prefix`) values ('tutorial','tutorial','4.0.0', '"
+					+ this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix() + "');\n";
+			Files.write(Paths.get(backupFilename), workbenchCropValues.getBytes(), StandardOpenOption.APPEND);
+
 			for (final Project program : this.workbenchDataManager
 					.getProjectsByCrop(this.contextUtil.getProjectInContext().getCropType())) {
-				final StringBuilder sb = new StringBuilder();
-				// sorry magic number here, will be replaced on restoration
-				sb.append("INSERT into `workbench_project` values (null, 9999, '");
-				sb.append(program.getProjectName());
-				sb.append("','");
-				sb.append(program.getStartDate());
-				sb.append("','");
-				sb.append(program.getUniqueID());
-				// 'tutorial' crop will be replaced with the crop in context upon restore
-				sb.append("','tutorial','");
-				sb.append(program.getLastOpenDate());
-				sb.append("');\n");
-				MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
+				final StringBuilder sb = this.buildProjectQueryString(program);
 				Files.write(Paths.get(backupFilename), sb.toString().getBytes(), StandardOpenOption.APPEND);
 			}
 		}
@@ -248,8 +231,46 @@ public class MySQLUtil {
 		return file.exists() ? file.getAbsoluteFile() : null;
 	}
 
-	public void restoreDatabase(final String databaseName, final File backupFile, final Callable<Boolean> preRestoreTasks)
-			throws Exception {
+	StringBuilder buildProjectQueryString(final Project program) {
+		final StringBuilder sb = new StringBuilder();
+		// sorry magic number here, will be replaced on restoration
+		sb.append(
+				"INSERT into `workbench_project` (`project_id`, `user_id`, `project_name`, `start_date`, `project_uuid`, `crop_type`, `last_open_date`) values (null, 9999, '");
+		sb.append(program.getProjectName());
+		sb.append("','");
+		sb.append(program.getStartDate());
+		sb.append("','");
+		sb.append(program.getUniqueID());
+		// 'tutorial' crop will be replaced with the crop in context upon
+		// restore
+		sb.append("','tutorial','");
+		sb.append(program.getLastOpenDate());
+		sb.append("');\n");
+		MySQLUtil.LOG.info("Writing to Backup project Information : " + sb.toString());
+		return sb;
+	}
+
+	List<String> buildCommandStringList(final String database, final String backupFilename,
+			final boolean includeProcedures) {
+		final String mysqlDumpAbsolutePath = new File(this.mysqlDumpPath).getAbsolutePath();
+
+		final List<String> command = new ArrayList<String>(
+				Arrays.asList(mysqlDumpAbsolutePath, "--complete-insert", "--extended-insert", "--no-create-db",
+						"--single-transaction", "--default-character-set=utf8", "--host=" + this.mysqlHost,
+						"--port=" + this.mysqlPort, "--user=" + this.username, database, "-r", backupFilename));
+
+		if (includeProcedures) {
+			command.add(1, "--routines");
+		}
+
+		if (!StringUtil.isEmpty(this.password)) {
+			command.add(1, "--password=" + this.password);
+		}
+		return command;
+	}
+
+	public void restoreDatabase(final String databaseName, final File backupFile,
+			final Callable<Boolean> preRestoreTasks) throws Exception {
 		this.connect();
 
 		try {
@@ -281,15 +302,20 @@ public class MySQLUtil {
 
 		// remove program records for dropped crop DB
 		this.executeQuery(connection, "USE workbench");
-		final List<String> programIdsToDelete =
-				this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where crop_type = '"
+		final List<String> programIdsToDelete = this.executeForManyStringResults(connection,
+				"SELECT project_id from workbench_project where crop_type = '"
 						+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 		for (final String programIdToDelete : programIdsToDelete) {
-			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
-			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_user_role where project_id = " + programIdToDelete);
-			this.executeQuery(connection, "DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
-			this.executeQuery(connection, "DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
-			this.executeQuery(connection, "DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
+			this.executeQuery(connection,
+					"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
+			this.executeQuery(connection,
+					"DELETE FROM workbench.workbench_project_user_role where project_id = " + programIdToDelete);
+			this.executeQuery(connection,
+					"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
+			this.executeQuery(connection,
+					"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
+			this.executeQuery(connection,
+					"DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
 		}
 
 		// CREATE LOCAL DB INSTANCE
@@ -301,13 +327,15 @@ public class MySQLUtil {
 
 		// restore the backup
 		try {
-			// this is needed because the schema_version of the file must be followed
+			// this is needed because the schema_version of the file must be
+			// followed
 			this.dropSchemaVersion(connection, databaseName);
 
 			MySQLUtil.LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
 			this.runScriptFromFile(databaseName, backupFile);
 
-			// after restore, restore from backup schema the users + persons table
+			// after restore, restore from backup schema the users + persons
+			// table
 			this.addCurrentUserToRestoredPrograms(connection);
 
 			// delete tutorial crop
@@ -315,12 +343,15 @@ public class MySQLUtil {
 			this.executeQuery(connection, "DELETE from `workbench_crop` where db_name='tutorial';");
 
 		} catch (final Exception e) {
-			// fail restore using the selected backup, reverting to previous DB..
+			// fail restore using the selected backup, reverting to previous
+			// DB..
 			MySQLUtil.LOG.error("Error encountered on restore " + e.getCause().getMessage(), e.getCause().getMessage());
 
-			// GCP-7192 (Workaround) If insert data to listnms script fails and throws an error
+			// GCP-7192 (Workaround) If insert data to listnms script fails and
+			// throws an error
 			// "Column count doesn't match value count at row 1"
-			// try to adjust the table schema so the script will be executed successfully.
+			// try to adjust the table schema so the script will be executed
+			// successfully.
 			// ERROR 1136 = Column count doesn't match value count at row 1
 			if (e.getMessage().contains("ERROR 1136 ")) {
 				try {
@@ -337,7 +368,8 @@ public class MySQLUtil {
 
 					this.runScriptFromFile(databaseName, backupFile);
 
-					// after restore, restore from backup schema the users + persons table
+					// after restore, restore from backup schema the users +
+					// persons table
 					this.restoreUsersPersonsAfterRestoreDB(connection, databaseName);
 
 				} catch (final Exception e2) {
@@ -354,7 +386,8 @@ public class MySQLUtil {
 		if (currentDbBackupFile != null) {
 			try {
 
-				MySQLUtil.LOG.debug("Trying to revert to the current state by restoring " + currentDbBackupFile.getAbsolutePath());
+				MySQLUtil.LOG.debug(
+						"Trying to revert to the current state by restoring " + currentDbBackupFile.getAbsolutePath());
 
 				this.executeQuery(connection, "DROP DATABASE IF EXISTS  " + databaseName);
 				this.executeQuery(connection, "CREATE DATABASE IF NOT EXISTS " + databaseName);
@@ -362,14 +395,16 @@ public class MySQLUtil {
 
 				this.runScriptFromFile(databaseName, currentDbBackupFile);
 			} catch (final Exception e1) {
-				// TODO review that message, change text to more appropriate and localise
-				final String sorryMessage =
-						"For some reason, the backup file cannot be restored" + " and your original database is now broken. I'm so sorry."
-								+ " If you have a backup file of your original database," + " you can try to restore it.";
+				// TODO review that message, change text to more appropriate and
+				// localise
+				final String sorryMessage = "For some reason, the backup file cannot be restored"
+						+ " and your original database is now broken. I'm so sorry."
+						+ " If you have a backup file of your original database," + " you can try to restore it.";
 				return new IllegalStateException(sorryMessage, e1);
 			}
 		}
-		return new IllegalStateException("Looks like there are errors in your SQL file. Please use another backup file.", e);
+		return new IllegalStateException(
+				"Looks like there are errors in your SQL file. Please use another backup file.", e);
 	}
 
 	protected void backupUserPersonsBeforeRestoreDB(final Connection connection, final String databaseName) {
@@ -412,19 +447,22 @@ public class MySQLUtil {
 		final int currentUserId = this.contextUtil.getCurrentWorkbenchUserId();
 		try {
 			this.executeQuery(connection, "USE workbench");
-			final List<String> programIds =
-					this.executeForManyStringResults(connection, "SELECT project_id from workbench_project where user_id = '9999';");
+			final List<String> programIds = this.executeForManyStringResults(connection,
+					"SELECT project_id from workbench_project where user_id = '9999';");
 			for (final String programKey : programIds) {
-				this.executeQuery(connection,
-						"INSERT into workbench_project_user_role values (null," + programKey + "," + currentUserId + ",1)");
-				this.executeQuery(connection,
-						"INSERT into workbench_project_user_info values (null," + programKey + "," + currentUserId + ",NOW())");
+				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + ","
+						+ currentUserId + ",1)");
+				this.executeQuery(connection, "INSERT into workbench_project_user_info values (null," + programKey + ","
+						+ currentUserId + ",NOW())");
 				this.executeQuery(connection,
 						"INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
-				this.executeQuery(connection, "UPDATE workbench_project set crop_type = '"
-						+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "' where project_id = " + programKey + ";");
+				this.executeQuery(connection,
+						"UPDATE workbench_project set crop_type = '"
+								+ this.contextUtil.getProjectInContext().getCropType().getCropName()
+								+ "' where project_id = " + programKey + ";");
 			}
-			this.executeQuery(connection, "UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
+			this.executeQuery(connection,
+					"UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
 		} catch (final SQLException e) {
 			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
 		}
@@ -448,12 +486,14 @@ public class MySQLUtil {
 		MySQLUtil.LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
 
 		if (StringUtil.isEmpty(this.password)) {
-			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
-					"--default-character-set=utf8", dbName, "--execute=source " + sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
+					"--user=" + this.username, "--default-character-set=utf8", dbName,
+					"--execute=source " + sqlFile.getAbsoluteFile());
 
 		} else {
-			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
-					"--password=" + this.password, "--default-character-set=utf8", dbName, "--execute=source " + sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
+					"--user=" + this.username, "--password=" + this.password, "--default-character-set=utf8", dbName,
+					"--execute=source " + sqlFile.getAbsoluteFile());
 		}
 
 		final Process mysqlRestoreProcess;
@@ -483,11 +523,13 @@ public class MySQLUtil {
 		MySQLUtil.LOG.debug("mysqlAbsolutePath = " + mysqlAbsolutePath);
 
 		if (StringUtil.isEmpty(this.password)) {
-			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
-					"--default-character-set=utf8", "--execute=source " + sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
+					"--user=" + this.username, "--default-character-set=utf8",
+					"--execute=source " + sqlFile.getAbsoluteFile());
 		} else {
-			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort, "--user=" + this.username,
-					"--password=" + this.password, "--default-character-set=utf8", "--execute=source " + sqlFile.getAbsoluteFile());
+			pb = new ProcessBuilder(mysqlAbsolutePath, "--host=" + this.mysqlHost, "--port=" + this.mysqlPort,
+					"--user=" + this.username, "--password=" + this.password, "--default-character-set=utf8",
+					"--execute=source " + sqlFile.getAbsoluteFile());
 		}
 
 		final Process mysqlRestoreProcess;
@@ -508,8 +550,10 @@ public class MySQLUtil {
 
 	private String readProcessInputAndErrorStream(final Process process) throws IOException {
 		/*
-		 * Added while loop to get input stream because process.waitFor() has a problem Reference:
-		 * http://stackoverflow.com/questions/5483830/process-waitfor-never-returns
+		 * Added while loop to get input stream because process.waitFor() has a
+		 * problem Reference:
+		 * http://stackoverflow.com/questions/5483830/process-waitfor-never-
+		 * returns
 		 */
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 		String line = null;
@@ -518,9 +562,12 @@ public class MySQLUtil {
 		}
 		reader.close();
 		/*
-		 * When the process writes to stderr the output goes to a fixed-size buffer. If the buffer fills up then the process blocks until
-		 * the buffer gets emptied. So if the buffer doesn't empty then the process will hang.
-		 * http://stackoverflow.com/questions/10981969/why-is-going-through-geterrorstream-necessary-to-run-a-process
+		 * When the process writes to stderr the output goes to a fixed-size
+		 * buffer. If the buffer fills up then the process blocks until the
+		 * buffer gets emptied. So if the buffer doesn't empty then the process
+		 * will hang.
+		 * http://stackoverflow.com/questions/10981969/why-is-going-through-
+		 * geterrorstream-necessary-to-run-a-process
 		 */
 		final BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 		final StringBuilder errorOut = new StringBuilder();
@@ -598,10 +645,13 @@ public class MySQLUtil {
 	}
 
 	/*
-	 * Perhaps unnecessary redundancy here in duplication of executeForStringResult, but implemented this way to favour stability for now
+	 * Perhaps unnecessary redundancy here in duplication of
+	 * executeForStringResult, but implemented this way to favour stability for
+	 * now
 	 *
 	 */
-	public List<String> executeForManyStringResults(final Connection connection, final String query) throws SQLException {
+	public List<String> executeForManyStringResults(final Connection connection, final String query)
+			throws SQLException {
 		final List<String> results = new ArrayList<>();
 		final Statement stmt = connection.createStatement();
 		ResultSet rs = null;
@@ -677,7 +727,8 @@ public class MySQLUtil {
 		}
 	}
 
-	public void dropSchemaVersion(final Connection connection, final String databaseName) throws IOException, SQLException {
+	public void dropSchemaVersion(final Connection connection, final String databaseName)
+			throws IOException, SQLException {
 		this.executeQuery(connection, "USE " + databaseName);
 		this.executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
 	}
@@ -721,9 +772,10 @@ public class MySQLUtil {
 			final Matcher matcher = pattern.matcher(filename);
 			if (matcher.matches()) {
 				if (restoreFilename != null) {
-					final StringTokenizer currentFilenameTokens = new StringTokenizer(filename.substring(databaseName.length()), "_");
-					final StringTokenizer previousFilenameTokens =
-							new StringTokenizer(restoreFilename.substring(databaseName.length()), "_");
+					final StringTokenizer currentFilenameTokens = new StringTokenizer(
+							filename.substring(databaseName.length()), "_");
+					final StringTokenizer previousFilenameTokens = new StringTokenizer(
+							restoreFilename.substring(databaseName.length()), "_");
 					while (currentFilenameTokens.hasMoreTokens()) {
 						final String currentToken = currentFilenameTokens.nextToken();
 						if (previousFilenameTokens.hasMoreTokens() && !currentToken.contains("system.sql")) {

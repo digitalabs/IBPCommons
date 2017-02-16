@@ -4,10 +4,10 @@ package org.generationcp.commons.workbook.generator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.generationcp.commons.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.PersonTestDataInitializer;
+import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserTestDataInitializer;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.junit.Assert;
@@ -38,17 +38,20 @@ public class UserRowGeneratorTest {
 	@InjectMocks
 	private UserRowGenerator userRowGenerator;
 	
-	private PersonTestDataInitializer personTDI;
+	private PersonTestDataInitializer personTestDataInitializer;
 	
-	private UserTestDataInitializer userTDI;
+	private UserTestDataInitializer userTestDataInitializer;
+	
+	private ProjectTestDataInitializer projectTestDataInitializer;
 	
 	@Before
 	public void setUp() {
-		this.personTDI = new PersonTestDataInitializer();
-		this.userTDI = new UserTestDataInitializer();
-		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
-		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userTDI.createUserList());
-		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(this.personTDI.createPerson());
+		this.personTestDataInitializer = new PersonTestDataInitializer();
+		this.userTestDataInitializer = new UserTestDataInitializer();
+		this.projectTestDataInitializer = new ProjectTestDataInitializer();
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.projectTestDataInitializer.createProject());
+		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userTestDataInitializer.createUserList());
+		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(this.personTestDataInitializer.createPerson());
 	}
 
 	@Test
