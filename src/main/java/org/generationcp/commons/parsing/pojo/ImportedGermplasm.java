@@ -441,6 +441,8 @@ public class ImportedGermplasm implements Serializable {
 		rec.setEntryTypeCategoricalID(this.entryTypeCategoricalID);
 		rec.setEntryTypeName(this.entryTypeName);
 		rec.setIndex(this.index);
+		rec.setGroupId(this.groupId);
+		rec.setStockIDs(this.stockIDs);
 
 		return rec;
 	}
