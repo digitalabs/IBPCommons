@@ -338,6 +338,10 @@ public class MySQLUtil {
 			// table
 			this.addCurrentUserToRestoredPrograms(connection);
 
+			// after restoring the script file successfully, make sure that the
+			// sequence table is updated.
+			this.resetSequenceDB(databaseName);
+
 			// delete tutorial crop
 			this.executeQuery(connection, "USE workbench;");
 			this.executeQuery(connection, "DELETE from `workbench_crop` where db_name='tutorial';");
@@ -405,6 +409,22 @@ public class MySQLUtil {
 		}
 		return new IllegalStateException(
 				"Looks like there are errors in your SQL file. Please use another backup file.", e);
+	}
+
+
+	protected void resetSequenceDB(final String databaseName) {
+		try {
+			this.executeQuery(connection, "USE " + databaseName);
+			this.executeQuery(connection,
+					"UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`phenotype_id`)/500)+100 AS sequence_value FROM `phenotype`) WHERE `sequence_name` = 'phenotype';");
+			this.executeQuery(connection,
+					"UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_phenotype_id`)/500)+100 FROM `nd_experiment_phenotype`) WHERE `sequence_name` = 'nd_experiment_phenotype';");
+			this.executeQuery(connection,
+					"UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_id`)/500)+100 FROM `nd_experiment`) WHERE `sequence_name` = 'nd_experiment';");
+		} catch (SQLException e) {
+			MySQLUtil.LOG.error("Cannot update the `sequence` table", e);
+		}
+
 	}
 
 	protected void backupUserPersonsBeforeRestoreDB(final Connection connection, final String databaseName) {
