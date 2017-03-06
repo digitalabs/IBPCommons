@@ -26,8 +26,6 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.domain.ontology.VariableType;
-import org.generationcp.middleware.helper.VariableInfo;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -95,11 +93,12 @@ public class BreedingViewImportServiceImplTest {
 	BreedingViewImportServiceImpl service = new BreedingViewImportServiceImpl();
 
 	private Stocks stocks;
+	private final String cropPrefix = "ABCD";
 
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-
+		
 		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
 		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
 		Mockito.doReturn(this.createCVTerm(this.LS_MEAN_ID, this.LS_MEAN)).when(cvTermDao)
@@ -178,7 +177,7 @@ public class BreedingViewImportServiceImplTest {
 				(DatasetValues) Matchers.anyObject(), Matchers.anyString());
 
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyList());
+				Matchers.anyList(), Matchers.anyString());
 
 	}
 
@@ -215,7 +214,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.studyDataManager, Mockito.times(0)).addDataSetVariableType(Matchers.anyInt(),
 				Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyList());
+				Matchers.anyList(), Matchers.anyString());
 
 	}
 
@@ -251,7 +250,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.studyDataManager, Mockito.times(2)).addDataSetVariableType(Matchers.anyInt(),
 				Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyList());
+				Matchers.anyList(), Matchers.anyString());
 
 	}
 
@@ -560,7 +559,7 @@ public class BreedingViewImportServiceImplTest {
 				(DatasetValues) Matchers.anyObject(), Matchers.anyString());
 
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyList());
+				Matchers.anyList(), Matchers.anyString());
 
 	}
 

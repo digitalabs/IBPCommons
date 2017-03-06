@@ -1,23 +1,12 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import au.com.bytecode.opencsv.CSVReader;
+import com.rits.cloning.Cloner;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.exceptions.BreedingViewInvalidFormatException;
 import org.generationcp.commons.service.BreedingViewImportService;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
@@ -53,9 +42,19 @@ import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.generationcp.middleware.util.DatasetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import au.com.bytecode.opencsv.CSVReader;
-
-import com.rits.cloning.Cloner;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
@@ -64,6 +63,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	private static final String MEANS_SUFFIX = "_Means";
 	private static final String LS_MEAN = "LS MEAN";
 	private static final String ERROR_ESTIMATE = "ERROR ESTIMATE";
+	private static final String plotCodePrefix = "adFr";
 
 	@Autowired
 	private StudyDataManager studyDataManager;
@@ -85,6 +85,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	@Autowired
 	private StandardVariableTransformer standardVariableTransformer;
+
+	@Autowired
+	private ContextUtil contextUtil;
 
 	private Map<String, String> localNameToAliasMap = null;
 
@@ -217,7 +220,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 
 		// save the experiment
-		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
+		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList,
+			plotCodePrefix);
 	}
 
 	/**
