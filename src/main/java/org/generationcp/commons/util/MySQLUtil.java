@@ -340,7 +340,7 @@ public class MySQLUtil {
 
 			// after restoring the script file successfully, make sure that the
 			// sequence table is updated.
-			this.resetSequenceDB(databaseName);
+			this.updateSequenceTableValues(databaseName);
 
 			// delete tutorial crop
 			this.executeQuery(connection, "USE workbench;");
@@ -412,20 +412,26 @@ public class MySQLUtil {
 	}
 
 
-	protected void resetSequenceDB(final String databaseName) {
+	protected void updateSequenceTableValues(final String databaseName) {
 		try {
 			this.executeQuery(connection, "USE " + databaseName);
-			this.executeQuery(connection,
-					"UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`phenotype_id`)/500)+100 AS sequence_value FROM `phenotype`) WHERE `sequence_name` = 'phenotype';");
-			this.executeQuery(connection,
-					"UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_phenotype_id`)/500)+100 FROM `nd_experiment_phenotype`) WHERE `sequence_name` = 'nd_experiment_phenotype';");
-			this.executeQuery(connection,
-					"UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_id`)/500)+100 FROM `nd_experiment`) WHERE `sequence_name` = 'nd_experiment';");
+			this.executeQuery(connection, buildSequenceTableUpdateQueryString("phenotype", "phenotype_id"));
+			this.executeQuery(connection, buildSequenceTableUpdateQueryString("nd_experiment_phenotype", "nd_experiment_phenotype_id"));
+			this.executeQuery(connection, buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
 		} catch (SQLException e) {
 			MySQLUtil.LOG.error("Cannot update the `sequence` table", e);
 		}
 
 	}
+
+	protected String buildSequenceTableUpdateQueryString(final String tableName, final String idColumn) {
+
+		return "UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`" + idColumn + "`)/500)+100 AS sequence_value FROM `" + tableName + "`) WHERE `sequence_name` = '" + tableName + "';";
+
+	}
+
+
+
 
 	protected void backupUserPersonsBeforeRestoreDB(final Connection connection, final String databaseName) {
 		try {
