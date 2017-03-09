@@ -26,8 +26,6 @@ public class MySQLUtilTest {
 
 	private Project project;
 
-	private ProjectTestDataInitializer projectTestDataInitializer;
-
 	@Autowired
 	@InjectMocks
 	private MySQLUtil mysqlUtil;
@@ -35,8 +33,7 @@ public class MySQLUtilTest {
 	@Before
 	public void setup() throws SQLException, ClassNotFoundException {
 		MockitoAnnotations.initMocks(this);
-		this.projectTestDataInitializer = new ProjectTestDataInitializer();
-		this.project = this.projectTestDataInitializer.createProject();
+		this.project = ProjectTestDataInitializer.createProject();
 	}
 
 	@Test
