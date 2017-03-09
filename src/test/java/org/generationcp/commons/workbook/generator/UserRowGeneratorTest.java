@@ -1,6 +1,8 @@
 
 package org.generationcp.commons.workbook.generator;
 
+import java.util.List;
+
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -10,6 +12,7 @@ import org.generationcp.middleware.data.initializer.PersonTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserTestDataInitializer;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,21 +40,18 @@ public class UserRowGeneratorTest {
 
 	@InjectMocks
 	private UserRowGenerator userRowGenerator;
-	
-	private PersonTestDataInitializer personTestDataInitializer;
-	
-	private UserTestDataInitializer userTestDataInitializer;
-	
-	private ProjectTestDataInitializer projectTestDataInitializer;
-	
+
+	private List<User> userList;
+
+
 	@Before
 	public void setUp() {
-		this.personTestDataInitializer = new PersonTestDataInitializer();
-		this.userTestDataInitializer = new UserTestDataInitializer();
-		this.projectTestDataInitializer = new ProjectTestDataInitializer();
-		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.projectTestDataInitializer.createProject());
-		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userTestDataInitializer.createUserList());
-		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(this.personTestDataInitializer.createPerson());
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
+
+		this.userList = UserTestDataInitializer.createUserList();
+		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userList);
+
+		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
 	}
 
 	@Test
@@ -64,5 +64,27 @@ public class UserRowGeneratorTest {
 				row.getCell(1).toString());
 		Assert.assertEquals("Third cell's content should be 1", UserRowGeneratorTest.USER_ID, row.getCell(2).toString());
 		Assert.assertEquals("Fourth cell's content should be Test Person", UserRowGeneratorTest.TEST_PERSON, row.getCell(3).toString());
+	}
+
+	@Test
+	public void testGetFname() {
+		// Test data - Make user id not equal to person id
+		final User user = this.userList.get(0);
+		final int personId = user.getUserid() + 1;
+		user.setPersonid(personId);
+
+		this.userRowGenerator.getFname(user);
+
+		// Verify that person id, not user id, was the one used to get Person record
+		Mockito.verify(this.workbenchDataManager).getPersonById(personId);
+	}
+
+	@Test
+	public void testGetFcode() {
+		final User user = this.userList.get(0);
+
+		final String fcode = this.userRowGenerator.getFcode(user);
+
+		Assert.assertEquals(user.getUserid().toString(), fcode);
 	}
 }
