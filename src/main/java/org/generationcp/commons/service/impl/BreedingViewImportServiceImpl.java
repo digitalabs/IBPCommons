@@ -63,7 +63,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	private static final String MEANS_SUFFIX = "_Means";
 	private static final String LS_MEAN = "LS MEAN";
 	private static final String ERROR_ESTIMATE = "ERROR ESTIMATE";
-	private static final String plotCodePrefix = "adFr";
 
 	@Autowired
 	private StudyDataManager studyDataManager;
@@ -221,7 +220,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		// save the experiment
 		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList,
-			plotCodePrefix);
+			this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix());
 	}
 
 	/**
