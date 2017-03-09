@@ -56,7 +56,7 @@ public class UserRowGenerator extends CodesSheetRowGenerator<User> {
 
 	@Override
 	String getFname(final User user) {
-		final Person person = this.workbenchDataManager.getPersonById(user.getUserid());
+		final Person person = this.workbenchDataManager.getPersonById(user.getPersonid());
 		return person.getDisplayName();
 	}
 }
