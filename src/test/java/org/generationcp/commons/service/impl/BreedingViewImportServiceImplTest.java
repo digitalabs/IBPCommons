@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
@@ -37,6 +38,8 @@ import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
 import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.oms.CVTerm;
+import org.generationcp.middleware.pojos.workbench.CropType;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
@@ -85,6 +88,8 @@ public class BreedingViewImportServiceImplTest {
 	TrialEnvironments trialEnvironments;
 	@Mock
 	TrialEnvironment trialEnvironment;
+	@Mock
+	ContextUtil contextUtil;
 
 	Map<String, ArrayList<String>> meansInput;
 	Map<String, Map<String, ArrayList<String>>> summaryStatisticsInput;
@@ -150,6 +155,11 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testImportMeansData() throws Exception {
+		Project p = new Project();
+		CropType c = new CropType();
+		c.setPlotCodePrefix("CODE");
+		p.setCropType(c);
+
 		// import with no existing means data
 		Mockito.doReturn(null).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.MEANS_DATA);
 
@@ -157,10 +167,9 @@ public class BreedingViewImportServiceImplTest {
 		summaryDatasets.add(this.createTrialDataSet());
 		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(this.STUDY_ID, DataSetType.SUMMARY_DATA);
 
-		Mockito.when(
-				this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-						(DatasetValues) Matchers.anyObject(), Matchers.anyString())).thenReturn(
-				new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
+		Mockito.when(this.studyDataManager
+				.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(), (DatasetValues) Matchers.anyObject(),
+						Matchers.anyString())).thenReturn(new DatasetReference(this.NEW_MEANS_DATASET_ID, this.EMPTY_VALUE));
 
 		Mockito.when(this.studyDataManager.getDataSet(this.NEW_MEANS_DATASET_ID)).thenReturn(this.createNewMeansDataSet());
 
@@ -168,6 +177,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(Matchers.any(OntologyVariableInfo.class));
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(p);
 
 		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
