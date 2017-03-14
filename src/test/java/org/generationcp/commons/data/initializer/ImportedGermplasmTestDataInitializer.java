@@ -6,8 +6,9 @@ import java.util.List;
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 
 public class ImportedGermplasmTestDataInitializer {
-	public static ImportedGermplasm createImportedGermplasm(){
-		final ImportedGermplasm importedGermplasm= new ImportedGermplasm();
+
+	public static ImportedGermplasm createImportedGermplasm() {
+		final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 		importedGermplasm.setIndex(1);
 		importedGermplasm.setEntryId(1);
 		importedGermplasm.setEntryCode("1");
@@ -15,8 +16,9 @@ public class ImportedGermplasmTestDataInitializer {
 		importedGermplasm.setGid("1");
 		return importedGermplasm;
 	}
-	public static List<ImportedGermplasm> createImportedGermplasmList(){
-		List<ImportedGermplasm> list = new ArrayList<>();
+
+	public static List<ImportedGermplasm> createImportedGermplasmList() {
+		final List<ImportedGermplasm> list = new ArrayList<>();
 		list.add(ImportedGermplasmTestDataInitializer.createImportedGermplasm());
 		return list;
 	}
