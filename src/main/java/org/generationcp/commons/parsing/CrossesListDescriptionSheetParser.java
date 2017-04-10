@@ -14,6 +14,7 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
+import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.UserDataManager;
 import org.generationcp.middleware.pojos.User;
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ import org.slf4j.LoggerFactory;
 public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDetails> extends AbstractExcelFileParser<T> {
 
 	static final String INVALID_LIST_USER = "The List User's value is invalid. See valid list user names on Codes sheet or leave it blank";
+	static final String MORE_THAN_ONE_USER1 = "User named ";
+	static final String MORE_THAN_ONE_USER2 = " is not unique in the database. Please contact your administrator";
 	private static final int DESCRIPTION_SHEET_NO = 0;
 	private static final int CONDITION_ROW_NO = 4;
 	private static final int DESCRIPTION_SHEET_COL_SIZE = 8;
@@ -128,14 +131,20 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	void validateListUserName(final String listUserName) throws FileParsingException {
-		if (StringUtils.isNotEmpty(listUserName)) {
-			final User user = this.userDataManager.getUserByFullname(listUserName);
-			if (user != null) {
-				this.importedList.setUserId(user.getUserid());
-			} else {
-				throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
+		try {
+			if (StringUtils.isNotEmpty(listUserName)) {
+				final User user = this.userDataManager.getUserByFullname(listUserName);
+				if (user != null) {
+					this.importedList.setUserId(user.getUserid());
+				} else {
+					throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
+				}
 			}
+		} catch (MiddlewareQueryException e) {
+			throw new FileParsingException(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER1 + listUserName
+					+ CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER2);
 		}
+
 	}
 
 	private void parseConditions() {
