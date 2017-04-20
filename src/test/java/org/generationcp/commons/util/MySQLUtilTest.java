@@ -21,6 +21,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath*:/testContext.xml" })
 public class MySQLUtilTest {
+	private static final String PROGRAM_ID = "100";
+	private static final int WORKBENCH_USER_ID = 2;
+	private static final int CROP_USER_ID = 3;
 	private static final String DATABASE = "ibdbv2_maize_merged";
 	private static final String BACKUP_FILENAME = "C:\\GCP\\Commons\\temp\\ibdbv2_maize_merged_20170209_033042_735_.sql";
 
@@ -119,6 +122,36 @@ public class MySQLUtilTest {
 		Assert.assertEquals("UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_id`)/500)+100 AS sequence_value FROM `nd_experiment`) WHERE `sequence_name` = 'nd_experiment';",
 				this.mysqlUtil.buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
 
+	}
+	
+	@Test
+	public void testBuildProjectUserRoleInsertScript() {
+		final int workbenchUserId = MySQLUtilTest.WORKBENCH_USER_ID;
+		final String programKey = MySQLUtilTest.PROGRAM_ID;
 
+		final String script = this.mysqlUtil.buildProjectUserRoleInsertScript(workbenchUserId, programKey);
+		Assert.assertEquals("INSERT into workbench_project_user_role values (null," + programKey + "," + workbenchUserId + ",1)", script);
+	}
+	
+	
+	@Test
+	public void testBuildProjectUserInfoInsertScript() {
+		final int workbenchUserId = MySQLUtilTest.WORKBENCH_USER_ID;
+		final String programKey = MySQLUtilTest.PROGRAM_ID;
+		
+		final String script = this.mysqlUtil.buildProjectUserInfoInsertScript(workbenchUserId, programKey);
+		Assert.assertEquals("INSERT into workbench_project_user_info values (null," + programKey + "," + workbenchUserId + ",NOW())",
+				script);
+	}
+	
+	@Test
+	public void testBuildIbdbUserMapInsertScriptipt() {
+		final int workbenchUserId = MySQLUtilTest.WORKBENCH_USER_ID;
+		final int cropUserId = MySQLUtilTest.CROP_USER_ID;
+		final String programKey = MySQLUtilTest.PROGRAM_ID;
+		
+		final String script = this.mysqlUtil.buildIbdbUserMapInsertScript(workbenchUserId, cropUserId, programKey);
+		Assert.assertEquals("INSERT into workbench_ibdb_user_map values (null," + workbenchUserId + "," + programKey + "," + cropUserId + ")",
+				script);
 	}
 }

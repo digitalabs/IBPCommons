@@ -477,12 +477,10 @@ public class MySQLUtil {
 			final List<String> programIds = this.executeForManyStringResults(connection,
 					"SELECT project_id from workbench_project where user_id = '9999';");
 			for (final String programKey : programIds) {
-				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + ","
-						+ workbenchUserId + ",1)");
-				this.executeQuery(connection, "INSERT into workbench_project_user_info values (null," + programKey + ","
-						+ workbenchUserId + ",NOW())");
+				this.executeQuery(connection, this.buildProjectUserRoleInsertScript(workbenchUserId, programKey));
+				this.executeQuery(connection, this.buildProjectUserInfoInsertScript(workbenchUserId, programKey));
 				this.executeQuery(connection,
-						"INSERT into workbench_ibdb_user_map values (null," + workbenchUserId + "," + programKey + "," + cropUserId + ")");
+						this.buildIbdbUserMapInsertScript(workbenchUserId, cropUserId, programKey));
 				this.executeQuery(connection,
 						"UPDATE workbench_project set crop_type = '"
 								+ this.contextUtil.getProjectInContext().getCropType().getCropName()
@@ -493,6 +491,22 @@ public class MySQLUtil {
 		} catch (final SQLException e) {
 			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
 		}
+	}
+
+	String buildIbdbUserMapInsertScript(final int workbenchUserId, final int cropUserId, final String programKey) {
+		StringBuilder sb = new StringBuilder("INSERT into workbench_ibdb_user_map");
+		
+		return "INSERT into workbench_ibdb_user_map values (null," + workbenchUserId + "," + programKey + "," + cropUserId + ")";
+	}
+
+	String buildProjectUserInfoInsertScript(final int workbenchUserId, final String programKey) {
+		return "INSERT into workbench_project_user_info values (null," + programKey + ","
+				+ workbenchUserId + ",NOW())";
+	}
+
+	String buildProjectUserRoleInsertScript(final int workbenchUserId, final String programKey) {
+		return "INSERT into workbench_project_user_role values (null," + programKey + ","
+				+ workbenchUserId + ",1)";
 	}
 
 	protected void alterListNmsTable(final Connection connection, final String databaseName) {
