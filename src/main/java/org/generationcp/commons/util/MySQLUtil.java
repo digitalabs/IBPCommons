@@ -470,25 +470,26 @@ public class MySQLUtil {
 	}
 
 	protected void addCurrentUserToRestoredPrograms(final Connection connection) {
-		final int currentUserId = this.contextUtil.getCurrentWorkbenchUserId();
+		final int workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
+		final int cropUserId = this.contextUtil.getCurrentUserLocalId();
 		try {
 			this.executeQuery(connection, "USE workbench");
 			final List<String> programIds = this.executeForManyStringResults(connection,
 					"SELECT project_id from workbench_project where user_id = '9999';");
 			for (final String programKey : programIds) {
 				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + ","
-						+ currentUserId + ",1)");
+						+ workbenchUserId + ",1)");
 				this.executeQuery(connection, "INSERT into workbench_project_user_info values (null," + programKey + ","
-						+ currentUserId + ",NOW())");
+						+ workbenchUserId + ",NOW())");
 				this.executeQuery(connection,
-						"INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
+						"INSERT into workbench_ibdb_user_map values (null," + workbenchUserId + "," + programKey + "," + cropUserId + ")");
 				this.executeQuery(connection,
 						"UPDATE workbench_project set crop_type = '"
 								+ this.contextUtil.getProjectInContext().getCropType().getCropName()
 								+ "' where project_id = " + programKey + ";");
 			}
 			this.executeQuery(connection,
-					"UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
+					"UPDATE workbench_project set user_id = '" + workbenchUserId + "' where user_id = 9999;");
 		} catch (final SQLException e) {
 			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
 		}
