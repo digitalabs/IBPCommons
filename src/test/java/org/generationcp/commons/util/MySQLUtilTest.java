@@ -124,34 +124,4 @@ public class MySQLUtilTest {
 
 	}
 	
-	@Test
-	public void testBuildProjectUserRoleInsertScript() {
-		final int workbenchUserId = MySQLUtilTest.WORKBENCH_USER_ID;
-		final String programKey = MySQLUtilTest.PROGRAM_ID;
-
-		final String script = this.mysqlUtil.buildProjectUserRoleInsertScript(workbenchUserId, programKey);
-		Assert.assertEquals("INSERT into workbench_project_user_role values (null," + programKey + "," + workbenchUserId + ",1)", script);
-	}
-	
-	
-	@Test
-	public void testBuildProjectUserInfoInsertScript() {
-		final int workbenchUserId = MySQLUtilTest.WORKBENCH_USER_ID;
-		final String programKey = MySQLUtilTest.PROGRAM_ID;
-		
-		final String script = this.mysqlUtil.buildProjectUserInfoInsertScript(workbenchUserId, programKey);
-		Assert.assertEquals("INSERT into workbench_project_user_info values (null," + programKey + "," + workbenchUserId + ",NOW())",
-				script);
-	}
-	
-	@Test
-	public void testBuildIbdbUserMapInsertScriptipt() {
-		final int workbenchUserId = MySQLUtilTest.WORKBENCH_USER_ID;
-		final int cropUserId = MySQLUtilTest.CROP_USER_ID;
-		final String programKey = MySQLUtilTest.PROGRAM_ID;
-		
-		final String script = this.mysqlUtil.buildIbdbUserMapInsertScript(workbenchUserId, cropUserId, programKey);
-		Assert.assertEquals("INSERT into workbench_ibdb_user_map values (null," + workbenchUserId + "," + programKey + "," + cropUserId + ")",
-				script);
-	}
 }

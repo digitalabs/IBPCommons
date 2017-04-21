@@ -74,7 +74,7 @@ public class MySQLUtil {
 	private Connection connection;
 
 	private File currentDbBackupFile;
-
+	
 	public String getMysqlPath() {
 		return this.mysqlPath;
 	}
@@ -295,8 +295,10 @@ public class MySQLUtil {
 		// backup current users + table in a temporary schema
 		this.backupUserPersonsBeforeRestoreDB(connection, databaseName);
 
-		// 05-08-14 Backup current DB + Stored Procedure
+		// Backup current DB + Stored Procedure
 		this.currentDbBackupFile = this.createCurrentDbBackupFile(databaseName);
+		
+		// Store the
 
 		this.executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
 
@@ -336,7 +338,7 @@ public class MySQLUtil {
 
 			// after restore, restore from backup schema the users + persons
 			// table
-			this.addCurrentUserToRestoredPrograms(connection);
+			this.updateCropTypeAndCreatorOfRestoredPrograms(connection);
 
 			// after restoring the script file successfully, make sure that the
 			// sequence table is updated.
@@ -469,44 +471,23 @@ public class MySQLUtil {
 		}
 	}
 
-	protected void addCurrentUserToRestoredPrograms(final Connection connection) {
-		final int workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
-		final int cropUserId = this.contextUtil.getCurrentUserLocalId();
+	void updateCropTypeAndCreatorOfRestoredPrograms(final Connection connection) {
 		try {
 			this.executeQuery(connection, "USE workbench");
-			final List<String> programIds = this.executeForManyStringResults(connection,
-					"SELECT project_id from workbench_project where user_id = '9999';");
-			for (final String programKey : programIds) {
-				this.executeQuery(connection, this.buildProjectUserRoleInsertScript(workbenchUserId, programKey));
-				this.executeQuery(connection, this.buildProjectUserInfoInsertScript(workbenchUserId, programKey));
-				this.executeQuery(connection,
-						this.buildIbdbUserMapInsertScript(workbenchUserId, cropUserId, programKey));
-				this.executeQuery(connection,
+			// Update crop type to current crop (previously 'tutorial' crop in backup file)
+			this.executeQuery(connection,
 						"UPDATE workbench_project set crop_type = '"
 								+ this.contextUtil.getProjectInContext().getCropType().getCropName()
-								+ "' where project_id = " + programKey + ";");
-			}
+								+ "' where user_id = 9999;");
+			
+			// Set current user as creator of restored programs
+			final int workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 			this.executeQuery(connection,
 					"UPDATE workbench_project set user_id = '" + workbenchUserId + "' where user_id = 9999;");
+			
 		} catch (final SQLException e) {
-			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
+			MySQLUtil.LOG.error("Could not update crop type and owner of restored programs.", e);
 		}
-	}
-
-	String buildIbdbUserMapInsertScript(final int workbenchUserId, final int cropUserId, final String programKey) {
-		StringBuilder sb = new StringBuilder("INSERT into workbench_ibdb_user_map");
-		
-		return "INSERT into workbench_ibdb_user_map values (null," + workbenchUserId + "," + programKey + "," + cropUserId + ")";
-	}
-
-	String buildProjectUserInfoInsertScript(final int workbenchUserId, final String programKey) {
-		return "INSERT into workbench_project_user_info values (null," + programKey + ","
-				+ workbenchUserId + ",NOW())";
-	}
-
-	String buildProjectUserRoleInsertScript(final int workbenchUserId, final String programKey) {
-		return "INSERT into workbench_project_user_role values (null," + programKey + ","
-				+ workbenchUserId + ",1)";
 	}
 
 	protected void alterListNmsTable(final Connection connection, final String databaseName) {
