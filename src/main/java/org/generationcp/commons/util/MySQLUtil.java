@@ -74,7 +74,7 @@ public class MySQLUtil {
 	private Connection connection;
 
 	private File currentDbBackupFile;
-
+	
 	public String getMysqlPath() {
 		return this.mysqlPath;
 	}
@@ -295,8 +295,10 @@ public class MySQLUtil {
 		// backup current users + table in a temporary schema
 		this.backupUserPersonsBeforeRestoreDB(connection, databaseName);
 
-		// 05-08-14 Backup current DB + Stored Procedure
+		// Backup current DB + Stored Procedure
 		this.currentDbBackupFile = this.createCurrentDbBackupFile(databaseName);
+		
+		// Store the
 
 		this.executeQuery(connection, "DROP DATABASE IF EXISTS " + databaseName);
 
@@ -336,7 +338,7 @@ public class MySQLUtil {
 
 			// after restore, restore from backup schema the users + persons
 			// table
-			this.addCurrentUserToRestoredPrograms(connection);
+			this.updateCropTypeAndCreatorOfRestoredPrograms(connection);
 
 			// after restoring the script file successfully, make sure that the
 			// sequence table is updated.
@@ -469,28 +471,22 @@ public class MySQLUtil {
 		}
 	}
 
-	protected void addCurrentUserToRestoredPrograms(final Connection connection) {
-		final int currentUserId = this.contextUtil.getCurrentWorkbenchUserId();
+	void updateCropTypeAndCreatorOfRestoredPrograms(final Connection connection) {
 		try {
 			this.executeQuery(connection, "USE workbench");
-			final List<String> programIds = this.executeForManyStringResults(connection,
-					"SELECT project_id from workbench_project where user_id = '9999';");
-			for (final String programKey : programIds) {
-				this.executeQuery(connection, "INSERT into workbench_project_user_role values (null," + programKey + ","
-						+ currentUserId + ",1)");
-				this.executeQuery(connection, "INSERT into workbench_project_user_info values (null," + programKey + ","
-						+ currentUserId + ",NOW())");
-				this.executeQuery(connection,
-						"INSERT into workbench_ibdb_user_map values (null," + currentUserId + "," + programKey + ",1)");
-				this.executeQuery(connection,
+			// Update crop type to current crop (previously 'tutorial' crop in backup file)
+			this.executeQuery(connection,
 						"UPDATE workbench_project set crop_type = '"
 								+ this.contextUtil.getProjectInContext().getCropType().getCropName()
-								+ "' where project_id = " + programKey + ";");
-			}
+								+ "' where user_id = 9999;");
+			
+			// Set current user as creator of restored programs
+			final int workbenchUserId = this.contextUtil.getCurrentWorkbenchUserId();
 			this.executeQuery(connection,
-					"UPDATE workbench_project set user_id = '" + currentUserId + "' where user_id = 9999;");
+					"UPDATE workbench_project set user_id = '" + workbenchUserId + "' where user_id = 9999;");
+			
 		} catch (final SQLException e) {
-			MySQLUtil.LOG.error("Could not add current user to restored programs", e);
+			MySQLUtil.LOG.error("Could not update crop type and owner of restored programs.", e);
 		}
 	}
 

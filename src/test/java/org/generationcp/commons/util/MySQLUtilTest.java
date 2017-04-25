@@ -1,18 +1,24 @@
 package org.generationcp.commons.util;
 
 import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -26,10 +32,13 @@ public class MySQLUtilTest {
 
 	private Project project;
 
+	@Mock
+	private ContextUtil contextUtil;
+	
 	@Autowired
 	@InjectMocks
 	private MySQLUtil mysqlUtil;
-
+	
 	@Before
 	public void setup() throws SQLException, ClassNotFoundException {
 		MockitoAnnotations.initMocks(this);
@@ -119,6 +128,32 @@ public class MySQLUtilTest {
 		Assert.assertEquals("UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_id`)/500)+100 AS sequence_value FROM `nd_experiment`) WHERE `sequence_name` = 'nd_experiment';",
 				this.mysqlUtil.buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
 
-
 	}
+	
+	@Test
+	public void testUpdateCropTypeAndOwnerOfRestoredPrograms() throws SQLException {
+		// Setup mocks
+		final Connection connection = Mockito.mock(Connection.class);
+		final Statement statement = Mockito.mock(Statement.class);
+		Mockito.when(connection.createStatement()).thenReturn(statement);
+		
+		final int userId = 2;
+		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(userId);
+		final Project testProject = ProjectTestDataInitializer.createProject();
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(testProject);
+		
+		// Method to test
+		this.mysqlUtil.updateCropTypeAndCreatorOfRestoredPrograms(connection);
+		
+		// Verify SQL queries executed
+		final ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.forClass(String.class);
+		Mockito.verify(statement, Mockito.times(3)).execute(queryStringCaptor.capture());
+		final List<String> queries = queryStringCaptor.getAllValues();
+		Assert.assertEquals(3, queries.size());
+		Assert.assertEquals("USE workbench", queries.get(0));
+		Assert.assertEquals("UPDATE workbench_project set crop_type = '" + testProject.getCropType().getCropName()
+								+ "' where user_id = 9999;", queries.get(1));
+		Assert.assertEquals("UPDATE workbench_project set user_id = '" + userId + "' where user_id = 9999;", queries.get(2));
+	}
+	
 }
