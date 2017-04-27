@@ -4,11 +4,8 @@ package org.generationcp.commons.util;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.generationcp.middleware.manager.GermplasmDataManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
@@ -17,6 +14,8 @@ import org.generationcp.middleware.pojos.Name;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import junit.framework.Assert;
 
 public class CrossingUtilTest {
 
@@ -126,6 +125,25 @@ public class CrossingUtilTest {
 				fatherOfFemale, Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
 
 		Assert.assertEquals("Invalid method id computed using parental line", Methods.THREE_WAY_CROSS.getMethodID(), methodId);
+	}
+	
+	@Test
+	public void testDetermineBreedingMethodBasedOnParentalLineComplexCross() {
+		Integer maleParentGID = 1;
+		Germplasm maleParent = new Germplasm();
+		maleParent.setGid(maleParentGID);
+		maleParent.setGnpgs(-1);
+		Germplasm femaleParent = new Germplasm();
+		femaleParent.setGnpgs(2);
+		Germplasm fatherOfFemale = new Germplasm();
+
+		// here we are just trying to emphasize that the gid of the father of the female germplasm is different from the germplasm of the male
+		fatherOfFemale.setGid(maleParentGID + 1);
+
+		Integer methodId = CrossingUtil.determineBreedingMethodBasedOnParentalLine(femaleParent, maleParent, Mockito.mock(Germplasm.class),
+				fatherOfFemale, Mockito.mock(Germplasm.class), Mockito.mock(Germplasm.class));
+
+		Assert.assertEquals("Invalid method id computed using parental line", Methods.COMPLEX_CROSS.getMethodID(), methodId);
 	}
 
 	/**
