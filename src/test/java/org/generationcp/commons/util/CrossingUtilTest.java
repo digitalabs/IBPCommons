@@ -121,7 +121,7 @@ public class CrossingUtilTest {
 	 * Current rules expect a three way cross when one parent does not have
 	 * parents (gnpgs < 0) which we'll call parent A, and the other parent has 2
 	 * (gnpgs == 2) which we'll call parent B. Also, the GID of parent A must be
-	 * different from either parent of parent B
+	 * different from either parent of parent B and the method of parent A must be single cross 
 	 */
 	@Test
 	public void testDetermineBreedingMethodBasedOnParentalLineThreeWayCross() {
