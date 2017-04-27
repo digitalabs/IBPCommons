@@ -105,7 +105,7 @@ public class CrossingUtilTest {
 	}
 
 	/**
-	 * Current rules expect a back cross when one parent does not have parents (gnpgs < 0) which we'll call parent A,
+	 * Current rules expect a three way cross when one parent does not have parents (gnpgs < 0) which we'll call parent A,
 	 * and the other parent has 2 (gnpgs == 2) which we'll call parent B. Also, the GID of parent A must be different from either parent of parent B
 	 */
 	@Test
@@ -116,6 +116,7 @@ public class CrossingUtilTest {
 		maleParent.setGnpgs(-1);
 		Germplasm femaleParent = new Germplasm();
 		femaleParent.setGnpgs(2);
+		femaleParent.setMethodId(Methods.SINGLE_CROSS.getMethodID());
 		Germplasm fatherOfFemale = new Germplasm();
 
 		// here we are just trying to emphasize that the gid of the father of the female germplasm is different from the germplasm of the male
