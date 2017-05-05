@@ -22,6 +22,7 @@ public class CrossSetting implements Serializable, PresetSetting {
 	private AdditionalDetailsSetting additionalDetailsSetting;
 	private boolean preservePlotDuplicates;
 	private boolean isUseManualSettingsForNaming;
+	private boolean applyNewGroupToPreviousCrosses;
 
 	public CrossSetting() {
 
@@ -88,6 +89,14 @@ public class CrossSetting implements Serializable, PresetSetting {
 		this.isUseManualSettingsForNaming = isUseManualSettingsForNaming;
 	}
 
+	public boolean isApplyNewGroupToPreviousCrosses() {
+		return applyNewGroupToPreviousCrosses;
+	}
+
+	public void setApplyNewGroupToPreviousCrosses(boolean applyNewGroupToPreviousCrosses) {
+		this.applyNewGroupToPreviousCrosses = applyNewGroupToPreviousCrosses;
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
