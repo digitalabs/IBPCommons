@@ -66,7 +66,7 @@ public class CrossingUtil {
 			if (motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid())
 					|| fatherOfParent1 != null && Objects.equals(fatherOfParent1.getGid(), parent2.getGid())) {
 				methodId = Methods.BACKCROSS.getMethodID();
-			} else if (parent1.getMethodId() == Methods.SINGLE_CROSS.getMethodID()) {
+			} else if (Methods.SINGLE_CROSS.getMethodID().equals(parent1.getMethodId())) {
 				methodId = Methods.THREE_WAY_CROSS.getMethodID();
 			} else {
 				methodId = Methods.COMPLEX_CROSS.getMethodID();
