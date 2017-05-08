@@ -38,8 +38,8 @@ public class CrossingUtil {
 			if (male != null && male.getGnpgs() < 0) {
 				methodId = CrossingUtil.determineCrossingMethod(female, male, motherOfFemale, fatherOfFemale);
 			} else {
-				if (female != null && female.getMethodId() == Methods.SINGLE_CROSS.getMethodID() && male != null
-						&& male.getMethodId() == Methods.SINGLE_CROSS.getMethodID()) {
+				if (female != null && Objects.equals(Methods.SINGLE_CROSS.getMethodID(), female.getMethodId()) && male != null
+						&& Objects.equals(Methods.SINGLE_CROSS.getMethodID(), male.getMethodId())) {
 					methodId = Methods.DOUBLE_CROSS.getMethodID();
 				} else {
 					methodId = Methods.COMPLEX_CROSS.getMethodID();
@@ -66,7 +66,7 @@ public class CrossingUtil {
 			if (motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid())
 					|| fatherOfParent1 != null && Objects.equals(fatherOfParent1.getGid(), parent2.getGid())) {
 				methodId = Methods.BACKCROSS.getMethodID();
-			} else if (Methods.SINGLE_CROSS.getMethodID().equals(parent1.getMethodId())) {
+			} else if (Objects.equals(Methods.SINGLE_CROSS.getMethodID(), parent1.getMethodId())) {
 				methodId = Methods.THREE_WAY_CROSS.getMethodID();
 			} else {
 				methodId = Methods.COMPLEX_CROSS.getMethodID();
