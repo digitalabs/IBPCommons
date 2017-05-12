@@ -589,10 +589,11 @@ public class BreedingViewImportServiceImplTest {
         Term meansMethod = new Term();
         meansMethod.setId(this.LS_MEAN_ID);
         String analysisVariableName = "ASI_Means";
+        final boolean isSummaryVariable = false;
 
         Mockito.when(ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getId(), this.LS_MEAN_ID)).thenReturn(null);
 
-        service.createAnalysisVariable(originalVariableType,analysisVariableName , meansMethod, PROGRAM_UUID, 1);
+        service.createAnalysisVariable(originalVariableType,analysisVariableName , meansMethod, PROGRAM_UUID, 1, isSummaryVariable);
         ArgumentCaptor<OntologyVariableInfo> infoArgument = ArgumentCaptor.forClass(OntologyVariableInfo.class);
 
         Mockito.verify(ontologyVariableDataManager).addVariable(infoArgument.capture());
@@ -614,7 +615,8 @@ public class BreedingViewImportServiceImplTest {
 
         Mockito.when(ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getId(), this.LS_MEAN_ID)).thenReturn(TEST_ANALYSIS_VARIABLE_TERM_ID);
 
-        service.createAnalysisVariable(originalVariableType,analysisVariableName , meansMethod, PROGRAM_UUID, 1);
+        final boolean isSummaryVariable = false;
+        service.createAnalysisVariable(originalVariableType,analysisVariableName , meansMethod, PROGRAM_UUID, 1, isSummaryVariable);
 
 
         Mockito.verify(ontologyVariableDataManager, Mockito.never()).addVariable(Mockito.any(OntologyVariableInfo.class));
