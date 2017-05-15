@@ -45,7 +45,6 @@ import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
-import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
 import org.generationcp.middleware.operation.builder.StandardVariableBuilder;
 import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
 import org.generationcp.middleware.pojos.dms.DmsProject;
@@ -618,12 +617,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final VariableTypeList plotVariates, final Map<String, String> nameToAliasMap, final String programUUID) throws IOException {
 		final VariableTypeList summaryStatsVariableTypeList = new VariableTypeList();
 
-		// TODO cleanup: check if this unassigned call could be removed
-		summaryStatsCSV.getData();
 		final List<String> summaryStatsList = summaryStatsCSV.getHeaderStats();
-		// TODO cleanup: unused/unassigned call
-		summaryStatsCSV.getTrialHeader();
-
 		final Map<String, Integer> summaryStatNameToIdMap = this.findOrSaveMethodsIfNotExisting(summaryStatsList);
 
 		final boolean isSummaryVariable = true;
@@ -892,33 +886,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	/**
-	 * This method returns the ontology variable id from the database based from the propertyId, scaleId, methodId and programUUID
-	 *
-	 * @param propertyId
-	 * @param scaleId
-	 * @param methodId
-	 * @param programUUID
-	 * @return ontology variable id
-	 */
-	private Integer findOntologyVariableId(final int propertyId, final int scaleId, final Integer methodId, final String programUUID) {
-		Integer ontologyVariableId = null;
-
-		final VariableFilter filterOpts = new VariableFilter();
-		filterOpts.setProgramUuid(programUUID);
-		filterOpts.addPropertyId(propertyId);
-		filterOpts.addMethodId(methodId);
-		filterOpts.addScaleId(scaleId);
-
-		final List<org.generationcp.middleware.domain.ontology.Variable> variableList =
-				this.ontologyVariableDataManager.getWithFilter(filterOpts);
-		if (variableList != null && !variableList.isEmpty()) {
-			final org.generationcp.middleware.domain.ontology.Variable variable = variableList.get(0);
-			ontologyVariableId = variable.getId();
-		}
-		return ontologyVariableId;
-	}
-
-	/**
 	 * This method returns a standard variable object from the database given the ontology variable field values
 	 *
 	 * @param termId
@@ -990,15 +957,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final Map<String, String> nameAliasMap = new HashMap<>();
 
 			String entryNoName = null;
-			// TODO cleanup: use better variable names than i and k
-			for (final Iterator<DMSVariableType> i = variateList.iterator(); i.hasNext();) {
-				final DMSVariableType k = i.next();
-				if (k.getStandardVariable().getId() == TermId.ENTRY_NO.getId()) {
-					entryNoName = k.getLocalName();
+			for (final Iterator<DMSVariableType> variateListIterator = variateList.iterator(); variateListIterator.hasNext();) {
+				final DMSVariableType variable = variateListIterator.next();
+				if (variable.getStandardVariable().getId() == TermId.ENTRY_NO.getId()) {
+					entryNoName = variable.getLocalName();
 				}
 				final String nameSanitized =
-						k.getLocalName().replaceAll(BreedingViewImportServiceImpl.REGEX_VALID_BREEDING_VIEW_CHARACTERS, "_");
-				nameAliasMap.put(nameSanitized, k.getLocalName());
+						variable.getLocalName().replaceAll(BreedingViewImportServiceImpl.REGEX_VALID_BREEDING_VIEW_CHARACTERS, "_");
+				nameAliasMap.put(nameSanitized, variable.getLocalName());
 			}
 
 			this.mapDupeEntryNoToActualEntryNo(nameAliasMap, entryNoName);
