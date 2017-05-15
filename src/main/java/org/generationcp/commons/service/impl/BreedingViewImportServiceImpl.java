@@ -71,8 +71,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	@Autowired
 	private OntologyVariableDataManager ontologyVariableDataManager;
 
-    @Autowired
-    private OntologyDataManager ontologyDataManager;
+	@Autowired
+	private OntologyDataManager ontologyDataManager;
 
 	@Autowired
 	private OntologyDaoFactory ontologyDaoFactory;
@@ -142,14 +142,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				// if yes, only append the variable types to existing means
 				// else, create the means dataset with the means variable types
 				if (meansDataSet != null) {
-					meansDataSet =
-							this.appendVariableTypesToExistingMeans(csvHeader, plotDataSet, meansDataSet, programUUID, lsMean,
-									errorEstimate, hasDuplicateColumnsInFile);
+					meansDataSet = this.appendVariableTypesToExistingMeans(csvHeader, plotDataSet, meansDataSet, programUUID, lsMean,
+							errorEstimate, hasDuplicateColumnsInFile);
 					meansDataSetExists = true;
 				} else {
-					meansDataSet =
-							this.createMeansDataset(studyId, study.getName() + "-MEANS", csvHeader, plotDataSet, programUUID, lsMean,
-									errorEstimate, hasDuplicateColumnsInFile);
+					meansDataSet = this.createMeansDataset(studyId, study.getName() + "-MEANS", csvHeader, plotDataSet, programUUID, lsMean,
+							errorEstimate, hasDuplicateColumnsInFile);
 				}
 				// create or append the experiments to the means dataset
 				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists, plotDataSet.getId(),
@@ -221,7 +219,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		// save the experiment
 		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList,
-			this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix());
+				this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix());
 	}
 
 	/**
@@ -276,16 +274,16 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		// add dataset type variables to means dataset (but not yet save it to the database)
 
-		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_NAME.getId(), datasetName, "Dataset name (local)",
-				datasetName, 1, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
+		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_NAME.getId(), datasetName, "Dataset name (local)", datasetName,
+				1, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
 		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TITLE.getId(), "DATASET_TITLE", "Dataset title (local)",
 				"My Dataset Description", 2, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
 		this.addMeansVariableToLists(
 				this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE", "Dataset type (local)",
-						String.valueOf(DataSetType.MEANS_DATA.getId()), 3, programUUID, PhenotypicType.DATASET), meansVariableList,
-				meansVariableTypeList);
+						String.valueOf(DataSetType.MEANS_DATA.getId()), 3, programUUID, PhenotypicType.DATASET),
+				meansVariableList, meansVariableTypeList);
 
 		// add plot dataset variables of type trial environment and germplasm to means dataset (but not yet save it to the database)
 		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
@@ -319,7 +317,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final Set<String> inputDataSetVariateNames = this.getAllNewVariatesToProcess(csvHeader, null, hasDuplicateColumnsInFile);
 		final Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
 		final Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
-		
+
 		for (final String variateName : inputDataSetVariateNames) {
 			final DMSVariableType variate = plotVariates.findByLocalName(variateName);
 			meansVariableTypeList.add(this.createAnalysisVariable(variate, variateName + BreedingViewImportServiceImpl.MEANS_SUFFIX,
@@ -490,7 +488,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		variableInfo.setPropertyId(propertyId);
 		variableInfo.setScaleId(scaleId);
 		variableInfo.setProgramUuid(programUUID);
-		variableInfo.addVariableType(isSummaryVariable? VariableType.ANALYSIS_SUMMARY : VariableType.ANALYSIS);
+		variableInfo.addVariableType(isSummaryVariable ? VariableType.ANALYSIS_SUMMARY : VariableType.ANALYSIS);
 		this.ontologyVariableDataManager.addVariable(variableInfo);
 		return variableInfo.getId();
 	}
@@ -531,15 +529,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final VariableTypeList variableTypeListVariates = plotDataset.getVariableTypes().getVariates();
 
 			// create the summary statistics variable types
-			final VariableTypeList summaryStatsVariableTypeList =
-					this.createSummaryStatsVariableTypes(summaryStatsCSV, trialDataSet, variableTypeListVariates, nameToAliasMap,
-							programUUID);
+			final VariableTypeList summaryStatsVariableTypeList = this.createSummaryStatsVariableTypes(summaryStatsCSV, trialDataSet,
+					variableTypeListVariates, nameToAliasMap, programUUID);
 
 			final Map<String, Integer> envFactorTolocationIdMap =
 					this.retrieveAllLocationsOfStudy(summaryStatsData.keySet(), studyId, summaryStatsCSV.getTrialHeader());
-			final List<ExperimentValues> summaryStatsExperimentValuesList =
-					this.createSummaryStatsExperimentValuesList(trialDataSet, envFactorTolocationIdMap, summaryStatsCSV.getHeaderStats(),
-							summaryStatsCSV.getData());
+			final List<ExperimentValues> summaryStatsExperimentValuesList = this.createSummaryStatsExperimentValuesList(trialDataSet,
+					envFactorTolocationIdMap, summaryStatsCSV.getHeaderStats(), summaryStatsCSV.getData());
 
 			// save project properties and experiments
 			final DmsProject project = new DmsProject();
@@ -583,7 +579,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return summaryStatsExperimentValuesList;
 	}
 
-	private Map<String, Integer> retrieveAllLocationsOfStudy(final Set<String> environments, final int studyId, final String envFactorName) {
+	private Map<String, Integer> retrieveAllLocationsOfStudy(final Set<String> environments, final int studyId,
+			final String envFactorName) {
 		final Map<String, Integer> envFactorTolocationIdMap = new LinkedHashMap<>();
 		final TrialEnvironments trialEnvironments =
 				this.studyDataManager.getTrialEnvironmentsInDataset(this.getTrialDataSet(studyId).getId());
@@ -636,8 +633,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 						final Term summaryStatMethod =
 								new Term(summaryStatNameToIdMap.get(summaryStatName), summaryStatName, summaryStatName);
 						// create the summary statistic variable type and add to list
-						final DMSVariableType summaryStatVariableType =
-								this.createAnalysisVariable(originalVariableType, localName, summaryStatMethod, programUUID, rank++, isSummaryVariable);
+						final DMSVariableType summaryStatVariableType = this.createAnalysisVariable(originalVariableType, localName,
+								summaryStatMethod, programUUID, rank++, isSummaryVariable);
 						summaryStatVariableType.setVariableType(VariableType.ANALYSIS_SUMMARY);
 						summaryStatsVariableTypeList.add(summaryStatVariableType);
 						trialDataSet.getVariableTypes().add(summaryStatVariableType);
@@ -702,9 +699,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					}
 
 					// retrieve all phenotype id of variables based on the plot no
-					final List<Object[]> list =
-							this.studyDataManager.getPhenotypeIdsByLocationAndPlotNo(plotDataset.getId(), ndGeolocationId, plotNo,
-									cvTermIds);
+					final List<Object[]> list = this.studyDataManager.getPhenotypeIdsByLocationAndPlotNo(plotDataset.getId(),
+							ndGeolocationId, plotNo, cvTermIds);
 					for (final Object[] object : list) {
 						// create PhenotypeOutlier objects and add to list
 						final PhenotypeOutlier outlier = new PhenotypeOutlier();
@@ -770,20 +766,20 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate, final boolean hasDuplicateColumnsInFile) {
 		final int numberOfMeansVariables = meansDataSet.getVariableTypes().getVariableTypes().size();
 		int rank = meansDataSet.getVariableTypes().getVariableTypes().get(numberOfMeansVariables - 1).getRank() + 1;
-		final Set<String> inputDataSetVariateNames =
-				this.getAllNewVariatesToProcess(csvHeader, meansDataSet.getVariableTypes().getVariates().getVariableTypes(),
-						hasDuplicateColumnsInFile);
+		final Set<String> inputDataSetVariateNames = this.getAllNewVariatesToProcess(csvHeader,
+				meansDataSet.getVariableTypes().getVariates().getVariableTypes(), hasDuplicateColumnsInFile);
 		final Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
 		final Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
 		final boolean isSummaryVariable = false;
 		for (final String variateName : inputDataSetVariateNames) {
 			final DMSVariableType variate = plotDataSet.getVariableTypes().findByLocalName(variateName);
 			// add means of the variate to the means dataset
-			this.addVariableToDataset(meansDataSet, this.createAnalysisVariable(variate, variateName
-					+ BreedingViewImportServiceImpl.MEANS_SUFFIX, lsMeanTerm, programUUID, rank++, isSummaryVariable));
+			this.addVariableToDataset(meansDataSet, this.createAnalysisVariable(variate,
+					variateName + BreedingViewImportServiceImpl.MEANS_SUFFIX, lsMeanTerm, programUUID, rank++, isSummaryVariable));
 			// add unit errors of the variate to the means dataset
-			this.addVariableToDataset(meansDataSet, this.createAnalysisVariable(variate, variateName
-					+ BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, errorEstimateTerm, programUUID, rank++, isSummaryVariable));
+			this.addVariableToDataset(meansDataSet,
+					this.createAnalysisVariable(variate, variateName + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, errorEstimateTerm,
+							programUUID, rank++, isSummaryVariable));
 		}
 
 		return meansDataSet;
@@ -820,8 +816,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final StandardVariable standardVariable = analysisVariableType.getStandardVariable();
 		standardVariable.setMethod(method);
 
-		Integer analysisVariableID =
-				this.ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getStandardVariable().getId(), method.getId());
+		Integer analysisVariableID = this.ontologyDataManager
+				.retrieveDerivedAnalysisVariable(originalVariableType.getStandardVariable().getId(), method.getId());
 
 		if (analysisVariableID == null) {
 
@@ -833,16 +829,16 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			analysisVariableID =
 					this.saveAnalysisVariable(variableName, standardVariable.getDescription(), standardVariable.getMethod().getId(),
 							standardVariable.getProperty().getId(), standardVariable.getScale().getId(), programUUID, isSummaryVariable);
-            this.ontologyDataManager.addCvTermRelationship(originalVariableType.getStandardVariable().getId(),
-                    analysisVariableID, TermId.HAS_ANALYSIS_VARIABLE.getId());
+			this.ontologyDataManager.addCvTermRelationship(originalVariableType.getStandardVariable().getId(), analysisVariableID,
+					TermId.HAS_ANALYSIS_VARIABLE.getId());
 
 			standardVariable.setId(analysisVariableID);
 			standardVariable.setPhenotypicType(PhenotypicType.VARIATE);
 
 		} else {
 
-			analysisVariableType.setStandardVariable(this
-					.createStandardardVariable(analysisVariableID, programUUID, PhenotypicType.VARIATE));
+			analysisVariableType
+					.setStandardVariable(this.createStandardardVariable(analysisVariableID, programUUID, PhenotypicType.VARIATE));
 		}
 
 		analysisVariableType.setRank(rank);
@@ -977,7 +973,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		nameAliasMap.put(entryNoName + "_1", entryNoName);
 	}
 
-
 	/**
 	 * This class parses a file and creates a map of variable names to a list of trait and means values
 	 *
@@ -1002,9 +997,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final List<Integer> columnIndexesToSkip = new ArrayList<>();
 			int columnIndex = 0;
 			for (final String headerCol : header) {
-				final String aliasLocalName =
-						headerCol.trim().replace(BreedingViewImportServiceImpl.MEANS_SUFFIX, "")
-								.replace(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, "");
+				final String aliasLocalName = headerCol.trim().replace(BreedingViewImportServiceImpl.MEANS_SUFFIX, "")
+						.replace(BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, "");
 				String actualLocalName = null;
 
 				actualLocalName = this.nameToAliasMapping.get(aliasLocalName);
@@ -1269,10 +1263,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			final List<String> headerList = Arrays.asList(fileHeaders);
 
-			if (!headerList
-					.containsAll(Arrays
-							.asList("Trait,NumValues,NumMissing,Mean,Variance,SD,Min,Max,Range,Median,LowerQuartile,UpperQuartile,MeanRep,MinRep,MaxRep,MeanSED,MinSED,MaxSED,MeanLSD,MinLSD,MaxLSD,CV,Heritability,WaldStatistic,WaldDF,Pvalue"
-									.split(",")))) {
+			if (!headerList.containsAll(Arrays
+					.asList("Trait,NumValues,NumMissing,Mean,Variance,SD,Min,Max,Range,Median,LowerQuartile,UpperQuartile,MeanRep,MinRep,MaxRep,MeanSED,MinSED,MaxSED,MeanLSD,MinLSD,MaxLSD,CV,Heritability,WaldStatistic,WaldDF,Pvalue"
+							.split(",")))) {
 				throw new BreedingViewInvalidFormatException("Cannot parse the file because the format is invalid for Summary Statistics.");
 			}
 		}
