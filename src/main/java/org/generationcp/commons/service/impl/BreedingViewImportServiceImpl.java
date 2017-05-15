@@ -60,9 +60,9 @@ import au.com.bytecode.opencsv.CSVReader;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
+	public static final String UNIT_ERRORS_SUFFIX = "_UnitErrors";
+	public static final String MEANS_SUFFIX = "_Means";
 	private static final String REGEX_VALID_BREEDING_VIEW_CHARACTERS = "[^a-zA-Z0-9-_%']+";
-	private static final String UNIT_ERRORS_SUFFIX = "_UnitErrors";
-	private static final String MEANS_SUFFIX = "_Means";
 	private static final String LS_MEAN = "LS MEAN";
 	private static final String ERROR_ESTIMATE = "ERROR ESTIMATE";
 
@@ -311,7 +311,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param lsMean
 	 * @param errorEstimate
 	 */
-	private void createMeansVariablesFromImportFileAndAddToList(final String[] csvHeader, final VariableTypeList plotVariates,
+	void createMeansVariablesFromImportFileAndAddToList(final String[] csvHeader, final VariableTypeList plotVariates,
 			final VariableTypeList meansVariableTypeList, final String programUUID, final CVTerm lsMean, final CVTerm errorEstimate,
 			final boolean hasDuplicateColumnsInFile) {
 		final boolean isSummaryVariable = false;
@@ -320,6 +320,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final Set<String> inputDataSetVariateNames = this.getAllNewVariatesToProcess(csvHeader, null, hasDuplicateColumnsInFile);
 		final Term lsMeanTerm = new Term(lsMean.getCvTermId(), lsMean.getName(), lsMean.getDefinition());
 		final Term errorEstimateTerm = new Term(errorEstimate.getCvTermId(), errorEstimate.getName(), errorEstimate.getDefinition());
+		
 		for (final String variateName : inputDataSetVariateNames) {
 			final DMSVariableType variate = plotVariates.findByLocalName(variateName);
 			meansVariableTypeList.add(this.createAnalysisVariable(variate, variateName + BreedingViewImportServiceImpl.MEANS_SUFFIX,
@@ -603,7 +604,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	/**
-	 * This method creates the summary statistics variable types from the summary statistics in the output file
+	 * This method creates the summary statistics variable types from the summary statistics in the BVSummary.csv output file
 	 *
 	 * @param summaryStatsCSV
 	 * @param trialDataSet
@@ -613,13 +614,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @return VariableTypeList containing the summary statistics
 	 * @throws IOException
 	 */
-	protected VariableTypeList createSummaryStatsVariableTypes(final SummaryStatsCSV summaryStatsCSV, final DataSet trialDataSet,
+	VariableTypeList createSummaryStatsVariableTypes(final SummaryStatsCSV summaryStatsCSV, final DataSet trialDataSet,
 			final VariableTypeList plotVariates, final Map<String, String> nameToAliasMap, final String programUUID) throws IOException {
 		final VariableTypeList summaryStatsVariableTypeList = new VariableTypeList();
 
+		// TODO cleanup: check if this unassigned call could be removed
 		summaryStatsCSV.getData();
 		final List<String> summaryStatsList = summaryStatsCSV.getHeaderStats();
-		// TODO cleanup unused/unassigned call
+		// TODO cleanup: unused/unassigned call
 		summaryStatsCSV.getTrialHeader();
 
 		final Map<String, Integer> summaryStatNameToIdMap = this.findOrSaveMethodsIfNotExisting(summaryStatsList);
