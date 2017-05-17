@@ -24,21 +24,22 @@ public class CrossingUtil {
 	private static final Logger LOG = LoggerFactory.getLogger(CrossingUtil.class);
 
 	public static Integer determineBreedingMethodBasedOnParentalLine(final Germplasm female, final Germplasm male,
-			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale, final Germplasm fatherOfMale) {
+			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale,
+			final Germplasm fatherOfMale) {
 		Integer methodId = null;
 
 		if (female != null && female.getGnpgs() < 0) {
 			if (male != null && male.getGnpgs() < 0) {
 				methodId = Methods.SINGLE_CROSS.getMethodID();
 			} else {
-				methodId = determineCrossingMethod(male, female, motherOfMale, fatherOfMale);
+				methodId = CrossingUtil.determineCrossingMethod(male, female, motherOfMale, fatherOfMale);
 			}
 		} else {
 			if (male != null && male.getGnpgs() < 0) {
-				methodId = determineCrossingMethod(female, male, motherOfFemale, fatherOfFemale);
+				methodId = CrossingUtil.determineCrossingMethod(female, male, motherOfFemale, fatherOfFemale);
 			} else {
-				if (female != null && female.getMethodId() == Methods.SINGLE_CROSS.getMethodID() && male != null
-						&& male.getMethodId() == Methods.SINGLE_CROSS.getMethodID()) {
+				if (female != null && Objects.equals(Methods.SINGLE_CROSS.getMethodID(), female.getMethodId()) && male != null
+						&& Objects.equals(Methods.SINGLE_CROSS.getMethodID(), male.getMethodId())) {
 					methodId = Methods.DOUBLE_CROSS.getMethodID();
 				} else {
 					methodId = Methods.COMPLEX_CROSS.getMethodID();
@@ -46,7 +47,8 @@ public class CrossingUtil {
 			}
 		}
 
-		// we default to using Single Cross as the breeding method in case it doesn't fit in into any of the previous scenarios
+		// we default to using Single Cross as the breeding method in case it
+		// doesn't fit in into any of the previous scenarios
 		if (methodId == null) {
 			methodId = Methods.SINGLE_CROSS.getMethodID();
 		}
@@ -54,18 +56,20 @@ public class CrossingUtil {
 		return methodId;
 	}
 
-	static Integer determineCrossingMethod(final Germplasm parent1, final Germplasm parent2, final Germplasm motherOfParent1,
-			final Germplasm fatherOfParent1) {
+	static Integer determineCrossingMethod(final Germplasm parent1, final Germplasm parent2,
+			final Germplasm motherOfParent1, final Germplasm fatherOfParent1) {
 
 		Integer methodId = null;
 		if (parent1 != null && parent1.getGnpgs() == 1) {
 			methodId = Methods.SINGLE_CROSS.getMethodID();
 		} else if (parent1 != null && parent1.getGnpgs() == 2) {
-			if ((motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid()))
-					|| (fatherOfParent1 != null && Objects.equals(fatherOfParent1.getGid(), parent2.getGid()))) {
+			if (motherOfParent1 != null && Objects.equals(motherOfParent1.getGid(), parent2.getGid())
+					|| fatherOfParent1 != null && Objects.equals(fatherOfParent1.getGid(), parent2.getGid())) {
 				methodId = Methods.BACKCROSS.getMethodID();
-			} else {
+			} else if (Objects.equals(Methods.SINGLE_CROSS.getMethodID(), parent1.getMethodId())) {
 				methodId = Methods.THREE_WAY_CROSS.getMethodID();
+			} else {
+				methodId = Methods.COMPLEX_CROSS.getMethodID();
 			}
 		} else {
 			methodId = Methods.COMPLEX_CROSS.getMethodID();
@@ -75,7 +79,8 @@ public class CrossingUtil {
 	}
 
 	/*
-	 * This is supposed to set the correct name type id to name using the crossing method snametype BMS-577
+	 * This is supposed to set the correct name type id to name using the
+	 * crossing method snametype BMS-577
 	 */
 	public static void applyMethodNameType(final GermplasmDataManager germplasmDataManager,
 			final List<Pair<Germplasm, Name>> germplasmPairs, final Integer defaultTypeId) {
