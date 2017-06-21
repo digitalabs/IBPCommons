@@ -14,6 +14,7 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.parsing.GermplasmExportTestHelper;
 import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
@@ -21,7 +22,7 @@ import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.FileService;
-import org.generationcp.commons.util.StringUtil;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +51,8 @@ public class GermplasmExportServiceImplTest {
 	public void setUp() throws InvalidFormatException, IOException {
 		MockitoAnnotations.initMocks(this);
 
-		this.columnsHeaders = this.generateSampleExportColumnHeader(14);
-		this.columnValues = this.generateSampleExportColumns(10, 14);
+		this.columnsHeaders = this.generateSampleExportColumnHeader();
+		this.columnValues = this.generateSampleExportColumnValues(10);
 		this.sheetName = "List";
 
 		this.input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
@@ -161,27 +162,38 @@ public class GermplasmExportServiceImplTest {
 		Assert.assertEquals("Should have the same size of column names", actualData.length, this.columnsHeaders.size());
 	}
 
-	private List<Map<Integer, ExportColumnValue>> generateSampleExportColumns(final int rows, final int columnHeaders) {
+	private List<Map<Integer, ExportColumnValue>> generateSampleExportColumnValues(final int rows) {
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
 		for (int i = 0; i < rows; i++) {
 			final Map<Integer, ExportColumnValue> mapData = new HashMap<>();
-			for (int x = 0; x < columnHeaders; x++) {
-				final Integer id = x;
-				mapData.put(id, new ExportColumnValue(id, i + ": , Value -" + x));
+			for (int j = 0; j < this.columnsHeaders.size(); j++) {
+				final ExportColumnHeader header = this.columnsHeaders.get(j);
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(header.getId())) {
+					final String decimalString = i + ".0";
+					mapData.put(header.getId(), new ExportColumnValue(header.getId(), decimalString));
+				} else {
+					mapData.put(header.getId(), new ExportColumnValue(header.getId(), "Row " + i + ": , Value -" + j));
+				}
 			}
 			exportColumnValues.add(mapData);
 		}
 		return exportColumnValues;
 	}
 
-	private List<ExportColumnHeader> generateSampleExportColumnHeader(final int columnHeaders) {
+	private List<ExportColumnHeader> generateSampleExportColumnHeader() {
 		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
-		for (int x = 0; x < columnHeaders; x++) {
-			final Integer id = x;
-			final boolean isDisplay = true;
-
-			exportColumnHeaders.add(new ExportColumnHeader(id, "Column Name -" + x, isDisplay));
-		}
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.ENTRY_NO.getId(), TermId.ENTRY_NO.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.DESIG.getId(), TermId.DESIG.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.CROSS.getId(), TermId.CROSS.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.GID.getId(), TermId.GID.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.SOURCE.getId(), TermId.SOURCE.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.DUPLICATE.getId(), TermId.DUPLICATE.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.BULK_WITH.getId(), TermId.BULK_WITH.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.BULK_COMPL.getId(), TermId.BULK_COMPL.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.LOCATION_ABBR.getId(), TermId.LOCATION_ABBR.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.SEED_AMOUNT_G.getId(), TermId.SEED_AMOUNT_G.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.STOCKID.getId(), TermId.STOCKID.toString(), true));
+		exportColumnHeaders.add(new ExportColumnHeader(TermId.COMMENT_INVENTORY.getId(), TermId.COMMENT_INVENTORY.toString(), true));
 		return exportColumnHeaders;
 	}
 
@@ -204,12 +216,19 @@ public class GermplasmExportServiceImplTest {
 		int rowCount = 1;
 		for (final Map<Integer, ExportColumnValue> rowEntry : this.columnValues) {
 			final HSSFRow row = sheet.getRow(rowCount);
-
-			for (final Map.Entry<Integer, ExportColumnValue> rowValue : rowEntry.entrySet()) {
-				final Integer id = rowValue.getKey();
-				final String value = rowValue.getValue().getValue();
-				Assert.assertEquals("Expected that the row values corresponds to their respective columns.", value, row.getCell(id)
-						.getStringCellValue());
+			int columnIndex = 0;
+			for (final ExportColumnHeader columnHeader : this.columnsHeaders){
+				final Integer columnId = columnHeader.getId();
+				final ExportColumnValue exportColumnValue = rowEntry.get(columnId);
+				// Verify that inventory amount is formatted as number
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(columnId)) {
+					Assert.assertEquals("Expecting numeric formatting for " + TermId.SEED_AMOUNT_G.toString() + " values.", Cell.CELL_TYPE_NUMERIC, row.getCell(columnIndex).getCellType());
+					Assert.assertEquals("Expected correct numeric value for numeric columns.", Double.valueOf(exportColumnValue.getValue()), row.getCell(columnIndex).getNumericCellValue());
+				} else {
+					Assert.assertEquals("Expected that the row values corresponds to their respective columns.", exportColumnValue.getValue(), row.getCell(columnIndex)
+							.getStringCellValue());
+				}
+				columnIndex++;
 			}
 
 			rowCount++;

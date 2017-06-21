@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -19,13 +20,15 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
+import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.GermplasmExportService;
-import org.generationcp.commons.util.StringUtil;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,12 +137,12 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			final List<ExportColumnHeader> exportColumnHeaders, final String sheetName) {
 		final HSSFWorkbook wb = new HSSFWorkbook();
 		final HSSFSheet sheet = wb.createSheet(sheetName);
-
+		
 		int rowIndex = 0;
 		this.writeColumHeaders(exportColumnHeaders, wb, sheet, rowIndex);
 		rowIndex++;
 
-		rowIndex = this.writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex);
+		rowIndex = this.writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex, wb);
 
 		for (int ctr = 0; ctr < rowIndex; ctr++) {
 			sheet.autoSizeColumn(rowIndex);
@@ -148,7 +151,11 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	protected int writeColumnValues(final List<ExportColumnHeader> exportColumnHeaders,
-			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex) {
+			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex, final Workbook workbook) {
+		// Initialize once - cell style with values formatted as decimal
+		final CellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("0.0"));
+		
 		int currentRowIndex = rowIndex;
 		for (final Map<Integer, ExportColumnValue> exportRowValue : exportColumnValues) {
 			final HSSFRow row = sheet.createRow(currentRowIndex);
@@ -156,7 +163,16 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			int columnIndex = 0;
 			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
 				final ExportColumnValue columnValue = exportRowValue.get(columnHeader.getId());
-				row.createCell(columnIndex).setCellValue(columnValue.getValue());
+				final HSSFCell cell = row.createCell(columnIndex);
+				// Cannot check data type at this point without additional Middleware query,
+				// so need to check against list of known numeric variables to format cell as number
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(columnHeader.getId())) {
+					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					cell.setCellStyle(cellStyle);
+					cell.setCellValue(Double.valueOf(columnValue.getValue()));
+				} else {
+					cell.setCellValue(columnValue.getValue());
+				}
 				columnIndex++;
 			}
 			currentRowIndex++;
