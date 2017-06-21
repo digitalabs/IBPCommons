@@ -40,30 +40,31 @@ import au.com.bytecode.opencsv.CSVWriter;
  * see {@link org.generationcp.commons.service.GermplasmExportService} documentation
  */
 public class GermplasmExportServiceImpl implements GermplasmExportService {
-	
+
 	// create workbook
 	@Resource
 	private GermplasmExportedWorkbook wb;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmExportServiceImpl.class);
-	
+
 	protected static final List<Integer> NUMERIC_IDS = Lists.newArrayList(TermId.ENTRY_NO.getId(), TermId.GID.getId());
 
 	/**
 	 * Default constructor for spring
 	 */
 	public GermplasmExportServiceImpl() {
-		
+
 	}
-	
+
 	/**
 	 * Test constructor
+	 *
 	 * @param wb mock {@link GermplasmExportedWorkbook}
 	 */
 	public GermplasmExportServiceImpl(final GermplasmExportedWorkbook wb) {
 		this.wb = wb;
 	}
-	
+
 	@Override
 	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
 			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath) throws IOException {
@@ -76,8 +77,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			throws IOException {
 		final File newFile = new File(fileNameFullPath);
 
-		final CSVWriter writer =
-				new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
+		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
 
 		// feed in your array (or convert your data to an array)
 		final List<String[]> rowValues = new ArrayList<>();
@@ -139,7 +139,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			final List<ExportColumnHeader> exportColumnHeaders, final String sheetName) {
 		final HSSFWorkbook wb = new HSSFWorkbook();
 		final HSSFSheet sheet = wb.createSheet(sheetName);
-		
+
 		int rowIndex = 0;
 		this.writeColumHeaders(exportColumnHeaders, wb, sheet, rowIndex);
 		rowIndex++;
@@ -153,11 +153,12 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	protected int writeColumnValues(final List<ExportColumnHeader> exportColumnHeaders,
-			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex, final Workbook workbook) {
+			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex,
+			final Workbook workbook) {
 		// Initialize once - cell style with values formatted as decimal
 		final CellStyle cellStyle = workbook.createCellStyle();
 		cellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("0.0"));
-		
+
 		int currentRowIndex = rowIndex;
 		for (final Map<Integer, ExportColumnValue> exportRowValue : exportColumnValues) {
 			final HSSFRow row = sheet.createRow(currentRowIndex);
@@ -174,7 +175,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					cell.setCellStyle(cellStyle);
 					cell.setCellValue(Double.valueOf(value));
-				} else if (NUMERIC_IDS.contains(id) && NumberUtils.isDigits(value)){
+				} else if (GermplasmExportServiceImpl.NUMERIC_IDS.contains(id) && NumberUtils.isDigits(value)) {
 					cell.setCellValue(Integer.parseInt(value));
 				} else {
 					cell.setCellValue(value);
@@ -224,18 +225,17 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	/**
-	 * Main workbook generation entry point. Uses the GermplasmExportedWorkbook class to
-	 * build an Excel style workbook to export.
+	 * Main workbook generation entry point. Uses the GermplasmExportedWorkbook class to build an Excel style workbook to export.
 	 */
 	@Override
 	public FileOutputStream generateGermplasmListExcelFile(final GermplasmListExportInputValues input)
 			throws GermplasmListExporterException {
-		wb.init(input);
+		this.wb.init(input);
 		final String filename = input.getFileName();
 		try {
 			// write the excel file
 			final FileOutputStream fileOutputStream = new FileOutputStream(filename);
-			wb.write(fileOutputStream);
+			this.wb.write(fileOutputStream);
 			fileOutputStream.close();
 			return fileOutputStream;
 		} catch (final Exception ex) {

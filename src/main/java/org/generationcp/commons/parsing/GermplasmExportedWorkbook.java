@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.parsing;
 
 import java.io.FileOutputStream;
@@ -28,12 +29,12 @@ import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 
 /**
- * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow
- * and the ExcelCellStyleBuilder to construct a workbook instance to export.
- * 
+ * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow and the ExcelCellStyleBuilder to construct a
+ * workbook instance to export.
+ *
  */
 public class GermplasmExportedWorkbook {
-	
+
 	// List Details
 	public static final String LIST_NAME = "LIST NAME";
 	public static final String LIST_DESCRIPTION = "LIST DESCRIPTION";
@@ -58,7 +59,7 @@ public class GermplasmExportedWorkbook {
 
 	// Factor
 	public static final String FACTOR = "FACTOR";
-	
+
 	// Codes
 	public static final String USER = "USER";
 	public static final String BREEDING_METHOD = "BREEDING METHOD";
@@ -69,43 +70,42 @@ public class GermplasmExportedWorkbook {
 
 	private HSSFWorkbook wb;
 	private GermplasmListExportInputValues input;
-	
-	//Sheet Generators
+
+	// Sheet Generators
 	@Resource
 	private CodesSheetGenerator codesSheetGenerator;
-	
+
 	/**
 	 * Default constructor
 	 */
 	public GermplasmExportedWorkbook() {
 	}
-	
+
 	/**
 	 * Test constructor
+	 *
 	 * @param codesSheetGenerator mock codesSheetGenerator
 	 */
 	public GermplasmExportedWorkbook(final CodesSheetGenerator codesSheetGenerator) {
 		this.codesSheetGenerator = codesSheetGenerator;
 	}
-	
 
-	
-	public void init(final GermplasmListExportInputValues input){
+	public void init(final GermplasmListExportInputValues input) {
 		this.wb = new HSSFWorkbook();
 		this.input = input;
 
-		//set styles
-		this.sheetStyles = new ExcelCellStyleBuilder(wb);
+		// set styles
+		this.sheetStyles = new ExcelCellStyleBuilder(this.wb);
 		this.textStyle = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_STYLE);
 		this.headingStyle = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE);
 
 		// create three worksheets - Description, Observations, and Codes
 		this.generateDescriptionSheet();
 		this.generateObservationSheet();
-		
-		//Generate Sheets
-		this.codesSheetGenerator.generateCodesSheet(wb);
-		
+
+		// Generate Sheets
+		this.codesSheetGenerator.generateCodesSheet(this.wb);
+
 	}
 
 	public void write(final FileOutputStream fos) throws IOException {
@@ -158,22 +158,21 @@ public class GermplasmExportedWorkbook {
 		final CellStyle labelStyle = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE);
 
 		int actualRow = startingRow - 1;
-		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(actualRow))
-				.writeListDetailsRow(descriptionSheet, LIST_NAME, germplasmList.getName(),
-						"Enter a list name here, or add it when saving in the BMS", labelStyle, this.textStyle);
+		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(actualRow)).writeListDetailsRow(descriptionSheet,
+				GermplasmExportedWorkbook.LIST_NAME, germplasmList.getName(), "Enter a list name here, or add it when saving in the BMS",
+				labelStyle, this.textStyle);
 
+		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow)).writeListDetailsRow(descriptionSheet,
+				GermplasmExportedWorkbook.LIST_DESCRIPTION, germplasmList.getDescription(),
+				"Enter a list description here, or add it when saving in the BMS", labelStyle, this.textStyle);
 
-		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow))
-				.writeListDetailsRow(descriptionSheet, LIST_DESCRIPTION, germplasmList.getDescription(),
-						"Enter a list description here, or add it when saving in the BMS", labelStyle, this.textStyle);
+		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow)).writeListDetailsRow(descriptionSheet,
+				GermplasmExportedWorkbook.LIST_TYPE, germplasmList.getType(), "See valid list types on Codes sheet for more options",
+				labelStyle, this.textStyle);
 
-		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow))
-				.writeListDetailsRow(descriptionSheet, LIST_TYPE, germplasmList.getType(),
-						"See valid list types on Codes sheet for more options", labelStyle, this.textStyle);
-
-		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow))
-				.writeListDetailsRow(descriptionSheet, LIST_DATE, String.valueOf(germplasmList.getDate()),
-						"Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank", labelStyle, this.textStyle);
+		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow)).writeListDetailsRow(descriptionSheet,
+				GermplasmExportedWorkbook.LIST_DATE, String.valueOf(germplasmList.getDate()),
+				"Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank", labelStyle, this.textStyle);
 
 		return ++actualRow;
 	}
@@ -192,21 +191,21 @@ public class GermplasmExportedWorkbook {
 
 		// write user details
 		final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
-		conditionDetailsHeading.createCell(0, this.headingStyle, CONDITION);
-		conditionDetailsHeading.createCell(1, this.headingStyle, DESCRIPTION);
-		conditionDetailsHeading.createCell(2, this.headingStyle, PROPERTY);
-		conditionDetailsHeading.createCell(3, this.headingStyle, SCALE);
-		conditionDetailsHeading.createCell(5, this.headingStyle, DATA_TYPE);
-		conditionDetailsHeading.createCell(6, this.headingStyle, VALUE);
-		conditionDetailsHeading.createCell(4, this.headingStyle, METHOD);
-		conditionDetailsHeading.createCell(7, this.headingStyle, COMMENTS);
+		conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.CONDITION);
+		conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
+		conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
+		conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
+		conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
+		conditionDetailsHeading.createCell(6, this.headingStyle, GermplasmExportedWorkbook.VALUE);
+		conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
+		conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
 
 		final ExcelWorkbookRow listUserRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 		listUserRow.createCell(0, labelStyleCondition, "LIST USER");
 		listUserRow.createCell(1, this.textStyle, "PERSON WHO MADE THE LIST");
-		listUserRow.createCell(2, this.textStyle, PERSON);
+		listUserRow.createCell(2, this.textStyle, GermplasmExportedWorkbook.PERSON);
 		listUserRow.createCell(3, this.textStyle, "DBCV");
-		listUserRow.createCell(4, this.textStyle, ASSIGNED);
+		listUserRow.createCell(4, this.textStyle, GermplasmExportedWorkbook.ASSIGNED);
 		listUserRow.createCell(5, this.textStyle, "C");
 		listUserRow.createCell(6, this.textStyle, ownerName.trim());
 		listUserRow.createCell(7, this.textStyle, "See valid user names and IDs on Codes sheet (or leave blank)");
@@ -214,9 +213,9 @@ public class GermplasmExportedWorkbook {
 		final ExcelWorkbookRow listUserIdRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 		listUserIdRow.createCell(0, labelStyleCondition, "LIST USER ID");
 		listUserIdRow.createCell(1, this.textStyle, "ID OF LIST OWNER");
-		listUserIdRow.createCell(2, this.textStyle, PERSON);
+		listUserIdRow.createCell(2, this.textStyle, GermplasmExportedWorkbook.PERSON);
 		listUserIdRow.createCell(3, this.textStyle, "DBID");
-		listUserIdRow.createCell(4, this.textStyle, ASSIGNED);
+		listUserIdRow.createCell(4, this.textStyle, GermplasmExportedWorkbook.ASSIGNED);
 		listUserIdRow.createCell(5, this.textStyle, "N");
 		listUserIdRow.createCell(6, numberStyle, germplasmList.getUserId());
 		listUserIdRow.createCell(7, this.textStyle, "");
@@ -224,9 +223,9 @@ public class GermplasmExportedWorkbook {
 		final ExcelWorkbookRow listExporterRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 		listExporterRow.createCell(0, labelStyleCondition, "LIST EXPORTER");
 		listExporterRow.createCell(1, this.textStyle, "PERSON EXPORTING THE LIST");
-		listExporterRow.createCell(2, this.textStyle, PERSON);
+		listExporterRow.createCell(2, this.textStyle, GermplasmExportedWorkbook.PERSON);
 		listExporterRow.createCell(3, this.textStyle, "DBCV");
-		listExporterRow.createCell(4, this.textStyle, ASSIGNED);
+		listExporterRow.createCell(4, this.textStyle, GermplasmExportedWorkbook.ASSIGNED);
 		listExporterRow.createCell(5, this.textStyle, "C");
 		listExporterRow.createCell(6, this.textStyle, exporterName.trim());
 		listExporterRow.createCell(7, this.textStyle, "");
@@ -234,9 +233,9 @@ public class GermplasmExportedWorkbook {
 		final ExcelWorkbookRow listExporterIdRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 		listExporterIdRow.createCell(0, labelStyleCondition, "LIST EXPORTER ID");
 		listExporterIdRow.createCell(1, this.textStyle, "ID OF LIST EXPORTER");
-		listExporterIdRow.createCell(2, this.textStyle, PERSON);
+		listExporterIdRow.createCell(2, this.textStyle, GermplasmExportedWorkbook.PERSON);
 		listExporterIdRow.createCell(3, this.textStyle, "DBID");
-		listExporterIdRow.createCell(4, this.textStyle, ASSIGNED);
+		listExporterIdRow.createCell(4, this.textStyle, GermplasmExportedWorkbook.ASSIGNED);
 		listExporterIdRow.createCell(5, this.textStyle, "N");
 		listExporterIdRow.createCell(6, numberStyle, currentLocalIbdbUserId);
 		listExporterIdRow.createCell(7, this.textStyle, "");
@@ -326,7 +325,6 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
-
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
 				listEntry.createCell(j).setCellValue(data.getCheckTypeDescription());
@@ -356,14 +354,14 @@ public class GermplasmExportedWorkbook {
 		int actualRow = startingRow - 1;
 
 		final ExcelWorkbookRow factorDetailsHeader = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
-		factorDetailsHeader.createCell(0, this.headingStyle, FACTOR);
-		factorDetailsHeader.createCell(1, this.headingStyle, DESCRIPTION);
-		factorDetailsHeader.createCell(2, this.headingStyle, PROPERTY);
-		factorDetailsHeader.createCell(3, this.headingStyle, SCALE);
-		factorDetailsHeader.createCell(4, this.headingStyle, METHOD);
-		factorDetailsHeader.createCell(5, this.headingStyle, DATA_TYPE);
+		factorDetailsHeader.createCell(0, this.headingStyle, GermplasmExportedWorkbook.FACTOR);
+		factorDetailsHeader.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
+		factorDetailsHeader.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
+		factorDetailsHeader.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
+		factorDetailsHeader.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
+		factorDetailsHeader.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
 		factorDetailsHeader.createCell(6, this.headingStyle, "");
-		factorDetailsHeader.createCell(7, this.headingStyle, COMMENTS);
+		factorDetailsHeader.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
 
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_ID))) {
@@ -373,8 +371,8 @@ public class GermplasmExportedWorkbook {
 
 			if (termEntry != null && Objects.equals(termEntry.getVocabularyId(), CvId.VARIABLES.getId())) {
 				final Variable variable = (Variable) termEntry;
-				entryIdRow.writeStandardVariableToRow(labelStyleFactor, this.sheetStyles.getCellStyle(
-						ExcelCellStyleBuilder.ExcelCellStyle.TEXT_HIGHLIGHT_STYLE_FACTOR), variable);
+				entryIdRow.writeStandardVariableToRow(labelStyleFactor,
+						this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_HIGHLIGHT_STYLE_FACTOR), variable);
 				entryIdRow.createCell(7, this.textStyle, "Sequence number - mandatory");
 
 			}
@@ -396,7 +394,7 @@ public class GermplasmExportedWorkbook {
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_CODE))) {
 
-			final Variable entryCode = (Variable)  columnTermMap.get(ColumnLabels.ENTRY_CODE.getTermId().getId());
+			final Variable entryCode = (Variable) columnTermMap.get(ColumnLabels.ENTRY_CODE.getTermId().getId());
 			final ExcelWorkbookRow entryCodeRow = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 
 			if (entryCode != null) {
@@ -556,14 +554,14 @@ public class GermplasmExportedWorkbook {
 		if (!this.input.getInventoryVariableMap().isEmpty()) {
 
 			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
-			conditionDetailsHeading.createCell(0, this.headingStyle, INVENTORY);
-			conditionDetailsHeading.createCell(1, this.headingStyle, DESCRIPTION);
-			conditionDetailsHeading.createCell(2, this.headingStyle, PROPERTY);
-			conditionDetailsHeading.createCell(3, this.headingStyle, SCALE);
-			conditionDetailsHeading.createCell(4, this.headingStyle, METHOD);
-			conditionDetailsHeading.createCell(5, this.headingStyle, DATA_TYPE);
+			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.INVENTORY);
+			conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
+			conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
+			conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
+			conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
+			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
 			conditionDetailsHeading.createCell(6, this.headingStyle, "");
-			conditionDetailsHeading.createCell(7, this.headingStyle, COMMENTS);
+			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
 
 			for (final Variable stdVar : this.input.getInventoryVariableMap().values()) {
 				final ExcelWorkbookRow row = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
@@ -593,14 +591,14 @@ public class GermplasmExportedWorkbook {
 		if (!this.input.getVariateVariableMap().isEmpty()) {
 
 			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
-			conditionDetailsHeading.createCell(0, this.headingStyle, VARIATE);
-			conditionDetailsHeading.createCell(1, this.headingStyle, DESCRIPTION);
-			conditionDetailsHeading.createCell(2, this.headingStyle, PROPERTY);
-			conditionDetailsHeading.createCell(3, this.headingStyle, SCALE);
-			conditionDetailsHeading.createCell(4, this.headingStyle, METHOD);
-			conditionDetailsHeading.createCell(5, this.headingStyle, DATA_TYPE);
+			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.VARIATE);
+			conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
+			conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
+			conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
+			conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
+			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
 			conditionDetailsHeading.createCell(6, this.headingStyle, "");
-			conditionDetailsHeading.createCell(7, this.headingStyle, COMMENTS);
+			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
 
 			for (final Variable stdVar : this.input.getVariateVariableMap().values()) {
 				final ExcelWorkbookRow row = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
@@ -637,8 +635,8 @@ public class GermplasmExportedWorkbook {
 			final Cell gidCell = listEntriesHeader.createCell(columnIndex);
 			gidCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GID, columnTermMap));
 			gidCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, this.sheetStyles.getCellStyle(
-					ExcelCellStyleBuilder.ExcelCellStyle.NUMBER_DATA_FORMAT_STYLE));
+			observationSheet.setDefaultColumnStyle(columnIndex,
+					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -655,8 +653,8 @@ public class GermplasmExportedWorkbook {
 			final Cell designationCell = listEntriesHeader.createCell(columnIndex);
 			designationCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.DESIGNATION, columnTermMap));
 			designationCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-			observationSheet.setDefaultColumnStyle(columnIndex, this.sheetStyles.getCellStyle(
-					ExcelCellStyleBuilder.ExcelCellStyle.COLUMN_HIGHLIGHT_STYLE_FACTOR));
+			observationSheet.setDefaultColumnStyle(columnIndex,
+					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.COLUMN_HIGHLIGHT_STYLE_FACTOR));
 			columnIndex++;
 		}
 
@@ -737,8 +735,8 @@ public class GermplasmExportedWorkbook {
 			final Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
 			seedAmountCell.setCellValue(this.input.getInventoryVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
 			seedAmountCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, this.sheetStyles.getCellStyle(
-					ExcelCellStyleBuilder.ExcelCellStyle.DECIMAL_NUMBER_DATA_FORMAT_STYLE));
+			observationSheet.setDefaultColumnStyle(columnIndex,
+					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.DECIMAL_NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
 		}
 
@@ -746,8 +744,8 @@ public class GermplasmExportedWorkbook {
 			final Cell notesCell = listEntriesHeader.createCell(columnIndex);
 			notesCell.setCellValue(variateStandardVariableMap.get(TermId.NOTES.getId()).getName().toUpperCase());
 			notesCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex, this.sheetStyles.getCellStyle(
-					ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE));
+			observationSheet.setDefaultColumnStyle(columnIndex,
+					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE));
 		}
 
 	}

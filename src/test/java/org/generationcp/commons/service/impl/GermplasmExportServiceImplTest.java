@@ -40,7 +40,8 @@ public class GermplasmExportServiceImplTest {
 	private FileService fileService;
 
 	@InjectMocks
-	private final GermplasmExportServiceImpl germplasmExportService  = new GermplasmExportServiceImpl(Mockito.mock(GermplasmExportedWorkbook.class));
+	private final GermplasmExportServiceImpl germplasmExportService =
+			new GermplasmExportServiceImpl(Mockito.mock(GermplasmExportedWorkbook.class));
 
 	private List<ExportColumnHeader> columnsHeaders;
 	private List<Map<Integer, ExportColumnValue>> columnValues;
@@ -198,15 +199,16 @@ public class GermplasmExportServiceImplTest {
 
 	@Test
 	public void testCreateWorkbookForSingleSheet() {
-		final HSSFWorkbook wb = this.germplasmExportService.createWorkbookForSingleSheet(this.columnValues, this.columnsHeaders, this.sheetName);
+		final HSSFWorkbook wb =
+				this.germplasmExportService.createWorkbookForSingleSheet(this.columnValues, this.columnsHeaders, this.sheetName);
 		final HSSFSheet sheet = wb.getSheetAt(0);
 
 		Assert.assertTrue("Expected to return a sheetName = " + this.sheetName, sheet.getSheetName().equalsIgnoreCase(this.sheetName));
 
 		final HSSFRow header = sheet.getRow(0);
 		for (int i = 0; i < this.columnsHeaders.size(); i++) {
-			Assert.assertTrue("Expected that the column headers are placed in order.", this.columnsHeaders.get(i).getName()
-					.equalsIgnoreCase(header.getCell(i).getStringCellValue()));
+			Assert.assertTrue("Expected that the column headers are placed in order.",
+					this.columnsHeaders.get(i).getName().equalsIgnoreCase(header.getCell(i).getStringCellValue()));
 		}
 
 		Assert.assertTrue("Expected to have a total of " + this.columnValues.size() + " rows excluding the columnHeader.",
@@ -216,16 +218,18 @@ public class GermplasmExportServiceImplTest {
 		for (final Map<Integer, ExportColumnValue> rowEntry : this.columnValues) {
 			final HSSFRow row = sheet.getRow(rowCount);
 			int columnIndex = 0;
-			for (final ExportColumnHeader columnHeader : this.columnsHeaders){
+			for (final ExportColumnHeader columnHeader : this.columnsHeaders) {
 				final Integer columnId = columnHeader.getId();
 				final ExportColumnValue exportColumnValue = rowEntry.get(columnId);
 				// Verify that inventory amount is formatted as number
 				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(columnId)) {
-					Assert.assertEquals("Expecting numeric formatting for " + TermId.SEED_AMOUNT_G.toString() + " values.", Cell.CELL_TYPE_NUMERIC, row.getCell(columnIndex).getCellType());
-					Assert.assertEquals("Expected correct numeric value for numeric columns.", Double.valueOf(exportColumnValue.getValue()), row.getCell(columnIndex).getNumericCellValue());
+					Assert.assertEquals("Expecting numeric formatting for " + TermId.SEED_AMOUNT_G.toString() + " values.",
+							Cell.CELL_TYPE_NUMERIC, row.getCell(columnIndex).getCellType());
+					Assert.assertEquals("Expected correct numeric value for numeric columns.", Double.valueOf(exportColumnValue.getValue()),
+							row.getCell(columnIndex).getNumericCellValue());
 				} else {
-					Assert.assertEquals("Expected that the row values corresponds to their respective columns.", exportColumnValue.getValue(), row.getCell(columnIndex)
-							.getStringCellValue());
+					Assert.assertEquals("Expected that the row values corresponds to their respective columns.",
+							exportColumnValue.getValue(), row.getCell(columnIndex).getStringCellValue());
 				}
 				columnIndex++;
 			}
