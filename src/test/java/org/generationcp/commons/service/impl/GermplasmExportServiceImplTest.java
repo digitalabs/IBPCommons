@@ -57,7 +57,6 @@ public class GermplasmExportServiceImplTest {
 
 		this.input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
 
-		this.germplasmExportService.setTemplateFile(GermplasmExportTestHelper.TEST_FILE_NAME);
 		Mockito.doReturn(GermplasmExportTestHelper.createWorkbook()).when(this.fileService)
 				.retrieveWorkbookTemplate(GermplasmExportTestHelper.TEST_FILE_NAME);
 	}

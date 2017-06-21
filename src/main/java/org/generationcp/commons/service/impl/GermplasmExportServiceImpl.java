@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
@@ -22,7 +23,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
-import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
@@ -31,6 +31,8 @@ import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -44,8 +46,8 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	private GermplasmExportedWorkbook wb;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmExportServiceImpl.class);
-
-	private String templateFile;
+	
+	protected static final List<Integer> NUMERIC_IDS = Lists.newArrayList(TermId.ENTRY_NO.getId(), TermId.GID.getId());
 
 	/**
 	 * Default constructor for spring
@@ -162,16 +164,20 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 
 			int columnIndex = 0;
 			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
-				final ExportColumnValue columnValue = exportRowValue.get(columnHeader.getId());
+				final Integer id = columnHeader.getId();
+				final ExportColumnValue columnValue = exportRowValue.get(id);
+				final String value = columnValue.getValue();
 				final HSSFCell cell = row.createCell(columnIndex);
 				// Cannot check data type at this point without additional Middleware query,
-				// so need to check against list of known numeric variables to format cell as number
-				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(columnHeader.getId())) {
+				// Format inventory amount as numeric cell type and cast GID, ENTRY_NO as numeric values
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(id)) {
 					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					cell.setCellStyle(cellStyle);
-					cell.setCellValue(Double.valueOf(columnValue.getValue()));
+					cell.setCellValue(Double.valueOf(value));
+				} else if (NUMERIC_IDS.contains(id) && NumberUtils.isDigits(value)){
+					cell.setCellValue(Integer.parseInt(value));
 				} else {
-					cell.setCellValue(columnValue.getValue());
+					cell.setCellValue(value);
 				}
 				columnIndex++;
 			}
@@ -238,8 +244,4 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		}
 	}
 
-
-	public void setTemplateFile(final String templateFile) {
-		this.templateFile = templateFile;
-	}
 }
