@@ -11,6 +11,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFPalette;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -19,15 +21,18 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.GermplasmExportService;
-import org.generationcp.commons.util.StringUtil;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Lists;
 
 import au.com.bytecode.opencsv.CSVWriter;
 
@@ -35,30 +40,31 @@ import au.com.bytecode.opencsv.CSVWriter;
  * see {@link org.generationcp.commons.service.GermplasmExportService} documentation
  */
 public class GermplasmExportServiceImpl implements GermplasmExportService {
-	
+
 	// create workbook
 	@Resource
 	private GermplasmExportedWorkbook wb;
-	
+
 	private static final Logger LOG = LoggerFactory.getLogger(GermplasmExportServiceImpl.class);
 
-	private String templateFile;
+	protected static final List<Integer> NUMERIC_IDS = Lists.newArrayList(TermId.ENTRY_NO.getId(), TermId.GID.getId());
 
 	/**
 	 * Default constructor for spring
 	 */
 	public GermplasmExportServiceImpl() {
-		
+
 	}
-	
+
 	/**
 	 * Test constructor
+	 *
 	 * @param wb mock {@link GermplasmExportedWorkbook}
 	 */
 	public GermplasmExportServiceImpl(final GermplasmExportedWorkbook wb) {
 		this.wb = wb;
 	}
-	
+
 	@Override
 	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
 			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath) throws IOException {
@@ -71,8 +77,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 			throws IOException {
 		final File newFile = new File(fileNameFullPath);
 
-		final CSVWriter writer =
-				new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
+		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
 
 		// feed in your array (or convert your data to an array)
 		final List<String[]> rowValues = new ArrayList<>();
@@ -139,7 +144,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		this.writeColumHeaders(exportColumnHeaders, wb, sheet, rowIndex);
 		rowIndex++;
 
-		rowIndex = this.writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex);
+		rowIndex = this.writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex, wb);
 
 		for (int ctr = 0; ctr < rowIndex; ctr++) {
 			sheet.autoSizeColumn(rowIndex);
@@ -148,15 +153,33 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	protected int writeColumnValues(final List<ExportColumnHeader> exportColumnHeaders,
-			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex) {
+			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex,
+			final Workbook workbook) {
+		// Initialize once - cell style with values formatted as decimal
+		final CellStyle cellStyle = workbook.createCellStyle();
+		cellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("0.0"));
+
 		int currentRowIndex = rowIndex;
 		for (final Map<Integer, ExportColumnValue> exportRowValue : exportColumnValues) {
 			final HSSFRow row = sheet.createRow(currentRowIndex);
 
 			int columnIndex = 0;
 			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
-				final ExportColumnValue columnValue = exportRowValue.get(columnHeader.getId());
-				row.createCell(columnIndex).setCellValue(columnValue.getValue());
+				final Integer id = columnHeader.getId();
+				final ExportColumnValue columnValue = exportRowValue.get(id);
+				final String value = columnValue.getValue();
+				final HSSFCell cell = row.createCell(columnIndex);
+				// Cannot check data type at this point without additional Middleware query,
+				// Format inventory amount as numeric cell type and cast GID, ENTRY_NO as numeric values
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(id)) {
+					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
+					cell.setCellStyle(cellStyle);
+					cell.setCellValue(Double.valueOf(value));
+				} else if (GermplasmExportServiceImpl.NUMERIC_IDS.contains(id) && NumberUtils.isDigits(value)) {
+					cell.setCellValue(Integer.parseInt(value));
+				} else {
+					cell.setCellValue(value);
+				}
 				columnIndex++;
 			}
 			currentRowIndex++;
@@ -202,18 +225,17 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	/**
-	 * Main workbook generation entry point. Uses the GermplasmExportedWorkbook class to
-	 * build an Excel style workbook to export.
+	 * Main workbook generation entry point. Uses the GermplasmExportedWorkbook class to build an Excel style workbook to export.
 	 */
 	@Override
 	public FileOutputStream generateGermplasmListExcelFile(final GermplasmListExportInputValues input)
 			throws GermplasmListExporterException {
-		wb.init(input);
+		this.wb.init(input);
 		final String filename = input.getFileName();
 		try {
 			// write the excel file
 			final FileOutputStream fileOutputStream = new FileOutputStream(filename);
-			wb.write(fileOutputStream);
+			this.wb.write(fileOutputStream);
 			fileOutputStream.close();
 			return fileOutputStream;
 		} catch (final Exception ex) {
@@ -222,8 +244,4 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		}
 	}
 
-
-	public void setTemplateFile(final String templateFile) {
-		this.templateFile = templateFile;
-	}
 }

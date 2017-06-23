@@ -26,6 +26,7 @@ public class GermplasmExportTestHelper {
 	public static final Integer USER_ID = 1;
 	public static final int NO_OF_LIST_ENTRIES = 10;
 	public static final String TEST_FILE_NAME = "test.csv";
+	public static final String SCALE = "KG";
 
 	public static HSSFWorkbook createWorkbook() {
 		final HSSFWorkbook wb = new HSSFWorkbook();
@@ -75,6 +76,9 @@ public class GermplasmExportTestHelper {
 			inventoryInfo.setLotCount(1);
 			inventoryInfo.setReservedLotCount(1);
 			inventoryInfo.setActualInventoryLotCount(1);
+			inventoryInfo.setDistinctScaleCountForGermplsm(1);
+			inventoryInfo.setTotalAvailableBalance(Double.valueOf(x));
+			inventoryInfo.setScaleForGermplsm(GermplasmExportTestHelper.SCALE);
 			germplasmListData.setInventoryInfo(inventoryInfo);
 			germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
 			germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
@@ -161,10 +165,10 @@ public class GermplasmExportTestHelper {
 		final Map<Integer, Variable> standardVariableMap = new LinkedHashMap<>();
 
 		standardVariableMap.put(TermId.STOCKID.getId(),
-				createVariable(TermId.STOCKID.getId(), "stockID", "ID of an inventory deposit", "Germplasm stock id", "DBCV", "Assigned",
+				createVariable(TermId.STOCKID.getId(), TermId.STOCKID.toString(), "ID of an inventory deposit", "Germplasm stock id", "DBCV", "Assigned",
 						DataType.CHARACTER_VARIABLE));
 		standardVariableMap.put(TermId.SEED_AMOUNT_G.getId(),
-				createVariable(TermId.SEED_AMOUNT_G.getId(), "SEED_AMOUNT_g", "Seed inventory amount deposited or withdrawn (g)",
+				createVariable(TermId.SEED_AMOUNT_G.getId(), TermId.SEED_AMOUNT_G.toString(), "Seed inventory amount deposited or withdrawn (g)",
 						"Inventory amount", "g", "Weighed", DataType.CHARACTER_VARIABLE));
 
 		return standardVariableMap;

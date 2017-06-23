@@ -1,3 +1,4 @@
+
 package org.generationcp.commons.parsing;
 
 import java.util.List;
@@ -22,12 +23,11 @@ import junit.framework.Assert;
 
 public class GermplasmExportedWorkbookTest {
 
-	private final GermplasmListExportInputValues input =  GermplasmExportTestHelper.generateGermplasmListExportInputValues();
+	private final GermplasmListExportInputValues input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
 
 	@Test
 	public void testGetNoOfVisibleColumns() {
 		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
-		germplasmExportedWorkbook.init(input);
 		Assert.assertTrue("Expected that the number of visibleColums = " + this.input.getVisibleColumnMap().size(),
 				germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap()) == this.input.getVisibleColumnMap()
 						.size());
@@ -44,58 +44,61 @@ public class GermplasmExportedWorkbookTest {
 		final HSSFWorkbook wb = GermplasmExportTestHelper.createWorkbook();
 		final GermplasmList germplasmList = this.input.getGermplasmList();
 		final List<GermplasmListData> listDatas = germplasmList.getListData();
-		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 		final ExcelCellStyleBuilder styles = new ExcelCellStyleBuilder(wb);
 
 		// to test
 		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
-		germplasmExportedWorkbook.init(input);
+		germplasmExportedWorkbook.init(this.input);
 
 		final HSSFSheet observationSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Observation");
 
-		HSSFRow row;
-		int columnIndex = 0;
-
+		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 		// Assert Header Row
-		row = observationSheet.getRow(0);
-
+		HSSFRow row = observationSheet.getRow(0);
+		int columnIndex = 0;
 		if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_NO.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY but didn't.",
-					row.getCell(columnIndex).getStringCellValue(), "ENTRY_NO");
+			Assert.assertEquals("Expecting correct header for " + TermId.ENTRY_NO.toString(), TermId.ENTRY_NO.toString(),
+					row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 		if (visibleColumnMap.get(String.valueOf(TermId.GID.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to GID but didn't.",
-					row.getCell(columnIndex).getStringCellValue(), "GID");
+			Assert.assertEquals("Expecting correct header for " + TermId.GID.toString(), TermId.GID.toString(),
+					row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 		if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_CODE.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to ENTRY CODE but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "ENTRY_CODE");
+			Assert.assertEquals("Expecting correct header for " + TermId.ENTRY_CODE.toString(), TermId.ENTRY_CODE.toString(),
+					row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 		if (visibleColumnMap.get(String.valueOf(TermId.DESIG.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to DESIGNATION but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "DESIGNATION");
+			Assert.assertEquals("Expecting correct header for DESIGNATION.", "DESIGNATION", row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 		if (visibleColumnMap.get(String.valueOf(TermId.CROSS.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to CROSS but didn't.",
-					row.getCell(columnIndex).getStringCellValue(), "CROSS");
+			Assert.assertEquals("Expecting correct header for " + TermId.CROSS.toString(), TermId.CROSS.toString(),
+					row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 		if (visibleColumnMap.get(String.valueOf(TermId.SEED_SOURCE.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to SOURCE but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "SEED_SOURCE");
+			Assert.assertEquals("Expecting correct header for " + TermId.SEED_SOURCE.toString(), TermId.SEED_SOURCE.toString(),
+					row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 
 		if (visibleColumnMap.get(String.valueOf(TermId.GROUPGID.getId()))) {
-			Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to GROUPGID but didn't.", row
-					.getCell(columnIndex).getStringCellValue(), "GROUPGID");
+			Assert.assertEquals("Expecting correct header for " + TermId.GROUPGID.toString(), TermId.GROUPGID.toString(),
+					row.getCell(columnIndex).getStringCellValue());
 			columnIndex++;
 		}
 
+		Assert.assertEquals("Expecting correct header for " + TermId.STOCKID.toString(), TermId.STOCKID.toString(),
+				row.getCell(columnIndex).getStringCellValue());
+		columnIndex++;
+
+		Assert.assertEquals("Expecting correct header for " + TermId.SEED_AMOUNT_G.toString(), TermId.SEED_AMOUNT_G.toString(),
+				row.getCell(columnIndex).getStringCellValue());
+		columnIndex++;
 
 		// Assert Row Values
 		int rowIndex = 1;
@@ -104,47 +107,51 @@ public class GermplasmExportedWorkbookTest {
 
 			columnIndex = 0;
 			if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_NO.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getNumericCellValue() + " equals to "
-								+ listData.getEntryId() + " but didn't.", row.getCell(columnIndex).getNumericCellValue(),
-						listData.getEntryId().doubleValue());
+				Assert.assertEquals("Expecting correct value for " + TermId.ENTRY_NO.toString() + " at Row " + (rowIndex + 1),
+						listData.getEntryId().doubleValue(), row.getCell(columnIndex).getNumericCellValue());
 				Assert.assertEquals(styles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.NUMBER_COLUMN_HIGHLIGHT_STYLE_FACTOR),
 						row.getCell(columnIndex).getCellStyle());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.GID.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getNumericCellValue() + " equals to "
-								+ listData.getEntryId() + " but didn't.", row.getCell(columnIndex).getNumericCellValue(),
-						listData.getGid().doubleValue());
+				Assert.assertEquals("Expecting correct value for " + TermId.GID.toString() + " at Row " + (rowIndex + 1),
+						listData.getGid().doubleValue(), row.getCell(columnIndex).getNumericCellValue());
 				Assert.assertEquals(styles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.NUMBER_DATA_FORMAT_STYLE),
 						row.getCell(columnIndex).getCellStyle());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.ENTRY_CODE.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getEntryCode()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getEntryCode());
+				Assert.assertEquals("Expecting correct value for " + TermId.ENTRY_NO.toString() + " at Row " + (rowIndex + 1),
+						listData.getEntryCode(), row.getCell(columnIndex).getStringCellValue());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.DESIG.getId()))) {
-				Assert.assertEquals(
-						"Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getDesignation()
-								+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getDesignation());
+				Assert.assertEquals("Expecting correct value for DESIGNATION at Row " + (rowIndex + 1), listData.getDesignation(),
+						row.getCell(columnIndex).getStringCellValue());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.CROSS.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getGroupName()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getGroupName());
+				Assert.assertEquals("Expecting correct value for " + TermId.CROSS.toString() + " at Row " + (rowIndex + 1),
+						listData.getGroupName(), row.getCell(columnIndex).getStringCellValue());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.SEED_SOURCE.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getStringCellValue() + " equals to " + listData.getSeedSource()
-						+ " but didn't.", row.getCell(columnIndex).getStringCellValue(), listData.getSeedSource());
+				Assert.assertEquals("Expecting correct value for " + TermId.SEED_SOURCE.toString() + " at Row " + (rowIndex + 1),
+						listData.getSeedSource(), row.getCell(columnIndex).getStringCellValue());
 				columnIndex++;
 			}
 			if (visibleColumnMap.get(String.valueOf(TermId.GROUPGID.getId()))) {
-				Assert.assertEquals("Expecting " + row.getCell(columnIndex).getNumericCellValue() + " equals to " + listData.getGroupId()
-						+ " but didn't.", row.getCell(columnIndex).getNumericCellValue(), listData.getGroupId().doubleValue());
+				Assert.assertEquals("Expecting correct value for " + TermId.GROUPGID.toString() + " at Row " + (rowIndex + 1),
+						listData.getGroupId().doubleValue(), row.getCell(columnIndex).getNumericCellValue());
 				columnIndex++;
 			}
+
+			Assert.assertEquals("Expecting correct value for " + TermId.STOCKID.toString() + " at Row " + (rowIndex + 1),
+					listData.getStockIDs(), row.getCell(columnIndex).getStringCellValue());
+			columnIndex++;
+
+			Assert.assertEquals("Expecting correct value for " + TermId.SEED_AMOUNT_G.toString() + " at Row " + (rowIndex + 1),
+					listData.getSeedAmount(), row.getCell(columnIndex).getStringCellValue());
 
 			rowIndex++;
 		}
@@ -154,7 +161,6 @@ public class GermplasmExportedWorkbookTest {
 	public void testGenerateDescriptionSheet() throws GermplasmListExporterException {
 
 		// input data
-		final HSSFWorkbook wb = new HSSFWorkbook();
 		final GermplasmList germplasmList = this.input.getGermplasmList();
 		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 
@@ -164,7 +170,7 @@ public class GermplasmExportedWorkbookTest {
 
 		// to test
 		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
-		germplasmExportedWorkbook.init(input);
+		germplasmExportedWorkbook.init(this.input);
 
 		final HSSFSheet descriptionSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Description");
 
@@ -174,102 +180,102 @@ public class GermplasmExportedWorkbookTest {
 		HSSFRow row;
 		// Assert List Details Section
 		row = descriptionSheet.getRow(0);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST NAME but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST NAME");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST NAME but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST NAME");
 		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getName());
 
 		row = descriptionSheet.getRow(1);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST DESCRIPTION but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST DESCRIPTION");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST DESCRIPTION but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST DESCRIPTION");
 		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getDescription());
 
 		row = descriptionSheet.getRow(2);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST TYPE but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST TYPE");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST TYPE but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST TYPE");
 		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getType());
 
 		row = descriptionSheet.getRow(3);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST DATE but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST DATE");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST DATE but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST DATE");
 		Assert.assertEquals(row.getCell(1).getStringCellValue(), germplasmList.getDate().toString());
 
 		// Assert List Condition Section
 		row = descriptionSheet.getRow(5);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to CONDITION but didn't.", row.getCell(0)
-				.getStringCellValue(), "CONDITION");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to DESCRIPTION but didn't.", row.getCell(1)
-				.getStringCellValue(), "DESCRIPTION");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PROPERTY but didn't.", row.getCell(2)
-				.getStringCellValue(), "PROPERTY");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to SCALE but didn't.", row.getCell(3)
-				.getStringCellValue(), "SCALE");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to METHOD but didn't.", row.getCell(4)
-				.getStringCellValue(), "METHOD");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to DATA TYPE but didn't.", row.getCell(5)
-				.getStringCellValue(), "DATA TYPE");
-		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to VALUE but didn't.", row.getCell(6)
-				.getStringCellValue(), "VALUE");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to CONDITION but didn't.",
+				row.getCell(0).getStringCellValue(), "CONDITION");
+		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to DESCRIPTION but didn't.",
+				row.getCell(1).getStringCellValue(), "DESCRIPTION");
+		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PROPERTY but didn't.",
+				row.getCell(2).getStringCellValue(), "PROPERTY");
+		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to SCALE but didn't.",
+				row.getCell(3).getStringCellValue(), "SCALE");
+		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to METHOD but didn't.",
+				row.getCell(4).getStringCellValue(), "METHOD");
+		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to DATA TYPE but didn't.",
+				row.getCell(5).getStringCellValue(), "DATA TYPE");
+		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to VALUE but didn't.",
+				row.getCell(6).getStringCellValue(), "VALUE");
 
 		row = descriptionSheet.getRow(6);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST USER but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST USER");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to PERSON WHO MADE THE LIST but didn't.", row
-				.getCell(1).getStringCellValue(), "PERSON WHO MADE THE LIST");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBCV but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBCV");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.", row.getCell(5)
-				.getStringCellValue(), "C");
-		Assert.assertEquals(
-				"Expecting " + row.getCell(6).getStringCellValue() + " equals to " + this.input.getOwnerName() + " but didn't.", row
-						.getCell(6).getStringCellValue(), this.input.getOwnerName());
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST USER but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST USER");
+		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to PERSON WHO MADE THE LIST but didn't.",
+				row.getCell(1).getStringCellValue(), "PERSON WHO MADE THE LIST");
+		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.",
+				row.getCell(2).getStringCellValue(), "PERSON");
+		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBCV but didn't.",
+				row.getCell(3).getStringCellValue(), "DBCV");
+		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.",
+				row.getCell(4).getStringCellValue(), "ASSIGNED");
+		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.",
+				row.getCell(5).getStringCellValue(), "C");
+		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to " + this.input.getOwnerName() + " but didn't.",
+				row.getCell(6).getStringCellValue(), this.input.getOwnerName());
 
 		row = descriptionSheet.getRow(7);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST USER ID but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST USER ID");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to ID OF LIST OWNER but didn't.", row.getCell(1)
-				.getStringCellValue(), "ID OF LIST OWNER");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBID but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBID");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST USER ID but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST USER ID");
+		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to ID OF LIST OWNER but didn't.",
+				row.getCell(1).getStringCellValue(), "ID OF LIST OWNER");
+		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.",
+				row.getCell(2).getStringCellValue(), "PERSON");
+		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBID but didn't.",
+				row.getCell(3).getStringCellValue(), "DBID");
+		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.",
+				row.getCell(4).getStringCellValue(), "ASSIGNED");
 		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.",
 				row.getCell(5).getStringCellValue(), "N");
-		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to " + germplasmList.getUserId()
-				+ " but didn't.", row.getCell(6).getNumericCellValue() == germplasmList.getUserId());
+		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to " + germplasmList.getUserId() + " but didn't.",
+				row.getCell(6).getNumericCellValue() == germplasmList.getUserId());
 
 		row = descriptionSheet.getRow(8);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST EXPORTER");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to PERSON EXPORTING THE LIST but didn't.", row
-				.getCell(1).getStringCellValue(), "PERSON EXPORTING THE LIST");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBCV but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBCV");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.", row.getCell(5)
-				.getStringCellValue(), "C");
-		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to " + this.input.getExporterName()
-				+ " but didn't.", row.getCell(6).getStringCellValue(), this.input.getExporterName());
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST EXPORTER");
+		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to PERSON EXPORTING THE LIST but didn't.",
+				row.getCell(1).getStringCellValue(), "PERSON EXPORTING THE LIST");
+		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.",
+				row.getCell(2).getStringCellValue(), "PERSON");
+		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBCV but didn't.",
+				row.getCell(3).getStringCellValue(), "DBCV");
+		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.",
+				row.getCell(4).getStringCellValue(), "ASSIGNED");
+		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to C but didn't.",
+				row.getCell(5).getStringCellValue(), "C");
+		Assert.assertEquals(
+				"Expecting " + row.getCell(6).getStringCellValue() + " equals to " + this.input.getExporterName() + " but didn't.",
+				row.getCell(6).getStringCellValue(), this.input.getExporterName());
 
 		row = descriptionSheet.getRow(9);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER ID but didn't.", row.getCell(0)
-				.getStringCellValue(), "LIST EXPORTER ID");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to LIST EXPORTER ID but didn't.",
+				row.getCell(0).getStringCellValue(), "LIST EXPORTER ID");
 		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to ID OF LIST EXPORTER but didn't.",
 				row.getCell(1).getStringCellValue(), "ID OF LIST EXPORTER");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.", row.getCell(2)
-				.getStringCellValue(), "PERSON");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBID but didn't.", row.getCell(3)
-				.getStringCellValue(), "DBID");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.", row.getCell(4)
-				.getStringCellValue(), "ASSIGNED");
+		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PERSON but didn't.",
+				row.getCell(2).getStringCellValue(), "PERSON");
+		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to DBID but didn't.",
+				row.getCell(3).getStringCellValue(), "DBID");
+		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to ASSIGNED but didn't.",
+				row.getCell(4).getStringCellValue(), "ASSIGNED");
 		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to N but didn't.",
 				row.getCell(5).getStringCellValue(), "N");
 		Assert.assertTrue("Expecting " + row.getCell(6).getNumericCellValue() + " equals to " + this.input.getCurrentLocalIbdbUserId()
@@ -277,20 +283,20 @@ public class GermplasmExportedWorkbookTest {
 
 		// Assert List Factor Section
 		row = descriptionSheet.getRow(11);
-		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to FACTOR but didn't.", row.getCell(0)
-				.getStringCellValue(), "FACTOR");
-		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to DESCRIPTION but didn't.", row.getCell(1)
-				.getStringCellValue(), "DESCRIPTION");
-		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PROPERTY but didn't.", row.getCell(2)
-				.getStringCellValue(), "PROPERTY");
-		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to SCALE but didn't.", row.getCell(3)
-				.getStringCellValue(), "SCALE");
-		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to METHOD but didn't.", row.getCell(4)
-				.getStringCellValue(), "METHOD");
-		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to DATA TYPE but didn't.", row.getCell(5)
-				.getStringCellValue(), "DATA TYPE");
-		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to blank but didn't.", row.getCell(6)
-				.getStringCellValue(), "");
+		Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue() + " equals to FACTOR but didn't.",
+				row.getCell(0).getStringCellValue(), "FACTOR");
+		Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue() + " equals to DESCRIPTION but didn't.",
+				row.getCell(1).getStringCellValue(), "DESCRIPTION");
+		Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue() + " equals to PROPERTY but didn't.",
+				row.getCell(2).getStringCellValue(), "PROPERTY");
+		Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue() + " equals to SCALE but didn't.",
+				row.getCell(3).getStringCellValue(), "SCALE");
+		Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue() + " equals to METHOD but didn't.",
+				row.getCell(4).getStringCellValue(), "METHOD");
+		Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue() + " equals to DATA TYPE but didn't.",
+				row.getCell(5).getStringCellValue(), "DATA TYPE");
+		Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue() + " equals to blank but didn't.",
+				row.getCell(6).getStringCellValue(), "");
 
 		int rowIndex = 11;
 
@@ -313,18 +319,18 @@ public class GermplasmExportedWorkbookTest {
 		for (final Variable stdVariable : inventoryVariables.values()) {
 
 			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
-					.getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(),
+					stdVariable.getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
 					stdVariable.getDefinition());
-			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
-					.getProperty().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
-					.getScale().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
-					.getMethod().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-					.getScale().getDataType().getName().substring(0, 1).toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(),
+					stdVariable.getProperty().getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(),
+					stdVariable.getScale().getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(),
+					stdVariable.getMethod().getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(),
+					stdVariable.getScale().getDataType().getName().substring(0, 1).toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
 		}
@@ -334,18 +340,18 @@ public class GermplasmExportedWorkbookTest {
 		for (final Variable stdVariable : variateVariables.values()) {
 
 			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(), stdVariable
-					.getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(),
+					stdVariable.getName().toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
 					stdVariable.getDefinition());
-			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(), stdVariable
-					.getProperty().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(), stdVariable
-					.getScale().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(), stdVariable
-					.getMethod().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(), stdVariable
-					.getScale().getDataType().getName().substring(0, 1).toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(),
+					stdVariable.getProperty().getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(),
+					stdVariable.getScale().getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(),
+					stdVariable.getMethod().getName().toUpperCase());
+			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(),
+					stdVariable.getScale().getDataType().getName().substring(0, 1).toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
 		}
