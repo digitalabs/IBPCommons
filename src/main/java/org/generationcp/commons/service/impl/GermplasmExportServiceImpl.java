@@ -29,6 +29,7 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,7 +175,8 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(id)) {
 					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					cell.setCellStyle(cellStyle);
-					cell.setCellValue(Double.valueOf(value));
+					final String cellValue = StringUtil.isEmpty(value)? "" : Double.valueOf(value).toString();
+					cell.setCellValue(cellValue);
 				} else if (GermplasmExportServiceImpl.NUMERIC_IDS.contains(id) && NumberUtils.isDigits(value)) {
 					cell.setCellValue(Integer.parseInt(value));
 				} else {
