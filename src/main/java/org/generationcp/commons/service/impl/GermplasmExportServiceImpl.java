@@ -175,7 +175,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(id)) {
 					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					cell.setCellStyle(cellStyle);
-					final String cellValue = StringUtil.isEmpty(value)? "" : Double.valueOf(value).toString();
+					final Double cellValue = StringUtil.isEmpty(value)? Double.valueOf(0): Double.valueOf(value);
 					cell.setCellValue(cellValue);
 				} else if (GermplasmExportServiceImpl.NUMERIC_IDS.contains(id) && NumberUtils.isDigits(value)) {
 					cell.setCellValue(Integer.parseInt(value));
