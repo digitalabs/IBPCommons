@@ -29,6 +29,7 @@ import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,7 +172,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 				final HSSFCell cell = row.createCell(columnIndex);
 				// Cannot check data type at this point without additional Middleware query,
 				// Format inventory amount as numeric cell type and cast GID, ENTRY_NO as numeric values
-				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(id)) {
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(id) && !StringUtil.isEmpty(value)) {
 					cell.setCellType(Cell.CELL_TYPE_NUMERIC);
 					cell.setCellStyle(cellStyle);
 					cell.setCellValue(Double.valueOf(value));
