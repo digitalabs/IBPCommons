@@ -22,6 +22,7 @@ import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportColumnValue;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.FileService;
+import org.generationcp.commons.util.StringUtil;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.junit.After;
 import org.junit.Before;
@@ -53,7 +54,7 @@ public class GermplasmExportServiceImplTest {
 		MockitoAnnotations.initMocks(this);
 
 		this.columnsHeaders = this.generateSampleExportColumnHeader();
-		this.columnValues = this.generateSampleExportColumnValues(10);
+		this.columnValues = this.generateSampleExportColumnValues(10, false);
 		this.sheetName = "List";
 
 		this.input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
@@ -162,14 +163,14 @@ public class GermplasmExportServiceImplTest {
 		Assert.assertEquals("Should have the same size of column names", actualData.length, this.columnsHeaders.size());
 	}
 
-	private List<Map<Integer, ExportColumnValue>> generateSampleExportColumnValues(final int rows) {
+	private List<Map<Integer, ExportColumnValue>> generateSampleExportColumnValues(final int rows, final boolean isSeedAmountBlank) {
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
 		for (int i = 0; i < rows; i++) {
 			final Map<Integer, ExportColumnValue> mapData = new HashMap<>();
 			for (int j = 0; j < this.columnsHeaders.size(); j++) {
 				final ExportColumnHeader header = this.columnsHeaders.get(j);
 				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(header.getId())) {
-					final String decimalString = i + ".0";
+					final String decimalString = isSeedAmountBlank ? "": i + ".0";
 					mapData.put(header.getId(), new ExportColumnValue(header.getId(), decimalString));
 				} else {
 					mapData.put(header.getId(), new ExportColumnValue(header.getId(), "Row " + i + ": , Value -" + j));
@@ -238,7 +239,36 @@ public class GermplasmExportServiceImplTest {
 		}
 
 	}
-
+	
+	@Test
+	public void testWriteColumnValuesWithEmptyInventoryAmountValues() {
+		final HSSFWorkbook wb = new HSSFWorkbook();
+		final HSSFSheet sheet = wb.createSheet(sheetName);
+		List<Map<Integer, ExportColumnValue>> columnValues = this.generateSampleExportColumnValues(2, true);
+		this.germplasmExportService.writeColumnValues(this.generateSampleExportColumnHeader(), columnValues, sheet, 1, wb);
+		
+		int rowCount = 1;
+		for (final Map<Integer, ExportColumnValue> rowEntry : columnValues) {
+			final HSSFRow row = sheet.getRow(rowCount);
+			int columnIndex = 0;
+			for (final ExportColumnHeader columnHeader : this.columnsHeaders) {
+				final Integer columnId = columnHeader.getId();
+				final ExportColumnValue exportColumnValue = rowEntry.get(columnId);
+				// Verify that inventory amount is blank or empty string
+				if (Integer.valueOf(TermId.SEED_AMOUNT_G.getId()).equals(columnId)) {
+					Assert.assertEquals("Expecting string formatting for " + TermId.SEED_AMOUNT_G.toString() + " values.",
+							Cell.CELL_TYPE_STRING, row.getCell(columnIndex).getCellType());
+					Assert.assertTrue("Expected empty string value for SEED_AMOUNT column.", StringUtil.isEmpty(row.getCell(columnIndex).getStringCellValue()));
+				} else {
+					Assert.assertEquals("Expected that the row values corresponds to their respective columns.",
+							exportColumnValue.getValue(), row.getCell(columnIndex).getStringCellValue());
+				}
+				columnIndex++;
+			}
+			rowCount++;
+		}
+	}
+	
 	@Test
 	public void testGenerateExcelFileForSingleSheet() throws IOException {
 		this.germplasmExportService.generateExcelFileForSingleSheet(this.columnValues, this.columnsHeaders,
