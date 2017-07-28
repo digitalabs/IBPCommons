@@ -84,8 +84,6 @@ public class BreedingViewImportServiceImplTest {
 
 	private static final String LS_MEAN = "LS MEAN";
 	private static final Integer LS_MEAN_ID = 16090;
-	private static final String ERROR_ESTIMATE = "ERROR ESTIMATE";
-	private static final int ERROR_ESTIMATE_ID = 16095;
 
 	private final List<DMSVariableType> factorVariableTypes = new ArrayList<DMSVariableType>();
 	private final List<DMSVariableType> variateVariableTypes = new ArrayList<DMSVariableType>();
@@ -122,7 +120,6 @@ public class BreedingViewImportServiceImplTest {
 	private ContextUtil contextUtil;
 
 	private CVTerm meansCVTerm;
-	private CVTerm errorEstimateCVTerm;
 
 	@InjectMocks
 	private final BreedingViewImportServiceImpl bvImportService = new BreedingViewImportServiceImpl();
@@ -139,11 +136,7 @@ public class BreedingViewImportServiceImplTest {
 		this.meansCVTerm = this.createCVTerm(BreedingViewImportServiceImplTest.LS_MEAN_ID, BreedingViewImportServiceImplTest.LS_MEAN);
 		Mockito.doReturn(this.meansCVTerm).when(cvTermDao).getByNameAndCvId(BreedingViewImportServiceImplTest.LS_MEAN,
 				CvId.METHODS.getId());
-		this.errorEstimateCVTerm =
-				this.createCVTerm(BreedingViewImportServiceImplTest.ERROR_ESTIMATE_ID, BreedingViewImportServiceImplTest.ERROR_ESTIMATE);
-		Mockito.doReturn(this.errorEstimateCVTerm).when(cvTermDao).getByNameAndCvId(BreedingViewImportServiceImplTest.ERROR_ESTIMATE,
-				CvId.METHODS.getId());
-
+		
 		Mockito.doReturn(this.createDmsProject(BreedingViewImportServiceImplTest.STUDY_ID, BreedingViewImportServiceImplTest.STUDY_NAME,
 				BreedingViewImportServiceImplTest.PROGRAM_UUID)).when(this.studyDataManager)
 				.getProject(BreedingViewImportServiceImplTest.STUDY_ID);
@@ -296,7 +289,7 @@ public class BreedingViewImportServiceImplTest {
 
 		this.bvImportService.importMeansData(file, BreedingViewImportServiceImplTest.STUDY_ID);
 
-		Mockito.verify(this.studyDataManager, Mockito.times(2)).addDataSetVariableType(Matchers.anyInt(),
+		Mockito.verify(this.studyDataManager, Mockito.times(1)).addDataSetVariableType(Matchers.anyInt(),
 				Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
 				Matchers.anyListOf(ExperimentValues.class), Matchers.anyString());
@@ -733,29 +726,22 @@ public class BreedingViewImportServiceImplTest {
 		// Method to test
 		final String[] csvHeadersArray = csvHeaders.toArray(new String[csvHeaders.size()]);
 		this.bvImportService.createMeansVariablesFromImportFileAndAddToList(csvHeadersArray, plotVariateList, meansVariableList,
-				BreedingViewImportServiceImplTest.PROGRAM_UUID, this.meansCVTerm, this.errorEstimateCVTerm, false);
+				BreedingViewImportServiceImplTest.PROGRAM_UUID, this.meansCVTerm, false);
 
-		// Expecting 2 analysis variables for each trait: <trait name>_Means and <trait name>_ErrorEstimate
-		final int newVariablesSize = BreedingViewImportServiceImplTest.TRAITS.length * 2;
+		// Expecting 1 analysis variable for each trait: <trait name>_Means
+		final int newVariablesSize = BreedingViewImportServiceImplTest.TRAITS.length;
 		Assert.assertEquals("Expecting " + newVariablesSize + " analysis variables to be added to means dataset variables.",
 				oldVariableListSize + newVariablesSize, meansVariableList.size());
 		for (final String traitName : BreedingViewImportServiceImplTest.TRAITS) {
 			boolean isMeansVarFound = false;
-			boolean isErrorEstimateVarFound = false;
 			for (final DMSVariableType trait : meansVariableList.getVariates().getVariableTypes()) {
 				final String meansVariableName = traitName + BreedingViewImportServiceImpl.MEANS_SUFFIX;
-				final String errorEstimateVariableName = traitName + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX;
 				if (meansVariableName.equals(trait.getLocalName())) {
 					isMeansVarFound = true;
 					continue;
-				} else if (errorEstimateVariableName.equals(trait.getLocalName())) {
-					isErrorEstimateVarFound = true;
-					continue;
-				}
+				} 
 			}
 			Assert.assertTrue("Expecting means analysis variable for " + traitName + " was added but was not.", isMeansVarFound);
-			Assert.assertTrue("Expecting unit errors analysis variable for " + traitName + " was added but was not.",
-					isErrorEstimateVarFound);
 		}
 		// Check that new variables were added to have "Analysis" variable type
 		final ArgumentCaptor<OntologyVariableInfo> infoArgument = ArgumentCaptor.forClass(OntologyVariableInfo.class);
@@ -805,28 +791,22 @@ public class BreedingViewImportServiceImplTest {
 		// Method to test
 		final String[] csvHeadersArray = csvHeaders.toArray(new String[csvHeaders.size()]);
 		this.bvImportService.appendVariableTypesToExistingMeans(csvHeadersArray, plotDataSet, meansDataSet,
-				BreedingViewImportServiceImplTest.PROGRAM_UUID, this.meansCVTerm, this.errorEstimateCVTerm, false);
+				BreedingViewImportServiceImplTest.PROGRAM_UUID, this.meansCVTerm, false);
 
-		// Expecting 2 analysis variables for each unanalyzed trait: <trait name>_Means and <trait name>_ErrorEstimate
-		final int newVariablesSize = (BreedingViewImportServiceImplTest.TRAITS.length - prevAnalyzedTraits.length) * 2;
+		// Expecting 1 analysis variable for each unanalyzed trait: <trait name>_Means
+		final int newVariablesSize = (BreedingViewImportServiceImplTest.TRAITS.length - prevAnalyzedTraits.length);
 		Assert.assertEquals("Expecting " + newVariablesSize + " analysis variables to be added to means dataset variables.",
 				oldVariableListSize + newVariablesSize, meansVariableList.size());
 		for (final String traitName : BreedingViewImportServiceImplTest.TRAITS) {
 			boolean isMeansVarFound = false;
-			boolean isErrorEstimateVarFound = false;
 			for (final DMSVariableType trait : meansVariableList.getVariates().getVariableTypes()) {
 				final String meansVariableName = traitName + BreedingViewImportServiceImpl.MEANS_SUFFIX;
-				final String errorEstimateVariableName = traitName + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX;
 				if (meansVariableName.equals(trait.getLocalName())) {
 					isMeansVarFound = true;
 					continue;
-				} else if (errorEstimateVariableName.equals(trait.getLocalName())) {
-					isErrorEstimateVarFound = true;
-					continue;
-				}
+				} 
 			}
 			Assert.assertTrue("Expecting means analysis variable for " + traitName + " but was not found.", isMeansVarFound);
-			Assert.assertTrue("Expecting unit errors analysis variable for " + traitName + " but was not found.", isErrorEstimateVarFound);
 		}
 		final ArgumentCaptor<Integer> datasetIdArgument = ArgumentCaptor.forClass(Integer.class);
 		Mockito.verify(this.studyDataManager, Mockito.times(newVariablesSize)).addDataSetVariableType(datasetIdArgument.capture(),
