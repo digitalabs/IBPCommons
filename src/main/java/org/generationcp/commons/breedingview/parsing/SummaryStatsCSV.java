@@ -27,7 +27,7 @@ public class SummaryStatsCSV {
 	private static final int TRAIT_INDEX = 1;
 	private static final int SUMMARY_METHODS_START_INDEX = 2;
 	private final File file;
-	private Map<String, Map<String, ArrayList<String>>> data;
+	private Map<String, Map<String, List<String>>> data;
 	private final Map<String, String> nameToAliasMapping;
 	private String[] header;
 
@@ -78,12 +78,12 @@ public class SummaryStatsCSV {
 	 * @return
 	 * @throws IOException
 	 */
-	public Map<String, Map<String, ArrayList<String>>> getData() throws IOException {
+	public Map<String, Map<String, List<String>>> getData() throws IOException {
 		if (this.data != null) {
 			return this.data;
 		}
 		final CSVReader reader = new CSVReader(new FileReader(this.file));
-		this.data = new LinkedHashMap<String, Map<String, ArrayList<String>>>();
+		this.data = new LinkedHashMap<>();
 		
 		// Track columns to skip - we will not save all summary columns in BMSSummary.csv
 		final List<Integer> columnIndicesToSkip = new ArrayList<>();
@@ -119,7 +119,7 @@ public class SummaryStatsCSV {
 			}
 
 			if (!this.data.containsKey(environment)) {
-				this.data.put(environment, new LinkedHashMap<String, ArrayList<String>>());
+				this.data.put(environment, new LinkedHashMap<String, List<String>>());
 			}
 
 			if (!this.data.get(environment).containsKey(trait)) {

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.dao.oms.CVTermDao;
@@ -68,7 +69,7 @@ public class BreedingViewImportServiceImplTest {
 	private static final String[] TRAITS = {BreedingViewImportServiceImplTest.TRAIT_ASI, BreedingViewImportServiceImplTest.TRAIT_APHID,
 			BreedingViewImportServiceImplTest.TRAIT_EPH, BreedingViewImportServiceImplTest.TRAIT_FMSROT};
 	private static final String ANALYSIS_VAR_NAME =
-			BreedingViewImportServiceImplTest.TRAIT_ASI + BreedingViewImportServiceImpl.MEANS_SUFFIX;
+			BreedingViewImportServiceImplTest.TRAIT_ASI + MeansCSV.MEANS_SUFFIX;
 	private static final String[] SUMMARY_STATS_HEADERS = {"NumValues", "NumMissing", "Variance", "SD", "Min", "Max", "Range"};
 	private static final int STUDY_ID = 1;
 	private static final String STUDY_NAME = "TEST STUDY";
@@ -148,9 +149,9 @@ public class BreedingViewImportServiceImplTest {
 		for (final String traitName : BreedingViewImportServiceImplTest.TRAITS) {
 			this.variateVariableTypes.add(this.createVariateVariableType(traitName));
 			this.meansVariateVariableTypes
-					.add(this.createVariateVariableType(traitName + BreedingViewImportServiceImpl.MEANS_SUFFIX, "", "", "LS MEAN"));
+					.add(this.createVariateVariableType(traitName + MeansCSV.MEANS_SUFFIX, "", "", "LS MEAN"));
 			this.meansVariateVariableTypes.add(
-					this.createVariateVariableType(traitName + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, "", "", "ERROR ESTIMATE"));
+					this.createVariateVariableType(traitName + MeansCSV.UNIT_ERRORS_SUFFIX, "", "", "ERROR ESTIMATE"));
 		}
 
 		final List<DataSet> plotDatasets = new ArrayList<>();
@@ -735,7 +736,7 @@ public class BreedingViewImportServiceImplTest {
 		for (final String traitName : BreedingViewImportServiceImplTest.TRAITS) {
 			boolean isMeansVarFound = false;
 			for (final DMSVariableType trait : meansVariableList.getVariates().getVariableTypes()) {
-				final String meansVariableName = traitName + BreedingViewImportServiceImpl.MEANS_SUFFIX;
+				final String meansVariableName = traitName + MeansCSV.MEANS_SUFFIX;
 				if (meansVariableName.equals(trait.getLocalName())) {
 					isMeansVarFound = true;
 					continue;
@@ -766,9 +767,7 @@ public class BreedingViewImportServiceImplTest {
 		// Assuming there is existing means dataset with 2 traits previously analyzed
 		for (final String traitName : prevAnalyzedTraits) {
 			meansVariableList
-					.add(this.createVariateVariableType(traitName + BreedingViewImportServiceImpl.MEANS_SUFFIX, "", "", "LS MEAN"));
-			meansVariableList.add(
-					this.createVariateVariableType(traitName + BreedingViewImportServiceImpl.UNIT_ERRORS_SUFFIX, "", "", "ERROR ESTIMATE"));
+					.add(this.createVariateVariableType(traitName + MeansCSV.MEANS_SUFFIX, "", "", "LS MEAN"));
 		}
 		final int oldVariableListSize = meansVariableList.size();
 
@@ -800,7 +799,7 @@ public class BreedingViewImportServiceImplTest {
 		for (final String traitName : BreedingViewImportServiceImplTest.TRAITS) {
 			boolean isMeansVarFound = false;
 			for (final DMSVariableType trait : meansVariableList.getVariates().getVariableTypes()) {
-				final String meansVariableName = traitName + BreedingViewImportServiceImpl.MEANS_SUFFIX;
+				final String meansVariableName = traitName + MeansCSV.MEANS_SUFFIX;
 				if (meansVariableName.equals(trait.getLocalName())) {
 					isMeansVarFound = true;
 					continue;
