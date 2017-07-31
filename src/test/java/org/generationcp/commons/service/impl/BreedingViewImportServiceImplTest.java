@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.commons.service.impl.BreedingViewImportServiceImpl.SummaryStatsCSV;
+import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -832,7 +832,7 @@ public class BreedingViewImportServiceImplTest {
 	@Test
 	public void testCreateSummaryStatsVariableTypes() throws IOException {
 		final SummaryStatsCSV summaryStatsCSV = Mockito.mock(SummaryStatsCSV.class);
-		Mockito.doReturn(Arrays.asList(BreedingViewImportServiceImplTest.SUMMARY_STATS_HEADERS)).when(summaryStatsCSV).getHeaderStats();
+		Mockito.doReturn(Arrays.asList(BreedingViewImportServiceImplTest.SUMMARY_STATS_HEADERS)).when(summaryStatsCSV).getSummaryHeaders();
 
 		final DataSet trialDataSet = new DataSet();
 		trialDataSet.setId(BreedingViewImportServiceImplTest.MEASUREMENT_DATASET_ID);
