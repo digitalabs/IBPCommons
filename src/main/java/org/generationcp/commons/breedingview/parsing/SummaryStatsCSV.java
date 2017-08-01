@@ -42,6 +42,18 @@ public class SummaryStatsCSV {
 
 		return Arrays.asList(this.header);
 	}
+	
+	/**
+	 * Return list of traits analyzed from summary file from BV.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public List<String> getTraits() throws IOException {
+		this.data = this.getData();
+		// Get the traits for 1st environment, assumes that all environments have the same traits analyzed
+		return new ArrayList<>(this.data.values().iterator().next().keySet());
+	}
 
 	/**
 	 * Return list of column headers for summary statistic methods

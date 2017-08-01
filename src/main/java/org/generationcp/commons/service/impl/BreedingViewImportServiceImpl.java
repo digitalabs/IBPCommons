@@ -591,8 +591,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	/**
-	 * This method creates the summary statistics variable types from the relevant summary statistics columns in the summary output
-	 * file from BV for all traits of study analyzed.
+	 * This method creates the summary statistics variable types from the relevant summary statistics columns for traits included in the
+	 * summary output file from BV.
 	 *
 	 * @param summaryStatsCSV
 	 * @param trialDataSet - environment dataset of study analyzed
@@ -613,10 +613,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final int numberOfTrialDatasetVariables = trialDataSet.getVariableTypes().size();
 		int rank = trialDataSet.getVariableTypes().getVariableTypes().get(numberOfTrialDatasetVariables - 1).getRank() + 1;
 
-		// Iterate through relevant summary statistics gathered from the output file of Breeding View
+		// Iterate through relevant summary statistics gathered per trait the output file of Breeding View
 		for (final String summaryStatName : summaryHeaders) {
-			for (final DMSVariableType variate : plotVariates.getVariableTypes()) {
-				final String trait = variate.getLocalName();
+			for (final String trait : summaryStatsCSV.getTraits()) {
 				final String localName = trait + "_" + summaryStatName;
 				
 				// Only create summary statistic variable if not yet existing in trial dataset

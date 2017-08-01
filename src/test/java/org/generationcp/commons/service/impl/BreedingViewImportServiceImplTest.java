@@ -870,6 +870,9 @@ public class BreedingViewImportServiceImplTest {
 			plotVariateList.add(trait);
 			traitAliasMap.put(trait.getLocalName(), trait.getLocalName());
 		}
+		// Not all traits in plot dataset were analyzed (only two included in summary file)
+		final List<String> traitsAnalyzed = Arrays.asList(BreedingViewImportServiceImplTest.TRAITS[0], BreedingViewImportServiceImplTest.TRAITS[1]);
+		Mockito.when(this.summaryStatsCSV.getTraits()).thenReturn(traitsAnalyzed);
 		Mockito.when(this.ontologyDataManager.retrieveDerivedAnalysisVariable(Matchers.anyInt(), Matchers.anyInt())).thenReturn(null);
 
 		// Method to test
@@ -878,7 +881,7 @@ public class BreedingViewImportServiceImplTest {
 
 		// Expecting one analysis summary variable per summary statistic method for each trait
 		final List<String> expectedSummaryVariableNames = new ArrayList<>();
-		for (final String trait : BreedingViewImportServiceImplTest.TRAITS) {
+		for (final String trait : traitsAnalyzed) {
 			for (final String method : this.summaryStatsCSV.getSummaryHeaders()) {
 				expectedSummaryVariableNames.add(trait + "_" + method);
 			}
@@ -951,6 +954,7 @@ public class BreedingViewImportServiceImplTest {
 		final List<String> summaryHeaders = Arrays.asList(SummaryStatsCSV.SUMMARY_STATS_METHODS);
 		Mockito.when(this.summaryStatsCSV.getSummaryHeaders()).thenReturn(summaryHeaders);
 		Mockito.when(this.summaryStatsCSV.getData()).thenReturn(data);
+		Mockito.when(this.summaryStatsCSV.getTraits()).thenReturn(Arrays.asList(BreedingViewImportServiceImplTest.TRAITS));
 	}
 
 	@Test
