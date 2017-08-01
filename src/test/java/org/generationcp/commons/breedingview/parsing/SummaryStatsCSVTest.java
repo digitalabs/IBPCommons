@@ -104,29 +104,33 @@ public class SummaryStatsCSVTest {
 		Assert.assertEquals(expectedSummaryMethodsSize, valuesForTrait1.size());
 		Assert.assertEquals("4.77777777777778", valuesForTrait1.get(0).toUpperCase());
 		Assert.assertEquals("1.64053588643061", valuesForTrait1.get(1).toUpperCase());
-		Assert.assertEquals("1.33970838533948E-007", valuesForTrait1.get(2).toUpperCase());
-		Assert.assertEquals("0.59277772260922", valuesForTrait1.get(3).toUpperCase());
+		Assert.assertEquals("46.0676481687635", valuesForTrait1.get(2).toUpperCase());
+		Assert.assertEquals("1.33970838533948E-007", valuesForTrait1.get(3).toUpperCase());
+		Assert.assertEquals("0.59277772260922", valuesForTrait1.get(4).toUpperCase());
 
 		final List<String> valuesForTrait2 = summaryData.get(environmentName).get(SummaryStatsCSVTest.TRAITS_LIST.get(1));
 		Assert.assertEquals(expectedSummaryMethodsSize, valuesForTrait2.size());
 		Assert.assertEquals("5.44444444444444", valuesForTrait2.get(0).toUpperCase());
 		Assert.assertEquals("2.44948959352742", valuesForTrait2.get(1).toUpperCase());
-		Assert.assertEquals("8.0036829175345E-007", valuesForTrait2.get(2).toUpperCase());
-		Assert.assertEquals("0.633313208454948", valuesForTrait2.get(3).toUpperCase());
+		Assert.assertEquals("60.3612577613275", valuesForTrait2.get(2).toUpperCase());
+		Assert.assertEquals("8.0036829175345E-007", valuesForTrait2.get(3).toUpperCase());
+		Assert.assertEquals("0.633313208454948", valuesForTrait2.get(4).toUpperCase());
 
 		final List<String> valuesForTrait3 = summaryData.get(environmentName).get(SummaryStatsCSVTest.TRAITS_LIST.get(2));
 		Assert.assertEquals(expectedSummaryMethodsSize, valuesForTrait3.size());
 		Assert.assertEquals("4.75", valuesForTrait3.get(0).toUpperCase());
 		Assert.assertEquals("1.9824941711781", valuesForTrait3.get(1).toUpperCase());
-		Assert.assertEquals("0.755758436827121", valuesForTrait3.get(2).toUpperCase());
-		Assert.assertEquals("0.0127968957025755", valuesForTrait3.get(3).toUpperCase());
+		Assert.assertEquals("52.9812941487543", valuesForTrait3.get(2).toUpperCase());
+		Assert.assertEquals("0.755758436827121", valuesForTrait3.get(3).toUpperCase());
+		Assert.assertEquals("0.0127968957025755", valuesForTrait3.get(4).toUpperCase());
 
 		final List<String> valuesForTrait4 = summaryData.get(environmentName).get(SummaryStatsCSVTest.TRAITS_LIST.get(3));
 		Assert.assertEquals(expectedSummaryMethodsSize, valuesForTrait4.size());
 		Assert.assertEquals("3", valuesForTrait4.get(0).toUpperCase());
 		Assert.assertEquals("1.80534185194117", valuesForTrait4.get(1).toUpperCase());
-		Assert.assertEquals("1.91999971810297E-007", valuesForTrait4.get(2).toUpperCase());
-		Assert.assertEquals("0.761300383072833", valuesForTrait4.get(3).toUpperCase());
+		Assert.assertEquals("80.7373420713164", valuesForTrait4.get(2).toUpperCase());
+		Assert.assertEquals("1.91999971810297E-007", valuesForTrait4.get(3).toUpperCase());
+		Assert.assertEquals("0.761300383072833", valuesForTrait4.get(4).toUpperCase());
 	}
 
 }

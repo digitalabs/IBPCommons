@@ -20,7 +20,7 @@ import au.com.bytecode.opencsv.CSVReader;
  */
 public class SummaryStatsCSV {
 
-	public static final String[] SUMMARY_STATS_METHODS = {"MEAN", "MEANSED", "HERITABILITY", "PVALUE"};
+	public static final String[] SUMMARY_STATS_METHODS = {"MEAN", "MEANSED", "CV", "HERITABILITY", "PVALUE"};
 	protected static final String FORMAT_IS_INVALID_FOR_SUMMARY_STATISTICS =
 			"Cannot parse the file because the format is invalid for Summary Statistics.";
 	private static final int ENVIRONMENT_INDEX = 0;
