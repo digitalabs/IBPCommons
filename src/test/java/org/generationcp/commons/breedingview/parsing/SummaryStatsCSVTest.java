@@ -20,7 +20,6 @@ import junit.framework.Assert;
 public class SummaryStatsCSVTest {
 
 	private static final String TRIAL_INSTANCE = "TRIAL_INSTANCE";
-	private static final List<String> SUMMARY_STATS_LIST = Arrays.asList("MEAN", "MEANSED", "HERITABILITY", "PVALUE");
 	private static final List<String> TRAITS_LIST = Arrays.asList("ASI", "Aphid1_5", "EPH", "FMSROT");
 	private SummaryStatsCSV summaryStatsCSV;
 
@@ -54,7 +53,7 @@ public class SummaryStatsCSVTest {
 		final List<String> allHeaders = new ArrayList<>();
 		allHeaders.add(SummaryStatsCSVTest.TRIAL_INSTANCE);
 		allHeaders.add("TRAIT");
-		allHeaders.addAll(SummaryStatsCSVTest.SUMMARY_STATS_LIST);
+		allHeaders.addAll(Arrays.asList(SummaryStatsCSV.SUMMARY_STATS_METHODS));
 
 		final List<String> headers = this.summaryStatsCSV.getHeaders();
 
@@ -70,8 +69,8 @@ public class SummaryStatsCSVTest {
 	public void testGetSummaryHeaders() throws IOException {
 		final List<String> summaryHeaders = this.summaryStatsCSV.getSummaryHeaders();
 
-		Assert.assertEquals(SummaryStatsCSVTest.SUMMARY_STATS_LIST.size(), summaryHeaders.size());
-		final ListIterator<String> expectedHeadersIterator = SummaryStatsCSVTest.SUMMARY_STATS_LIST.listIterator();
+		Assert.assertEquals(SummaryStatsCSV.SUMMARY_STATS_METHODS.length, summaryHeaders.size());
+		final ListIterator<String> expectedHeadersIterator = Arrays.asList(SummaryStatsCSV.SUMMARY_STATS_METHODS).listIterator();
 		final ListIterator<String> actualHeadersIterator = summaryHeaders.listIterator();
 		while (expectedHeadersIterator.hasNext()) {
 			Assert.assertEquals(expectedHeadersIterator.next().toUpperCase(), actualHeadersIterator.next().toUpperCase());
