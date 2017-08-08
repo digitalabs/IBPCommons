@@ -997,7 +997,73 @@ public class BreedingViewImportServiceImplTest {
 				}
 			}
 		}
+	}
+	
+	@Test
+	public void testGenerateNameToAliasMapWhenPreviousMapIsNotNull() {
+		final Map<String, String> aliasMap = new HashMap<>();
+		for (final String trait : SummaryStatsTestDataInitializer.TRAITS_LIST){
+			aliasMap.put(trait, trait + "_");
+		}
+		this.bvImportService.setLocalNameToAliasMap(aliasMap);
+		final DataSet plotDataSet = Mockito.mock(DataSet.class);
+		
+		// Method to test
+		final Map<String, String> finalAliasMap =
+				this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
 
+		Assert.assertEquals(aliasMap, finalAliasMap);
+		Mockito.verify(plotDataSet, Mockito.never()).getVariableTypes();
+	}
+	
+	@Test
+	public void testGenerateNameToAliasMapWhenPreviousMapIsNull() {
+		this.bvImportService.setLocalNameToAliasMap(null);
+		final VariableTypeList varTypeList = new VariableTypeList();
+		for (final DMSVariableType factor : this.factorVariableTypes) {
+			varTypeList.add(factor);
+		}
+		for (final DMSVariableType trait : this.variateVariableTypes){
+			varTypeList.add(trait);
+		}
+		final DataSet plotDataSet = new DataSet();
+		plotDataSet.setVariableTypes(varTypeList);
+		
+		// Method to test
+		final Map<String, String> finalAliasMap =
+				this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+
+		// final alias map will contain ENTRY_NO_1 for dupe entry no column from BV
+		Assert.assertEquals(varTypeList.size() + 1, finalAliasMap.size());
+		for (final DMSVariableType varType : varTypeList.getVariableTypes()) {
+			Assert.assertTrue(finalAliasMap.keySet().contains(varType.getLocalName()));
+			Assert.assertTrue(finalAliasMap.containsValue(varType.getLocalName()));
+		}
+	}
+	
+	@Test
+	public void testGenerateNameToAliasMapWhenPreviousMapIsEmpty() {
+		this.bvImportService.setLocalNameToAliasMap(new HashMap<String, String>());
+		final VariableTypeList varTypeList = new VariableTypeList();
+		for (final DMSVariableType factor : this.factorVariableTypes) {
+			varTypeList.add(factor);
+		}
+		for (final DMSVariableType trait : this.variateVariableTypes){
+			varTypeList.add(trait);
+		}
+		final DataSet plotDataSet = new DataSet();
+		plotDataSet.setVariableTypes(varTypeList);
+		
+		// Method to test
+		final Map<String, String> finalAliasMap =
+				this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+
+		// final alias map will contain ENTRY_NO_1 for dupe entry no column from BV
+		Assert.assertEquals(varTypeList.size() + 1, finalAliasMap.size());
+		for (final DMSVariableType varType : varTypeList.getVariableTypes()) {
+			Assert.assertTrue(finalAliasMap.keySet().contains(varType.getLocalName()));
+			Assert.assertTrue(finalAliasMap.containsValue(varType.getLocalName()));
+		}
 	}
 
 }

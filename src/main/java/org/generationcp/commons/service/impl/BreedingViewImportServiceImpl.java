@@ -925,14 +925,16 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	/**
-	 * This method is retrieves the existing plot dataset variables and creates a map of sanitized names to the variable names
+	 * If there's existing alias to local name map, return it. Otherwise, retrieve the existing plot dataset variables and 
+	 * create a map of sanitized names to the variable names
 	 *
-	 * @param studyId
+	 * @param studyId - id of analyzed study
+	 * @param plotDataset - plot dataset of analyzed study
 	 * @return Map of sanitized names to local variable names
 	 */
 	protected Map<String, String> generateNameToAliasMap(final int studyId, final DataSet plotDataset) {
 
-		if (this.localNameToAliasMap != null) {
+		if (this.localNameToAliasMap != null && !this.localNameToAliasMap.isEmpty()) {
 			return this.localNameToAliasMap;
 		} else {
 			final List<DMSVariableType> variateList = plotDataset.getVariableTypes().getVariableTypes();
@@ -962,6 +964,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	protected void setCloner(final Cloner cloner) {
 		this.cloner = cloner;
+	}
+
+	
+	public void setLocalNameToAliasMap(Map<String, String> localNameToAliasMap) {
+		this.localNameToAliasMap = localNameToAliasMap;
 	}
 
 }
