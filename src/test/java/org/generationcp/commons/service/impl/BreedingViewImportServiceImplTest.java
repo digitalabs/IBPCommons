@@ -870,6 +870,7 @@ public class BreedingViewImportServiceImplTest {
 			plotVariateList.add(trait);
 			traitAliasMap.put(trait.getLocalName(), trait.getLocalName());
 		}
+		this.bvImportService.setLocalNameToAliasMap(traitAliasMap);
 		// Not all traits in plot dataset were analyzed (only two included in summary file)
 		final List<String> traitsAnalyzed = Arrays.asList(BreedingViewImportServiceImplTest.TRAITS[0], BreedingViewImportServiceImplTest.TRAITS[1]);
 		Mockito.when(this.summaryStatsCSV.getTraits()).thenReturn(traitsAnalyzed);
@@ -877,7 +878,7 @@ public class BreedingViewImportServiceImplTest {
 
 		// Method to test
 		final VariableTypeList summaryStatVariables = this.bvImportService.createSummaryStatsVariableTypes(this.summaryStatsCSV,
-				trialDataSet, plotVariateList, traitAliasMap, BreedingViewImportServiceImplTest.PROGRAM_UUID);
+				trialDataSet, plotVariateList, BreedingViewImportServiceImplTest.PROGRAM_UUID);
 
 		// Expecting one analysis summary variable per summary statistic method for each trait
 		final List<String> expectedSummaryVariableNames = new ArrayList<>();
@@ -916,7 +917,7 @@ public class BreedingViewImportServiceImplTest {
 			plotVariateList.add(trait);
 			traitAliasMap.put(trait.getLocalName(), trait.getLocalName());
 		}
-
+		this.bvImportService.setLocalNameToAliasMap(traitAliasMap);
 		final DataSet trialDataSet = new DataSet();
 		trialDataSet.setId(BreedingViewImportServiceImplTest.MEASUREMENT_DATASET_ID);
 		final VariableTypeList trialVariablesList = new VariableTypeList();
@@ -933,7 +934,7 @@ public class BreedingViewImportServiceImplTest {
 
 		// Method to test
 		final VariableTypeList summaryStatVariables = this.bvImportService.createSummaryStatsVariableTypes(this.summaryStatsCSV,
-				trialDataSet, plotVariateList, traitAliasMap, BreedingViewImportServiceImplTest.PROGRAM_UUID);
+				trialDataSet, plotVariateList, BreedingViewImportServiceImplTest.PROGRAM_UUID);
 
 		// Check that no new summary variables saved and returned
 		Assert.assertEquals("Expecting no new summary statistics variables created.", 0, summaryStatVariables.size());
@@ -997,7 +998,48 @@ public class BreedingViewImportServiceImplTest {
 				}
 			}
 		}
+	}
+	
+	@Test
+	public void testGenerateNameToAliasMapWhenPreviousMapIsNotEmpth() {
+		final Map<String, String> aliasMap = new HashMap<>();
+		for (final String trait : SummaryStatsTestDataInitializer.TRAITS_LIST){
+			aliasMap.put(trait, trait + "_");
+		}
+		this.bvImportService.setLocalNameToAliasMap(aliasMap);
+		final DataSet plotDataSet = Mockito.mock(DataSet.class);
+		
+		// Method to test
+		this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
 
+		final Map<String, String> finalAliasMap = this.bvImportService.getLocalNameToAliasMap();
+		Assert.assertEquals(aliasMap, finalAliasMap);
+		Mockito.verify(plotDataSet, Mockito.never()).getVariableTypes();
+	}
+	
+	@Test
+	public void testGenerateNameToAliasMapWhenPreviousMapIsEmpty() {
+		this.bvImportService.setLocalNameToAliasMap(new HashMap<String, String>());
+		final VariableTypeList varTypeList = new VariableTypeList();
+		for (final DMSVariableType factor : this.factorVariableTypes) {
+			varTypeList.add(factor);
+		}
+		for (final DMSVariableType trait : this.variateVariableTypes){
+			varTypeList.add(trait);
+		}
+		final DataSet plotDataSet = new DataSet();
+		plotDataSet.setVariableTypes(varTypeList);
+		
+		// Method to test
+		this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+
+		// final alias map will contain ENTRY_NO_1 for dupe entry no column from BV
+		final Map<String, String> finalAliasMap = this.bvImportService.getLocalNameToAliasMap();
+		Assert.assertEquals(varTypeList.size() + 1, finalAliasMap.size());
+		for (final DMSVariableType varType : varTypeList.getVariableTypes()) {
+			Assert.assertTrue(finalAliasMap.keySet().contains(varType.getLocalName()));
+			Assert.assertTrue(finalAliasMap.containsValue(varType.getLocalName()));
+		}
 	}
 
 }
