@@ -490,7 +490,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final VariableTypeList summaryStatsVariableTypeList = this.createSummaryStatsVariableTypes(summaryStatsCSV, trialDataSet,
 					variableTypeListVariates, programUUID);
 
-			final Map<String, Integer> envFactorTolocationIdMap =
+			final Map<Integer, String> envFactorTolocationIdMap =
 					this.retrieveAllLocationsOfStudy(summaryStatsData.keySet(), studyId, summaryStatsCSV.getTrialHeader());
 			final List<ExperimentValues> summaryStatsExperimentValuesList = this.createSummaryStatsExperimentValuesList(trialDataSet,
 					envFactorTolocationIdMap, summaryStatsCSV);
@@ -498,8 +498,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			// Save project properties and experiments
 			final DmsProject project = new DmsProject();
 			project.setProjectId(trialDataSet.getId());
+			
 			this.studyDataManager.saveTrialDatasetSummary(project, summaryStatsVariableTypeList, summaryStatsExperimentValuesList,
-					new ArrayList<>(envFactorTolocationIdMap.values()));
+					new ArrayList<>(envFactorTolocationIdMap.keySet()));
 
 		} catch (final Exception e) {
 			throw new BreedingViewImportException(e.getMessage(), e);
@@ -518,12 +519,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @throws IOException 
 	 */
 	List<ExperimentValues> createSummaryStatsExperimentValuesList(final DataSet trialDataSet,
-			final Map<String, Integer> envFactorTolocationIdMap, final SummaryStatsCSV summaryCSV) throws IOException {
+			final Map<Integer, String> envFactorTolocationIdMap, final SummaryStatsCSV summaryCSV) throws IOException {
 		final List<String> summaryHeaders = summaryCSV.getSummaryHeaders();
 		final Map<String, Map<String, List<String>>> summaryStatsData = summaryCSV.getData();
 		final List<ExperimentValues> summaryStatsExperimentValuesList = new ArrayList<>();
 		
-		for (final String envFactorValue : envFactorTolocationIdMap.keySet()) {
+		int counter = 0;
+		for (final String envFactorValue : envFactorTolocationIdMap.values()) {
 			for (final String summaryStatName : summaryHeaders) {
 				for (final Entry<String, List<String>> traitSummaryStat : summaryStatsData.get(envFactorValue).entrySet()) {
 
@@ -531,7 +533,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					variableList.setVariables(new ArrayList<Variable>());
 					final ExperimentValues experimentValues = new ExperimentValues();
 					experimentValues.setVariableList(variableList);
-					experimentValues.setLocationId(envFactorTolocationIdMap.get(envFactorValue));
+					experimentValues.setLocationId(Integer.valueOf(envFactorTolocationIdMap.keySet().toArray()[counter].toString()));
 
 					final DMSVariableType summaryStatVariableType =
 							trialDataSet.findVariableTypeByLocalName(traitSummaryStat.getKey() + "_" + summaryStatName);
@@ -544,25 +546,18 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					}
 				}
 			}
+			counter++;
 		}
 		return summaryStatsExperimentValuesList;
 	}
 
-	private Map<String, Integer> retrieveAllLocationsOfStudy(final Set<String> environments, final int studyId,
+	private Map<Integer, String> retrieveAllLocationsOfStudy(final Set<String> environments, final int studyId,
 			final String envFactorName) {
-		final Map<String, Integer> envFactorTolocationIdMap = new LinkedHashMap<>();
+		final Map<Integer, String> envFactorTolocationIdMap = new LinkedHashMap<>();
 		final TrialEnvironments trialEnvironments =
 				this.studyDataManager.getTrialEnvironmentsInDataset(this.getTrialDataSet(studyId).getId());
-		for (final String env : environments) {
-			// Unfortunately, Breeding View cannot handle double quotes in CSV. Because of that, variables in the CSV file with comma are
-			// replaced with semicolon. So we need to replace semicolon with comma again
-			String envFactor = env.replace(";", ",");
-			TrialEnvironment trialEnv = trialEnvironments.findOnlyOneByLocalName(envFactorName, envFactor);
-			if (trialEnv == null) {
-				envFactor = env;
-				trialEnv = trialEnvironments.findOnlyOneByLocalName(envFactorName, envFactor);
-			}
-			envFactorTolocationIdMap.put(env, trialEnv.getId());
+		for(TrialEnvironment trialEnvironment: trialEnvironments.getTrialEnvironments()){
+			envFactorTolocationIdMap.put(trialEnvironment.getId(), trialEnvironment.getVariables().findByLocalName(envFactorName).getActualValue());
 		}
 		return envFactorTolocationIdMap;
 	}

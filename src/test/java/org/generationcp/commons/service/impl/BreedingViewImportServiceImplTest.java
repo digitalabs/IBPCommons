@@ -969,9 +969,9 @@ public class BreedingViewImportServiceImplTest {
 		varTypeList.setVariableTypes(this.summaryVariableTypes);
 		dataSet.setVariableTypes(varTypeList);
 
-		final Map<String, Integer> locationNameToIdMap = new LinkedHashMap<>();
+		final Map<Integer, String> locationNameToIdMap = new LinkedHashMap<>();
 		for (final String environment : data.keySet()) {
-			locationNameToIdMap.put(environment, Integer.valueOf(environment));
+			locationNameToIdMap.put(Integer.valueOf(environment), environment);
 		}
 
 		// Method to test
