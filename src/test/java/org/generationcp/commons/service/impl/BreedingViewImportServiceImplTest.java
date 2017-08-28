@@ -991,7 +991,7 @@ public class BreedingViewImportServiceImplTest {
 					final Integer value = Integer.valueOf(environmentName) * 10 + i;
 
 					final ExperimentValues experimentValue = actualValuesIterator.next();
-					Assert.assertEquals(locationNameToIdMap.get(environmentName), experimentValue.getLocationId());
+					Assert.assertEquals(environmentName, experimentValue.getLocationId().toString());
 					final Variable variable = experimentValue.getVariableList().getVariables().get(0);
 					Assert.assertEquals(summaryVariableName, variable.getVariableType().getLocalName());
 					Assert.assertEquals(value.toString() + "." + j, variable.getActualValue());
