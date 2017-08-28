@@ -1010,7 +1010,7 @@ public class BreedingViewImportServiceImplTest {
 		final DataSet plotDataSet = Mockito.mock(DataSet.class);
 		
 		// Method to test
-		this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+		this.bvImportService.generateNameToAliasMap(plotDataSet);
 
 		final Map<String, String> finalAliasMap = this.bvImportService.getLocalNameToAliasMap();
 		Assert.assertEquals(aliasMap, finalAliasMap);
@@ -1031,7 +1031,7 @@ public class BreedingViewImportServiceImplTest {
 		plotDataSet.setVariableTypes(varTypeList);
 		
 		// Method to test
-		this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+		this.bvImportService.generateNameToAliasMap(plotDataSet);
 
 		// final alias map will contain ENTRY_NO_1 for dupe entry no column from BV
 		final Map<String, String> finalAliasMap = this.bvImportService.getLocalNameToAliasMap();
