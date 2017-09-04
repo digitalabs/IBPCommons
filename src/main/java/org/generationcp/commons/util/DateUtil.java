@@ -23,6 +23,7 @@ public class DateUtil {
 	public static final String DATE_AS_NUMBER_FORMAT = Util.DATE_AS_NUMBER_FORMAT;
 	public static final String FRONTEND_DATE_FORMAT = Util.FRONTEND_DATE_FORMAT;
 	public static final String FRONTEND_DATE_FORMAT_2 = Util.FRONTEND_DATE_FORMAT_2;
+	public static final String FRONTEND_DATE_FORMAT_3 = Util.FRONTEND_DATE_FORMAT_3;
 	public static final String FRONTEND_TIMESTAMP_FORMAT = Util.FRONTEND_TIMESTAMP_FORMAT;
 
 	private DateUtil() {
