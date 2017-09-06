@@ -969,9 +969,9 @@ public class BreedingViewImportServiceImplTest {
 		varTypeList.setVariableTypes(this.summaryVariableTypes);
 		dataSet.setVariableTypes(varTypeList);
 
-		final Map<String, Integer> locationNameToIdMap = new LinkedHashMap<>();
+		final Map<Integer, String> locationNameToIdMap = new LinkedHashMap<>();
 		for (final String environment : data.keySet()) {
-			locationNameToIdMap.put(environment, Integer.valueOf(environment));
+			locationNameToIdMap.put(Integer.valueOf(environment), environment);
 		}
 
 		// Method to test
@@ -991,7 +991,7 @@ public class BreedingViewImportServiceImplTest {
 					final Integer value = Integer.valueOf(environmentName) * 10 + i;
 
 					final ExperimentValues experimentValue = actualValuesIterator.next();
-					Assert.assertEquals(locationNameToIdMap.get(environmentName), experimentValue.getLocationId());
+					Assert.assertEquals(environmentName, experimentValue.getLocationId().toString());
 					final Variable variable = experimentValue.getVariableList().getVariables().get(0);
 					Assert.assertEquals(summaryVariableName, variable.getVariableType().getLocalName());
 					Assert.assertEquals(value.toString() + "." + j, variable.getActualValue());
@@ -1010,7 +1010,7 @@ public class BreedingViewImportServiceImplTest {
 		final DataSet plotDataSet = Mockito.mock(DataSet.class);
 		
 		// Method to test
-		this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+		this.bvImportService.generateNameToAliasMap(plotDataSet);
 
 		final Map<String, String> finalAliasMap = this.bvImportService.getLocalNameToAliasMap();
 		Assert.assertEquals(aliasMap, finalAliasMap);
@@ -1031,7 +1031,7 @@ public class BreedingViewImportServiceImplTest {
 		plotDataSet.setVariableTypes(varTypeList);
 		
 		// Method to test
-		this.bvImportService.generateNameToAliasMap(BreedingViewImportServiceImplTest.STUDY_ID, plotDataSet);
+		this.bvImportService.generateNameToAliasMap(plotDataSet);
 
 		// final alias map will contain ENTRY_NO_1 for dupe entry no column from BV
 		final Map<String, String> finalAliasMap = this.bvImportService.getLocalNameToAliasMap();
