@@ -282,7 +282,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				programUUID, lSMean, hasDuplicateColumnsInFile);
 
 		// Save and return the newly-created means dataset
-		final DatasetReference datasetReference = this.studyDataManager.addDataSet(study.getProjectId(), meansVariableTypeList, datasetValues, "");
+		final DatasetReference datasetReference = this.studyDataManager.addDataSet(study.getProjectId(), meansVariableTypeList, datasetValues, programUUID);
 		return this.studyDataManager.getDataSet(datasetReference.getId());
 
 	}
