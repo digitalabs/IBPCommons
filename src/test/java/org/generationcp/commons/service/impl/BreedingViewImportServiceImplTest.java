@@ -87,6 +87,7 @@ public class BreedingViewImportServiceImplTest {
 
 	private static final String LS_MEAN = "LS MEAN";
 	private static final Integer LS_MEAN_ID = 16090;
+	public static final String LOCATION_NAME = "LOCATION_NAME";
 
 	private final List<DMSVariableType> factorVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> variateVariableTypes = new ArrayList<>();
@@ -1040,6 +1041,54 @@ public class BreedingViewImportServiceImplTest {
 			Assert.assertTrue(finalAliasMap.keySet().contains(varType.getLocalName()));
 			Assert.assertTrue(finalAliasMap.containsValue(varType.getLocalName()));
 		}
+	}
+
+	@Test
+	public void testCreateGeolocationIdEnvironmentMap() {
+
+		this.factorVariableTypes.add(this.createTrialEnvironmentVariableType(LOCATION_NAME));
+
+		final int testGeolocationId1 = 100;
+		final String testLocationName1 = "Agua Fria (AF)";
+
+		final int testGeolocationId2 = 101;
+		final String testLocationName2 = "Africa";
+
+		final int testGeolocationId3 = 102;
+		final String testLocationName3 = "UP Los Banos, Philippines";
+
+		final List<DataSet> summaryDataDatasets = new ArrayList<>();
+		summaryDataDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
+
+		final TrialEnvironments testTrialEnvironments = new TrialEnvironments();
+
+		final TrialEnvironment trialEnvironment1 = this.createTrialEnvironment(testGeolocationId1);
+		trialEnvironment1.getVariables().findByLocalName(LOCATION_NAME).setValue(testLocationName1);
+		final TrialEnvironment trialEnvironment2 = this.createTrialEnvironment(testGeolocationId2);
+		trialEnvironment2.getVariables().findByLocalName(LOCATION_NAME).setValue(testLocationName2);
+		final TrialEnvironment trialEnvironment3 = this.createTrialEnvironment(testGeolocationId3);
+		trialEnvironment3.getVariables().findByLocalName(LOCATION_NAME).setValue(testLocationName3);
+
+		testTrialEnvironments.add(trialEnvironment1);
+		testTrialEnvironments.add(trialEnvironment2);
+		testTrialEnvironments.add(trialEnvironment3);
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(testTrialEnvironments);
+
+		// Only add environments 1 and 3
+		final Set<String> environments = new HashSet<>();
+		environments.add(testLocationName1);
+		environments.add(testLocationName3);
+
+		Map<Integer, String> result = this.bvImportService.createGeolocationIdEnvironmentMap(environments, STUDY_ID, LOCATION_NAME);
+
+		// Verify that only environents 1 and 3 are in the geolocationIDEnvironmentMap
+		Assert.assertEquals(result.get(testGeolocationId1), testLocationName1);
+		Assert.assertEquals(result.get(testGeolocationId3), testLocationName3);
+		Assert.assertFalse(result.containsKey(testGeolocationId2));
+
 	}
 
 }
