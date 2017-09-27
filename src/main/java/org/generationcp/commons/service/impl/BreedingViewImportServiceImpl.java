@@ -559,7 +559,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final TrialEnvironments trialEnvironments =
 				this.studyDataManager.getTrialEnvironmentsInDataset(this.getTrialDataSet(studyId).getId());
 
-		// Only create map entry for environments present in SSA Output.
+		// Only create map entries for environments present in SSA Output because they have Summary Statistic values
+		// for saving later.
 		for (final String environmentName : environments) {
 			// Unfortunately, Breeding View cannot handle double quotes in CSV. Because of that, variables in the CSV file with comma are
 			// replaced with semicolon. So we need to replace semicolon with comma again
