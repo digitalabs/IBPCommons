@@ -1096,7 +1096,7 @@ public class BreedingViewImportServiceImplTest {
 
 		final Map<Integer, String> result = this.bvImportService.createGeolocationIdEnvironmentMap(environments, STUDY_ID, LOCATION_NAME);
 
-		// Verify that only environents 1 and 3 are in the geolocationIDEnvironmentMap
+		// Verify that only environments 1 and 3 are in the geolocationIDEnvironmentMap
 		Assert.assertEquals(result.get(testGeolocationId1), testLocationName1);
 		Assert.assertEquals(result.get(testGeolocationId3), testLocationName3);
 		Assert.assertFalse(result.containsKey(testGeolocationId2));
