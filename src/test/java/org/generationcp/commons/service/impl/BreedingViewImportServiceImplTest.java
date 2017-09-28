@@ -1,16 +1,7 @@
-
 package org.generationcp.commons.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.rits.cloning.Cloner;
+import junit.framework.Assert;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
@@ -60,9 +51,17 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.rits.cloning.Cloner;
-
-import junit.framework.Assert;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BreedingViewImportServiceImplTest {
 
@@ -87,6 +86,7 @@ public class BreedingViewImportServiceImplTest {
 
 	private static final String LS_MEAN = "LS MEAN";
 	private static final Integer LS_MEAN_ID = 16090;
+	public static final String LOCATION_NAME = "LOCATION_NAME";
 
 	private final List<DMSVariableType> factorVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> variateVariableTypes = new ArrayList<>();
@@ -144,8 +144,8 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
 
 		this.meansCVTerm = this.createCVTerm(BreedingViewImportServiceImplTest.LS_MEAN_ID, BreedingViewImportServiceImplTest.LS_MEAN);
-		Mockito.doReturn(this.meansCVTerm).when(cvTermDao).getByNameAndCvId(BreedingViewImportServiceImplTest.LS_MEAN,
-				CvId.METHODS.getId());
+		Mockito.doReturn(this.meansCVTerm).when(cvTermDao)
+				.getByNameAndCvId(BreedingViewImportServiceImplTest.LS_MEAN, CvId.METHODS.getId());
 
 		Mockito.doReturn(this.createDmsProject(BreedingViewImportServiceImplTest.STUDY_ID, BreedingViewImportServiceImplTest.STUDY_NAME,
 				BreedingViewImportServiceImplTest.PROGRAM_UUID)).when(this.studyDataManager)
@@ -164,8 +164,8 @@ public class BreedingViewImportServiceImplTest {
 
 		final List<DataSet> plotDatasets = new ArrayList<>();
 		plotDatasets.add(this.createMeasurementDataSet());
-		Mockito.doReturn(plotDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.PLOT_DATA);
+		Mockito.doReturn(plotDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.PLOT_DATA);
 
 		this.stocks = new Stocks();
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
@@ -189,18 +189,18 @@ public class BreedingViewImportServiceImplTest {
 		final Project p = this.createProjectWithCrop();
 
 		// import with no existing means data
-		Mockito.doReturn(null).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.MEANS_DATA);
+		Mockito.doReturn(null).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.MEANS_DATA);
 
 		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
-		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.SUMMARY_DATA);
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
 
-		Mockito.when(this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-				(DatasetValues) Matchers.anyObject(), Matchers.anyString()))
-				.thenReturn(new DatasetReference(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
-						BreedingViewImportServiceImplTest.EMPTY_VALUE));
+		Mockito.when(this.studyDataManager
+				.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(), (DatasetValues) Matchers.anyObject(),
+						Matchers.anyString())).thenReturn(new DatasetReference(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
+				BreedingViewImportServiceImplTest.EMPTY_VALUE));
 
 		Mockito.when(this.studyDataManager.getDataSet(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID))
 				.thenReturn(this.createNewMeansDataSet());
@@ -215,11 +215,13 @@ public class BreedingViewImportServiceImplTest {
 
 		this.bvImportService.importMeansData(file, BreedingViewImportServiceImplTest.STUDY_ID);
 
-		Mockito.verify(this.studyDataManager).addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-				(DatasetValues) Matchers.anyObject(), Matchers.anyString());
+		Mockito.verify(this.studyDataManager)
+				.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(), (DatasetValues) Matchers.anyObject(),
+						Matchers.anyString());
 
-		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyListOf(ExperimentValues.class), Matchers.anyString());
+		Mockito.verify(this.studyDataManager)
+				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class),
+						Matchers.anyString());
 
 	}
 
@@ -236,13 +238,13 @@ public class BreedingViewImportServiceImplTest {
 		// import with existing means data
 		final List<DataSet> meansDataSets = new ArrayList<>();
 		meansDataSets.add(this.createExistingMeansDataSet());
-		Mockito.doReturn(meansDataSets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.MEANS_DATA);
+		Mockito.doReturn(meansDataSets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.MEANS_DATA);
 
 		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
-		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.SUMMARY_DATA);
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(p);
 
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
@@ -256,10 +258,11 @@ public class BreedingViewImportServiceImplTest {
 
 		this.bvImportService.importMeansData(file, BreedingViewImportServiceImplTest.STUDY_ID);
 
-		Mockito.verify(this.studyDataManager, Mockito.times(0)).addDataSetVariableType(Matchers.anyInt(),
-				Matchers.any(DMSVariableType.class));
-		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyListOf(ExperimentValues.class), Matchers.anyString());
+		Mockito.verify(this.studyDataManager, Mockito.times(0))
+				.addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
+		Mockito.verify(this.studyDataManager)
+				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class),
+						Matchers.anyString());
 
 	}
 
@@ -271,19 +274,19 @@ public class BreedingViewImportServiceImplTest {
 		final DataSet measurementDataSet = this.createMeasurementDataSet();
 		final List<DataSet> plotDataDatasets = new ArrayList<>();
 		plotDataDatasets.add(measurementDataSet);
-		Mockito.doReturn(plotDataDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.PLOT_DATA);
+		Mockito.doReturn(plotDataDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.PLOT_DATA);
 
 		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
-		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.SUMMARY_DATA);
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
 
 		// import with existing means data
 		final List<DataSet> meansDataSets = new ArrayList<>();
 		meansDataSets.add(this.createExistingMeansDataSet());
-		Mockito.doReturn(meansDataSets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.MEANS_DATA);
+		Mockito.doReturn(meansDataSets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.MEANS_DATA);
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.trialEnvironments);
 
@@ -298,10 +301,11 @@ public class BreedingViewImportServiceImplTest {
 
 		this.bvImportService.importMeansData(file, BreedingViewImportServiceImplTest.STUDY_ID);
 
-		Mockito.verify(this.studyDataManager, Mockito.times(1)).addDataSetVariableType(Matchers.anyInt(),
-				Matchers.any(DMSVariableType.class));
-		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyListOf(ExperimentValues.class), Matchers.anyString());
+		Mockito.verify(this.studyDataManager, Mockito.times(1))
+				.addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
+		Mockito.verify(this.studyDataManager)
+				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class),
+						Matchers.anyString());
 
 	}
 
@@ -326,8 +330,8 @@ public class BreedingViewImportServiceImplTest {
 
 		final List<DataSet> summaryDataDatasets = new ArrayList<>();
 		summaryDataDatasets.add(this.createTrialDataSet());
-		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.SUMMARY_DATA);
+		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
 
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.createTrialEnvironments());
 
@@ -343,8 +347,9 @@ public class BreedingViewImportServiceImplTest {
 
 		final ArgumentCaptor<DmsProject> datasetCaptor = ArgumentCaptor.forClass(DmsProject.class);
 		final ArgumentCaptor<VariableTypeList> variableTypeListCaptor = ArgumentCaptor.forClass(VariableTypeList.class);
-		Mockito.verify(this.studyDataManager).saveTrialDatasetSummary(datasetCaptor.capture(), variableTypeListCaptor.capture(),
-				this.experimentValuesCaptor.capture(), Matchers.anyListOf(Integer.class));
+		Mockito.verify(this.studyDataManager)
+				.saveTrialDatasetSummary(datasetCaptor.capture(), variableTypeListCaptor.capture(), this.experimentValuesCaptor.capture(),
+						Matchers.anyListOf(Integer.class));
 		// Check arguments used when updating trial dataset
 		Assert.assertEquals(Integer.valueOf(summaryDataDatasets.get(0).getId()), datasetCaptor.getValue().getProjectId());
 		final int numberOfSummaryVariables = BreedingViewImportServiceImplTest.TRAITS.length * SummaryStatsCSV.SUMMARY_STATS_METHODS.length;
@@ -560,19 +565,19 @@ public class BreedingViewImportServiceImplTest {
 	private TrialEnvironments createTrialEnvironments() {
 
 		final TrialEnvironments trialEnvs = new TrialEnvironments();
-		trialEnvs.add(this.createTrialEnvironment());
+		trialEnvs.add(this.createTrialEnvironment(1));
 		return trialEnvs;
 
 	}
 
-	private TrialEnvironment createTrialEnvironment() {
+	private TrialEnvironment createTrialEnvironment(final int geolocationId) {
 
-		final LocationDto location = new LocationDto(1, "CIMMYT");
+		final LocationDto location = new LocationDto(geolocationId, "CIMMYT");
 		final VariableList variableList = new VariableList();
 
 		this.addVariables(variableList);
 
-		final TrialEnvironment trialEnv = new TrialEnvironment(1, variableList);
+		final TrialEnvironment trialEnv = new TrialEnvironment(geolocationId, variableList);
 		trialEnv.setLocation(location);
 
 		return trialEnv;
@@ -604,18 +609,18 @@ public class BreedingViewImportServiceImplTest {
 	public void testImportMeansDataWithDupeEntryNo() throws Exception {
 		final Project p = this.createProjectWithCrop();
 		// import with no existing means data
-		Mockito.doReturn(null).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.MEANS_DATA);
+		Mockito.doReturn(null).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.MEANS_DATA);
 
 		final List<DataSet> summaryDatasets = new ArrayList<>();
 		summaryDatasets.add(this.createTrialDataSet());
-		Mockito.doReturn(summaryDatasets).when(this.studyDataManager).getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID,
-				DataSetType.SUMMARY_DATA);
+		Mockito.doReturn(summaryDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
 
-		Mockito.when(this.studyDataManager.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-				(DatasetValues) Matchers.anyObject(), Matchers.anyString()))
-				.thenReturn(new DatasetReference(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
-						BreedingViewImportServiceImplTest.EMPTY_VALUE));
+		Mockito.when(this.studyDataManager
+				.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(), (DatasetValues) Matchers.anyObject(),
+						Matchers.anyString())).thenReturn(new DatasetReference(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
+				BreedingViewImportServiceImplTest.EMPTY_VALUE));
 
 		Mockito.when(this.studyDataManager.getDataSet(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID))
 				.thenReturn(this.createNewMeansDataSet());
@@ -630,11 +635,13 @@ public class BreedingViewImportServiceImplTest {
 
 		this.bvImportService.importMeansData(file, BreedingViewImportServiceImplTest.STUDY_ID);
 
-		Mockito.verify(this.studyDataManager).addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(),
-				(DatasetValues) Matchers.anyObject(), Matchers.anyString());
+		Mockito.verify(this.studyDataManager)
+				.addDataSet(Matchers.anyInt(), (VariableTypeList) Matchers.anyObject(), (DatasetValues) Matchers.anyObject(),
+						Matchers.anyString());
 
-		Mockito.verify(this.studyDataManager).addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class),
-				Matchers.anyListOf(ExperimentValues.class), Matchers.anyString());
+		Mockito.verify(this.studyDataManager)
+				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class),
+						Matchers.anyString());
 
 	}
 
@@ -653,8 +660,9 @@ public class BreedingViewImportServiceImplTest {
 		final DMSVariableType originalVariableType = this.createVariateVariableType(BreedingViewImportServiceImplTest.TRAIT_ASI);
 		final Term meansMethod = new Term();
 		meansMethod.setId(BreedingViewImportServiceImplTest.LS_MEAN_ID);
-		Mockito.when(this.ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getId(),
-				BreedingViewImportServiceImplTest.LS_MEAN_ID)).thenReturn(null);
+		Mockito.when(this.ontologyDataManager
+				.retrieveDerivedAnalysisVariable(originalVariableType.getId(), BreedingViewImportServiceImplTest.LS_MEAN_ID))
+				.thenReturn(null);
 
 		this.bvImportService.createAnalysisVariable(originalVariableType, BreedingViewImportServiceImplTest.ANALYSIS_VAR_NAME, meansMethod,
 				BreedingViewImportServiceImplTest.PROGRAM_UUID, 1, isSummaryVariable);
@@ -686,15 +694,17 @@ public class BreedingViewImportServiceImplTest {
 		final Term meansMethod = new Term();
 		meansMethod.setId(BreedingViewImportServiceImplTest.LS_MEAN_ID);
 
-		Mockito.when(this.ontologyDataManager.retrieveDerivedAnalysisVariable(originalVariableType.getId(),
-				BreedingViewImportServiceImplTest.LS_MEAN_ID)).thenReturn(BreedingViewImportServiceImplTest.TEST_ANALYSIS_VARIABLE_TERM_ID);
+		Mockito.when(this.ontologyDataManager
+				.retrieveDerivedAnalysisVariable(originalVariableType.getId(), BreedingViewImportServiceImplTest.LS_MEAN_ID))
+				.thenReturn(BreedingViewImportServiceImplTest.TEST_ANALYSIS_VARIABLE_TERM_ID);
 
 		this.bvImportService.createAnalysisVariable(originalVariableType, BreedingViewImportServiceImplTest.ANALYSIS_VAR_NAME, meansMethod,
 				BreedingViewImportServiceImplTest.PROGRAM_UUID, 1, isSummaryVariable);
 
 		Mockito.verify(this.ontologyVariableDataManager, Mockito.never()).addVariable(Matchers.any(OntologyVariableInfo.class));
-		Mockito.verify(this.ontologyDataManager, Mockito.never()).addCvTermRelationship(Matchers.eq(originalVariableType.getId()),
-				Matchers.anyInt(), Matchers.eq(TermId.HAS_ANALYSIS_VARIABLE.getId()));
+		Mockito.verify(this.ontologyDataManager, Mockito.never())
+				.addCvTermRelationship(Matchers.eq(originalVariableType.getId()), Matchers.anyInt(),
+						Matchers.eq(TermId.HAS_ANALYSIS_VARIABLE.getId()));
 
 	}
 
@@ -834,8 +844,8 @@ public class BreedingViewImportServiceImplTest {
 			Assert.assertTrue("Expecting means analysis variable for " + traitName + " but was not found.", isMeansVarFound);
 		}
 		final ArgumentCaptor<Integer> datasetIdArgument = ArgumentCaptor.forClass(Integer.class);
-		Mockito.verify(this.studyDataManager, Mockito.times(newVariablesSize)).addDataSetVariableType(datasetIdArgument.capture(),
-				Matchers.any(DMSVariableType.class));
+		Mockito.verify(this.studyDataManager, Mockito.times(newVariablesSize))
+				.addDataSetVariableType(datasetIdArgument.capture(), Matchers.any(DMSVariableType.class));
 		Assert.assertEquals("Expecting correct ID to be used for adding new variables to means dataset.",
 				BreedingViewImportServiceImplTest.EXISTING_MEANS_DATASET_ID, datasetIdArgument.getValue().intValue());
 
@@ -872,13 +882,15 @@ public class BreedingViewImportServiceImplTest {
 		}
 		this.bvImportService.setLocalNameToAliasMap(traitAliasMap);
 		// Not all traits in plot dataset were analyzed (only two included in summary file)
-		final List<String> traitsAnalyzed = Arrays.asList(BreedingViewImportServiceImplTest.TRAITS[0], BreedingViewImportServiceImplTest.TRAITS[1]);
+		final List<String> traitsAnalyzed =
+				Arrays.asList(BreedingViewImportServiceImplTest.TRAITS[0], BreedingViewImportServiceImplTest.TRAITS[1]);
 		Mockito.when(this.summaryStatsCSV.getTraits()).thenReturn(traitsAnalyzed);
 		Mockito.when(this.ontologyDataManager.retrieveDerivedAnalysisVariable(Matchers.anyInt(), Matchers.anyInt())).thenReturn(null);
 
 		// Method to test
-		final VariableTypeList summaryStatVariables = this.bvImportService.createSummaryStatsVariableTypes(this.summaryStatsCSV,
-				trialDataSet, plotVariateList, BreedingViewImportServiceImplTest.PROGRAM_UUID);
+		final VariableTypeList summaryStatVariables = this.bvImportService
+				.createSummaryStatsVariableTypes(this.summaryStatsCSV, trialDataSet, plotVariateList,
+						BreedingViewImportServiceImplTest.PROGRAM_UUID);
 
 		// Expecting one analysis summary variable per summary statistic method for each trait
 		final List<String> expectedSummaryVariableNames = new ArrayList<>();
@@ -933,14 +945,15 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.ontologyDataManager.retrieveDerivedAnalysisVariable(Matchers.anyInt(), Matchers.anyInt())).thenReturn(1);
 
 		// Method to test
-		final VariableTypeList summaryStatVariables = this.bvImportService.createSummaryStatsVariableTypes(this.summaryStatsCSV,
-				trialDataSet, plotVariateList, BreedingViewImportServiceImplTest.PROGRAM_UUID);
+		final VariableTypeList summaryStatVariables = this.bvImportService
+				.createSummaryStatsVariableTypes(this.summaryStatsCSV, trialDataSet, plotVariateList,
+						BreedingViewImportServiceImplTest.PROGRAM_UUID);
 
 		// Check that no new summary variables saved and returned
 		Assert.assertEquals("Expecting no new summary statistics variables created.", 0, summaryStatVariables.size());
 		Mockito.verify(this.ontologyVariableDataManager, Mockito.never()).addVariable(Matchers.any(OntologyVariableInfo.class));
-		Mockito.verify(this.ontologyDataManager, Mockito.never()).addCvTermRelationship(Matchers.anyInt(), Matchers.anyInt(),
-				Matchers.eq(TermId.HAS_ANALYSIS_VARIABLE.getId()));
+		Mockito.verify(this.ontologyDataManager, Mockito.never())
+				.addCvTermRelationship(Matchers.anyInt(), Matchers.anyInt(), Matchers.eq(TermId.HAS_ANALYSIS_VARIABLE.getId()));
 
 	}
 
@@ -999,16 +1012,16 @@ public class BreedingViewImportServiceImplTest {
 			}
 		}
 	}
-	
+
 	@Test
 	public void testGenerateNameToAliasMapWhenPreviousMapIsNotEmpth() {
 		final Map<String, String> aliasMap = new HashMap<>();
-		for (final String trait : SummaryStatsTestDataInitializer.TRAITS_LIST){
+		for (final String trait : SummaryStatsTestDataInitializer.TRAITS_LIST) {
 			aliasMap.put(trait, trait + "_");
 		}
 		this.bvImportService.setLocalNameToAliasMap(aliasMap);
 		final DataSet plotDataSet = Mockito.mock(DataSet.class);
-		
+
 		// Method to test
 		this.bvImportService.generateNameToAliasMap(plotDataSet);
 
@@ -1016,7 +1029,7 @@ public class BreedingViewImportServiceImplTest {
 		Assert.assertEquals(aliasMap, finalAliasMap);
 		Mockito.verify(plotDataSet, Mockito.never()).getVariableTypes();
 	}
-	
+
 	@Test
 	public void testGenerateNameToAliasMapWhenPreviousMapIsEmpty() {
 		this.bvImportService.setLocalNameToAliasMap(new HashMap<String, String>());
@@ -1024,12 +1037,12 @@ public class BreedingViewImportServiceImplTest {
 		for (final DMSVariableType factor : this.factorVariableTypes) {
 			varTypeList.add(factor);
 		}
-		for (final DMSVariableType trait : this.variateVariableTypes){
+		for (final DMSVariableType trait : this.variateVariableTypes) {
 			varTypeList.add(trait);
 		}
 		final DataSet plotDataSet = new DataSet();
 		plotDataSet.setVariableTypes(varTypeList);
-		
+
 		// Method to test
 		this.bvImportService.generateNameToAliasMap(plotDataSet);
 
@@ -1040,6 +1053,54 @@ public class BreedingViewImportServiceImplTest {
 			Assert.assertTrue(finalAliasMap.keySet().contains(varType.getLocalName()));
 			Assert.assertTrue(finalAliasMap.containsValue(varType.getLocalName()));
 		}
+	}
+
+	@Test
+	public void testCreateGeolocationIdEnvironmentMap() {
+
+		this.factorVariableTypes.add(this.createTrialEnvironmentVariableType(LOCATION_NAME));
+
+		final int testGeolocationId1 = 100;
+		final String testLocationName1 = "Agua Fria (AF)";
+
+		final int testGeolocationId2 = 101;
+		final String testLocationName2 = "Africa";
+
+		final int testGeolocationId3 = 102;
+		final String testLocationName3 = "UP Los Banos, Philippines";
+
+		final List<DataSet> summaryDataDatasets = new ArrayList<>();
+		summaryDataDatasets.add(this.createTrialDataSet());
+		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
+
+		final TrialEnvironments testTrialEnvironments = new TrialEnvironments();
+
+		final TrialEnvironment trialEnvironment1 = this.createTrialEnvironment(testGeolocationId1);
+		trialEnvironment1.getVariables().findByLocalName(LOCATION_NAME).setValue(testLocationName1);
+		final TrialEnvironment trialEnvironment2 = this.createTrialEnvironment(testGeolocationId2);
+		trialEnvironment2.getVariables().findByLocalName(LOCATION_NAME).setValue(testLocationName2);
+		final TrialEnvironment trialEnvironment3 = this.createTrialEnvironment(testGeolocationId3);
+		trialEnvironment3.getVariables().findByLocalName(LOCATION_NAME).setValue(testLocationName3);
+
+		testTrialEnvironments.add(trialEnvironment1);
+		testTrialEnvironments.add(trialEnvironment2);
+		testTrialEnvironments.add(trialEnvironment3);
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(testTrialEnvironments);
+
+		// Only add environments 1 and 3
+		final Set<String> environments = new HashSet<>();
+		environments.add(testLocationName1);
+		environments.add(testLocationName3);
+
+		final Map<Integer, String> result = this.bvImportService.createGeolocationIdEnvironmentMap(environments, STUDY_ID, LOCATION_NAME);
+
+		// Verify that only environments 1 and 3 are in the geolocationIDEnvironmentMap
+		Assert.assertEquals(result.get(testGeolocationId1), testLocationName1);
+		Assert.assertEquals(result.get(testGeolocationId3), testLocationName3);
+		Assert.assertFalse(result.containsKey(testGeolocationId2));
+
 	}
 
 }
