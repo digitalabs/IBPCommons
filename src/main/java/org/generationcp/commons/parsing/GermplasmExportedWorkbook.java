@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.generationcp.commons.constant.ColumnLabels;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
