@@ -16,6 +16,9 @@ public interface UserTreeStateService {
 
 	List<String> getUserProgramTreeStateForSaveList(int userId, String programUuid);
 
+	List<String> getUserProgramTreeStateForSaveSampleList(int userId, String programUuid, String type);
+
+
 	UserProgramTreeState saveOrUpdateUserProgramTreeState(int userId, String programUuid, String type, List<String> treeState)
 			throws MiddlewareQueryException;
 }
