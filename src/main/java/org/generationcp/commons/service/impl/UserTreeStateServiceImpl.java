@@ -24,8 +24,8 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	@Resource
 	private GermplasmListManager germplasmListManager;
 
-/*	@Resource
-	private SampleListService sampleListService;*/
+	@Resource
+	private SampleListService sampleListService;
 
 	@Override
 	public List<String> getUserProgramTreeStateByUserIdProgramUuidAndType(final int userId, final String programUuid, final String type) {
@@ -51,7 +51,7 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 
 	@Override
 	public List<String> getUserProgramTreeStateForSaveSampleList(final int userId, final String programUuid, String type) {
-		final SampleList sampleList = this.germplasmListManager.getLastSavedSampleListByUserId(userId, programUuid);
+		final SampleList sampleList = this.sampleListService.getLastSavedSampleListByUserId(userId, programUuid);
 		final List<String> treeState;
 
 		// if no lists have been saved yet, attempt to retrieve the user's tree navigation state
