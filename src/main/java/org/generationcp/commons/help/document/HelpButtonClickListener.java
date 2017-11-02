@@ -24,13 +24,12 @@ public class HelpButtonClickListener implements Button.ClickListener {
 
 	@Resource
 	private TomcatUtil tomcatUtil;
+
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
+
 	@Resource
 	private Properties helpProperties;
-	@Autowired
-	@Qualifier("workbenchProperties")
-	private Properties workbenchProperties;
 
 	private HelpModule link;
 
@@ -50,7 +49,7 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		if (!propertyLink.isEmpty() && (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory))) {
 			event.getComponent().getWindow().open(tutorialLink, " _BLANK");
 		} else if (!hasInternetConnection && !HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
-			HelpWindow helpWindow = new HelpWindow(this.workbenchDataManager, this.tomcatUtil, this.workbenchProperties);
+			HelpWindow helpWindow = new HelpWindow(this.workbenchDataManager, this.tomcatUtil);
 			event.getComponent().getParent().getWindow().addWindow(helpWindow);
 		}
 	}
@@ -86,7 +85,4 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		this.helpProperties = helpProperties;
 	}
 
-	protected void setWorkbenchProperties(Properties workbenchProperties) {
-		this.workbenchProperties = workbenchProperties;
-	}
 }
