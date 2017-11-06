@@ -54,6 +54,10 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 		super();
 		this.workbenchDataManager = workbenchDataManager;
 		this.tomcatUtil = tomcatUtil;
+	}
+
+	@Override
+	public void afterPropertiesSet() {
 		this.initializeLayout();
 	}
 
