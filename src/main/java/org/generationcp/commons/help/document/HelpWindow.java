@@ -26,6 +26,7 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
+import org.springframework.beans.factory.annotation.Value;
 
 @Configurable
 public class HelpWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent {
@@ -45,13 +46,18 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 	private WorkbenchDataManager workbenchDataManager;
 
 	private TomcatUtil tomcatUtil;
-	private Properties workbenchProperties;
 
-	public HelpWindow(WorkbenchDataManager workbenchDataManager, TomcatUtil tomcatUtil, Properties workbenchProperties) {
+	@Value("${workbench.version}")
+	private String workbenchVersion;
+
+	public HelpWindow(WorkbenchDataManager workbenchDataManager, TomcatUtil tomcatUtil) {
 		super();
 		this.workbenchDataManager = workbenchDataManager;
 		this.tomcatUtil = tomcatUtil;
-		this.workbenchProperties = workbenchProperties;
+	}
+
+	@Override
+	public void afterPropertiesSet() {
 		this.initializeLayout();
 	}
 
@@ -65,7 +71,7 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 
 		this.rootLayout = this.getContent();
 
-		Label version = new Label(this.workbenchProperties.getProperty("workbench.version", ""));
+		Label version = new Label(workbenchVersion);
 		version.setStyleName("gcp-version");
 		this.rootLayout.addComponent(version);
 

@@ -57,7 +57,6 @@ public class HelpButtonClickListenerTest {
 		this.listener.setHelpProperties(this.helpProperties);
 		this.listener.setTomcatUtil(this.tomcatUtil);
 		this.listener.setWorkbenchDataManager(this.workbenchDataManager);
-		this.listener.setWorkbenchProperties(this.workbenchProperties);
 
 		Mockito.when(this.event.getComponent()).thenReturn(this.component);
 		Mockito.when(this.component.getWindow()).thenReturn(this.window);
