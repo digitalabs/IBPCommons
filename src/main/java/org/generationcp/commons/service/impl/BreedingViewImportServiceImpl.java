@@ -499,6 +499,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			// Save project properties and experiments
 			final DmsProject project = new DmsProject();
 			project.setProjectId(trialDataSet.getId());
+			project.setStudyType(study.getStudyType());
 
 			this.studyDataManager.saveTrialDatasetSummary(project, summaryStatsVariableTypeList, summaryStatsExperimentValuesList,
 					new ArrayList<>(geolocationIdToEnvironmentMap.keySet()));
