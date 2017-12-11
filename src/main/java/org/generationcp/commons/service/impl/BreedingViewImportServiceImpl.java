@@ -918,7 +918,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	String generateAnalysisVariableScaleName(final String name) {
-		final String variableName = name.substring(0, name.lastIndexOf("_"));
+		final String variableName = name.substring(0, name.lastIndexOf('_'));
 		String scaleName = "";
 		if (name.endsWith(MeansCSV.MEANS_SUFFIX) || name.endsWith("_MeanSED") || name.endsWith("_Mean")) {
 			scaleName = "Average " + variableName + " Score";
