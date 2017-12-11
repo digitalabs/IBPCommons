@@ -7,6 +7,7 @@ import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.dao.oms.CVTermDao;
+import org.generationcp.middleware.data.initializer.OntologyScaleTestDataInitializer;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
@@ -26,12 +27,15 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.DataType;
+import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.VariableType;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
 import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
@@ -43,6 +47,7 @@ import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -50,6 +55,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,8 +69,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BreedingViewImportServiceImplTest {
 
+	private static final String ACDTOL_E_1TO5 = "AcdTol_E_1to5";
 	private static final String TRAIT_ASI = "ASI";
 	private static final String TRAIT_APHID = "Aphid1_5";
 	private static final String TRAIT_EPH = "EPH";
@@ -98,6 +106,9 @@ public class BreedingViewImportServiceImplTest {
 
 	@Mock
 	private OntologyDaoFactory ontologyDaoFactory;
+	
+	@Mock
+	private OntologyScaleDataManager scaleDataManager;
 
 	@Mock
 	private OntologyVariableDataManager ontologyVariableDataManager;
@@ -174,6 +185,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
 				.transformVariable(Matchers.any(org.generationcp.middleware.domain.ontology.Variable.class));
+		
+		Mockito.when(this.scaleDataManager.getScaleById(Matchers.anyInt(), Matchers.anyBoolean())).thenReturn(OntologyScaleTestDataInitializer.createScale());
 	}
 
 	private DmsProject createDmsProject(final int id, final String name, final String programUUID) {
@@ -1102,5 +1115,63 @@ public class BreedingViewImportServiceImplTest {
 		Assert.assertFalse(result.containsKey(testGeolocationId2));
 
 	}
-
+	
+	@Test
+	public void testGenerateAnalysisVariableScaleNameForMeans() {
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX);
+		Assert.assertEquals("Average AcdTol_E_1to5 Score", scaleName);
+	}
+	
+	@Test
+	public void testGenerateAnalysisVariableScaleNameForCV(){
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(ACDTOL_E_1TO5 + "_CV");
+		Assert.assertEquals("Percent SE/Mean for AcdTol_E_1to5", scaleName);
+	}
+	
+	@Test
+	public void testGenerateAnalysisVariableScaleNameForHeritability(){
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(ACDTOL_E_1TO5 + "_Heritability");
+		Assert.assertEquals("Ratio genetic variance/phenotypic variance for variable AcdTol_E_1to5", scaleName);
+	}
+	
+	@Test
+	public void testGenerateAnalysisVariableScaleNameForPValue(){
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(ACDTOL_E_1TO5 + "_Pvalue");
+		Assert.assertEquals("Significance of test for mean differences for variable AcdTol_E_1to5", scaleName);
+	}
+	
+	@Test
+	public void testGetAnalysisVariableScaleIdWhereScaleIsNumeric() {
+		final Scale scale = OntologyScaleTestDataInitializer.createScale();
+		final int scaleId = this.bvImportService.getAnalysisVariableScaleId(scale.getId(), scale.getName());
+		Assert.assertEquals(scale.getId(), scaleId);
+		Mockito.verify(this.scaleDataManager).getScaleById(scale.getId(), true);
+		Mockito.verify(this.ontologyDataManager, Mockito.never()).findTermByName(Matchers.anyString(), Matchers.eq(CvId.SCALES));
+	}
+	
+	@Test
+	public void testGetAnalysisVariableScaleIdWhereScaleIsCategoricalAndNonExistent() {
+		final String variableName = ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
+		final Scale scale = OntologyScaleTestDataInitializer.createScaleWithNameAndDataType(variableName, DataType.CATEGORICAL_VARIABLE);
+		Mockito.when(this.scaleDataManager.getScaleById(Matchers.anyInt(), Matchers.anyBoolean())).thenReturn(scale);
+		
+		this.bvImportService.getAnalysisVariableScaleId(scale.getId(), variableName);
+		Mockito.verify(this.scaleDataManager).getScaleById(scale.getId(), true);
+		Mockito.verify(this.ontologyDataManager).findTermByName(this.bvImportService.generateAnalysisVariableScaleName(variableName), CvId.SCALES);
+		Mockito.verify(this.scaleDataManager).addScale(Matchers.any(Scale.class));
+	}
+	
+	@Test
+	public void testGetAnalysisVariableScaleIdWhereScaleIsCategoricalAndExisting() {
+		final String variableName = ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
+		final Scale scale = OntologyScaleTestDataInitializer.createScaleWithNameAndDataType(variableName, DataType.CATEGORICAL_VARIABLE);
+		Mockito.when(this.scaleDataManager.getScaleById(Matchers.anyInt(), Matchers.anyBoolean())).thenReturn(scale);
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(variableName);
+		Mockito.when(this.ontologyDataManager.findTermByName(scaleName, CvId.SCALES)).thenReturn(scale);
+		
+		this.bvImportService.getAnalysisVariableScaleId(scale.getId(), variableName);
+		Mockito.verify(this.scaleDataManager).getScaleById(scale.getId(), true);
+		Mockito.verify(this.ontologyDataManager).findTermByName(scaleName, CvId.SCALES);
+		Mockito.verify(this.scaleDataManager, Mockito.never()).addScale(Matchers.any(Scale.class));
+	}
 }
