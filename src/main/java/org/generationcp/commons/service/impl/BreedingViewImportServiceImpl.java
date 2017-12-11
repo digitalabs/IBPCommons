@@ -25,12 +25,15 @@ import org.generationcp.middleware.domain.dms.VariableTypeList;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.domain.ontology.Method;
+import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.VariableType;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
+import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
 import org.generationcp.middleware.operation.builder.StandardVariableBuilder;
@@ -79,6 +82,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	@Autowired
 	private StandardVariableTransformer standardVariableTransformer;
+	
+	@Autowired
+	private OntologyScaleDataManager scaleDataManager;
 
 	@Autowired
 	private ContextUtil contextUtil;
@@ -781,17 +787,16 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		Integer analysisVariableID = this.ontologyDataManager
 				.retrieveDerivedAnalysisVariable(originalVariableType.getStandardVariable().getId(), method.getId());
-
 		if (analysisVariableID == null) {
-
 			String variableName = name;
 			if (this.isVariableExisting(variableName)) {
 				variableName = variableName + "_1";
 			}
 
+			final int scaleId = this.getAnalysisVariableScaleId(standardVariable.getScale().getId(), name);
 			analysisVariableID =
 					this.saveAnalysisVariable(variableName, standardVariable.getDescription(), standardVariable.getMethod().getId(),
-							standardVariable.getProperty().getId(), standardVariable.getScale().getId(), programUUID, isSummaryVariable);
+							standardVariable.getProperty().getId(), scaleId, programUUID, isSummaryVariable);
 			this.ontologyDataManager.addCvTermRelationship(originalVariableType.getStandardVariable().getId(), analysisVariableID,
 					TermId.HAS_ANALYSIS_VARIABLE.getId());
 
@@ -799,13 +804,48 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			standardVariable.setPhenotypicType(PhenotypicType.VARIATE);
 
 		} else {
-
 			analysisVariableType
 					.setStandardVariable(this.createStandardardVariable(analysisVariableID, programUUID, PhenotypicType.VARIATE));
 		}
 
 		analysisVariableType.setRank(rank);
 		return analysisVariableType;
+	}
+
+	int getAnalysisVariableScaleId(int scaleId, String name) {
+		final Scale originalScale = this.scaleDataManager.getScaleById(scaleId, true);
+		//Create new scales for analysis variables if the original scale is categorical else retain the original scale
+		if(originalScale.getDataType().getId() == TermId.CATEGORICAL_VARIABLE.getId()) {
+			final String scaleName = this.generateAnalysisVariableScaleName(name);
+			Term existingScale = this.ontologyDataManager.findTermByName(scaleName, CvId.SCALES);
+			if(existingScale != null){
+				return existingScale.getId();
+			} else { 
+				Scale scale = new Scale();
+				scale.setName(scaleName);
+				scale.setDefinition(scaleName);
+				scale.setDataType(DataType.NUMERIC_VARIABLE);
+				this.scaleDataManager.addScale(scale);
+				return scale.getId();
+			}
+		} else {
+			return scaleId;
+		}
+	}
+
+	String generateAnalysisVariableScaleName(String name) {
+		final String variableName = name.substring(0, name.lastIndexOf("_"));
+		String scaleName = "";
+		if (name.endsWith(MeansCSV.MEANS_SUFFIX) || name.endsWith("_MeanSED") || name.endsWith("_Mean")) {
+			scaleName = "Average " + variableName + " Score";
+		} else if (name.endsWith("_CV")) {
+			scaleName = "Percent SE/Mean for " + variableName;
+		} else if (name.endsWith("_Heritability")) {
+			scaleName = "Ratio genetic variance/phenotypic variance for variable " + variableName;
+		} else if (name.endsWith("_Pvalue")) {
+			scaleName = "Significance of test for mean differences for variable " + variableName;
+		}
+		return scaleName;
 	}
 
 	/***
