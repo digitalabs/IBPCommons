@@ -2,6 +2,7 @@ package org.generationcp.commons.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,9 +17,11 @@ import java.util.Set;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.OutlierCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
+import org.generationcp.commons.constant.Message;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.service.BreedingViewImportService;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
@@ -60,6 +63,11 @@ import com.rits.cloning.Cloner;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
+	static final String PVALUE_SUFFIX = "_Pvalue";
+	static final String HERITABILITY_SUFFIX = "_Heritability";
+	static final String CV_SUFFIX = "_CV";
+	private static final String MEAN_SUFFIX = "_Mean";
+	private static final String MEAN_SED_SUFFIX = "_MeanSED";
 	private static final String REGEX_VALID_BREEDING_VIEW_CHARACTERS = "[^a-zA-Z0-9-_%']+";
 	private static final String LS_MEAN = "LS MEAN";
 
@@ -89,6 +97,9 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	@Autowired
 	private ContextUtil contextUtil;
+
+	@Autowired
+	private SimpleResourceBundleMessageSource messageSource;
 
 	private Map<String, String> localNameToAliasMap = new HashMap<>();
 
@@ -920,14 +931,16 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	String generateAnalysisVariableScaleName(final String name) {
 		final String variableName = name.substring(0, name.lastIndexOf('_'));
 		String scaleName = "";
-		if (name.endsWith(MeansCSV.MEANS_SUFFIX) || name.endsWith("_MeanSED") || name.endsWith("_Mean")) {
-			scaleName = "Average " + variableName + " Score";
-		} else if (name.endsWith("_CV")) {
-			scaleName = "Percent SE/Mean for " + variableName;
-		} else if (name.endsWith("_Heritability")) {
-			scaleName = "Ratio genetic variance/phenotypic variance for variable " + variableName;
-		} else if (name.endsWith("_Pvalue")) {
-			scaleName = "Significance of test for mean differences for variable " + variableName;
+		if (name.endsWith(MeansCSV.MEANS_SUFFIX) || name.endsWith(BreedingViewImportServiceImpl.MEAN_SED_SUFFIX)
+				|| name.endsWith(BreedingViewImportServiceImpl.MEAN_SUFFIX)) {
+			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.MEANS_SCALE_NAME), variableName);
+		} else if (name.endsWith(BreedingViewImportServiceImpl.CV_SUFFIX)) {
+			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.CV_SCALE_NAME), variableName);
+		} else if (name.endsWith(BreedingViewImportServiceImpl.HERITABILITY_SUFFIX)) {
+			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.HERITABILITY_SCALE_NAME),
+					variableName);
+		} else if (name.endsWith(BreedingViewImportServiceImpl.PVALUE_SUFFIX)) {
+			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.PVALUE_SCALE_NAME), variableName);
 		}
 		return scaleName;
 	}

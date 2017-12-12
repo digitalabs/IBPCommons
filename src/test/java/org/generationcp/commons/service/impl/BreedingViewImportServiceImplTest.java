@@ -14,8 +14,10 @@ import java.util.Set;
 
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
+import org.generationcp.commons.constant.Message;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.data.initializer.OntologyScaleTestDataInitializer;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -103,6 +105,9 @@ public class BreedingViewImportServiceImplTest {
 	private final List<DMSVariableType> variateVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> meansVariateVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> summaryVariableTypes = new ArrayList<>();
+
+	@Mock
+	private SimpleResourceBundleMessageSource messageSource;
 
 	@Mock
 	private StudyDataManager studyDataManager;
@@ -1173,6 +1178,7 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForMeans() {
+		Mockito.when(this.messageSource.getMessage(Message.MEANS_SCALE_NAME)).thenReturn("Average {0} Score");
 		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
 				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX);
 		Assert.assertEquals("Average AcdTol_E_1to5 Score", scaleName);
@@ -1180,22 +1186,27 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForCV() {
-		final String scaleName = this.bvImportService
-				.generateAnalysisVariableScaleName(BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + "_CV");
+		Mockito.when(this.messageSource.getMessage(Message.CV_SCALE_NAME)).thenReturn("Percent SE/Mean for {0}");
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
+				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.CV_SUFFIX);
 		Assert.assertEquals("Percent SE/Mean for AcdTol_E_1to5", scaleName);
 	}
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForHeritability() {
-		final String scaleName = this.bvImportService
-				.generateAnalysisVariableScaleName(BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + "_Heritability");
+		Mockito.when(this.messageSource.getMessage(Message.HERITABILITY_SCALE_NAME))
+				.thenReturn("Ratio genetic variance/phenotypic variance for variable {0}");
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
+				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.HERITABILITY_SUFFIX);
 		Assert.assertEquals("Ratio genetic variance/phenotypic variance for variable AcdTol_E_1to5", scaleName);
 	}
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForPValue() {
-		final String scaleName = this.bvImportService
-				.generateAnalysisVariableScaleName(BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + "_Pvalue");
+		Mockito.when(this.messageSource.getMessage(Message.PVALUE_SCALE_NAME))
+				.thenReturn("Significance of test for mean differences for variable {0}");
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
+				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.PVALUE_SUFFIX);
 		Assert.assertEquals("Significance of test for mean differences for variable AcdTol_E_1to5", scaleName);
 	}
 
@@ -1211,6 +1222,7 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGetAnalysisVariableScaleIdWhereScaleIsCategoricalAndNonExistent() {
+		Mockito.when(this.messageSource.getMessage(Message.MEANS_SCALE_NAME)).thenReturn("Average {0} Score");
 		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
 		final Scale scale = OntologyScaleTestDataInitializer.createScaleWithNameAndDataType(variableName,
 				DataType.CATEGORICAL_VARIABLE);
@@ -1225,6 +1237,7 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGetAnalysisVariableScaleIdWhereScaleIsCategoricalAndExisting() {
+		Mockito.when(this.messageSource.getMessage(Message.MEANS_SCALE_NAME)).thenReturn("Average {0} Score");
 		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
 		final Scale scale = OntologyScaleTestDataInitializer.createScaleWithNameAndDataType(variableName,
 				DataType.CATEGORICAL_VARIABLE);
