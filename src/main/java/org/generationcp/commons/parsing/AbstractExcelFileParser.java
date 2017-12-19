@@ -152,4 +152,13 @@ public abstract class AbstractExcelFileParser<T> {
 		return PoiUtil.rowIsEmpty(this.workbook.getSheetAt(sheetNo), rowNo, 0, colCount - 1);
 	}
 
+	/**
+	 *
+	 * @param sheetName
+	 * @return
+	 */
+	public Integer getSheetIndex (final String sheetName) {
+		return this.workbook.getSheetIndex(sheetName);
+	}
+
 }
