@@ -47,12 +47,12 @@ public abstract class AbstractExcelFileParser<T> {
 			this.workbook = this.fileService.retrieveWorkbook(absoluteFilename);
 			return this.parseWorkbook(this.workbook, additionalParams);
 
-		} catch (InvalidFormatException e) {
+		} catch (final InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
-		} catch (IOException e) {
+			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, null, Locale.ENGLISH));
+		} catch (final IOException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
+			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_READ_ERROR, null, Locale.ENGLISH));
 		}
 
 	}
@@ -63,7 +63,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	public abstract T parseWorkbook(Workbook workbook, Map<String, Object> additionalParams) throws FileParsingException;
 
-	public Workbook storeAndRetrieveWorkbook(MultipartFile multipartFile) throws FileParsingException {
+	public Workbook storeAndRetrieveWorkbook(final MultipartFile multipartFile) throws FileParsingException {
 		try {
 			this.originalFilename = multipartFile.getOriginalFilename();
 
@@ -71,15 +71,15 @@ public abstract class AbstractExcelFileParser<T> {
 				throw new InvalidFormatException("Unsupported file format");
 			}
 
-			String serverFilename = this.fileService.saveTemporaryFile(multipartFile.getInputStream());
+			final String serverFilename = this.fileService.saveTemporaryFile(multipartFile.getInputStream());
 
 			return this.fileService.retrieveWorkbook(serverFilename);
-		} catch (InvalidFormatException e) {
+		} catch (final InvalidFormatException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage(FILE_INVALID, null, Locale.ENGLISH));
-		} catch (IOException e) {
+			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, null, Locale.ENGLISH));
+		} catch (final IOException e) {
 			AbstractExcelFileParser.LOG.debug(e.getMessage(), e);
-			throw new FileParsingException(this.messageSource.getMessage(FILE_READ_ERROR, null, Locale.ENGLISH));
+			throw new FileParsingException(this.messageSource.getMessage(AbstractExcelFileParser.FILE_READ_ERROR, null, Locale.ENGLISH));
 		}
 	}
 
@@ -113,7 +113,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	/**
 	 * Wrapper to PoiUtil.getCellStringValue static call so we can stub the methods on unit tests
-	 * 
+	 *
 	 * @param sheetNo number of excel sheet
 	 * @param rowNo number of excel row
 	 * @param columnNo number of excel column
@@ -123,7 +123,7 @@ public abstract class AbstractExcelFileParser<T> {
 		final String out = null == columnNo ? "" : PoiUtil.getCellStringValue(this.workbook, sheetNo, rowNo, columnNo);
 		return null == out ? "" : out;
 	}
-	
+
 	public int getLastCellNum(final int sheetNo, final int rowNo) {
 		return PoiUtil.getLastCellNum(this.workbook.getSheetAt(sheetNo), rowNo);
 	}
@@ -142,7 +142,7 @@ public abstract class AbstractExcelFileParser<T> {
 
 	/**
 	 * Wrapper to PoiUtil.rowIsEmpty static call so we can stub the methods on unit tests
-	 * 
+	 *
 	 * @param sheetNo number of excel sheet
 	 * @param rowNo number of excel row
 	 * @param colCount
@@ -157,7 +157,7 @@ public abstract class AbstractExcelFileParser<T> {
 	 * @param sheetName
 	 * @return
 	 */
-	public Integer getSheetIndex (final String sheetName) {
+	public Integer getSheetIndex(final String sheetName) {
 		return this.workbook.getSheetIndex(sheetName);
 	}
 
