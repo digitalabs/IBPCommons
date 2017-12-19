@@ -153,9 +153,9 @@ public abstract class AbstractExcelFileParser<T> {
 	}
 
 	/**
-	 *
-	 * @param sheetName
-	 * @return
+	 * Wrapper to PoiUtil.getSheetIndex
+	 * @param sheetName sheet name
+	 * @return Index
 	 */
 	public Integer getSheetIndex(final String sheetName) {
 		return this.workbook.getSheetIndex(sheetName);
