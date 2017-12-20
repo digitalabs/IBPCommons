@@ -70,7 +70,6 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 		this.doParseVariates = true;
 		this.userDataManager = userDataManager;
 		this.descriptionSheetIndex = 0;
-		;
 	}
 
 	private void parseDescriptionSheet() throws FileParsingException, ParseException {
