@@ -311,8 +311,6 @@ public class MySQLUtil {
 			this.executeQuery(connection,
 					"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
 			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project_user_role where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
 					"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
 			this.executeQuery(connection,
 					"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
