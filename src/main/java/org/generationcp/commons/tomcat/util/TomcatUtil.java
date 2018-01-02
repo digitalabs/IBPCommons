@@ -111,51 +111,6 @@ public class TomcatUtil {
 		}
 	}
 
-	public void startWebApp(String contextPath) throws IOException {
-		Map<String, String> requestParams = new HashMap<String, String>();
-		requestParams.put("path", contextPath);
-
-		String startOutput = this.doHttpGetRequest(this.managerUrl + "/start", requestParams);
-		String[] lines = startOutput.split("\n");
-
-		if (lines.length > 0) {
-			String line1 = lines[0];
-			if (!line1.trim().startsWith("OK")) {
-				throw new IOException("Cannot start webapp " + contextPath);
-			}
-		}
-	}
-
-	public void stopWebApp(String contextPath) throws IOException {
-		Map<String, String> requestParams = new HashMap<String, String>();
-		requestParams.put("path", contextPath);
-
-		String startOutput = this.doHttpGetRequest(this.managerUrl + "/stop", requestParams);
-		String[] lines = startOutput.split("\n");
-
-		if (lines.length > 0) {
-			String line1 = lines[0];
-			if (!line1.trim().startsWith("OK")) {
-				throw new IOException("Cannot start webapp " + contextPath);
-			}
-		}
-	}
-
-	public void reloadWebApp(String contextPath) throws IOException {
-		Map<String, String> requestParams = new HashMap<String, String>();
-		requestParams.put("path", contextPath);
-
-		String startOutput = this.doHttpGetRequest(this.managerUrl + "/reload", requestParams);
-		String[] lines = startOutput.split("\n");
-
-		if (lines.length > 0) {
-			String line1 = lines[0];
-			if (!line1.trim().startsWith("OK")) {
-				throw new IOException("Cannot start webapp " + contextPath);
-			}
-		}
-	}
-
 	public static String getContextPathFromUrl(String url) throws MalformedURLException {
 		URL urlObj = new URL(url);
 		String path = urlObj.getPath();
@@ -208,32 +163,4 @@ public class TomcatUtil {
 		return status == HttpStatus.SC_OK ? new String(responseBody) : "";
 	}
 
-	public void deployWebAppIfNecessary(Tool tool) {
-		try {
-			if (Util.isOneOf(tool.getToolType(), ToolType.WEB_WITH_LOGIN, ToolType.WEB)) {
-				TomcatUtil.LOG.debug("Configuring Webapp" + tool.getToolName());
-
-				String contextPath = TomcatUtil.getContextPathFromUrl(WorkbenchAppPathResolver.getFullWebAddress(tool.getPath()));
-				String localWarPath = TomcatUtil.getLocalWarPathFromUrl(WorkbenchAppPathResolver.getFullWebAddress(tool.getPath()));
-
-				WebAppStatusInfo statusInfo = this.getWebAppStatus();
-
-				boolean deployed = statusInfo.isDeployed(contextPath);
-				boolean running = statusInfo.isRunning(contextPath);
-
-				if (running) {
-					return;
-				}
-
-				if (!deployed) {
-					this.deployLocalWar(contextPath, localWarPath);
-				} else {
-					this.startWebApp(contextPath);
-				}
-
-			}
-		} catch (IOException e) {
-			TomcatUtil.LOG.error("cannot deploy " + tool.getToolName(), e);
-		}
-	}
 }
