@@ -35,6 +35,13 @@ public class MySQLUtilTest {
 	@Mock
 	private ContextUtil contextUtil;
 	
+	@Mock
+	private Connection connection;
+	
+	@Mock
+	private Statement statement;
+	
+	
 	@Autowired
 	@InjectMocks
 	private MySQLUtil mysqlUtil;
@@ -43,6 +50,8 @@ public class MySQLUtilTest {
 	public void setup() throws SQLException, ClassNotFoundException {
 		MockitoAnnotations.initMocks(this);
 		this.project = ProjectTestDataInitializer.createProject();
+		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.project);
+		Mockito.when(this.connection.createStatement()).thenReturn(this.statement);
 	}
 
 	@Test
@@ -133,27 +142,38 @@ public class MySQLUtilTest {
 	@Test
 	public void testUpdateCropTypeAndOwnerOfRestoredPrograms() throws SQLException {
 		// Setup mocks
-		final Connection connection = Mockito.mock(Connection.class);
-		final Statement statement = Mockito.mock(Statement.class);
-		Mockito.when(connection.createStatement()).thenReturn(statement);
-		
 		final int userId = 2;
 		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(userId);
-		final Project testProject = ProjectTestDataInitializer.createProject();
-		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(testProject);
 		
 		// Method to test
-		this.mysqlUtil.updateCropTypeAndCreatorOfRestoredPrograms(connection);
+		this.mysqlUtil.updateCropTypeAndCreatorOfRestoredPrograms(this.connection);
 		
 		// Verify SQL queries executed
 		final ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(statement, Mockito.times(3)).execute(queryStringCaptor.capture());
+		Mockito.verify(this.statement, Mockito.times(3)).execute(queryStringCaptor.capture());
 		final List<String> queries = queryStringCaptor.getAllValues();
 		Assert.assertEquals(3, queries.size());
 		Assert.assertEquals("USE workbench", queries.get(0));
-		Assert.assertEquals("UPDATE workbench_project set crop_type = '" + testProject.getCropType().getCropName()
+		Assert.assertEquals("UPDATE workbench_project set crop_type = '" + this.project.getCropType().getCropName()
 								+ "' where user_id = 9999;", queries.get(1));
 		Assert.assertEquals("UPDATE workbench_project set user_id = '" + userId + "' where user_id = 9999;", queries.get(2));
+	}
+	
+	@Test
+	public void testExecuteDeleteScriptsForWorkbenchCropData() throws SQLException {
+		
+		final String programIdToDelete = Integer.valueOf(101).toString();
+		this.mysqlUtil.executeDeleteScriptsForWorkbenchCropData(this.connection, programIdToDelete);
+		
+		// Verify SQL queries executed
+		final ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.forClass(String.class);
+		Mockito.verify(this.statement, Mockito.times(4)).execute(queryStringCaptor.capture());
+		final List<String> queries = queryStringCaptor.getAllValues();
+		Assert.assertEquals(4, queries.size());
+		Assert.assertEquals("DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete, queries.get(0));
+		Assert.assertEquals("DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete, queries.get(1));
+		Assert.assertEquals("DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete, queries.get(2));
+		Assert.assertEquals("DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete, queries.get(3));
 	}
 	
 }

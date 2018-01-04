@@ -308,14 +308,7 @@ public class MySQLUtil {
 				"SELECT project_id from workbench_project where crop_type = '"
 						+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 		for (final String programIdToDelete : programIdsToDelete) {
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
+			this.executeDeleteScriptsForWorkbenchCropData(connection, programIdToDelete);
 		}
 
 		// CREATE LOCAL DB INSTANCE
@@ -383,6 +376,17 @@ public class MySQLUtil {
 				throw this.doRestoreToPreviousBackup(connection, databaseName, this.currentDbBackupFile, e);
 			}
 		}
+	}
+
+	void executeDeleteScriptsForWorkbenchCropData(final Connection connection, final String programIdToDelete) throws SQLException {
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
 	}
 
 	private IllegalStateException doRestoreToPreviousBackup(final Connection connection, final String databaseName,
