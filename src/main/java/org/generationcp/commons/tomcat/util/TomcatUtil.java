@@ -11,22 +11,15 @@ import java.util.Map;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.generationcp.commons.util.Util;
-import org.generationcp.commons.util.WorkbenchAppPathResolver;
-import org.generationcp.middleware.pojos.workbench.Tool;
-import org.generationcp.middleware.pojos.workbench.ToolType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TomcatUtil {
-
-	private final static Logger LOG = LoggerFactory.getLogger(TomcatUtil.class);
 
 	private String managerUrl;
 
@@ -67,7 +60,7 @@ public class TomcatUtil {
 		this.password = password;
 	}
 
-	public WebAppStatusInfo getWebAppStatus() throws HttpException, IOException {
+	public WebAppStatusInfo getWebAppStatus() throws IOException {
 		WebAppStatusInfo statusInfo = new WebAppStatusInfo();
 
 		String listOutput = this.doHttpGetRequest(this.managerUrl + "/list", null);
@@ -139,7 +132,7 @@ public class TomcatUtil {
 		return "/";
 	}
 
-	protected String doHttpGetRequest(String url, Map<String, String> requestParams) throws HttpException, IOException {
+	protected String doHttpGetRequest(String url, Map<String, String> requestParams) throws IOException {
 		URL urlObj = new URL(url);
 
 		HttpClient client = new HttpClient();

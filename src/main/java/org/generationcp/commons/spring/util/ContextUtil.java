@@ -11,13 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.commons.context.ContextInfo;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.util.WebUtils;
 
 import com.google.common.cache.Cache;
@@ -30,8 +27,6 @@ public class ContextUtil {
 
 	private static final String NO_LOCAL_USER_ID_FOUND_MESSAGE = "Unable to retrive local id for logged in user id '%s' and project '%s'."
 			+ " Please contact administrator for further information.";
-
-	static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
 
 	@Resource
 	private HttpServletRequest request;
@@ -61,7 +56,7 @@ public class ContextUtil {
 		return org.generationcp.commons.util.ContextUtil.getContextInfoFromRequest(this.request);
 	}
 
-	public Project getProjectInContext() throws MiddlewareQueryException {
+	public Project getProjectInContext() {
 		return org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
 	}
 
@@ -88,19 +83,19 @@ public class ContextUtil {
 
 	}
 
-	public int getCurrentWorkbenchUserId() throws MiddlewareQueryException {
+	public int getCurrentWorkbenchUserId() {
 		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
 	}
 
-	public User getCurrentWorkbenchUser() throws MiddlewareQueryException {
+	public User getCurrentWorkbenchUser() {
 		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUser(this.workbenchDataManager, this.request);
 	}
 
-	public String getCurrentWorkbenchUsername() throws MiddlewareQueryException {
+	public String getCurrentWorkbenchUsername() {
 		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUsername(this.workbenchDataManager, this.request);
 	}
 
-	public void logProgramActivity(String activityTitle, String activityDescription) throws MiddlewareQueryException {
+	public void logProgramActivity(String activityTitle, String activityDescription) {
 		Project currentProject = this.getProjectInContext();
 		User currentUser = this.getCurrentWorkbenchUser();
 
