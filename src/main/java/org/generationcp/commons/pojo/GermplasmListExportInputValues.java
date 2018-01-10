@@ -36,7 +36,7 @@ public class GermplasmListExportInputValues {
 		return this.fileName;
 	}
 
-	public void setFileName(String fileName) {
+	public void setFileName(final String fileName) {
 		this.fileName = fileName;
 	}
 
@@ -44,7 +44,7 @@ public class GermplasmListExportInputValues {
 		return this.germplasmList;
 	}
 
-	public void setGermplasmList(GermplasmList germplasmList) {
+	public void setGermplasmList(final GermplasmList germplasmList) {
 		this.germplasmList = germplasmList;
 	}
 
@@ -52,7 +52,7 @@ public class GermplasmListExportInputValues {
 		return this.ownerName;
 	}
 
-	public void setOwnerName(String ownerName) {
+	public void setOwnerName(final String ownerName) {
 		this.ownerName = ownerName;
 	}
 
@@ -60,7 +60,7 @@ public class GermplasmListExportInputValues {
 		return this.exporterName;
 	}
 
-	public void setExporterName(String exporterName) {
+	public void setExporterName(final String exporterName) {
 		this.exporterName = exporterName;
 	}
 
@@ -68,7 +68,7 @@ public class GermplasmListExportInputValues {
 		return this.currentLocalIbdbUserId;
 	}
 
-	public void setCurrentLocalIbdbUserId(Integer currentLocalIbdbUserId) {
+	public void setCurrentLocalIbdbUserId(final Integer currentLocalIbdbUserId) {
 		this.currentLocalIbdbUserId = currentLocalIbdbUserId;
 	}
 
@@ -76,7 +76,7 @@ public class GermplasmListExportInputValues {
 		return this.visibleColumnMap;
 	}
 
-	public void setVisibleColumnMap(Map<String, Boolean> visibleColumnMap) {
+	public void setVisibleColumnMap(final Map<String, Boolean> visibleColumnMap) {
 		this.visibleColumnMap = visibleColumnMap;
 	}
 
@@ -88,7 +88,7 @@ public class GermplasmListExportInputValues {
 		}
 	}
 
-	public void setColumnTermMap(Map<Integer, Term> columnTermMap) {
+	public void setColumnTermMap(final Map<Integer, Term> columnTermMap) {
 		this.columnTermMap = columnTermMap;
 	}
 
@@ -96,7 +96,7 @@ public class GermplasmListExportInputValues {
 		return this.germplasmParents;
 	}
 
-	public void setGermplasmParents(Map<Integer, GermplasmParents> germplasmParents) {
+	public void setGermplasmParents(final Map<Integer, GermplasmParents> germplasmParents) {
 		this.germplasmParents = germplasmParents;
 	}
 
@@ -109,7 +109,7 @@ public class GermplasmListExportInputValues {
 		return this.inventoryVariableMap;
 	}
 
-	public void setInventoryVariableMap(Map<Integer, Variable> inventoryStandardVariableMap) {
+	public void setInventoryVariableMap(final Map<Integer, Variable> inventoryStandardVariableMap) {
 		this.inventoryVariableMap = inventoryStandardVariableMap;
 	}
 
@@ -122,7 +122,7 @@ public class GermplasmListExportInputValues {
 		return this.variateVariableMap;
 	}
 
-	public void setVariateVariableMap(Map<Integer, Variable> variateStandardVariableMap) {
+	public void setVariateVariableMap(final Map<Integer, Variable> variateStandardVariableMap) {
 		this.variateVariableMap = variateStandardVariableMap;
 	}
 
@@ -133,7 +133,7 @@ public class GermplasmListExportInputValues {
 		return this.listData;
 	}
 
-	public void setListData(List<? extends GermplasmExportSource> listData) {
+	public void setListData(final List<? extends GermplasmExportSource> listData) {
 		this.listData = listData;
 	}
 
