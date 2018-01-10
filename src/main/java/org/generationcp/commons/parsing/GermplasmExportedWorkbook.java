@@ -1,14 +1,6 @@
 
 package org.generationcp.commons.parsing;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,16 +9,25 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
+import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
+
+import javax.annotation.Resource;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow and the ExcelCellStyleBuilder to construct a
@@ -251,6 +252,7 @@ public class GermplasmExportedWorkbook {
 		final Map<Integer, Variable> inventoryStandardVariableMap = this.input.getInventoryVariableMap();
 		final List<? extends GermplasmExportSource> listData = this.input.getListData();
 		final Map<Integer, GermplasmParents> germplasmParentsMap = this.input.getGermplasmParents();
+		final Map<Integer, Variable> variateVariableMap = this.input.getVariateVariableMap();
 
 		this.createListEntriesHeaderRow(observationSheet);
 
@@ -338,8 +340,25 @@ public class GermplasmExportedWorkbook {
 
 			if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
 				listEntry.createCell(j).setCellValue(data.getSeedAmount());
+				j++;
 			}
 
+			if (variateVariableMap.containsKey(this.getColumnNamesTermId(ColumnLabels.NOTES))) {
+				listEntry.createCell(j).setCellValue(data.getNotes());
+				j++;
+			}
+
+			final GermplasmListNewColumnsInfo columnsInfo = input.getCurrentColumnsInfo();
+			if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
+				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+					final String column = columnEntry.getKey();
+					for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
+						final String value = columnValue.getValue();
+						listEntry.createCell(j).setCellValue(value == null ? "" : value);
+					}
+					j++;
+				}
+			}
 			i += 1;
 		}
 
@@ -745,9 +764,19 @@ public class GermplasmExportedWorkbook {
 			notesCell.setCellValue(variateStandardVariableMap.get(TermId.NOTES.getId()).getName().toUpperCase());
 			notesCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
 			observationSheet.setDefaultColumnStyle(columnIndex,
-					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE));
+				this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE));
 		}
 
+		final GermplasmListNewColumnsInfo columnsInfo = input.getCurrentColumnsInfo();
+		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+				final String column = columnEntry.getKey();
+				final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+				entryTypeCell.setCellValue(column);
+				entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+				columnIndex++;
+			}
+		}
 	}
 
 	private void fillSheetWithCellStyle(final HSSFSheet sheet) {

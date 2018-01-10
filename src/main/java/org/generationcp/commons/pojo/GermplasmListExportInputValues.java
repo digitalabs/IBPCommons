@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
@@ -24,6 +25,8 @@ public class GermplasmListExportInputValues {
 	private Map<Integer, Variable> variateVariableMap;
 	private Map<Integer, GermplasmParents> germplasmParents;
 	private List<? extends GermplasmExportSource> listData;
+
+	private GermplasmListNewColumnsInfo currentColumnsInfo;
 
 	public GermplasmListExportInputValues() {
 		super();
@@ -132,5 +135,13 @@ public class GermplasmListExportInputValues {
 
 	public void setListData(List<? extends GermplasmExportSource> listData) {
 		this.listData = listData;
+	}
+
+	public void setCurrentColumnsInfo(final GermplasmListNewColumnsInfo currentColumnsInfo) {
+		this.currentColumnsInfo = currentColumnsInfo;
+	}
+
+	public GermplasmListNewColumnsInfo getCurrentColumnsInfo() {
+		return this.currentColumnsInfo;
 	}
 }
