@@ -9,6 +9,7 @@ import java.util.Objects;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -353,10 +354,16 @@ public class GermplasmExportedWorkbook {
 			if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
 				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 					columnEntry.getKey();
-					for (final ListDataColumnValues columnValue : columnEntry.getValue()) {
-						final String value = columnValue.getValue();
-						listEntry.createCell(j).setCellValue(value == null ? "" : value);
-					}
+					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+					ListDataColumnValues listDataColumnValues =
+						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
+
+							public boolean evaluate(Object object) {
+								return ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId());
+							}
+						});
+					final String value = listDataColumnValues.getValue();
+					listEntry.createCell(j).setCellValue(value == null ? "" : value);
 					j++;
 				}
 			}
