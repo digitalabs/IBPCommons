@@ -362,8 +362,9 @@ public class GermplasmExportedWorkbook {
 								return ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId());
 							}
 						});
-					final String value = listDataColumnValues.getValue();
-					listEntry.createCell(j).setCellValue(value == null ? "" : value);
+					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
+
+					listEntry.createCell(j).setCellValue(value);
 					j++;
 				}
 			}
