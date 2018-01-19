@@ -82,6 +82,8 @@ public class ImportedGermplasm implements Serializable {
 	private String replicationNumber;
     private String plotNumber;
 
+	private String plantNumber;
+
 	/** GroupId associated with Germplsm **/
 	private Integer groupId;
 
@@ -475,5 +477,13 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setStockIDs(String stockIDs) {
 		this.stockIDs = stockIDs;
+	}
+
+	public String getPlantNumber() {
+		return plantNumber;
+	}
+
+	public void setPlantNumber(final String plantNumber) {
+		this.plantNumber = plantNumber;
 	}
 }
