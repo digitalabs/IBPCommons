@@ -355,10 +355,10 @@ public class GermplasmExportedWorkbook {
 				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 					columnEntry.getKey();
 					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
-					ListDataColumnValues listDataColumnValues =
+					final ListDataColumnValues listDataColumnValues =
 						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 
-							public boolean evaluate(Object object) {
+							public boolean evaluate(final Object object) {
 								return ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId());
 							}
 						});
