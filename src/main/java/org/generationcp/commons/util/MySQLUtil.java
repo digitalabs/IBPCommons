@@ -320,10 +320,6 @@ public class MySQLUtil {
 
 		// restore the backup
 		try {
-			// this is needed because the schema_version of the file must be
-			// followed
-			this.dropSchemaVersion(connection, databaseName);
-
 			MySQLUtil.LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
 			this.runScriptFromFile(databaseName, backupFile);
 
@@ -749,12 +745,6 @@ public class MySQLUtil {
 		} finally {
 			this.disconnect();
 		}
-	}
-
-	public void dropSchemaVersion(final Connection connection, final String databaseName)
-			throws IOException, SQLException {
-		this.executeQuery(connection, "USE " + databaseName);
-		this.executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
 	}
 
 	public File createCurrentDbBackupFile(final String databaseName) throws IOException, InterruptedException {
