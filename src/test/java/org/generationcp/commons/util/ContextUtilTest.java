@@ -10,7 +10,6 @@ import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.WorkbenchRuntimeData;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -86,8 +85,6 @@ public class ContextUtilTest {
 		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
 
 		Assert.assertEquals(contextInfo.getLoggedInUserId(), ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request));
-
-		Mockito.verify(this.workbenchDataManager, Mockito.never()).getWorkbenchRuntimeData();
 	}
 
 
@@ -95,9 +92,6 @@ public class ContextUtilTest {
 	public void testExceptionIsThrownWhenWorkbenchUserCannotBeResolved() throws MiddlewareQueryException {
 		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
 		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
-		WorkbenchRuntimeData workbenchRuntimeData = new WorkbenchRuntimeData();
-		workbenchRuntimeData.setUserId(null);
-		Mockito.when(this.workbenchDataManager.getWorkbenchRuntimeData()).thenReturn(workbenchRuntimeData);
 
 		ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
 	}

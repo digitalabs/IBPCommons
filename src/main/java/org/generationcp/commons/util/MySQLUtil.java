@@ -308,16 +308,7 @@ public class MySQLUtil {
 				"SELECT project_id from workbench_project where crop_type = '"
 						+ this.contextUtil.getProjectInContext().getCropType().getCropName() + "';");
 		for (final String programIdToDelete : programIdsToDelete) {
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project_user_role where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
-			this.executeQuery(connection,
-					"DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
+			this.executeDeleteScriptsForWorkbenchCropData(connection, programIdToDelete);
 		}
 
 		// CREATE LOCAL DB INSTANCE
@@ -329,10 +320,6 @@ public class MySQLUtil {
 
 		// restore the backup
 		try {
-			// this is needed because the schema_version of the file must be
-			// followed
-			this.dropSchemaVersion(connection, databaseName);
-
 			MySQLUtil.LOG.debug("Trying to restore the original file " + backupFile.getAbsolutePath());
 			this.runScriptFromFile(databaseName, backupFile);
 
@@ -385,6 +372,17 @@ public class MySQLUtil {
 				throw this.doRestoreToPreviousBackup(connection, databaseName, this.currentDbBackupFile, e);
 			}
 		}
+	}
+
+	void executeDeleteScriptsForWorkbenchCropData(final Connection connection, final String programIdToDelete) throws SQLException {
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
+		this.executeQuery(connection,
+				"DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
 	}
 
 	private IllegalStateException doRestoreToPreviousBackup(final Connection connection, final String databaseName,
@@ -747,12 +745,6 @@ public class MySQLUtil {
 		} finally {
 			this.disconnect();
 		}
-	}
-
-	public void dropSchemaVersion(final Connection connection, final String databaseName)
-			throws IOException, SQLException {
-		this.executeQuery(connection, "USE " + databaseName);
-		this.executeQuery(connection, "DROP TABLE IF EXISTS schema_version");
 	}
 
 	public File createCurrentDbBackupFile(final String databaseName) throws IOException, InterruptedException {
