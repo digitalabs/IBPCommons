@@ -30,7 +30,7 @@ public class SeedSourceGenerator {
 	}
 
 	public String generateSeedSource(final Workbook workbook, final String instanceNumber, final String selectionNumber,
-			final String plotNumber, final String studyName) {
+			final String plotNumber, final String studyName, final String plantNumber) {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 
@@ -72,6 +72,20 @@ public class SeedSourceGenerator {
 				return true;
 			}
 		};
+		
+		final KeyComponentValueResolver plantNumberResolver = new KeyComponentValueResolver() {
+
+			@Override
+			public String resolve() {
+				return plantNumber;
+			}
+
+			@Override
+			public boolean isOptional() {
+				// Setting to not optional so that "-" wont be appended before plant number when it is specified
+				return false;
+			}
+		};
 
 		List<MeasurementVariable> conditions = workbook.getConditions();
 		StudyType studyType = workbook.getStudyDetails().getStudyType();
@@ -88,6 +102,7 @@ public class SeedSourceGenerator {
 				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
+		keyComponentValueResolvers.put(KeyComponent.PLANT_NO, plantNumberResolver);
 
 		return service
 				.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
@@ -97,8 +112,8 @@ public class SeedSourceGenerator {
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
-		String femaleSeedSource = generateSeedSource(workbook, "1", null, femalePlotNo, femaleStudyName);
-		String maleSeedSource = generateSeedSource(workbook, "1", null, malePlotNo, maleStudyName);
+		String femaleSeedSource = generateSeedSource(workbook, "1", null, femalePlotNo, femaleStudyName, null);
+		String maleSeedSource = generateSeedSource(workbook, "1", null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
 }

@@ -48,10 +48,10 @@ public class SeedSourceGeneratorTest {
 		MockitoAnnotations.initMocks(this);
 
 		GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
-		germplasmNamingProperties.setGermplasmOriginNurseriesDefault("[NAME]:[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginNurseriesDefault("[NAME]:[PLOTNO]:[PLANT_NO]");
 		germplasmNamingProperties.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
 		germplasmNamingProperties.setGermplasmOriginNurseriesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
-		germplasmNamingProperties.setGermplasmOriginTrialsDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginTrialsDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]:[PLANT_NO]");
 		germplasmNamingProperties.setGermplasmOriginTrialsMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
 		germplasmNamingProperties.setGermplasmOriginTrialsWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 
@@ -96,20 +96,23 @@ public class SeedSourceGeneratorTest {
 		workbook.setConditions(Lists.newArrayList(locationMV, seasonMV));
 
 		setCurrentCrop("rice");
-		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName());
-		Assert.assertEquals("StudyName:3", seedSource);
+		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), null);
+		Assert.assertEquals("StudyName:3:", seedSource);
+		// with plant number
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), "1");
+		Assert.assertEquals("StudyName:3:1", seedSource);
 
 		setCurrentCrop("wheat");
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName());
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("IND\\Dry Season\\StudyName\\3", seedSource);
 
 		setCurrentCrop("maize");
 		// with selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName());
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry Season-StudyName-3-2", seedSource);
 
 		// without selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, null, "3", studyDetails.getStudyName());
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, null, "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry Season-StudyName-3", seedSource);
 	}
 
@@ -146,19 +149,23 @@ public class SeedSourceGeneratorTest {
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
 		setCurrentCrop("rice");
-		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName());
-		Assert.assertEquals("TestStudy:IND:Dry Season:3", seedSource);
+		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
+		Assert.assertEquals("TestStudy:IND:Dry Season:3:", seedSource);
+		
+		// with Plant Number 
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), "4");
+		Assert.assertEquals("TestStudy:IND:Dry Season:3:4", seedSource);
 
 		setCurrentCrop("wheat");
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName());
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("IND\\Dry Season\\TestStudy\\3", seedSource);
 
 		setCurrentCrop("maize");
 		// with selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName());
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry Season-TestStudy-3-2", seedSource);
 		// without selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", null, "3", studyDetails.getStudyName());
+		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", null, "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry Season-TestStudy-3", seedSource);
 	}
 
@@ -184,6 +191,11 @@ public class SeedSourceGeneratorTest {
 		String crossSeedSource =
 				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "MaleStudyName", "FemaleStudyName");
 		Assert.assertEquals("INDDry Season-FemaleStudyName-2/INDDry Season-MaleStudyName-1", crossSeedSource);
+		
+		setCurrentCrop("rice");
+		crossSeedSource =
+				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "MaleStudyName", "FemaleStudyName");
+		Assert.assertEquals("FemaleStudyName:2:/MaleStudyName:1:", crossSeedSource);
 	}
 
 }
