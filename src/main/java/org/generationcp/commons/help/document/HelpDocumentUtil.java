@@ -6,9 +6,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.WorkbenchSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,8 +34,8 @@ public class HelpDocumentUtil {
 		}
 	}
 
-	public static boolean isDocumentsFolderFound(String installationDirectory) {
-		String docsDirectory = installationDirectory + File.separator + "Documents" + File.separator;
+	public static boolean isDocumentsFolderFound() {
+		String docsDirectory = "Documents" + File.separator;
 		File docsDirectoryFile = new File(docsDirectory);
 		if (docsDirectoryFile.exists() && docsDirectoryFile.isDirectory()) {
 			return true;
@@ -46,20 +43,7 @@ public class HelpDocumentUtil {
 		return false;
 	}
 
-	public static String getInstallationDirectory(WorkbenchDataManager workbenchDataManager) {
-		WorkbenchSetting setting = null;
-		try {
-			setting = workbenchDataManager.getWorkbenchSetting();
-		} catch (MiddlewareQueryException e) {
-			LOG.error(e.getMessage(), e);
-		}
-		String installationDirectory = "";
-		if (setting != null) {
-			installationDirectory = setting.getInstallationDirectory();
-		}
-		return installationDirectory;
-	}
-
+	
 	public static String getOnLineLink(String link) {
 		String onlineLink = "";
 		if (!link.isEmpty()) {
