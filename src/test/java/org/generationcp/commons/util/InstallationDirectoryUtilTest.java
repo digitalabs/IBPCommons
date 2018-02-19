@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import org.generationcp.commons.constant.ToolEnum;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -40,7 +39,7 @@ public class InstallationDirectoryUtilTest {
 		if (exists) {
 			Assert.assertEquals(1, projectWorkspaceDirectory.list().length);
 		}
-		final File breedingViewDirectory = new File(projectWorkspaceDirectory, ToolEnum.BREEDING_VIEW.getToolName());
+		final File breedingViewDirectory = new File(projectWorkspaceDirectory, ToolName.BREEDING_VIEW.getName());
 		Assert.assertEquals(exists, breedingViewDirectory.exists());
 		final File bvInputDirectory = new File(breedingViewDirectory, InstallationDirectoryUtil.INPUT);
 		Assert.assertEquals(exists, bvInputDirectory.exists());
@@ -189,13 +188,11 @@ public class InstallationDirectoryUtilTest {
 	public void testGetInputDirectoryForTool() {
 		final Project project = ProjectTestDataInitializer.createProject();
 		project.setProjectName(DUMMY_PROJECT_NAME);
-		Tool tool = this.constructDummyNativeTool();
-		tool.setGroupName("GROUPNAME");
 		try {
-			String inputDirectory = this.installationDirUtil.getInputDirectoryForProjectAndTool(project, tool);
+			String inputDirectory = this.installationDirUtil.getInputDirectoryForProjectAndTool(project, ToolName.BREEDING_VIEW);
 			Assert.assertNotNull(inputDirectory);
 			Assert.assertEquals(new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator
-					+ project.getCropType().getCropName() + File.separator + DUMMY_PROJECT_NAME + File.separator + tool.getGroupName() + File.separator
+					+ project.getCropType().getCropName() + File.separator + DUMMY_PROJECT_NAME + File.separator + ToolName.BREEDING_VIEW.getName() + File.separator
 					+ InstallationDirectoryUtil.INPUT).getAbsolutePath(), new File(inputDirectory).getAbsolutePath());
 			
 			this.deleteTestInstallationDirectory();
@@ -211,10 +208,10 @@ public class InstallationDirectoryUtilTest {
 		Tool tool = this.constructDummyNativeTool();
 		tool.setGroupName("GROUPNAME");
 		try {
-			String inputDirectory = this.installationDirUtil.getOutputDirectoryForProjectAndTool(project, tool);
+			String inputDirectory = this.installationDirUtil.getOutputDirectoryForProjectAndTool(project, ToolName.BREEDING_VIEW);
 			Assert.assertNotNull(inputDirectory);
 			Assert.assertEquals(new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator
-					+ project.getCropType().getCropName() + File.separator + DUMMY_PROJECT_NAME + File.separator + tool.getGroupName() + File.separator
+					+ project.getCropType().getCropName() + File.separator + DUMMY_PROJECT_NAME + ToolName.BREEDING_VIEW.getName() + File.separator
 					+ InstallationDirectoryUtil.OUTPUT).getAbsolutePath(), new File(inputDirectory).getAbsolutePath());
 			
 			this.deleteTestInstallationDirectory();

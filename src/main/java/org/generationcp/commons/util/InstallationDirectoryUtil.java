@@ -4,10 +4,9 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.generationcp.commons.constant.ToolEnum;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 
 public class InstallationDirectoryUtil {
 	
@@ -25,7 +24,7 @@ public class InstallationDirectoryUtil {
 		projectDir.mkdirs();
 
 		// create the directory only for breeding_view tool
-		final List<String> toolList = Collections.singletonList(ToolEnum.BREEDING_VIEW.getToolName());
+		final List<String> toolList = Collections.singletonList(ToolName.BREEDING_VIEW.getName());
 		for (final String toolName : toolList) {
 			final File toolDir = new File(projectDir, toolName);
 			toolDir.mkdirs();
@@ -76,21 +75,21 @@ public class InstallationDirectoryUtil {
 		}
 	}
 
-	public String getInputDirectoryForProjectAndTool(final Project project, final Tool tool) {
+	public String getInputDirectoryForProjectAndTool(final Project project, final ToolName tool) {
 		final File toolDir = this.getToolDirectoryForProject(project, tool);
 
 		return new File(toolDir, InstallationDirectoryUtil.INPUT).getAbsolutePath();
 	}
 	
-	public String getOutputDirectoryForProjectAndTool(final Project project, final Tool tool) {
+	public String getOutputDirectoryForProjectAndTool(final Project project, final ToolName tool) {
 		final File toolDir = this.getToolDirectoryForProject(project, tool);
 
 		return new File(toolDir, InstallationDirectoryUtil.OUTPUT).getAbsolutePath();
 	}
 
-	private File getToolDirectoryForProject(final Project project, final Tool tool) {
+	private File getToolDirectoryForProject(final Project project, final ToolName tool) {
 		final File projectDir = this.getFileForWorkspaceProjectDirectory(project);
-		return new File(projectDir, tool.getGroupName());
+		return new File(projectDir, tool.getName());
 	}
 	
 	void recursiveFileDelete(File file) {
