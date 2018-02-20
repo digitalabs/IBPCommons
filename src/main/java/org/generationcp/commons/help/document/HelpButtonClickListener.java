@@ -8,9 +8,7 @@ import javax.annotation.Resource;
 
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
@@ -45,11 +43,10 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		Window currentWindow = event.getComponent().getWindow();
 		ExternalResource tutorialLink = this.getTutorialLink(this.link, currentWindow, hasInternetConnection);
 
-		String installationDirectory = HelpDocumentUtil.getInstallationDirectory(this.workbenchDataManager);
-		if (!propertyLink.isEmpty() && (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound(installationDirectory))) {
+		if (!propertyLink.isEmpty() && (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound())) {
 			event.getComponent().getWindow().open(tutorialLink, " _BLANK");
-		} else if (!hasInternetConnection && !HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
-			HelpWindow helpWindow = new HelpWindow(this.workbenchDataManager, this.tomcatUtil);
+		} else if (!hasInternetConnection && !HelpDocumentUtil.isDocumentsFolderFound()) {
+			HelpWindow helpWindow = new HelpWindow(this.tomcatUtil);
 			event.getComponent().getParent().getWindow().addWindow(helpWindow);
 		}
 	}

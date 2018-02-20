@@ -4,7 +4,6 @@ package org.generationcp.commons.help.document;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Properties;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
@@ -13,11 +12,11 @@ import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.commons.util.WorkbenchAppPathResolver;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.commons.vaadin.ui.BaseSubWindow;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.terminal.ThemeResource;
@@ -26,7 +25,6 @@ import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Panel;
-import org.springframework.beans.factory.annotation.Value;
 
 @Configurable
 public class HelpWindow extends BaseSubWindow implements InitializingBean, InternationalizableComponent {
@@ -43,16 +41,13 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 	private static final String WINDOW_WIDTH = "640px";
 	private static final String WINDOW_HEIGHT = "415px";
 
-	private WorkbenchDataManager workbenchDataManager;
-
 	private TomcatUtil tomcatUtil;
 
 	@Value("${workbench.version}")
 	private String workbenchVersion;
 
-	public HelpWindow(WorkbenchDataManager workbenchDataManager, TomcatUtil tomcatUtil) {
+	public HelpWindow(final TomcatUtil tomcatUtil) {
 		super();
-		this.workbenchDataManager = workbenchDataManager;
 		this.tomcatUtil = tomcatUtil;
 	}
 
@@ -83,8 +78,7 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 		// detect if docs are installed
 		// if not, show a message prompting them to download and install it first
 
-		String installationDirectory = HelpDocumentUtil.getInstallationDirectory(this.workbenchDataManager);
-		if (!HelpDocumentUtil.isDocumentsFolderFound(installationDirectory)) {
+		if (!HelpDocumentUtil.isDocumentsFolderFound()) {
 			// if the document directory does not exist,
 			// it means that the BMS Documentation has not been installed
 			CustomLayout helpLayout = new CustomLayout("help_not_installed");
@@ -94,7 +88,7 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 			CustomLayout helpLayout = new CustomLayout("help");
 			panel.setContent(helpLayout);
 
-			this.deployDocumentsToTomcat(installationDirectory);
+			this.deployDocumentsToTomcat();
 
 			Link htmlLink = this.buildHTMLLink();
 			helpLayout.addComponent(htmlLink, "html_link");
@@ -111,10 +105,10 @@ public class HelpWindow extends BaseSubWindow implements InitializingBean, Inter
 		return htmlLink;
 	}
 
-	private void deployDocumentsToTomcat(String installationDirectory) {
-		String docsDirectory = installationDirectory + File.separator + "Documents" + File.separator;
+	private void deployDocumentsToTomcat() {
+		String docsDirectory = "Documents" + File.separator;
 
-		String targetHTMLPath = installationDirectory + File.separator + HelpWindow.BMS_INSTALLATION_DIR_POSTFIX + HelpWindow.BMS_HTML;
+		String targetHTMLPath = HelpWindow.BMS_INSTALLATION_DIR_POSTFIX + HelpWindow.BMS_HTML;
 
 		try {
 			FileUtils.deleteDirectory(new File(targetHTMLPath));

@@ -8,8 +8,6 @@ import java.util.Properties;
 
 import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.WorkbenchSetting;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +30,7 @@ public class HelpButtonClickListenerTest {
 
 	@Mock
 	private TomcatUtil tomcatUtil;
-	@Mock
-	private WorkbenchDataManager workbenchDataManager;
+	
 	@Mock
 	private Properties helpProperties;
 
@@ -56,7 +53,6 @@ public class HelpButtonClickListenerTest {
 		this.listener = Mockito.spy(new HelpButtonClickListener(this.link));
 		this.listener.setHelpProperties(this.helpProperties);
 		this.listener.setTomcatUtil(this.tomcatUtil);
-		this.listener.setWorkbenchDataManager(this.workbenchDataManager);
 
 		Mockito.when(this.event.getComponent()).thenReturn(this.component);
 		Mockito.when(this.component.getWindow()).thenReturn(this.window);
@@ -114,10 +110,6 @@ public class HelpButtonClickListenerTest {
 
 		ExternalResource tutorialLink = new ExternalResource(offlineURL);
 		Mockito.doReturn(tutorialLink).when(this.listener).getTutorialLink(this.link, this.window, false);
-
-		WorkbenchSetting setting = new WorkbenchSetting();
-		setting.setInstallationDirectory(INSTALLATION_PATH);
-		Mockito.when(this.workbenchDataManager.getWorkbenchSetting()).thenReturn(setting);
 
 		this.listener.buttonClick(this.event);
 
