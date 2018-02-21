@@ -1,6 +1,7 @@
 package org.generationcp.commons.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -77,16 +78,24 @@ public class InstallationDirectoryUtil {
 
 	public String getInputDirectoryForProjectAndTool(final Project project, final ToolName tool) {
 		final File toolDir = this.getToolDirectoryForProject(project, tool);
-
 		return new File(toolDir, InstallationDirectoryUtil.INPUT).getAbsolutePath();
 	}
 	
 	public String getOutputDirectoryForProjectAndTool(final Project project, final ToolName tool) {
 		final File toolDir = this.getToolDirectoryForProject(project, tool);
-
 		return new File(toolDir, InstallationDirectoryUtil.OUTPUT).getAbsolutePath();
 	}
-
+	
+	public String getTempFileInOutputDirectoryForProjectAndTool(final String fileName, final String extension, final Project project,
+			final ToolName tool) throws IOException {
+		final File outputDir = new File(this.getOutputDirectoryForProjectAndTool(project, tool));
+		// Create temporary file under output directory of project and tool
+		if (!outputDir.exists()) {
+			outputDir.mkdirs();
+		}
+		return File.createTempFile(fileName, extension).getAbsolutePath();
+	}
+	
 	private File getToolDirectoryForProject(final Project project, final ToolName tool) {
 		final File projectDir = this.getFileForWorkspaceProjectDirectory(project);
 		return new File(projectDir, tool.getName());
