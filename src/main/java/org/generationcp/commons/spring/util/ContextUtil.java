@@ -102,4 +102,11 @@ public class ContextUtil {
 
 		this.workbenchDataManager.addProjectActivity(projAct);
 	}
+
+	public Integer getCurrentIbdbUserId() {
+		return this.workbenchDataManager
+			.getCurrentIbdbUserId(Long.valueOf(this.getProjectInContext().getProjectId().toString()), this.getCurrentWorkbenchUserId());
+
+	}
+
 }
