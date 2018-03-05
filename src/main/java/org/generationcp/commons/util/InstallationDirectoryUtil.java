@@ -97,7 +97,7 @@ public class InstallationDirectoryUtil {
 			outputDir.mkdirs();
 		}
 		// FIXME - perform checking that fileName is > 3 characters, else temp file will throw "Prefix too short" error
-		return File.createTempFile(fileName, extension).getAbsolutePath();
+		return File.createTempFile(fileName, extension, outputDir).getAbsolutePath();
 	}
 	
 	public String getFileInTemporaryDirectoryForProjectAndTool(final String fileName, final Project project, final ToolName tool)
