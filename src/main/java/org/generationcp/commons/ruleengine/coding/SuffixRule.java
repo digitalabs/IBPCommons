@@ -18,9 +18,8 @@ public class SuffixRule extends OrderedRule<CodingRuleExecutionContext> {
 	private CodingExpressionResolver codingExpressionResolver;
 
 	@Override
-	public Object runRule(CodingRuleExecutionContext context) throws RuleException {
+	public Object runRule(final CodingRuleExecutionContext context) throws RuleException {
 
-		final List<String> input = context.getCurrentData();
 		final NamingConfiguration namingConfiguration = context.getNamingConfiguration();
 		String suffix = context.getNamingConfiguration().getSuffix();
 
@@ -28,13 +27,11 @@ public class SuffixRule extends OrderedRule<CodingRuleExecutionContext> {
 			suffix = "";
 		}
 
-		for (int i = 0; i < input.size(); i++) {
-			input.set(i, codingExpressionResolver.resolve(input.get(i), suffix, namingConfiguration).get(0));
-		}
+		final String resolvedData = codingExpressionResolver.resolve(context.getCurrentData(), suffix, namingConfiguration).get(0);
 
-		context.setCurrentData(input);
+		context.setCurrentData(resolvedData);
 
-		return input;
+		return resolvedData;
 
 	}
 

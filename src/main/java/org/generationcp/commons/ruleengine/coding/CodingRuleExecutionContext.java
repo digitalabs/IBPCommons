@@ -8,9 +8,10 @@ import java.util.List;
 
 public class CodingRuleExecutionContext extends OrderedRuleExecutionContext {
 
+	private static final String EMPTY_STRING = "";
 	private final NamingConfiguration namingConfiguration;
 	private Integer startNumber;
-	private List<String> currentData =  new ArrayList<>();
+	private String currentData = EMPTY_STRING;
 
 	public CodingRuleExecutionContext(final List<String> executionOrder, final NamingConfiguration namingConfiguration) {
 		super(executionOrder);
@@ -34,16 +35,16 @@ public class CodingRuleExecutionContext extends OrderedRuleExecutionContext {
 		this.startNumber = startNumber;
 	}
 
-	public List<String> getCurrentData() {
+	public String getCurrentData() {
 		return currentData;
 	}
 
-	public void setCurrentData(final List<String> currentData) {
+	public void setCurrentData(final String currentData) {
 		this.currentData = currentData;
 	}
 
 	public void reset() {
-		this.getCurrentData().clear();
+		this.setCurrentData(EMPTY_STRING);
 		this.setCurrentExecutionIndex(0);
 	}
 }

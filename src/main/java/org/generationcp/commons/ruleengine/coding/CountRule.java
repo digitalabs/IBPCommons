@@ -7,7 +7,6 @@ import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Component
 public class CountRule extends OrderedRule<CodingRuleExecutionContext> {
@@ -18,9 +17,8 @@ public class CountRule extends OrderedRule<CodingRuleExecutionContext> {
 	private CodingExpressionResolver codingExpressionResolver;
 
 	@Override
-	public Object runRule(CodingRuleExecutionContext context) throws RuleException {
+	public Object runRule(final CodingRuleExecutionContext context) throws RuleException {
 
-		final List<String> input = context.getCurrentData();
 		final NamingConfiguration namingConfiguration = context.getNamingConfiguration();
 		String count = context.getNamingConfiguration().getCount();
 
@@ -28,13 +26,11 @@ public class CountRule extends OrderedRule<CodingRuleExecutionContext> {
 			count = "";
 		}
 
-		for (int i = 0; i < input.size(); i++) {
-			input.set(i, codingExpressionResolver.resolve(input.get(i), count, namingConfiguration).get(0));
-		}
+		final String resolvedData = codingExpressionResolver.resolve(context.getCurrentData(), count, namingConfiguration).get(0);
 
-		context.setCurrentData(input);
+		context.setCurrentData(resolvedData);
 
-		return input;
+		return resolvedData;
 
 	}
 

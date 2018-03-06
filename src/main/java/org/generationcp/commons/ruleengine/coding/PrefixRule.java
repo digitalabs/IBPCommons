@@ -20,8 +20,6 @@ public class PrefixRule extends OrderedRule<CodingRuleExecutionContext> {
 	@Override
 	public Object runRule(final CodingRuleExecutionContext context) throws RuleException {
 
-		final List<String> input = context.getCurrentData();
-
 		final NamingConfiguration namingConfiguration = context.getNamingConfiguration();
 		String prefix = context.getNamingConfiguration().getPrefix();
 
@@ -29,11 +27,11 @@ public class PrefixRule extends OrderedRule<CodingRuleExecutionContext> {
 			prefix = "";
 		}
 
-		input.add(codingExpressionResolver.resolve("", prefix, namingConfiguration).get(0));
+		final String resolvedData = codingExpressionResolver.resolve(context.getCurrentData(), prefix, namingConfiguration).get(0);
 
-		context.setCurrentData(input);
+		context.setCurrentData(resolvedData);
 
-		return input;
+		return resolvedData;
 
 	}
 
