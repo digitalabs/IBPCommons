@@ -17,6 +17,7 @@ public class InstallationDirectoryUtil {
 	public static final String WORKSPACE_DIR = "workspace";
 	public static final String INPUT = "input";
 	public static final String OUTPUT = "output";
+	public static final String TEMP = "temp";
 	
 	public void createWorkspaceDirectoriesForProject(final Project project) {
 
@@ -96,8 +97,12 @@ public class InstallationDirectoryUtil {
 		if (!outputDir.exists()) {
 			outputDir.mkdirs();
 		}
-		// FIXME - perform checking that fileName is > 3 characters, else temp file will throw "Prefix too short" error
-		return File.createTempFile(fileName, extension, outputDir).getAbsolutePath();
+		String finalFilename = fileName;
+		// Perform checking that fileName is > 3 characters, else temp file will throw "Prefix too short" error
+		if (fileName.length() < 3){
+			finalFilename = TEMP;
+		}
+		return File.createTempFile(finalFilename, extension, outputDir).getAbsolutePath();
 	}
 	
 	public String getFileInTemporaryDirectoryForProjectAndTool(final String fileName, final Project project, final ToolName tool)
@@ -110,7 +115,7 @@ public class InstallationDirectoryUtil {
 		return new File(tempDirectory.toFile(), fileName).getAbsolutePath();
 	}
 	
-	private File getToolDirectoryForProject(final Project project, final ToolName tool) {
+	protected File getToolDirectoryForProject(final Project project, final ToolName tool) {
 		final File projectDir = this.getFileForWorkspaceProjectDirectory(project);
 		return new File(projectDir, tool.getName());
 	}
