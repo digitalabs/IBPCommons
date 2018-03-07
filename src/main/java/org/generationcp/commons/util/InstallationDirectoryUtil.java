@@ -120,7 +120,7 @@ public class InstallationDirectoryUtil {
 		return new File(projectDir, tool.getName());
 	}
 	
-	void recursiveFileDelete(File file) {
+	public void recursiveFileDelete(File file) {
         //to end the recursive loop
         if (!file.exists()){
         	return;
