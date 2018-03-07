@@ -1,7 +1,10 @@
 package org.generationcp.commons.service.impl;
 
 import com.google.common.collect.Lists;
+import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.RuleFactory;
+import org.generationcp.commons.ruleengine.coding.CodingRuleExecutionContext;
+import org.generationcp.commons.ruleengine.coding.expression.SequenceExpression;
 import org.generationcp.commons.ruleengine.service.RulesService;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
@@ -9,6 +12,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
+import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.KeySequenceRegisterService;
@@ -33,6 +37,13 @@ import java.util.Set;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmCodeGenerationServiceImplTest {
 
+	private static final int NAMING_CONFIG_STARTING_SEQUENCE = 1;
+	private static final String PREFIX = "ABH";
+	private static final String SUFFIX = "CDE";
+	private static final Integer NEXT_NUMBER = 21;
+	private static final Integer NEXT_NUMBER_WITH_SPACE = 6;
+	private static final Integer NEXT_NUMBER_WITHOUT_PREFIX = 31;
+
 	@Mock
 	private RulesService rulesService;
 
@@ -51,18 +62,16 @@ public class GermplasmCodeGenerationServiceImplTest {
 	@InjectMocks
 	private GermplasmCodeGenerationServiceImpl germplasmCodeGenerationService = new GermplasmCodeGenerationServiceImpl();
 
-	private static final String PREFIX = "ABH";
-	private static final String SUFFIX = "CDE";
-	private static final Integer NEXT_NUMBER = 21;
-	private static final Integer NEXT_NUMBER_WITH_SPACE = 6;
-	private static final Integer NEXT_NUMBER_WITHOUT_PREFIX = 31;
-	private GermplasmNameSetting setting;
+	private GermplasmNameSetting germplasmNameSetting;
+	private NamingConfiguration namingConfiguration;
+	private CodingRuleExecutionContext codingRuleExecutionContext;
 	private UserDefinedField codeNameType;
 
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		this.setting = this.createGermplasmNameSetting();
+		this.germplasmNameSetting = this.createGermplasmNameSetting();
+		this.namingConfiguration = this.createNamingConfiguration();
 		this.setupCodeNameType();
 
 		Mockito.doReturn(NEXT_NUMBER).when(this.keySequenceRegisterService).getNextSequence(PREFIX, SUFFIX);
@@ -74,28 +83,202 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNameWhenGermplasmIsNotFixed() {
+	public void testApplyGroupNameAutomaticNamingGermplasmIsNotFixed() throws RuleException {
 		Germplasm g1 = new Germplasm();
 		g1.setGid(1);
 
 		Mockito.when(this.germplasmDataManager.getGermplasmByGID(g1.getGid())).thenReturn(g1);
 
-		GermplasmGroupNamingResult result =
-				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.setting, this.codeNameType, 0, 0);
+		GermplasmGroupNamingResult result = this.germplasmCodeGenerationService
+				.applyGroupName(g1.getGid(), this.namingConfiguration, this.codeNameType, this.codingRuleExecutionContext);
 		Assert.assertEquals("Expected service to return with one validation message regarding germplasm not being fixed.", 1,
 				result.getMessages().size());
 		Assert.assertTrue("Expected service to return with validation regarding germplasm not being fixed.",
 				result.getMessages().contains("Germplasm (gid: 1) is not part of a management group. Can not assign group name."));
 	}
 
-	private void setupCodeNameType() {
-		this.codeNameType = new UserDefinedField();
-		this.codeNameType.setFldno(41);
-		this.codeNameType.setFcode("CODE1");
+	@Test
+	public void testApplyGroupNameAutomaticNamingGermplasmIsFixedAndHasGroupMembers() throws RuleException {
+		Integer mgid = 1;
+
+		Germplasm g1 = new Germplasm();
+		g1.setGid(1);
+		g1.setMgid(mgid);
+
+		// Setup existing preferred name
+		Name g1Name = new Name();
+		g1Name.setNval("g1Name");
+		g1Name.setNstat(1);
+		g1.getNames().add(g1Name);
+
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(g1.getGid())).thenReturn(g1);
+
+		Germplasm g2 = new Germplasm();
+		g2.setGid(2);
+		g2.setMgid(mgid);
+
+		Germplasm g3 = new Germplasm();
+		g3.setGid(3);
+		g3.setMgid(mgid);
+
+		String expectedCodedName = PREFIX + NAMING_CONFIG_STARTING_SEQUENCE + SUFFIX;
+
+		Mockito.when(this.germplasmGroupingService.getGroupMembers(mgid)).thenReturn(Lists.newArrayList(g1, g2, g3));
+		Mockito.when(this.rulesService.runRules(this.codingRuleExecutionContext)).thenReturn(expectedCodedName);
+
+		GermplasmGroupNamingResult result = this.germplasmCodeGenerationService
+				.applyGroupName(g1.getGid(), this.namingConfiguration, this.codeNameType, this.codingRuleExecutionContext);
+		Assert.assertEquals("Expected service to return with 3 messages, one per group member.", 3, result.getMessages().size());
+
+		Assert.assertEquals("Expected germplasm g1 to have a coded name assigned as preferred name.", expectedCodedName,
+				g1.findPreferredName().getNval());
+		Assert.assertEquals("Expected germplasm g1 to have a coded name with coded name type.", this.codeNameType.getFldno(),
+				g1.findPreferredName().getTypeId());
+		Assert.assertEquals("Expected existing preferred name of germplasm g1 to be set as non-preferred.", new Integer(0),
+				g1Name.getNstat());
+		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g1.getGid(),
+				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(0));
+
+		Assert.assertEquals("Expected germplasm g2 to have a coded name assigned.", expectedCodedName, g2.findPreferredName().getNval());
+		Assert.assertEquals("Expected germplasm g2 to have a coded name with coded name type.", this.codeNameType.getFldno(),
+				g2.findPreferredName().getTypeId());
+		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g2.getGid(),
+				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(1));
+
+		Assert.assertEquals("Expected germplasm g3 to have a coded name assigned.", expectedCodedName, g3.findPreferredName().getNval());
+		Assert.assertEquals("Expected germplasm g3 to have a coded name with coded name type.", this.codeNameType.getFldno(),
+				g3.findPreferredName().getTypeId());
+		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g3.getGid(),
+				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(2));
 	}
 
 	@Test
-	public void testApplyGroupNameWhenGermplasmIsFixedAndHasGroupMembers() {
+	public void testApplyGroupNameAutomaticNamingGermplasmIsFixedAndHasGroupMembersWithExistingCodedNames() throws RuleException {
+		Integer mgid = 1;
+
+		Germplasm g1 = new Germplasm();
+		g1.setGid(1);
+		g1.setMgid(mgid);
+
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(g1.getGid())).thenReturn(g1);
+
+		Germplasm g2 = new Germplasm();
+		g2.setGid(2);
+		g2.setMgid(mgid);
+
+		Germplasm g3 = new Germplasm();
+		g3.setGid(3);
+		g3.setMgid(mgid);
+
+		// Lets setup the third member with existing coded name.
+		Name g3CodedName = new Name();
+		// same name type
+		g3CodedName.setTypeId(this.codeNameType.getFldno());
+		// but different name
+		String existingCodedNameOfG3 = "ExistingCodedNameOfG3";
+		g3CodedName.setNval(existingCodedNameOfG3);
+		g3CodedName.setNstat(1);
+		g3.getNames().add(g3CodedName);
+
+		String expectedCodedName = PREFIX + NAMING_CONFIG_STARTING_SEQUENCE + SUFFIX;
+
+		Mockito.when(this.germplasmGroupingService.getGroupMembers(mgid)).thenReturn(Lists.newArrayList(g1, g2, g3));
+		Mockito.when(this.rulesService.runRules(this.codingRuleExecutionContext)).thenReturn(expectedCodedName);
+
+		GermplasmGroupNamingResult result = this.germplasmCodeGenerationService
+				.applyGroupName(g1.getGid(), this.namingConfiguration, this.codeNameType, this.codingRuleExecutionContext);
+		Assert.assertEquals("Expected service to return with 3 messages, one per group member.", 3, result.getMessages().size());
+
+		Assert.assertEquals("Expected germplasm g1 to have a coded name assigned as preferred name.", expectedCodedName,
+				g1.findPreferredName().getNval());
+		Assert.assertEquals("Expected germplasm g1 to have a coded name with coded name type.", this.codeNameType.getFldno(),
+				g1.findPreferredName().getTypeId());
+		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g1.getGid(),
+				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(0));
+
+		Assert.assertEquals("Expected germplasm g2 to have a coded name assigned.", expectedCodedName, g2.findPreferredName().getNval());
+		Assert.assertEquals("Expected germplasm g2 to have a coded name with coded name type.", this.codeNameType.getFldno(),
+				g2.findPreferredName().getTypeId());
+		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g2.getGid(),
+				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(1));
+
+		Assert.assertEquals("Expected existing coded name of g3 to be retained.", existingCodedNameOfG3, g3.findPreferredName().getNval());
+		Assert.assertTrue(
+				"Expected service to return with validation regarding germplasm g3 not assigned given name because it already has one with same type.",
+				result.getMessages().contains(
+						"Germplasm (gid: 3) already has existing name ExistingCodedNameOfG3 of type CODE1. Supplied name "
+								+ expectedCodedName + " was not added."));
+	}
+
+	@Test
+	public void testApplyGroupNamesAutomaticNaming() throws RuleException {
+		final Set<Integer> gids = new HashSet<>(Arrays.asList(1001, 1002, 1003, 1004));
+		final Map<Integer, Germplasm> germplasmMap = new HashMap<>();
+		final Map<Integer, Name> oldPreferredNames = new HashMap<>();
+		Integer startNumber = NAMING_CONFIG_STARTING_SEQUENCE;
+		for (final Integer gid : gids) {
+			Germplasm germplasm = new Germplasm();
+			germplasm.setGid(gid);
+			germplasm.setMgid(gid);
+
+			// Setup existing preferred name
+			Name g1Name = new Name();
+			g1Name.setNval("Name G-" + gid);
+			g1Name.setNstat(1);
+			germplasm.getNames().add(g1Name);
+			germplasmMap.put(gid, germplasm);
+			oldPreferredNames.put(gid, g1Name);
+
+			Mockito.when(this.germplasmDataManager.getGermplasmByGID(gid)).thenReturn(germplasm);
+			Mockito.when(this.germplasmGroupingService.getGroupMembers(gid)).thenReturn(Lists.newArrayList(germplasm));
+		}
+		Mockito.when(this.ruleFactory.getRuleSequenceForNamespace("coding")).thenReturn(new String[]{});
+		Mockito.when(this.rulesService.runRules(Mockito.any(CodingRuleExecutionContext.class)))
+				.thenReturn(PREFIX + NAMING_CONFIG_STARTING_SEQUENCE + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 1) + SUFFIX,
+						PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 2) + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 3) + SUFFIX,
+						PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 4) + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 5) + SUFFIX);
+
+		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
+				this.germplasmCodeGenerationService.applyGroupNames(gids, this.namingConfiguration, this.codeNameType);
+		Assert.assertEquals("Expected service to return with " + gids.size() + " naming results, one per germplasm.", gids.size(),
+				resultsMap.keySet().size());
+
+		for (final Integer gid : gids) {
+			final Germplasm germplasm = germplasmMap.get(gid);
+			String expectedCodedName = PREFIX + (startNumber++) + SUFFIX;
+			Assert.assertEquals("Expected germplasm " + gid + " to have a coded name assigned as preferred name.", expectedCodedName,
+					germplasm.findPreferredName().getNval());
+			Assert.assertEquals("Expected germplasm " + gid + " to have a coded name with coded name type.", this.codeNameType.getFldno(),
+					germplasm.findPreferredName().getTypeId());
+			Assert.assertEquals("Expected existing preferred name of germplasm " + gid + " to be set as non-preferred.", new Integer(0),
+					oldPreferredNames.get(gid).getNstat());
+
+			Assert.assertNotNull(resultsMap.get(gid));
+			Assert.assertEquals(1, resultsMap.get(gid).getMessages().size());
+			Assert.assertEquals(
+					String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
+							expectedCodedName, this.codeNameType.getFcode()), resultsMap.get(gid).getMessages().get(0));
+		}
+
+	}
+
+	@Test
+	public void testApplyGroupNameManualNamingGermplasmIsNotFixed() {
+		Germplasm g1 = new Germplasm();
+		g1.setGid(1);
+
+		Mockito.when(this.germplasmDataManager.getGermplasmByGID(g1.getGid())).thenReturn(g1);
+
+		GermplasmGroupNamingResult result =
+				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.germplasmNameSetting, this.codeNameType, 0, 0);
+		Assert.assertEquals("Expected service to return with one validation message regarding germplasm not being fixed.", 1,
+				result.getMessages().size());
+		Assert.assertTrue("Expected service to return with validation regarding germplasm not being fixed.",
+				result.getMessages().contains("Germplasm (gid: 1) is not part of a management group. Can not assign group name."));
+	}
+
+	@Test
+	public void testApplyGroupNameManualNamingGermplasmIsFixedAndHasGroupMembers() {
 		Integer mgid = 1;
 
 		Germplasm g1 = new Germplasm();
@@ -123,7 +306,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		String expectedCodedName = PREFIX + " 000000" + NEXT_NUMBER_WITH_SPACE + " " + SUFFIX;
 
 		GermplasmGroupNamingResult result =
-				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.setting, this.codeNameType, 0, 0);
+				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with 3 messages, one per group member.", 3, result.getMessages().size());
 
 		Assert.assertEquals("Expected germplasm g1 to have a coded name assigned as preferred name.", expectedCodedName,
@@ -149,7 +332,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNameWhenGermplasmIsFixedAndHasGroupMembersWithExistingCodedNames() {
+	public void testApplyGroupNameManualNamingGermplasmIsFixedAndHasGroupMembersWithExistingCodedNames() {
 		Integer mgid = 1;
 
 		Germplasm g1 = new Germplasm();
@@ -181,7 +364,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		String expectedCodedName = PREFIX + " 000000" + NEXT_NUMBER_WITH_SPACE + " " + SUFFIX;
 
 		GermplasmGroupNamingResult result =
-				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.setting, this.codeNameType, 0, 0);
+				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with 3 messages, one per group member.", 3, result.getMessages().size());
 
 		Assert.assertEquals("Expected germplasm g1 to have a coded name assigned as preferred name.", expectedCodedName,
@@ -206,10 +389,10 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNameWhenStartNumberIsSpecified() {
+	public void testApplyGroupNameManualWhenStartNumberIsSpecified() {
 		// Set a start number greater than what is saved
 		final Integer startNumber = NEXT_NUMBER_WITH_SPACE + 10;
-		this.setting.setStartNumber(startNumber);
+		this.germplasmNameSetting.setStartNumber(startNumber);
 
 		Integer mgid = 1;
 
@@ -238,7 +421,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		String expectedCodedName = PREFIX + " 00000" + startNumber + " " + SUFFIX;
 
 		GermplasmGroupNamingResult result =
-				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.setting, this.codeNameType, 0, 0);
+				this.germplasmCodeGenerationService.applyGroupName(g1.getGid(), this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with 3 messages, one per group member.", 3, result.getMessages().size());
 
 		Assert.assertEquals("Expected germplasm g1 to have a coded name assigned as preferred name.", expectedCodedName,
@@ -264,7 +447,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNames() {
+	public void testApplyGroupNamesManualNaming() {
 		final Set<Integer> gids = new HashSet<>(Arrays.asList(1001, 1002, 1003, 1004));
 		final Map<Integer, Germplasm> germplasmMap = new HashMap<>();
 		final Map<Integer, Name> oldPreferredNames = new HashMap<>();
@@ -289,7 +472,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 				.thenReturn(startNumber, startNumber + 1, startNumber + 2, startNumber + 3, startNumber + 4, startNumber + 5);
 
 		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
-				this.germplasmCodeGenerationService.applyGroupNames(gids, this.setting, this.codeNameType, 0, 0);
+				this.germplasmCodeGenerationService.applyGroupNames(gids, this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with " + gids.size() + " naming results, one per germplasm.", gids.size(),
 				resultsMap.keySet().size());
 
@@ -313,9 +496,9 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNamesWithStartNumberSmallerThanLastSequenceUsed() {
+	public void testApplyGroupNamesManualNamingWithStartNumberSmallerThanLastSequenceUsed() {
 		// Set a start number greater than what is saved
-		this.setting.setStartNumber(NEXT_NUMBER_WITH_SPACE - 1);
+		this.germplasmNameSetting.setStartNumber(NEXT_NUMBER_WITH_SPACE - 1);
 
 		final Set<Integer> gids = new HashSet<>(Arrays.asList(1001, 1002, 1003, 1004));
 		final Map<Integer, Germplasm> germplasmMap = new HashMap<>();
@@ -341,7 +524,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 				.thenReturn(startNumber, startNumber + 1, startNumber + 2, startNumber + 3, startNumber + 4, startNumber + 5);
 
 		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
-				this.germplasmCodeGenerationService.applyGroupNames(gids, this.setting, this.codeNameType, 0, 0);
+				this.germplasmCodeGenerationService.applyGroupNames(gids, this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with " + gids.size() + " naming results, one per germplasm.", gids.size(),
 				resultsMap.keySet().size());
 
@@ -365,10 +548,10 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNamesWhenValidStartNumberIsSpecified() {
+	public void testApplyGroupNamesManualNamingValidStartNumberIsSpecified() {
 		// Set a start number greater than what is saved
 		Integer startNumber = NEXT_NUMBER_WITH_SPACE + 10;
-		this.setting.setStartNumber(startNumber);
+		this.germplasmNameSetting.setStartNumber(startNumber);
 
 		final Set<Integer> gids = new HashSet<>(Arrays.asList(1001, 1002, 1003));
 		final Map<Integer, Germplasm> germplasmMap = new HashMap<>();
@@ -391,7 +574,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		}
 
 		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
-				this.germplasmCodeGenerationService.applyGroupNames(gids, this.setting, this.codeNameType, 0, 0);
+				this.germplasmCodeGenerationService.applyGroupNames(gids, this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with " + gids.size() + " naming results, one per germplasm.", gids.size(),
 				resultsMap.keySet().size());
 
@@ -430,7 +613,8 @@ public class GermplasmCodeGenerationServiceImplTest {
 	@Test
 	public void testBuildDesignationNameInSequenceWithSpacesInPrefixSuffix() {
 		final int nextNumber = 10;
-		final String designationName = this.germplasmCodeGenerationService.buildDesignationNameInSequence(nextNumber, this.setting);
+		final String designationName =
+				this.germplasmCodeGenerationService.buildDesignationNameInSequence(nextNumber, this.germplasmNameSetting);
 		Assert.assertEquals(PREFIX + " 00000" + nextNumber + " " + SUFFIX, designationName);
 	}
 
@@ -582,7 +766,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 	public void testGetNextNameInSequenceWithNullStartNumber() {
 		String nextNameInSequence = "";
 		try {
-			nextNameInSequence = this.germplasmCodeGenerationService.getNextNameInSequence(this.setting);
+			nextNameInSequence = this.germplasmCodeGenerationService.getNextNameInSequence(this.germplasmNameSetting);
 		} catch (InvalidGermplasmNameSettingException e) {
 			Assert.fail("Not expecting InvalidGermplasmNameSettingException to be thrown but was thrown.");
 		}
@@ -648,6 +832,21 @@ public class GermplasmCodeGenerationServiceImplTest {
 		setting.setNumOfDigits(7);
 
 		return setting;
+	}
+
+	private NamingConfiguration createNamingConfiguration() {
+		final NamingConfiguration namingConfiguration = new NamingConfiguration();
+		namingConfiguration.setPrefix(GermplasmCodeGenerationServiceImplTest.PREFIX);
+		namingConfiguration.setSuffix(GermplasmCodeGenerationServiceImplTest.SUFFIX);
+		namingConfiguration.setCount(SequenceExpression.KEY);
+		namingConfiguration.setSequenceCounter(NAMING_CONFIG_STARTING_SEQUENCE);
+		return namingConfiguration;
+	}
+
+	private void setupCodeNameType() {
+		this.codeNameType = new UserDefinedField();
+		this.codeNameType.setFldno(41);
+		this.codeNameType.setFcode("CODE1");
 	}
 
 }
