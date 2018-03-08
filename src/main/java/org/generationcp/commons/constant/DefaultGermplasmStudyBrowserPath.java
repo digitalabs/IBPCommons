@@ -6,8 +6,9 @@ package org.generationcp.commons.constant;
  */
 public interface DefaultGermplasmStudyBrowserPath {
 
-	public static final String LIST_BROWSER_LINK = "ibpworkbench/maingpsb/germplasmlist-";
-	public static final String GERMPLASM_BROWSER_LINK = "ibpworkbench/maingpsb/germplasm-";
-	public static final String STUDY_BROWSER_LINK = "ibpworkbench/maingpsb/study-";
+	String LIST_BROWSER_LINK = "ibpworkbench/maingpsb/germplasmlist-";
+	String GERMPLASM_BROWSER_LINK = "ibpworkbench/maingpsb/germplasm-";
+	String STUDY_BROWSER_LINK = "ibpworkbench/maingpsb/study-";
+	String GRAPHICAL_FILTERING_TOOL_LINK = "/ibpworkbench/controller/graphical-filtering?studyDbId=%s&crop=%s&restartApplication";
 
 }
