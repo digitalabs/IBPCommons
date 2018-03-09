@@ -213,14 +213,16 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			// Make the current preferred name as non-preferred by setting nstat = 0
 			final Name currentPreferredName = germplasm.findPreferredName();
 			if (currentPreferredName != null) {
-				currentPreferredName.setNstat(0); // nstat = 0 means it is not a preferred name.
+				// nstat = 0 means it is not a preferred name.
+				currentPreferredName.setNstat(0);
 			}
 
 			final Name name = new Name();
 			name.setGermplasmId(germplasm.getGid());
 			name.setTypeId(nameType.getFldno());
 			name.setNval(groupName);
-			name.setNstat(1); // nstat = 1 means it is preferred name.
+			// nstat = 1 means it is preferred name.
+			name.setNstat(1);
 			name.setUserId(userId);
 			name.setLocationId(locationId);
 			name.setNdate(Util.getCurrentDateAsIntegerValue());

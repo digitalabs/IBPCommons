@@ -48,7 +48,7 @@ public class SequenceExpressionTest {
 		sequenceExpression.apply(values, "", namingConfiguration);
 
 		assertEquals("AAA" + String.valueOf(startingSequenceNumber) + "BBB", values.get(0).toString());
-		assertEquals("Sequence Counter should be incremented each time [SEQUENCE] expression is evaluated.",startingSequenceNumber + 1,
+		assertEquals("Sequence Counter should be incremented each time [SEQUENCE] expression is evaluated.", startingSequenceNumber + 1,
 				namingConfiguration.getSequenceCounter());
 
 	}

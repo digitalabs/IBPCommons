@@ -232,7 +232,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 			Mockito.when(this.germplasmDataManager.getGermplasmByGID(gid)).thenReturn(germplasm);
 			Mockito.when(this.germplasmGroupingService.getGroupMembers(gid)).thenReturn(Lists.newArrayList(germplasm));
 		}
-		Mockito.when(this.ruleFactory.getRuleSequenceForNamespace("coding")).thenReturn(new String[]{});
+		Mockito.when(this.ruleFactory.getRuleSequenceForNamespace("coding")).thenReturn(new String[] {});
 		Mockito.when(this.rulesService.runRules(Mockito.any(CodingRuleExecutionContext.class)))
 				.thenReturn(PREFIX + NAMING_CONFIG_STARTING_SEQUENCE + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 1) + SUFFIX,
 						PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 2) + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 3) + SUFFIX,

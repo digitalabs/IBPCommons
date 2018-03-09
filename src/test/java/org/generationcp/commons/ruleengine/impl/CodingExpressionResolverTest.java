@@ -37,7 +37,6 @@ public class CodingExpressionResolverTest {
 
 		assertEquals(currentInput + startingSequenceNumber, result.get(0));
 
-
 	}
 
 }

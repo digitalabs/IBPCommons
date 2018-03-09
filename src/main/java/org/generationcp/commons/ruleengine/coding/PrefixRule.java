@@ -7,7 +7,6 @@ import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Component
 public class PrefixRule extends OrderedRule<CodingRuleExecutionContext> {

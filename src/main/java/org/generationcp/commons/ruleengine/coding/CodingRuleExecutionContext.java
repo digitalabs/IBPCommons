@@ -3,7 +3,6 @@ package org.generationcp.commons.ruleengine.coding;
 import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
 import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CodingRuleExecutionContext extends OrderedRuleExecutionContext {

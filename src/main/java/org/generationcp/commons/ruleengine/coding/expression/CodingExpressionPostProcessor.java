@@ -8,12 +8,12 @@ public class CodingExpressionPostProcessor implements BeanPostProcessor {
 	private CodingExpressionFactory codingExpressionFactory;
 
 	@Override
-	public Object postProcessBeforeInitialization(final Object o, final String s) throws BeansException {
+	public Object postProcessBeforeInitialization(final Object o, final String s) {
 		return o;
 	}
 
 	@Override
-	public Object postProcessAfterInitialization(final Object o, final String s) throws BeansException {
+	public Object postProcessAfterInitialization(final Object o, final String s) {
 		if (o instanceof BaseCodingExpression) {
 			codingExpressionFactory.addExpression((Expression) o);
 		}

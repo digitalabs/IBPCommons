@@ -1,5 +1,5 @@
-
 package org.generationcp.commons.ruleengine.impl;
+
 import org.generationcp.commons.ruleengine.coding.expression.CodingExpressionFactory;
 import org.generationcp.commons.ruleengine.coding.expression.Expression;
 import org.generationcp.commons.util.ExpressionHelper;
@@ -18,9 +18,6 @@ public class CodingExpressionResolver {
 
 	@Resource
 	private CodingExpressionFactory factory;
-
-	public CodingExpressionResolver() {
-	}
 
 	public List<String> resolve(final String currentInput, final String processCode, final NamingConfiguration namingConfiguration) {
 		List<String> newNames = new ArrayList<String>();
