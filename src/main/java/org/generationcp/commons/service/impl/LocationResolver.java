@@ -2,14 +2,15 @@
 package org.generationcp.commons.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +25,12 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 	protected List<MeasurementVariable> conditions;
 	protected MeasurementRow trailInstanceObservation;
-	protected StudyType studyType;
+	protected StudyTypeDto studyType;
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocationResolver.class);
 
 	public LocationResolver(final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
-			final StudyType studyType) {
+			final StudyTypeDto studyType) {
 		this.studyType = studyType;
 		this.trailInstanceObservation = trailInstanceObservation;
 		this.conditions = conditions;
@@ -50,7 +51,7 @@ public class LocationResolver implements KeyComponentValueResolver {
 			});
 		}
 
-		if (this.studyType == StudyType.N) {
+		if (Objects.equals(this.studyType.getLabel(), "N")) {
 
 			if (conditionsMap != null) {
 				if (conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
@@ -62,7 +63,7 @@ public class LocationResolver implements KeyComponentValueResolver {
 				}
 			}
 
-		} else if (this.studyType == StudyType.T) {
+		} else if (Objects.equals(this.studyType.getLabel(), "T")) {
 
 			if (this.trailInstanceObservation != null) {
 				final ImmutableMap<Integer, MeasurementData> dataListMap =

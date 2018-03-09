@@ -13,17 +13,17 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.oms.StudyType;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 
 public class SeedSourceGenerator {
 
-	private GermplasmNamingProperties germplasmNamingProperties;
-	private OntologyVariableDataManager ontologyVariableDataManager;
-	private ContextUtil contextUtil;
+	private final GermplasmNamingProperties germplasmNamingProperties;
+	private final OntologyVariableDataManager ontologyVariableDataManager;
+	private final ContextUtil contextUtil;
 
-	public SeedSourceGenerator(GermplasmNamingProperties germplasmNamingProperties, OntologyVariableDataManager ontologyVariableDataManager,
-			ContextUtil contextUtil) {
+	public SeedSourceGenerator(final GermplasmNamingProperties germplasmNamingProperties, final OntologyVariableDataManager ontologyVariableDataManager,
+			final ContextUtil contextUtil) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.contextUtil = contextUtil;
@@ -87,13 +87,11 @@ public class SeedSourceGenerator {
 			}
 		};
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
-		MeasurementRow trailInstanceObservation = null;
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
+		final MeasurementRow trailInstanceObservation;
 
-		if(studyType == StudyType.T){
-			trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(instanceNumber));
-		}
+		trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(instanceNumber));
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
@@ -112,8 +110,8 @@ public class SeedSourceGenerator {
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
-		String femaleSeedSource = generateSeedSource(workbook, "1", null, femalePlotNo, femaleStudyName, null);
-		String maleSeedSource = generateSeedSource(workbook, "1", null, malePlotNo, maleStudyName, null);
+		final String femaleSeedSource = generateSeedSource(workbook, "1", null, femalePlotNo, femaleStudyName, null);
+		final String maleSeedSource = generateSeedSource(workbook, "1", null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
 }

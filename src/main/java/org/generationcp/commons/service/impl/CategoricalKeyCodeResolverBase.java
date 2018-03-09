@@ -2,6 +2,7 @@
 package org.generationcp.commons.service.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.KeyComponentValueResolver;
@@ -13,6 +14,7 @@ import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 
 public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValueResolver {
@@ -22,10 +24,10 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 
 	protected List<MeasurementVariable> conditions;
 	protected MeasurementRow trailInstanceObservation;
-	protected StudyType studyType;
+	protected StudyTypeDto studyType;
 
 	public CategoricalKeyCodeResolverBase(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
-			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyType studyType) {
+			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyTypeDto studyType) {
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.contextUtil = contextUtil;
 		this.studyType = studyType;
@@ -47,7 +49,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 	public String resolve() {
 		String resolvedValue = "";
 
-		if (this.studyType == StudyType.N) {
+		if (Objects.equals(this.studyType.getLabel(), StudyType.N.getLabel())) {
 			MeasurementVariable measurementVariable = null;
 
 			if (this.conditions != null) {
@@ -70,7 +72,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 					}
 				}
 			}
-		} else if (this.studyType == StudyType.T) {
+		} else if (Objects.equals(this.studyType.getLabel(), StudyType.T.getLabel())) {
 			if (this.trailInstanceObservation != null) {
 				for (final MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
 					if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == this.getKeyCodeId().getId()) {

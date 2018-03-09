@@ -12,11 +12,11 @@ import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.etl.StudyDetails;
 import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
@@ -42,15 +42,15 @@ public class ProjectPrefixResolverTest {
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
 
-		Project testProject = new Project();
+		final Project testProject = new Project();
 		testProject.setUniqueID("e8e4be0a-5d63-452f-8fde-b1c794ec7b1a");
 		testProject.setCropType(new CropType("maize"));
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(testProject);
 		Mockito.when(this.contextUtil.getCurrentProgramUUID()).thenReturn(testProject.getUniqueID());
 
-		Variable variable = new Variable();
-		Scale seasonScale = new Scale();
-		TermSummary categories = new TermSummary(PROJECT_CATEGORY_ID, PROJECT_CATEGORY_VALUE, PROJECT_CATEGORY_VALUE);
+		final Variable variable = new Variable();
+		final Scale seasonScale = new Scale();
+		final TermSummary categories = new TermSummary(PROJECT_CATEGORY_ID, PROJECT_CATEGORY_VALUE, PROJECT_CATEGORY_VALUE);
 		seasonScale.addCategory(categories);
 		variable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
@@ -60,24 +60,24 @@ public class ProjectPrefixResolverTest {
 	@Test
 	public void testResolveForNurseryWithProgramVariableAndValue() {
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(new StudyTypeDto("N"));
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable measurementVariable = new MeasurementVariable();
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
 		measurementVariable.setTermId(TermId.PROJECT_PREFIX.getId());
 		measurementVariable.setValue(PROJECT_CATEGORY_ID.toString());
 
 		workbook.setConditions(Lists.newArrayList(measurementVariable));
 
-		MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		ProjectPrefixResolver
+		final ProjectPrefixResolver
 				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
 				trailInstanceObservation, studyType);
-		String program = projectPrefixResolver.resolve();
+		final String program = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in Nursery settings.",
 				PROJECT_CATEGORY_VALUE, program);
 
@@ -85,66 +85,66 @@ public class ProjectPrefixResolverTest {
 
 	@Test
 	public void testResolveForTrialWithProgramVariableAndValue() {
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(new StudyTypeDto("T"));
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1ProgramMV = new MeasurementVariable();
+		final MeasurementVariable instance1ProgramMV = new MeasurementVariable();
 		instance1ProgramMV.setTermId(TermId.PROJECT_PREFIX.getId());
-		MeasurementData instance1ProgramMD = new MeasurementData();
+		final MeasurementData instance1ProgramMD = new MeasurementData();
 		instance1ProgramMD.setValue(PROJECT_CATEGORY_VALUE);
 		instance1ProgramMD.setMeasurementVariable(instance1ProgramMV);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow trialInstanceObservation = new MeasurementRow();
+		final MeasurementRow trialInstanceObservation = new MeasurementRow();
 		trialInstanceObservation.setDataList(Lists.newArrayList(instance1MD, instance1ProgramMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(trialInstanceObservation));
 
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		ProjectPrefixResolver
+		final ProjectPrefixResolver
 				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
 				trialInstanceObservation, studyType);
-		String season = projectPrefixResolver.resolve();
+		final String season = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in environment level settings.",
 				PROJECT_CATEGORY_VALUE, season);
 	}
 	
 	@Test
 	public void testResolveForTrialWithProgramVariableConditions() {
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(new StudyTypeDto("T"));
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1ProgramMV = new MeasurementVariable();
+		final MeasurementVariable instance1ProgramMV = new MeasurementVariable();
 		instance1ProgramMV.setTermId(TermId.PROJECT_PREFIX.getId());
 		instance1ProgramMV.setValue(PROJECT_CATEGORY_VALUE);
 		
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		instance1MV.setValue("1");
 		
-		MeasurementRow trialInstanceObservation = null;
+		final MeasurementRow trialInstanceObservation = null;
 		
-		List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
+		final List<MeasurementVariable> conditions = new ArrayList<MeasurementVariable>();
 		conditions.add(instance1MV);
 		conditions.add(instance1ProgramMV);
 		workbook.setConditions(conditions );
 
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		ProjectPrefixResolver
+		final ProjectPrefixResolver
 				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
 				trialInstanceObservation, studyType);
-		String season = projectPrefixResolver.resolve();
+		final String season = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in environment level settings.",
 				PROJECT_CATEGORY_VALUE, season);
 	}
