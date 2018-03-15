@@ -3,8 +3,8 @@ package org.generationcp.commons.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.generationcp.commons.constant.ToolEnum;
 import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.generationcp.middleware.pojos.workbench.ToolType;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -51,12 +51,10 @@ public class WorkbenchAppPathResolver {
 		appPath = appPath.endsWith("/") ? appPath.substring(0, appPath.length() - 1) : appPath;
 
 		if (!"null".equals(idParam) && !StringUtil.isEmptyOrWhitespaceOnly(idParam)) {
-			if (ToolEnum.STUDY_MANAGER_FIELDBOOK_WEB.getToolName().equals(tool.getToolName())) {
+			if (ToolName.STUDY_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
 				appPath += "/openTrial/";
-			} else if (Util
-					.isOneOf(tool.getToolName(), ToolEnum.BM_LIST_MANAGER.getToolName(), ToolEnum.STUDY_BROWSER_WITH_ID.getToolName(),
-							ToolEnum.GERMPLASM_BROWSER.getToolName(), ToolEnum.GERMPLASM_LIST_BROWSER)) {
-				appPath += "-";
+			} else if (ToolName.NURSERY_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
+				appPath += "/editNursery/";
 			}
 
 			appPath += idParam;

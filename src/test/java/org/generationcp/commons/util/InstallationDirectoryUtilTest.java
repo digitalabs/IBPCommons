@@ -1,38 +1,48 @@
 package org.generationcp.commons.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
-import org.generationcp.commons.constant.ToolEnum;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class InstallationDirectoryUtilTest {
 	
-	private static final String DUMMY_TOOL_TITLE = "DummyTitle";
-	private static final String DUMMY_NATIVE_TOOL_PATH = "C:/Breeding Management System/tools/dummyTool/dummyTool.exe";
 	private static final String DUMMY_PROJECT_NAME = "Maize Tutorial Program";
+	private static final String TEMP_FILENAME = "temp";
+	private static final String XLS_EXTENSION = ".xls";
 	
 	private InstallationDirectoryUtil installationDirUtil = new InstallationDirectoryUtil();
 	
+	private Project project;
+	
+	@Before
+	public void setup() {
+		this.project = ProjectTestDataInitializer.createProject();
+		project.setProjectName(DUMMY_PROJECT_NAME + new Random().nextInt());
+		
+		// Make sure test environment is clean
+		this.deleteTestInstallationDirectory();
+		final File workspaceDir = new File(InstallationDirectoryUtil.WORKSPACE_DIR);
+		Assert.assertFalse(workspaceDir.exists());
+	}
+	
 	@Test
 	public void testCreateWorkspaceDirectoriesForProject() {
-		final Project project = ProjectTestDataInitializer.createProject();
-		project.setProjectName(DUMMY_PROJECT_NAME);
-		this.installationDirUtil.createWorkspaceDirectoriesForProject(project);
+		this.installationDirUtil.createWorkspaceDirectoriesForProject(this.project);
 
 		final File projectWorkspaceDirectory =
-				new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), DUMMY_PROJECT_NAME);
+				new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + this.project.getCropType().getCropName(), this.project.getProjectName());
 		Assert.assertTrue(projectWorkspaceDirectory.exists());
 		this.verifyProjectFolderSubdirectories(projectWorkspaceDirectory, true);
-		
-		this.deleteTestInstallationDirectory();
 	}
 
 	// Check the existence of "breeding_view" directory under program with "input" and "output" subdirectories
@@ -40,7 +50,7 @@ public class InstallationDirectoryUtilTest {
 		if (exists) {
 			Assert.assertEquals(1, projectWorkspaceDirectory.list().length);
 		}
-		final File breedingViewDirectory = new File(projectWorkspaceDirectory, ToolEnum.BREEDING_VIEW.getToolName());
+		final File breedingViewDirectory = new File(projectWorkspaceDirectory, ToolName.BREEDING_VIEW.getName());
 		Assert.assertEquals(exists, breedingViewDirectory.exists());
 		final File bvInputDirectory = new File(breedingViewDirectory, InstallationDirectoryUtil.INPUT);
 		Assert.assertEquals(exists, bvInputDirectory.exists());
@@ -53,62 +63,50 @@ public class InstallationDirectoryUtilTest {
 		// Already create project directory. Test method should not continue with creating sub-contents
 		final String cropName = "banana";
 		final File projectWorkspaceDirectory =
-				new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + cropName, DUMMY_PROJECT_NAME);
+				new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + cropName, this.project.getProjectName());
 		projectWorkspaceDirectory.mkdirs();
 		
-		final Project project = ProjectTestDataInitializer.createProject();
-		project.setProjectName(DUMMY_PROJECT_NAME);
-		this.installationDirUtil.createWorkspaceDirectoriesForProject(project);
+		this.installationDirUtil.createWorkspaceDirectoriesForProject(this.project);
 		
 		Assert.assertTrue(projectWorkspaceDirectory.exists());
 		// Check that "breeding_view" directory and sub-folders will not be created anymore
 		this.verifyProjectFolderSubdirectories(projectWorkspaceDirectory, false);
-		
-		this.deleteTestInstallationDirectory();
 	}
 	
 	@Test
 	public void testRenameOldWorkspaceDirectoryWhenOldProgramFolderExists() {
 		// Existing directory should be renamed to new program name
 		final String oldProjectName = "Old Maize Program";
-		final Project project = ProjectTestDataInitializer.createProject();
 		final File oldProjectWorkspaceDirectory =
 				new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), oldProjectName);
 		oldProjectWorkspaceDirectory.mkdirs();
 		Assert.assertTrue(oldProjectWorkspaceDirectory.exists());
 		
-		project.setProjectName(DUMMY_PROJECT_NAME);
-		this.installationDirUtil.renameOldWorkspaceDirectory(oldProjectName, project);
+		this.installationDirUtil.renameOldWorkspaceDirectory(oldProjectName, this.project);
 		// Folder for old project name should not exist anymore since it was renamed
 		Assert.assertFalse(oldProjectWorkspaceDirectory.exists());
 		final File newProjectWorkspaceDirectory = new File(
-				InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), DUMMY_PROJECT_NAME);
+				InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), this.project.getProjectName());
 		Assert.assertTrue(newProjectWorkspaceDirectory.exists());
 		// Check that "breeding_view" directory and sub-folders will not be created anymore
 		this.verifyProjectFolderSubdirectories(newProjectWorkspaceDirectory, false);
-		
-		this.deleteTestInstallationDirectory();
 	}
 	
 	@Test
 	public void testRenameOldWorkspaceDirectoryWhenOldProgramFolderDoesNotExist() {
 		final String oldProjectName = "Old Maize Program";
-		final Project project = ProjectTestDataInitializer.createProject();
 		final File oldProjectWorkspaceDirectory =
 				new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), oldProjectName);
 		Assert.assertFalse(oldProjectWorkspaceDirectory.exists());
 		
-		project.setProjectName(DUMMY_PROJECT_NAME);
 		this.installationDirUtil.renameOldWorkspaceDirectory(oldProjectName, project);
 		// Folder for old project name should still not exist
 		Assert.assertFalse(oldProjectWorkspaceDirectory.exists());
 		final File newProjectWorkspaceDirectory = new File(
-				InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), DUMMY_PROJECT_NAME);
+				InstallationDirectoryUtil.WORKSPACE_DIR + File.separator + project.getCropType().getCropName(), this.project.getProjectName());
 		// Folder for new project name should now exist
 		Assert.assertTrue(newProjectWorkspaceDirectory.exists());
 		this.verifyProjectFolderSubdirectories(newProjectWorkspaceDirectory, true);
-		
-		this.deleteTestInstallationDirectory();
 	}
 	
 	@Test
@@ -148,7 +146,6 @@ public class InstallationDirectoryUtilTest {
 			this.verifyProjectFolderSubdirectories(newProjectWorkspaceDirectory, true);
 		}
 		
-		this.deleteTestInstallationDirectory();
 	}
 	
 	@Test
@@ -176,7 +173,6 @@ public class InstallationDirectoryUtilTest {
 			this.verifyProjectFolderSubdirectories(newProjectWorkspaceDirectory, true);
 		}
 		
-		this.deleteTestInstallationDirectory();
 	}
 
 	private void deleteTestInstallationDirectory() {
@@ -187,18 +183,13 @@ public class InstallationDirectoryUtilTest {
 	
 	@Test
 	public void testGetInputDirectoryForTool() {
-		final Project project = ProjectTestDataInitializer.createProject();
-		project.setProjectName(DUMMY_PROJECT_NAME);
-		Tool tool = this.constructDummyNativeTool();
-		tool.setGroupName("GROUPNAME");
 		try {
-			String inputDirectory = this.installationDirUtil.getInputDirectoryForProjectAndTool(project, tool);
+			String inputDirectory = this.installationDirUtil.getInputDirectoryForProjectAndTool(project, ToolName.BREEDING_VIEW);
 			Assert.assertNotNull(inputDirectory);
 			Assert.assertEquals(new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator
-					+ project.getCropType().getCropName() + File.separator + DUMMY_PROJECT_NAME + File.separator + tool.getGroupName() + File.separator
+					+ project.getCropType().getCropName() + File.separator + this.project.getProjectName() + File.separator + ToolName.BREEDING_VIEW.getName() + File.separator
 					+ InstallationDirectoryUtil.INPUT).getAbsolutePath(), new File(inputDirectory).getAbsolutePath());
 			
-			this.deleteTestInstallationDirectory();
 		} catch (IllegalStateException e) {
 			Assert.fail("There should be no exception thrown");
 		}
@@ -206,25 +197,77 @@ public class InstallationDirectoryUtilTest {
 	
 	@Test
 	public void testGetOutputDirectoryForTool() {
-		final Project project = ProjectTestDataInitializer.createProject();
-		project.setProjectName(DUMMY_PROJECT_NAME);
-		Tool tool = this.constructDummyNativeTool();
-		tool.setGroupName("GROUPNAME");
 		try {
-			String inputDirectory = this.installationDirUtil.getOutputDirectoryForProjectAndTool(project, tool);
-			Assert.assertNotNull(inputDirectory);
+			String outputDirectory = this.installationDirUtil.getOutputDirectoryForProjectAndTool(project, ToolName.BREEDING_VIEW);
+			Assert.assertNotNull(outputDirectory);
 			Assert.assertEquals(new File(InstallationDirectoryUtil.WORKSPACE_DIR + File.separator
-					+ project.getCropType().getCropName() + File.separator + DUMMY_PROJECT_NAME + File.separator + tool.getGroupName() + File.separator
-					+ InstallationDirectoryUtil.OUTPUT).getAbsolutePath(), new File(inputDirectory).getAbsolutePath());
+					+ project.getCropType().getCropName() + File.separator + this.project.getProjectName() + File.separator + ToolName.BREEDING_VIEW.getName() + File.separator
+					+ InstallationDirectoryUtil.OUTPUT).getAbsolutePath(), new File(outputDirectory).getAbsolutePath());
 			
-			this.deleteTestInstallationDirectory();
 		} catch (IllegalStateException e) {
 			Assert.fail("There should be no exception thrown");
 		}
 	}
 	
-	private Tool constructDummyNativeTool() {
-		return new Tool(ToolName.GDMS.name(), InstallationDirectoryUtilTest.DUMMY_TOOL_TITLE, InstallationDirectoryUtilTest.DUMMY_NATIVE_TOOL_PATH);
+	@Test
+	public void testGetTempFileInOutputDirectoryForProjectAndTool() {
+		try {
+			final String tempFilePath = this.installationDirUtil.getTempFileInOutputDirectoryForProjectAndTool(TEMP_FILENAME, XLS_EXTENSION, project, ToolName.FIELDBOOK_WEB);
+			final String outputDirectory = this.installationDirUtil.getOutputDirectoryForProjectAndTool(project, ToolName.FIELDBOOK_WEB);
+			final File outputDirectoryFile = new File(outputDirectory);
+			Assert.assertTrue(outputDirectoryFile.exists());
+			Assert.assertFalse(outputDirectory.isEmpty());
+			Assert.assertEquals(1, outputDirectoryFile.list().length);
+			Assert.assertEquals(outputDirectory + File.separator + outputDirectoryFile.list()[0], tempFilePath);
+			final File tempFile = new File(tempFilePath);
+			Assert.assertTrue(tempFile.exists());
+			Assert.assertTrue(tempFile.getName().startsWith(TEMP_FILENAME));
+			
+		} catch (IOException e) {
+			Assert.fail("There should be no exception thrown");
+		}
 	}
+	
+	@Test
+	public void testGetTempFileInOutputDirectoryWhenPrefixIsLessThan3Characters() {
+		try {
+			final String prefix = "AB";
+			final String tempFilePath = this.installationDirUtil.getTempFileInOutputDirectoryForProjectAndTool(prefix, XLS_EXTENSION, project, ToolName.FIELDBOOK_WEB);
+			final String outputDirectory = this.installationDirUtil.getOutputDirectoryForProjectAndTool(project, ToolName.FIELDBOOK_WEB);
+			final File outputDirectoryFile = new File(outputDirectory);
+			Assert.assertTrue(outputDirectoryFile.exists());
+			Assert.assertFalse(outputDirectory.isEmpty());
+			Assert.assertEquals(1, outputDirectoryFile.list().length);
+			Assert.assertEquals(outputDirectory + File.separator + outputDirectoryFile.list()[0], tempFilePath);
+			final File tempFile = new File(tempFilePath);
+			Assert.assertTrue(tempFile.exists());
+			// Check that "temp" was used as prefix in place of original prefix since it was too short
+			Assert.assertTrue(tempFile.getName().startsWith(InstallationDirectoryUtil.TEMP));
+			
+		} catch (IOException | IllegalArgumentException e) {
+			Assert.fail("There should be no exception thrown");
+		}
+	}
+	
+	@Test
+	public void testGetFileInTemporaryDirectoryForProjectAndTool() {
+		try {
+			final String tempFilePath = this.installationDirUtil.getFileInTemporaryDirectoryForProjectAndTool(TEMP_FILENAME +  XLS_EXTENSION, project, ToolName.STUDY_BROWSER);
+			final File toolDirectoryFile = this.installationDirUtil.getToolDirectoryForProject(project, ToolName.STUDY_BROWSER);
+			Assert.assertTrue(toolDirectoryFile.exists());
+			Assert.assertEquals(1, toolDirectoryFile.list().length);
+			String outputTempDirectory = InstallationDirectoryUtil.OUTPUT;
+			for (final File file : toolDirectoryFile.listFiles()) {
+				if (file.getName().startsWith("output") && file.isDirectory()) {
+					outputTempDirectory = file.getName();
+				}
+			}
+			Assert.assertEquals(toolDirectoryFile.getAbsolutePath() + File.separator + outputTempDirectory + File.separator + TEMP_FILENAME
+					+ XLS_EXTENSION, tempFilePath);
+		} catch (IOException e) {
+			Assert.fail("There should be no exception thrown");
+		}
+	}
+	
 
 }

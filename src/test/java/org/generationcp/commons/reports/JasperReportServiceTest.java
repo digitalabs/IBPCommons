@@ -1,7 +1,8 @@
 package org.generationcp.commons.reports;
 
-import junit.framework.Assert;
-import org.generationcp.commons.constant.ToolEnum;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.generationcp.commons.constant.ToolSection;
 import org.generationcp.commons.pojo.CustomReportType;
 import org.generationcp.commons.reports.service.JasperReportService;
@@ -13,6 +14,7 @@ import org.generationcp.middleware.pojos.presets.StandardPreset;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.generationcp.middleware.util.CrossExpansionProperties;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,8 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.List;
+import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JasperReportServiceTest {
@@ -60,12 +61,12 @@ public class JasperReportServiceTest {
         Tool fbTool = new Tool();
         fbTool.setToolId(TEST_TOOL_ID);
 
-        Mockito.when(this.workbenchDataManager.getToolWithName(ToolEnum.FIELDBOOK_WEB.getToolName())).thenReturn(fbTool);
+        Mockito.when(this.workbenchDataManager.getToolWithName(ToolName.TRIAL_MANAGER_FIELDBOOK_WEB.getName())).thenReturn(fbTool);
 
         Mockito.when(workbenchDataManager.getStandardPresetFromCropAndTool(TEST_CROP_NAME.toLowerCase(), TEST_TOOL_ID.intValue(), ToolSection.FB_TRIAL_MGR_CUSTOM_REPORT.name())).thenReturn(standardPresets);
 
 
-        List<CustomReportType> presets = unitUnderTest.getCustomReportTypes(ToolSection.FB_TRIAL_MGR_CUSTOM_REPORT.name(), ToolEnum.FIELDBOOK_WEB.getToolName());
+        List<CustomReportType> presets = unitUnderTest.getCustomReportTypes(ToolSection.FB_TRIAL_MGR_CUSTOM_REPORT.name(), ToolName.TRIAL_MANAGER_FIELDBOOK_WEB.getName());
         Assert.assertEquals("Should return 2 presets since there is a study", 2, presets.size());
     }
 }

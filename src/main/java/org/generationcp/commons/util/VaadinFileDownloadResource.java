@@ -26,25 +26,25 @@ import com.vaadin.terminal.FileResource;
  * @author Dennis Billano
  *
  */
-public class FileDownloadResource extends FileResource {
+public class VaadinFileDownloadResource extends FileResource {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger LOG = LoggerFactory.getLogger(FileDownloadResource.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VaadinFileDownloadResource.class);
 
 	private String downloadFileName;
-
-	public FileDownloadResource(File sourceFile, Application application) {
-		super(sourceFile, application);
-	}
-
-	public FileDownloadResource(File sourceFile, String downloadFileName, Application application) {
+	
+	public VaadinFileDownloadResource(final File sourceFile, final String downloadFileName, final Application application) {
 		super(sourceFile, application);
 		this.downloadFileName = FileUtils.sanitizeFileName(downloadFileName);
+	}
+	
+	public VaadinFileDownloadResource(final File sourceFile, final Application application) {
+		super(sourceFile, application);
 	}
 
 	@Override
 	public String getFilename() {
-		return downloadFileName == null ? super.getFilename() : downloadFileName;
+        return this.downloadFileName == null ? super.getFilename() : this.downloadFileName;
 	}
 
 	@Override
@@ -52,8 +52,8 @@ public class FileDownloadResource extends FileResource {
 		final DownloadStream ds = super.getStream();
 		final String mimeType = FileUtils.detectMimeType(this.getFilename());
 
-		ds.setParameter("Content-Type", String.format("%s;charset=utf-8", mimeType));
-		ds.setParameter("Content-Disposition", String.format("attachment; filename=\"%s\"; filename*=utf-8''%s", this.getFilename(),
+		ds.setParameter(FileUtils.CONTENT_TYPE, String.format("%s;charset=utf-8", mimeType));
+		ds.setParameter(FileUtils.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"; filename*=utf-8''%s", this.getFilename(),
 				FileUtils.encodeFilenameForDownload(this.getFilename())));
 
 		return ds;
