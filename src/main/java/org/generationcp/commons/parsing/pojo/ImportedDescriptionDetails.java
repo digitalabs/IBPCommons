@@ -46,7 +46,7 @@ public class ImportedDescriptionDetails implements Serializable {
 	public ImportedDescriptionDetails() {
 	}
 
-	public ImportedDescriptionDetails(String filename, String name, String title, String type, Date date) {
+	public ImportedDescriptionDetails(final String filename,final String name,final String title,final String type,final Date date) {
 		this.filename = filename;
 		this.name = name;
 		this.title = title;
