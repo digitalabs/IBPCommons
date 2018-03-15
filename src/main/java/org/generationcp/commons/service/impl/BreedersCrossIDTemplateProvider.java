@@ -2,7 +2,6 @@ package org.generationcp.commons.service.impl;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyTemplateProvider;
-import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
 
 public class BreedersCrossIDTemplateProvider implements KeyTemplateProvider{
@@ -18,12 +17,7 @@ public class BreedersCrossIDTemplateProvider implements KeyTemplateProvider{
 	@Override
 	public String getKeyTemplate() {
 		String breedersCrossIDTemplate = "";
-
-		if (this.studyType.equals(StudyType.N)) {
-			breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDNursery();
-		} else if (this.studyType.equals(StudyType.T)) {
-			breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDTrial();
-		}
+		breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDTrial();
 		return breedersCrossIDTemplate;
 	}
 }

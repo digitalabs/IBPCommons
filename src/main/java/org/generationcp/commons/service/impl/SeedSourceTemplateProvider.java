@@ -3,7 +3,6 @@ package org.generationcp.commons.service.impl;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyTemplateProvider;
-import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
 
 /**
@@ -13,6 +12,8 @@ import org.generationcp.middleware.domain.study.StudyTypeDto;
  */
 public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 
+	public static final String WHEAT = "wheat";
+	public static final String MAIZE = "maize";
 	private GermplasmNamingProperties germplasmNamingProperties;
 	private final StudyTypeDto studyType;
 	private final String crop;
@@ -26,22 +27,14 @@ public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 	@Override
 	public String getKeyTemplate() {
 		String seedSourceTemplate;
-		if (this.studyType.equals(StudyType.N)) {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesDefault();
-			if (this.crop.equals("wheat")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesWheat();
-			} else if (this.crop.equals("maize")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesMaize();
-			}
-		} else if (this.studyType.equals(StudyType.T)) {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsDefault();
 
-			if (this.crop.equals("wheat")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsWheat();
-			} else if (this.crop.equals("maize")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsMaize();
-			}
-		}else{
+		seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsDefault();
+
+		if (this.crop.equals(WHEAT)) {
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsWheat();
+		} else if (this.crop.equals(MAIZE)) {
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsMaize();
+		} else {
 			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesDefault();
 		}
 		return seedSourceTemplate;
