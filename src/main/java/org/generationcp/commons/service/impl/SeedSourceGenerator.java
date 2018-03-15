@@ -18,6 +18,7 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 
 public class SeedSourceGenerator {
 
+	private final static String INSTANCE_NUMBER = "1";
 	private final GermplasmNamingProperties germplasmNamingProperties;
 	private final OntologyVariableDataManager ontologyVariableDataManager;
 	private final ContextUtil contextUtil;
@@ -96,8 +97,7 @@ public class SeedSourceGenerator {
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
 		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.SEASON,
-				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.PLANT_NO, plantNumberResolver);
@@ -110,8 +110,8 @@ public class SeedSourceGenerator {
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
-		final String femaleSeedSource = generateSeedSource(workbook, "1", null, femalePlotNo, femaleStudyName, null);
-		final String maleSeedSource = generateSeedSource(workbook, "1", null, malePlotNo, maleStudyName, null);
+		final String femaleSeedSource = generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
+		final String maleSeedSource = generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
 }
