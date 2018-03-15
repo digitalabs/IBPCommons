@@ -1,19 +1,23 @@
 package org.generationcp.commons.util;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 
-import org.generationcp.commons.constant.ToolEnum;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.Tool;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 
 public class InstallationDirectoryUtil {
 	
 	public static final String WORKSPACE_DIR = "workspace";
 	public static final String INPUT = "input";
 	public static final String OUTPUT = "output";
+	public static final String TEMP = "temp";
 	
 	public void createWorkspaceDirectoriesForProject(final Project project) {
 
@@ -25,7 +29,7 @@ public class InstallationDirectoryUtil {
 		projectDir.mkdirs();
 
 		// create the directory only for breeding_view tool
-		final List<String> toolList = Collections.singletonList(ToolEnum.BREEDING_VIEW.getToolName());
+		final List<String> toolList = Collections.singletonList(ToolName.BREEDING_VIEW.getName());
 		for (final String toolName : toolList) {
 			final File toolDir = new File(projectDir, toolName);
 			toolDir.mkdirs();
@@ -76,24 +80,47 @@ public class InstallationDirectoryUtil {
 		}
 	}
 
-	public String getInputDirectoryForProjectAndTool(final Project project, final Tool tool) {
+	public String getInputDirectoryForProjectAndTool(final Project project, final ToolName tool) {
 		final File toolDir = this.getToolDirectoryForProject(project, tool);
-
 		return new File(toolDir, InstallationDirectoryUtil.INPUT).getAbsolutePath();
 	}
 	
-	public String getOutputDirectoryForProjectAndTool(final Project project, final Tool tool) {
+	public String getOutputDirectoryForProjectAndTool(final Project project, final ToolName tool) {
 		final File toolDir = this.getToolDirectoryForProject(project, tool);
-
 		return new File(toolDir, InstallationDirectoryUtil.OUTPUT).getAbsolutePath();
 	}
-
-	private File getToolDirectoryForProject(final Project project, final Tool tool) {
-		final File projectDir = this.getFileForWorkspaceProjectDirectory(project);
-		return new File(projectDir, tool.getGroupName());
+	
+	public String getTempFileInOutputDirectoryForProjectAndTool(final String fileName, final String extension, final Project project,
+			final ToolName tool) throws IOException {
+		final File outputDir = new File(this.getOutputDirectoryForProjectAndTool(project, tool));
+		// Create temporary file under output directory of project and tool
+		if (!outputDir.exists()) {
+			outputDir.mkdirs();
+		}
+		String finalFilename = fileName;
+		// Perform checking that fileName is > 3 characters, else temp file will throw "Prefix too short" error
+		if (fileName.length() < 3){
+			finalFilename = TEMP;
+		}
+		return File.createTempFile(finalFilename, extension, outputDir).getAbsolutePath();
 	}
 	
-	void recursiveFileDelete(File file) {
+	public String getFileInTemporaryDirectoryForProjectAndTool(final String fileName, final Project project, final ToolName tool)
+			throws IOException {
+		final File toolDirectory = this.getToolDirectoryForProject(project, tool);
+		if (!toolDirectory.exists()) {
+			toolDirectory.mkdirs();
+		}
+		final Path tempDirectory = Files.createTempDirectory(FileSystems.getDefault().getPath(toolDirectory.getPath()), InstallationDirectoryUtil.OUTPUT);
+		return new File(tempDirectory.toFile(), fileName).getAbsolutePath();
+	}
+	
+	protected File getToolDirectoryForProject(final Project project, final ToolName tool) {
+		final File projectDir = this.getFileForWorkspaceProjectDirectory(project);
+		return new File(projectDir, tool.getName());
+	}
+	
+	public void recursiveFileDelete(File file) {
         //to end the recursive loop
         if (!file.exists()){
         	return;
