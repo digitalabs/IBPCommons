@@ -55,7 +55,10 @@ public class WorkbenchAppPathResolver {
 				appPath += "/openTrial/";
 			} else if (ToolName.NURSERY_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
 				appPath += "/editNursery/";
-			} 
+
+			} else if (tool.getToolName().equals(ToolName.GERMPLASM_BROWSER.getName())) {
+				appPath += "-";
+			}
 
 			appPath += idParam;
 		}
