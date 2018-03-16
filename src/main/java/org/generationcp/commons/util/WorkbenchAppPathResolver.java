@@ -56,7 +56,8 @@ public class WorkbenchAppPathResolver {
 			} else if (ToolName.NURSERY_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
 				appPath += "/editNursery/";
 
-			} else if (tool.getToolName().equals(ToolName.GERMPLASM_BROWSER.getName())) {
+			} else if (tool.getToolName().equals(ToolName.GERMPLASM_BROWSER.getName()) ||
+					tool.getToolName().equals(ToolName.STUDY_BROWSER_WITH_ID.getName())) {
 				appPath += "-";
 			}
 
