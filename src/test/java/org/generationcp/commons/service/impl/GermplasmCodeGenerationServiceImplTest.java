@@ -12,7 +12,7 @@ import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
 import org.generationcp.middleware.service.api.KeySequenceRegisterService;

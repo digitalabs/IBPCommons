@@ -3,7 +3,7 @@ package org.generationcp.commons.ruleengine.coding.expression;
 import org.generationcp.commons.ruleengine.Expression;
 import org.generationcp.commons.util.ExpressionHelper;
 import org.generationcp.commons.util.ExpressionHelperCallback;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

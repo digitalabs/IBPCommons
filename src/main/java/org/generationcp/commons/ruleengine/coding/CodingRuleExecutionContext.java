@@ -1,7 +1,7 @@
 package org.generationcp.commons.ruleengine.coding;
 
 import org.generationcp.commons.ruleengine.OrderedRuleExecutionContext;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 
 import java.util.List;
 

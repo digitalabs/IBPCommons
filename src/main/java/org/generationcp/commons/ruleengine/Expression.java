@@ -1,6 +1,6 @@
 package org.generationcp.commons.ruleengine;
 
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 
 import java.util.List;
 

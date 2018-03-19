@@ -5,7 +5,7 @@ import org.generationcp.commons.ruleengine.coding.CodingRuleExecutionContext;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 
 import java.util.Map;

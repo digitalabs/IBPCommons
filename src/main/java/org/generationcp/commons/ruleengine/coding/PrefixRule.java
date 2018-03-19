@@ -3,7 +3,7 @@ package org.generationcp.commons.ruleengine.coding;
 import org.generationcp.commons.ruleengine.OrderedRule;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.coding.expression.CodingExpressionResolver;
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

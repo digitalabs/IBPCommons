@@ -1,6 +1,6 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
-import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
+import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
