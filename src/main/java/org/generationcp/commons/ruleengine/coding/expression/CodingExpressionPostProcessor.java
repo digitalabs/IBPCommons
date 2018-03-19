@@ -1,6 +1,6 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
-import org.springframework.beans.BeansException;
+import org.generationcp.commons.ruleengine.Expression;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
 public class CodingExpressionPostProcessor implements BeanPostProcessor {

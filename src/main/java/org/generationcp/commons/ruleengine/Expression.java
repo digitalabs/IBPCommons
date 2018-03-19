@@ -1,4 +1,4 @@
-package org.generationcp.commons.ruleengine.coding.expression;
+package org.generationcp.commons.ruleengine;
 
 import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 

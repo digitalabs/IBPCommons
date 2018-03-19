@@ -1,5 +1,7 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
+import org.generationcp.commons.ruleengine.Expression;
+
 import java.util.HashMap;
 import java.util.Map;
 

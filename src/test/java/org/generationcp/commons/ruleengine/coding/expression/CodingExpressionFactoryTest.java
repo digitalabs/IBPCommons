@@ -1,5 +1,6 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
+import org.generationcp.commons.ruleengine.Expression;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package org.generationcp.commons.ruleengine.coding;
 
 import org.generationcp.commons.ruleengine.RuleException;
-import org.generationcp.commons.ruleengine.impl.CodingExpressionResolver;
+import org.generationcp.commons.ruleengine.coding.expression.CodingExpressionResolver;
 import org.generationcp.middleware.pojos.workbench.NamingConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +23,7 @@ public class SuffixRuleTest {
 	private CodingExpressionResolver codingExpressionResolver;
 
 	@InjectMocks
-	private SuffixRule prefixRule;
+	private SuffixRule suffixRule;
 
 	@Test
 	public void testRunRule() throws RuleException {
@@ -40,7 +40,7 @@ public class SuffixRuleTest {
 		Mockito.when(codingExpressionResolver.resolve(context.getCurrentData(), namingConfiguration.getSuffix(), namingConfiguration))
 				.thenReturn(Arrays.asList(suffix));
 
-		assertEquals(suffix, this.prefixRule.runRule(context));
+		assertEquals(suffix, this.suffixRule.runRule(context));
 	}
 
 }

@@ -1,7 +1,6 @@
-package org.generationcp.commons.ruleengine.impl;
+package org.generationcp.commons.ruleengine.coding.expression;
 
-import org.generationcp.commons.ruleengine.coding.expression.CodingExpressionFactory;
-import org.generationcp.commons.ruleengine.coding.expression.Expression;
+import org.generationcp.commons.ruleengine.Expression;
 import org.generationcp.commons.util.ExpressionHelper;
 import org.generationcp.commons.util.ExpressionHelperCallback;
 import org.generationcp.middleware.pojos.workbench.NamingConfiguration;

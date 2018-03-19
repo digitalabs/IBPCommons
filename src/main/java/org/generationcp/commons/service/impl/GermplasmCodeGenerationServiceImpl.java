@@ -177,21 +177,12 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	String getNumberWithLeadingZeroesAsString(final Integer number, final GermplasmNameSetting setting) {
-		final StringBuilder sb = new StringBuilder();
-		final String numberString = number.toString();
 		final Integer numOfDigits = setting.getNumOfDigits();
 
-		if (numOfDigits != null && numOfDigits > 0) {
-			final int numOfZerosNeeded = numOfDigits - numberString.length();
-			if (numOfZerosNeeded > 0) {
-				for (int i = 0; i < numOfZerosNeeded; i++) {
-					sb.append("0");
-				}
-			}
-
+		if (numOfDigits == null || numOfDigits <= 0) {
+			return number.toString();
 		}
-		sb.append(number);
-		return sb.toString();
+		return String.format("%0" + numOfDigits + "d", number);
 	}
 
 	protected void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType, final Integer userId,
