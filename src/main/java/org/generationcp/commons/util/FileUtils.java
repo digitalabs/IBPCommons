@@ -12,12 +12,11 @@ package org.generationcp.commons.util;
 
 import java.io.File;
 import java.util.BitSet;
+
 import javax.activation.MimetypesFileTypeMap;
 
 import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 public class FileUtils {
@@ -29,7 +28,8 @@ public class FileUtils {
 	public static final String MIME_ZIP = "application/zip";
 	public static final String MIME_PDF = "application/pdf";
 	public static final String MIME_DEFAULT = "application/octet-stream";
-	private static final Logger LOG = LoggerFactory.getLogger(FileUtils.class);
+	public static final String CONTENT_TYPE = "Content-Type";
+	public static final String CONTENT_DISPOSITION = "Content-Disposition";
 
 	/**
 	 * BitSet of www-form-url safe characters.

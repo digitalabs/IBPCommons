@@ -14,6 +14,11 @@ public class ImportedGermplasmTestDataInitializer {
 		importedGermplasm.setEntryCode("1");
 		importedGermplasm.setDesig("Desig");
 		importedGermplasm.setGid("1");
+		importedGermplasm.setGroupId(1);
+		importedGermplasm.setSource("SOURCE");
+		importedGermplasm.setStockIDs("STOCKID");
+		importedGermplasm.setEntryCode("1");
+		importedGermplasm.setCross("CROSS");
 		return importedGermplasm;
 	}
 
