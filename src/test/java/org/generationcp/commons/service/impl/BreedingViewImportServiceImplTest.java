@@ -9,15 +9,15 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
-import org.generationcp.commons.constant.Message;
+import org.generationcp.commons.constant.CommonMessage;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.data.initializer.OntologyScaleTestDataInitializer;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -72,8 +72,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 import com.rits.cloning.Cloner;
 
 import junit.framework.Assert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath*:/testContext.xml" })
 public class BreedingViewImportServiceImplTest {
 
 	private static final String ACDTOL_E_1TO5 = "AcdTol_E_1to5";
@@ -106,8 +111,8 @@ public class BreedingViewImportServiceImplTest {
 	private final List<DMSVariableType> meansVariateVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> summaryVariableTypes = new ArrayList<>();
 
-	@Mock
-	private SimpleResourceBundleMessageSource messageSource;
+	@Autowired
+	private ResourceBundleMessageSource messageSource;
 
 	@Mock
 	private StudyDataManager studyDataManager;
@@ -192,6 +197,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.studyDataManager.getStocksInDataset(Matchers.anyInt())).thenReturn(this.stocks);
 
 		this.bvImportService.setCloner(new Cloner());
+		this.bvImportService.setMessageSource(this.messageSource);
 
 		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
 				.transformVariable(Matchers.any(org.generationcp.middleware.domain.ontology.Variable.class));
@@ -1178,35 +1184,39 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForMeans() {
-		Mockito.when(this.messageSource.getMessage(Message.MEANS_SCALE_NAME)).thenReturn("Average {0} Score");
-		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
-				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX);
+
+		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
+
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(variableName);
 		Assert.assertEquals("Average AcdTol_E_1to5 Score", scaleName);
 	}
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForCV() {
-		Mockito.when(this.messageSource.getMessage(Message.CV_SCALE_NAME)).thenReturn("Percent SE/Mean for {0}");
-		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
-				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.CV_SUFFIX);
+
+		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.CV_SUFFIX;
+
+		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(variableName);
 		Assert.assertEquals("Percent SE/Mean for AcdTol_E_1to5", scaleName);
 	}
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForHeritability() {
-		Mockito.when(this.messageSource.getMessage(Message.HERITABILITY_SCALE_NAME))
-				.thenReturn("Ratio genetic variance/phenotypic variance for variable {0}");
+
+		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.HERITABILITY_SUFFIX;
+
 		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
-				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.HERITABILITY_SUFFIX);
+				variableName);
 		Assert.assertEquals("Ratio genetic variance/phenotypic variance for variable AcdTol_E_1to5", scaleName);
 	}
 
 	@Test
 	public void testGenerateAnalysisVariableScaleNameForPValue() {
-		Mockito.when(this.messageSource.getMessage(Message.PVALUE_SCALE_NAME))
-				.thenReturn("Significance of test for mean differences for variable {0}");
+
+		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.PVALUE_SUFFIX;
+
 		final String scaleName = this.bvImportService.generateAnalysisVariableScaleName(
-				BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + BreedingViewImportServiceImpl.PVALUE_SUFFIX);
+				variableName);
 		Assert.assertEquals("Significance of test for mean differences for variable AcdTol_E_1to5", scaleName);
 	}
 
@@ -1222,8 +1232,8 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGetAnalysisVariableScaleIdWhereScaleIsCategoricalAndNonExistent() {
-		Mockito.when(this.messageSource.getMessage(Message.MEANS_SCALE_NAME)).thenReturn("Average {0} Score");
 		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
+
 		final Scale scale = OntologyScaleTestDataInitializer.createScaleWithNameAndDataType(variableName,
 				DataType.CATEGORICAL_VARIABLE);
 		Mockito.when(this.scaleDataManager.getScaleById(Matchers.anyInt(), Matchers.anyBoolean())).thenReturn(scale);
@@ -1237,8 +1247,9 @@ public class BreedingViewImportServiceImplTest {
 
 	@Test
 	public void testGetAnalysisVariableScaleIdWhereScaleIsCategoricalAndExisting() {
-		Mockito.when(this.messageSource.getMessage(Message.MEANS_SCALE_NAME)).thenReturn("Average {0} Score");
+
 		final String variableName = BreedingViewImportServiceImplTest.ACDTOL_E_1TO5 + MeansCSV.MEANS_SUFFIX;
+
 		final Scale scale = OntologyScaleTestDataInitializer.createScaleWithNameAndDataType(variableName,
 				DataType.CATEGORICAL_VARIABLE);
 		Mockito.when(this.scaleDataManager.getScaleById(Matchers.anyInt(), Matchers.anyBoolean())).thenReturn(scale);

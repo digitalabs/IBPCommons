@@ -30,5 +30,14 @@
         <property name="password" value="${db.password}" />
     </bean>
 
+    <!-- The Message Source -->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+                <value>CommonMessages</value>
+            </list>
+        </property>
+    </bean>
 
 </beans>
