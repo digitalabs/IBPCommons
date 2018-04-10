@@ -7,7 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.lang3.time.DateUtils;
-import org.generationcp.commons.constant.VaadinMessage;
+import org.generationcp.commons.constant.CommonMessage;
 import org.generationcp.commons.exceptions.InvalidDateException;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.util.Util;
@@ -154,17 +154,17 @@ public class DateUtil {
 	 * @param year
 	 * @param month
 	 * @param day
-	 * @return VaadinMessage Enum that is to be interpreted in specific web application
+	 * @return CommonMessage Enum that is to be interpreted in specific web application
 	 */
 	public static void validateDate(int year, int month, int day) throws InvalidDateException {
 		if (!DateUtil.isValidYear(year)) {
-			throw new InvalidDateException("Year must be greater than or equal to 1900", VaadinMessage.INVALID_YEAR);
+			throw new InvalidDateException("Year must be greater than or equal to 1900", CommonMessage.INVALID_YEAR);
 		}
 		if (month <= 0 || month > 12) {
-			throw new InvalidDateException("Month out of range", VaadinMessage.ERROR_MONTH_OUT_OF_RANGE);
+			throw new InvalidDateException("Month out of range", CommonMessage.ERROR_MONTH_OUT_OF_RANGE);
 		}
 		if (day <= 0 || day > DateUtil.daysInMonth(year, month)) {
-			throw new InvalidDateException("Day out of range", VaadinMessage.ERROR_DAY_OUT_OF_RANGE);
+			throw new InvalidDateException("Day out of range", CommonMessage.ERROR_DAY_OUT_OF_RANGE);
 		}
 	}
 

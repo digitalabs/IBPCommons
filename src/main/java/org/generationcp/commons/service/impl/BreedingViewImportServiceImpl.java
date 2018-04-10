@@ -2,7 +2,6 @@ package org.generationcp.commons.service.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,6 +9,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -17,11 +17,10 @@ import java.util.Set;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.OutlierCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
-import org.generationcp.commons.constant.Message;
+import org.generationcp.commons.constant.CommonMessage;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.service.BreedingViewImportService;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.vaadin.spring.SimpleResourceBundleMessageSource;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
@@ -60,6 +59,7 @@ import org.generationcp.middleware.util.DatasetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.rits.cloning.Cloner;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
@@ -99,7 +99,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	private ContextUtil contextUtil;
 
 	@Autowired
-	private SimpleResourceBundleMessageSource messageSource;
+	private ResourceBundleMessageSource messageSource;
 
 	private Map<String, String> localNameToAliasMap = new HashMap<>();
 
@@ -933,14 +933,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		String scaleName = "";
 		if (name.endsWith(MeansCSV.MEANS_SUFFIX) || name.endsWith(BreedingViewImportServiceImpl.MEAN_SED_SUFFIX)
 				|| name.endsWith(BreedingViewImportServiceImpl.MEAN_SUFFIX)) {
-			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.MEANS_SCALE_NAME), variableName);
+			scaleName = this.messageSource.getMessage(CommonMessage.MEANS_SCALE_NAME.name(), new Object[] { variableName }, Locale.ENGLISH);
 		} else if (name.endsWith(BreedingViewImportServiceImpl.CV_SUFFIX)) {
-			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.CV_SCALE_NAME), variableName);
+			scaleName = this.messageSource.getMessage(CommonMessage.CV_SCALE_NAME.name(), new Object[] { variableName }, Locale.ENGLISH);
 		} else if (name.endsWith(BreedingViewImportServiceImpl.HERITABILITY_SUFFIX)) {
-			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.HERITABILITY_SCALE_NAME),
-					variableName);
+			scaleName = this.messageSource.getMessage(CommonMessage.HERITABILITY_SCALE_NAME.name(), new Object[] { variableName }, Locale.ENGLISH);
 		} else if (name.endsWith(BreedingViewImportServiceImpl.PVALUE_SUFFIX)) {
-			scaleName = MessageFormat.format(this.messageSource.getMessage(Message.PVALUE_SCALE_NAME), variableName);
+			scaleName = this.messageSource.getMessage(CommonMessage.PVALUE_SCALE_NAME.name(), new Object[] { variableName }, Locale.ENGLISH);
 		}
 		return scaleName;
 	}
@@ -1089,6 +1088,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	protected void setCloner(final Cloner cloner) {
 		this.cloner = cloner;
+	}
+
+	protected void setMessageSource(final ResourceBundleMessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 
 	public void setLocalNameToAliasMap(final Map<String, String> localNameToAliasMap) {
