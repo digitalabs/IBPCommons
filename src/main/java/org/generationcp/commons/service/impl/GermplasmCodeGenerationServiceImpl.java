@@ -85,7 +85,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
 		if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
-			result.addMessage(String.format(GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP, germplasm.getGid()));
+			result.addError(String.format(GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP, germplasm.getGid()));
 			return result;
 		}
 
@@ -111,7 +111,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
 		if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
-			result.addMessage(
+			result.addError(
 					String.format("Germplasm (gid: %s) is not part of a management group. Can not assign group name.", germplasm.getGid()));
 			return result;
 		}
@@ -221,11 +221,11 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 
 			germplasm.getNames().add(name);
 			this.germplasmDataManager.save(germplasm);
-			result.addMessage(
+			result.addSuccess(
 					String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
 							groupName, nameType.getFcode()));
 		} else {
-			result.addMessage(String.format("Germplasm (gid: %s) already has existing name %s of type %s. Supplied name %s was not added.",
+			result.addError(String.format("Germplasm (gid: %s) already has existing name %s of type %s. Supplied name %s was not added.",
 					germplasm.getGid(), existingNameOfGivenType.getNval(), nameType.getFcode(), groupName));
 		}
 	}

@@ -193,14 +193,14 @@ public class GermplasmCodeGenerationServiceImplTest {
 				g1.findPreferredName().getNval());
 		Assert.assertEquals("Expected germplasm g1 to have a coded name with coded name type.", this.codeNameType.getFldno(),
 				g1.findPreferredName().getTypeId());
-		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g1.getGid(),
-				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(0));
+		Assert.assertTrue(result.getMessages().contains(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g1.getGid(),
+				expectedCodedName, this.codeNameType.getFcode())));
 
 		Assert.assertEquals("Expected germplasm g2 to have a coded name assigned.", expectedCodedName, g2.findPreferredName().getNval());
 		Assert.assertEquals("Expected germplasm g2 to have a coded name with coded name type.", this.codeNameType.getFldno(),
 				g2.findPreferredName().getTypeId());
-		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g2.getGid(),
-				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(1));
+		Assert.assertTrue(result.getMessages().contains(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g2.getGid(),
+				expectedCodedName, this.codeNameType.getFcode())));
 
 		Assert.assertEquals("Expected existing coded name of g3 to be retained.", existingCodedNameOfG3, g3.findPreferredName().getNval());
 		Assert.assertTrue(
@@ -371,14 +371,14 @@ public class GermplasmCodeGenerationServiceImplTest {
 				g1.findPreferredName().getNval());
 		Assert.assertEquals("Expected germplasm g1 to have a coded name with coded name type.", this.codeNameType.getFldno(),
 				g1.findPreferredName().getTypeId());
-		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g1.getGid(),
-				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(0));
+		Assert.assertTrue(result.getMessages().contains(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g1.getGid(),
+				expectedCodedName, this.codeNameType.getFcode())));
 
 		Assert.assertEquals("Expected germplasm g2 to have a coded name assigned.", expectedCodedName, g2.findPreferredName().getNval());
 		Assert.assertEquals("Expected germplasm g2 to have a coded name with coded name type.", this.codeNameType.getFldno(),
 				g2.findPreferredName().getTypeId());
-		Assert.assertEquals(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g2.getGid(),
-				expectedCodedName, this.codeNameType.getFcode()), result.getMessages().get(1));
+		Assert.assertTrue(result.getMessages().contains(String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", g2.getGid(),
+				expectedCodedName, this.codeNameType.getFcode())));
 
 		Assert.assertEquals("Expected existing coded name of g3 to be retained.", existingCodedNameOfG3, g3.findPreferredName().getNval());
 		Assert.assertTrue(
