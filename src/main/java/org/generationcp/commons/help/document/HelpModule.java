@@ -13,7 +13,7 @@ public enum HelpModule {
 			"molecular.breeding.design.tool"), MOLECULAR_BREEDING_DECISION_TOOL("molecular.breeding.decision.tool"), MOLECULAR_BREEDING_PLANNER(
 			"molecular.breeding.planner"), MANAGE_PROGRAM_SETTINGS_MANAGE_PROGRAM_SETTING(
 			"manage.program.settings.update"), BACKUP_PROGRAM_DATA("backup.program.data"), RESTORE_PROGRAM_DATA(
-			"restore.program.data"), DATA_IMPORT_TOOL("data.import.tool"),MANAGE_LOCATIONS("manage.locations"),MANAGE_BREEDING_METHODS("manage.breeding.methods");
+			"restore.program.data"), DATA_IMPORT_TOOL("data.import.tool"),MANAGE_LOCATIONS("manage.locations"),MANAGE_BREEDING_METHODS("manage.breeding.methods"), MANAGE_INVENTORY("manage.inventory");
 
 	/* This is the variable name from the property file helplinks.properties */
 	private String propertyName;
