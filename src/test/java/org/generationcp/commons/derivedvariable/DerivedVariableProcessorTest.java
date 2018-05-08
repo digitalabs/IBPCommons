@@ -23,16 +23,16 @@ public class DerivedVariableProcessorTest {
 	private static final String TERM_NOT_FOUND = "TermNotFound";
 	private static final String FORMULA = "(\"{" + DerivedVariableProcessorTest.TERM_1 + "}\"/100)*((100-{"
 			+ DerivedVariableProcessorTest.TERM_2 + "})/(100-12.5))*(10/{" + DerivedVariableProcessorTest.TERM_3 + "})";
-	private static final String EXPECTED_FORMULA_RESULT = "10";
+	private static final String EXPECTED_FORMULA_RESULT = "10.0571";
 	private static final String FORMULA_2 = "{PlotSize}*6.23";
 	private static final String EXPECTED_FORMULA_2_RESULT = "62.3";
 	private DerivedVariableProcessor derivedVariableProcessor;
-	private Map<String, String> terms;
+	private Map<String, Object> terms;
 	private String updatedFormula;
 
 	@Before
 	public void setUp() {
-		this.derivedVariableProcessor = DerivedVariableProcessor.getInstance();
+		this.derivedVariableProcessor = new DerivedVariableProcessor();
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class DerivedVariableProcessorTest {
 		}
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
 		Assert.assertNotNull("Terms should not be null", this.terms);
-		for (Map.Entry<String, String> entry : this.terms.entrySet()) {
+		for (Map.Entry<String, Object> entry : this.terms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			Assert.assertNotNull(key + " should have a value", value);
@@ -75,9 +75,9 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementRow() {
-		Map<String, String> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
+		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(testTerms, null);
-		for (Map.Entry<String, String> entry : testTerms.entrySet()) {
+		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			Assert.assertNull(key + " should not have a value", value);
@@ -86,11 +86,11 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementDataList() {
-		Map<String, String> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
+		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(testTerms, measurementRow);
-		for (Map.Entry<String, String> entry : testTerms.entrySet()) {
+		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			Assert.assertNull(key + " should not have a value", value);
@@ -104,7 +104,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	private List<MeasurementData> createMeasurementDataListTestData() {
-		List<MeasurementData> measurementDataList = new ArrayList<MeasurementData>();
+		List<MeasurementData> measurementDataList = new ArrayList<>();
 		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_1,
 				DerivedVariableProcessorTest.TERM_VALUE_1, null));
 		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.UNMODIFIED_TERM_2, null,
@@ -125,7 +125,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testRemoveCurlyBracesFromFormula() {
 		if (this.updatedFormula == null) {
-			this.updatedFormula = this.derivedVariableProcessor.removeCurlyBracesFromFormula(DerivedVariableProcessorTest.FORMULA);
+			this.updatedFormula = this.derivedVariableProcessor.replaceBraces(DerivedVariableProcessorTest.FORMULA);
 		}
 		Assert.assertFalse(this.updatedFormula.contains("{"));
 		Assert.assertFalse(this.updatedFormula.contains("}"));
@@ -133,19 +133,17 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula_NullFormula() {
-		String nullFormula = this.derivedVariableProcessor.removeCurlyBracesFromFormula(null);
+		String nullFormula = this.derivedVariableProcessor.replaceBraces(null);
 		Assert.assertNull(nullFormula);
 	}
 
 	@Test
 	public void testEvaluateFormula() {
 		if (this.updatedFormula == null) {
-			this.updatedFormula = this.derivedVariableProcessor.removeCurlyBracesFromFormula(DerivedVariableProcessorTest.FORMULA);
+			this.updatedFormula = this.derivedVariableProcessor.replaceBraces(DerivedVariableProcessorTest.FORMULA);
 		}
 		if (this.terms == null) {
 			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
-		}
-		if (this.terms.values().iterator().next() == null) {
 			this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
 		}
 		String result = this.derivedVariableProcessor.evaluateFormula(this.updatedFormula, this.terms);

@@ -1,5 +1,10 @@
-
 package org.generationcp.commons.derivedvariable;
+
+import org.apache.commons.lang3.math.NumberUtils;
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.expression.spel.support.StandardEvaluationContext;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -8,25 +13,17 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.mvel2.MVEL;
-
 public class DerivedVariableProcessor {
 
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
-	public static final String MVEL_BIG_DECIMAL_POSTFIX = "B";
-	private static DerivedVariableProcessor instance;
+	public static final String PLACEHOLDER = "terms";
 
-	private DerivedVariableProcessor() {
-		// private constructor
-	}
+	private final SpelExpressionParser parser;
+	private final StandardEvaluationContext context;
 
-	public static DerivedVariableProcessor getInstance() {
-		if (DerivedVariableProcessor.instance == null) {
-			DerivedVariableProcessor.instance = new DerivedVariableProcessor();
-		}
-		return DerivedVariableProcessor.instance;
+	public DerivedVariableProcessor() {
+		this.parser = new SpelExpressionParser();
+		this.context = new StandardEvaluationContext();
 	}
 
 	/**
@@ -35,8 +32,8 @@ public class DerivedVariableProcessor {
 	 *
 	 *         Extract term names from formula then store them in a map with null as the default value
 	 */
-	public Map<String, String> extractTermsFromFormula(String formula) {
-		Map<String, String> inputVariables = new HashMap<String, String>();
+	public Map<String, Object> extractTermsFromFormula(String formula) {
+		Map<String, Object> inputVariables = new HashMap<>();
 		Pattern pattern = Pattern.compile(DerivedVariableProcessor.TERM_INSIDE_BRACES_REGEX);
 		Matcher matcher = pattern.matcher(formula);
 		while (matcher.find()) {
@@ -67,7 +64,7 @@ public class DerivedVariableProcessor {
 	 *
 	 *        Update values of terms from the measurement
 	 */
-	public void fetchTermValuesFromMeasurement(Map<String, String> terms, MeasurementRow measurementRow) {
+	public void fetchTermValuesFromMeasurement(Map<String, Object> terms, MeasurementRow measurementRow) {
 		if (measurementRow != null && measurementRow.getDataList() != null) {
 			for (MeasurementData measurementData : measurementRow.getDataList()) {
 				String term = this.removeAllInvalidCharacters(measurementData.getLabel());
@@ -84,10 +81,13 @@ public class DerivedVariableProcessor {
 	 *
 	 *         Update values of terms from the measurement
 	 */
-	private String getMeasurementValue(MeasurementData measurementData) {
+	private Object getMeasurementValue(MeasurementData measurementData) {
 		String value = measurementData.getcValueId();
 		if (value == null) {
 			value = measurementData.getValue();
+		}
+		if (NumberUtils.isNumber(value)) {
+			return new BigDecimal(value);
 		}
 		return value;
 	}
@@ -96,36 +96,15 @@ public class DerivedVariableProcessor {
 	 * @param formula String
 	 * @return String formula with no curly braces
 	 *
-	 *         Remove curly braces from formula
+	 *         Replace curly braces in formula
 	 */
-	public String removeCurlyBracesFromFormula(String formula) {
+	public String replaceBraces(String formula) {
 		String updatedFormula = formula;
 		if (updatedFormula != null) {
-			updatedFormula = updatedFormula.replaceAll("\\{", "");
-			updatedFormula = updatedFormula.replaceAll("\\}", "");
+			updatedFormula = updatedFormula.replaceAll("\\{", "#" + PLACEHOLDER + "['");
+			updatedFormula = updatedFormula.replaceAll("\\}", "']");
 		}
 		return updatedFormula;
-	}
-
-	/**
-	 * @param value String
-	 * @return String new value with the postfix appended after numbers
-	 *
-	 *         Append postfix to numbers
-	 */
-	public String addPostfixToNumbers(String value, String postfix) {
-		StringBuilder newValue = new StringBuilder();
-		Pattern pattern = Pattern.compile("\\d[.\\d]*");
-		Matcher matcher = pattern.matcher(value);
-		int start = 0;
-		while (matcher.find()) {
-			int end = matcher.end();
-			newValue.append(value.substring(start, end));
-			newValue.append(postfix);
-			start = end;
-		}
-		newValue.append(value.substring(start));
-		return newValue.toString();
 	}
 
 	/**
@@ -135,21 +114,19 @@ public class DerivedVariableProcessor {
 	 *
 	 *         Evaluate formula from the value of input variables
 	 */
-	public String evaluateFormula(String formula, Map<String, String> terms) {
+	public String evaluateFormula(String formula, Map<String, Object> terms) {
 		String newFormula = this.formatFormula(formula);
-		Object result = MVEL.eval(newFormula, terms);
-		if (result instanceof BigDecimal) {
-			return ((BigDecimal) result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
-		} else if (result instanceof String) {
-			return (String) result;
+		this.context.setVariable(PLACEHOLDER, terms);
+		String result = this.parser.parseExpression(newFormula).getValue(context, String.class);
+		if (NumberUtils.isNumber(result)) {
+			return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
 		}
-		return formula;
+		return result;
 	}
 
 	private String formatFormula(String formula) {
-		String newFormula = this.removeCurlyBracesFromFormula(formula);
+		String newFormula = this.replaceBraces(formula);
 		newFormula = this.removeAllInvalidCharacters(newFormula);
-		newFormula = this.addPostfixToNumbers(newFormula, DerivedVariableProcessor.MVEL_BIG_DECIMAL_POSTFIX);
 		return newFormula;
 	}
 
@@ -161,7 +138,7 @@ public class DerivedVariableProcessor {
 	 *         Get the value of the derived variable from a formula and values of input variables
 	 */
 	public String getDerivedVariableValue(String formula, MeasurementRow measurementRow) {
-		Map<String, String> terms = this.extractTermsFromFormula(formula);
+		Map<String, Object> terms = this.extractTermsFromFormula(formula);
 		this.fetchTermValuesFromMeasurement(terms, measurementRow);
 		return this.evaluateFormula(formula, terms);
 	}
