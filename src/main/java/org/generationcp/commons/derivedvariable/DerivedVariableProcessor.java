@@ -24,6 +24,11 @@ public class DerivedVariableProcessor {
 	public DerivedVariableProcessor() {
 		this.parser = new SpelExpressionParser();
 		this.context = new StandardEvaluationContext();
+		try {
+			this.context.registerFunction("concat", DerivedVariableFunctions.class.getDeclaredMethod("concat", new Class[] {String[].class}));
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**

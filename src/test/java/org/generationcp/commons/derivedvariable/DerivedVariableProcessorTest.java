@@ -2,14 +2,18 @@
 package org.generationcp.commons.derivedvariable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.*;
 
 public class DerivedVariableProcessorTest {
 
@@ -152,5 +156,16 @@ public class DerivedVariableProcessorTest {
 						this.createMeasurementRowTestData());
 		Assert.assertEquals("The derived variable value should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT,
 				DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT, result);
+	}
+
+	@Test
+	public void testFunctions() {
+		final String param1 = "number of plots: ";
+		final String formula = "concat('" + param1 + "', {PlotSize})";
+		final Map<String, Object> terms = this.derivedVariableProcessor.extractTermsFromFormula(formula);
+		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(terms, this.createMeasurementRowTestData());
+
+		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
+		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
 }
