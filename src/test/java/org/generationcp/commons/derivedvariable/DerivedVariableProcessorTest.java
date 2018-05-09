@@ -21,14 +21,14 @@ public class DerivedVariableProcessorTest {
 	private static final String TERM_VALUE_2 = "12.5";
 	private static final String TERM_VALUE_3 = "10";
 	private static final String TERM_NOT_FOUND = "TermNotFound";
-	private static final String FORMULA = "(\"{" + DerivedVariableProcessorTest.TERM_1 + "}\"/100)*((100-{"
+	private static final String FORMULA_1 = "(\"{" + DerivedVariableProcessorTest.TERM_1 + "}\"/100)*((100-{"
 			+ DerivedVariableProcessorTest.TERM_2 + "})/(100-12.5))*(10/{" + DerivedVariableProcessorTest.TERM_3 + "})";
-	private static final String EXPECTED_FORMULA_RESULT = "10.0571";
+	private static final String EXPECTED_FORMULA_1_RESULT = "10.0571";
 	private static final String FORMULA_2 = "{PlotSize}*6.23";
 	private static final String EXPECTED_FORMULA_2_RESULT = "62.3";
 	private DerivedVariableProcessor derivedVariableProcessor;
 	private Map<String, Object> terms;
-	private String updatedFormula;
+	private String formula;
 
 	@Before
 	public void setUp() {
@@ -48,7 +48,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testExtractTermsFromFormula() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
+			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
 		}
 		Assert.assertNotNull("Terms should be extracted from formula", this.terms);
 		Assert.assertTrue(DerivedVariableProcessorTest.TERM_1 + " should be one of the extracted terms",
@@ -62,7 +62,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFetchTermValuesFromMeasurement() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
+			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
 		}
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
 		Assert.assertNotNull("Terms should not be null", this.terms);
@@ -75,7 +75,7 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementRow() {
-		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
+		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(testTerms, null);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
@@ -86,7 +86,7 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementDataList() {
-		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
+		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(testTerms, measurementRow);
@@ -124,11 +124,9 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula() {
-		if (this.updatedFormula == null) {
-			this.updatedFormula = this.derivedVariableProcessor.replaceBraces(DerivedVariableProcessorTest.FORMULA);
-		}
-		Assert.assertFalse(this.updatedFormula.contains("{"));
-		Assert.assertFalse(this.updatedFormula.contains("}"));
+		this.formula = this.derivedVariableProcessor.replaceBraces(DerivedVariableProcessorTest.FORMULA_1);
+		Assert.assertFalse(this.formula.contains("{"));
+		Assert.assertFalse(this.formula.contains("}"));
 	}
 
 	@Test
@@ -139,16 +137,12 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testEvaluateFormula() {
-		if (this.updatedFormula == null) {
-			this.updatedFormula = this.derivedVariableProcessor.replaceBraces(DerivedVariableProcessorTest.FORMULA);
-		}
-		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA);
-			this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
-		}
-		String result = this.derivedVariableProcessor.evaluateFormula(this.updatedFormula, this.terms);
-		Assert.assertEquals("The result of " + this.updatedFormula + " should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_RESULT
-				+ " but got " + result, DerivedVariableProcessorTest.EXPECTED_FORMULA_RESULT, result);
+		this.formula = FORMULA_1;
+		this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
+		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
+		String result = this.derivedVariableProcessor.evaluateFormula(this.formula, this.terms);
+		Assert.assertEquals("The result of " + this.formula + " should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT
+				+ " but got " + result, DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT, result);
 	}
 
 	@Test
