@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.*;
 public class DerivedVariableProcessorTest {
 
 	private static final String TERM_1 = "GrainWghtg";
-	private static final String TERM_2 = "Moisture";
+	private static final String TERM_2 = " Moisture";
 	private static final String TERM_3 = "\"PlotSize\"";
 	private static final String UNMODIFIED_TERM_2 = "% Moisture";
 	private static final String TERM_VALUE_1 = "1000";
@@ -161,7 +161,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
-		final String formula = "concat('" + param1 + "', {PlotSize})";
+		final String formula = "#concat('" + param1 + "', {PlotSize})";
 		final Map<String, Object> terms = this.derivedVariableProcessor.extractTermsFromFormula(formula);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(terms, this.createMeasurementRowTestData());
 

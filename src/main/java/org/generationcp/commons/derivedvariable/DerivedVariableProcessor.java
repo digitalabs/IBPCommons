@@ -17,7 +17,9 @@ public class DerivedVariableProcessor {
 
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
 	private static final Pattern TYPES_REGEX = Pattern.compile("T\\((.*?)\\)");
+
 	public static final String PLACEHOLDER = "terms";
+	private static final String CONCAT = "concat";
 
 	private final SpelExpressionParser parser;
 	private final StandardEvaluationContext context;
@@ -26,7 +28,7 @@ public class DerivedVariableProcessor {
 		this.parser = new SpelExpressionParser();
 		this.context = new StandardEvaluationContext();
 		try {
-			this.context.registerFunction("concat", DerivedVariableFunctions.class.getDeclaredMethod("concat", new Class[] {String[].class}));
+			this.context.registerFunction(CONCAT, DerivedVariableFunctions.class.getDeclaredMethod(CONCAT, new Class[] {String[].class}));
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
@@ -57,11 +59,10 @@ public class DerivedVariableProcessor {
 	public String removeAllInvalidCharacters(final String text) {
 		String newText = text;
 		if (newText != null) {
-			newText = newText.replaceAll("\\s", "");
 			newText = newText.replaceAll("%", "");
 			newText = newText.replaceAll("\"", "");
+			newText = this.removeArbitraryCodeExecution(newText);
 		}
-		newText = this.removeArbitraryCodeExecution(text);
 		return newText;
 	}
 
