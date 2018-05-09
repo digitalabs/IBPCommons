@@ -168,4 +168,15 @@ public class DerivedVariableProcessorTest {
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
+
+	@Test(expected = NullPointerException.class)
+	public void testSpELSecurity() {
+		String result = this.derivedVariableProcessor.removeAllInvalidCharacters("T(System).exit(0)");
+		Assert.assertThat(result, is(".exit(0)"));
+
+		result = this.derivedVariableProcessor.removeAllInvalidCharacters("T(java.lang.Runtime).getRuntime().exec('gnome-calculator')");
+		Assert.assertThat(result, is(".getRuntime().exec('gnome-calculator')"));
+
+		this.derivedVariableProcessor.evaluateFormula(result, new HashMap<String, Object>());
+	}
 }

@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 public class DerivedVariableProcessor {
 
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
+	private static final Pattern TYPES_REGEX = Pattern.compile("T\\((.*?)\\)");
 	public static final String PLACEHOLDER = "terms";
 
 	private final SpelExpressionParser parser;
@@ -53,14 +54,20 @@ public class DerivedVariableProcessor {
 	 *
 	 *         Remove invalid characters from text: whites spaces, percent, double quotes
 	 */
-	public String removeAllInvalidCharacters(String text) {
+	public String removeAllInvalidCharacters(final String text) {
 		String newText = text;
 		if (newText != null) {
 			newText = newText.replaceAll("\\s", "");
 			newText = newText.replaceAll("%", "");
 			newText = newText.replaceAll("\"", "");
 		}
+		newText = this.removeArbitraryCodeExecution(text);
 		return newText;
+	}
+
+	private String removeArbitraryCodeExecution(final String text) {
+		final Matcher matcher = TYPES_REGEX.matcher(text);
+		return matcher.replaceAll("");
 	}
 
 	/**
