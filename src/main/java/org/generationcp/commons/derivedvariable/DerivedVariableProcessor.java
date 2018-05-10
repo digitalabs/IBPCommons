@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 public class DerivedVariableProcessor {
 
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
-	private static final Pattern TYPES_REGEX = Pattern.compile("T\\((.*?)\\)");
+	private static final String TYPES_REGEX = ".*T\\((.*?)\\)";
 
 	public static final String PLACEHOLDER = "terms";
 	private static final String CONCAT = "concat";
@@ -67,8 +67,11 @@ public class DerivedVariableProcessor {
 	}
 
 	private String removeArbitraryCodeExecution(final String text) {
-		final Matcher matcher = TYPES_REGEX.matcher(text);
-		return matcher.replaceAll("");
+		String newText = text;
+		while (newText.matches(TYPES_REGEX)) {
+			newText = newText.replaceAll(TYPES_REGEX, "");
+		}
+		return newText;
 	}
 
 	/**

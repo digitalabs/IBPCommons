@@ -1,19 +1,18 @@
 
 package org.generationcp.commons.derivedvariable;
 
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 
 public class DerivedVariableProcessorTest {
 
@@ -169,14 +168,25 @@ public class DerivedVariableProcessorTest {
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void testSpELSecurity() {
-		String result = this.derivedVariableProcessor.removeAllInvalidCharacters("T(System).exit(0)");
-		Assert.assertThat(result, is(".exit(0)"));
+	@Test()
+	public void testSecurity() {
+		String formula = this.derivedVariableProcessor.removeAllInvalidCharacters("T(System).exit(0)");
+		Assert.assertThat(formula, is(".exit(0)"));
 
-		result = this.derivedVariableProcessor.removeAllInvalidCharacters("T(java.lang.Runtime).getRuntime().exec('gnome-calculator')");
-		Assert.assertThat(result, is(".getRuntime().exec('gnome-calculator')"));
+		formula = this.derivedVariableProcessor.removeAllInvalidCharacters("T(java.lang.Runtime).getRuntime().exec('gnome-calculator')");
+		Assert.assertThat(formula, is(".getRuntime().exec('gnome-calculator')"));
 
-		this.derivedVariableProcessor.evaluateFormula(result, new HashMap<String, Object>());
+		formula = this.derivedVariableProcessor.removeAllInvalidCharacters("TT(System)(System).exit(0)");
+		Assert.assertThat(formula, is("(System).exit(0)"));
+	}
+
+	@Test(expected = Exception.class)
+	public void testSecurityEval() {
+		this.derivedVariableProcessor.evaluateFormula("T(System).exit(0)", new HashMap<String, Object>());
+	}
+
+	@Test(expected = Exception.class)
+	public void testSecurityEval2() {
+		this.derivedVariableProcessor.evaluateFormula("TT(System)(System).exit(0)", new HashMap<String, Object>());
 	}
 }
