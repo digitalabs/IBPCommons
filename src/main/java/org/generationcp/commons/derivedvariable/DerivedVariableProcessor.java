@@ -1,14 +1,18 @@
 package org.generationcp.commons.derivedvariable;
 
-import org.apache.commons.lang3.math.NumberUtils;
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
+import org.mariuszgromada.math.mxparser.Argument;
+import org.mariuszgromada.math.mxparser.Expression;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,22 +20,11 @@ import java.util.regex.Pattern;
 public class DerivedVariableProcessor {
 
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
-	private static final String TYPES_REGEX = ".*T\\((.*?)\\)";
 
-	public static final String PLACEHOLDER = "terms";
 	private static final String CONCAT = "concat";
 
-	private final SpelExpressionParser parser;
-	private final StandardEvaluationContext context;
 
 	public DerivedVariableProcessor() {
-		this.parser = new SpelExpressionParser();
-		this.context = new StandardEvaluationContext();
-		try {
-			this.context.registerFunction(CONCAT, DerivedVariableFunctions.class.getDeclaredMethod(CONCAT, new Class[] {String[].class}));
-		} catch (NoSuchMethodException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	/**
@@ -61,15 +54,6 @@ public class DerivedVariableProcessor {
 		if (newText != null) {
 			newText = newText.replaceAll("%", "");
 			newText = newText.replaceAll("\"", "");
-			newText = this.removeArbitraryCodeExecution(newText);
-		}
-		return newText;
-	}
-
-	private String removeArbitraryCodeExecution(final String text) {
-		String newText = text;
-		while (newText.matches(TYPES_REGEX)) {
-			newText = newText.replaceAll(TYPES_REGEX, "");
 		}
 		return newText;
 	}
@@ -102,9 +86,6 @@ public class DerivedVariableProcessor {
 		if (value == null) {
 			value = measurementData.getValue();
 		}
-		if (NumberUtils.isNumber(value)) {
-			return new BigDecimal(value);
-		}
 		return value;
 	}
 
@@ -117,8 +98,8 @@ public class DerivedVariableProcessor {
 	public String replaceBraces(String formula) {
 		String updatedFormula = formula;
 		if (updatedFormula != null) {
-			updatedFormula = updatedFormula.replaceAll("\\{", "#" + PLACEHOLDER + "['");
-			updatedFormula = updatedFormula.replaceAll("\\}", "']");
+			updatedFormula = updatedFormula.replaceAll("\\{", "");
+			updatedFormula = updatedFormula.replaceAll("\\}", "");
 		}
 		return updatedFormula;
 	}
@@ -132,12 +113,17 @@ public class DerivedVariableProcessor {
 	 */
 	public String evaluateFormula(String formula, Map<String, Object> terms) {
 		String newFormula = this.formatFormula(formula);
-		this.context.setVariable(PLACEHOLDER, terms);
-		String result = this.parser.parseExpression(newFormula).getValue(context, String.class);
-		if (NumberUtils.isNumber(result)) {
-			return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
-		}
-		return result;
+		List<Argument> args = Lists.transform(new ArrayList<>(terms.entrySet()), new Function<Map.Entry<String, Object>, Argument>() {
+
+			@Nullable
+			@Override
+			public Argument apply(@Nullable final Map.Entry<String, Object> term) {
+				return new Argument(term.getKey() + "=" + term.getValue());
+			}
+		});
+
+		double result = new Expression(newFormula, args.toArray(new Argument[0])).calculate();
+		return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
 	}
 
 	private String formatFormula(String formula) {
