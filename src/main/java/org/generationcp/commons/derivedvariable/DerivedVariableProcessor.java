@@ -38,7 +38,9 @@ public class DerivedVariableProcessor {
 		Pattern pattern = Pattern.compile(DerivedVariableProcessor.TERM_INSIDE_BRACES_REGEX);
 		Matcher matcher = pattern.matcher(formula);
 		while (matcher.find()) {
-			inputVariables.put(this.removeAllInvalidCharacters(matcher.group(1)), null);
+			String term = this.removeAllInvalidCharacters(matcher.group(1));
+			term = this.removeWhitespace(term);
+			inputVariables.put(term, null);
 		}
 		return inputVariables;
 	}
@@ -47,7 +49,7 @@ public class DerivedVariableProcessor {
 	 * @param text String
 	 * @return String text with no invalid characters
 	 *
-	 *         Remove invalid characters from text: whites spaces, percent, double quotes
+	 *         Remove invalid characters from text: percent, double quotes
 	 */
 	public String removeAllInvalidCharacters(final String text) {
 		String newText = text;
@@ -56,6 +58,13 @@ public class DerivedVariableProcessor {
 			newText = newText.replaceAll("\"", "");
 		}
 		return newText;
+	}
+
+	public String removeWhitespace(final String text) {
+		if (text != null) {
+			return text.replaceAll("\\s", "");
+		}
+		return "";
 	}
 
 	/**
@@ -68,6 +77,7 @@ public class DerivedVariableProcessor {
 		if (measurementRow != null && measurementRow.getDataList() != null) {
 			for (MeasurementData measurementData : measurementRow.getDataList()) {
 				String term = this.removeAllInvalidCharacters(measurementData.getLabel());
+				term = this.removeWhitespace(term);
 				if (terms.containsKey(term)) {
 					terms.put(term, this.getMeasurementValue(measurementData));
 				}

@@ -60,7 +60,7 @@ public class DerivedVariableProcessorTest {
 		Assert.assertTrue(DerivedVariableProcessorTest.TERM_1 + " should be one of the extracted terms",
 				this.terms.containsKey(DerivedVariableProcessorTest.TERM_1));
 		Assert.assertTrue(DerivedVariableProcessorTest.TERM_2 + " should be one of the extracted terms",
-				this.terms.containsKey(DerivedVariableProcessorTest.TERM_2));
+				this.terms.containsKey(DerivedVariableProcessorTest.TERM_2.trim()));
 		Assert.assertFalse(DerivedVariableProcessorTest.TERM_NOT_FOUND + " should not be one of the extracted terms",
 				this.terms.containsKey(DerivedVariableProcessorTest.TERM_NOT_FOUND));
 	}
