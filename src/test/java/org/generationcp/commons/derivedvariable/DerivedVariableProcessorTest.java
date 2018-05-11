@@ -157,10 +157,9 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	@Ignore // TODO
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
-		final String formula = "#concat('" + param1 + "', {PlotSize})";
+		final String formula = "f:concat('" + param1 + "', {PlotSize})";
 		final Map<String, Object> terms = this.derivedVariableProcessor.extractTermsFromFormula(formula);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(terms, this.createMeasurementRowTestData());
 

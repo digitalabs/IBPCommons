@@ -18,12 +18,28 @@ import java.util.regex.Pattern;
 
 public class DerivedVariableProcessor {
 
+	public static class Functions {
+
+		@SuppressWarnings("unused")
+		public String concat(final String... args) {
+			final StringBuilder sb = new StringBuilder();
+			for (String arg : args) {
+				sb.append(arg);
+			}
+			return sb.toString();
+		}
+	}
+
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
 
-	private static final String CONCAT = "concat";
-
+	private final JexlEngine engine;
+	private final MapContext context;
 
 	public DerivedVariableProcessor() {
+		Map<String, Object> functions = new HashMap<>();
+		functions.put("f", new Functions());
+		this.engine = new JexlBuilder().namespaces(functions).create();
+		this.context = new MapContext();
 	}
 
 	/**
@@ -123,14 +139,12 @@ public class DerivedVariableProcessor {
 	public String evaluateFormula(String formula, Map<String, Object> terms) {
 		String newFormula = this.formatFormula(formula);
 
-		JexlEngine jexl = new JexlBuilder().create();
-		JexlExpression expr = jexl.createExpression(newFormula);
-		JexlContext context = new MapContext();
+		JexlExpression expr = this.engine.createExpression(newFormula);
 		for (Map.Entry<String, Object> term : terms.entrySet()) {
-			context.set(term.getKey(), term.getValue());
+			this.context.set(term.getKey(), term.getValue());
 		}
 
-		String result = expr.evaluate(context).toString();
+		String result = expr.evaluate(this.context).toString();
 
 		if (NumberUtils.isNumber(result)) {
 			return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
