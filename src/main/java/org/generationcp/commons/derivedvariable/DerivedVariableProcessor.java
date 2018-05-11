@@ -1,18 +1,17 @@
 package org.generationcp.commons.derivedvariable;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlContext;
+import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlExpression;
+import org.apache.commons.jexl3.MapContext;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.mariuszgromada.math.mxparser.Argument;
-import org.mariuszgromada.math.mxparser.Expression;
 
-import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -123,17 +122,20 @@ public class DerivedVariableProcessor {
 	 */
 	public String evaluateFormula(String formula, Map<String, Object> terms) {
 		String newFormula = this.formatFormula(formula);
-		List<Argument> args = Lists.transform(new ArrayList<>(terms.entrySet()), new Function<Map.Entry<String, Object>, Argument>() {
 
-			@Nullable
-			@Override
-			public Argument apply(@Nullable final Map.Entry<String, Object> term) {
-				return new Argument(term.getKey() + "=" + term.getValue());
-			}
-		});
+		JexlEngine jexl = new JexlBuilder().create();
+		JexlExpression expr = jexl.createExpression(newFormula);
+		JexlContext context = new MapContext();
+		for (Map.Entry<String, Object> term : terms.entrySet()) {
+			context.set(term.getKey(), term.getValue());
+		}
 
-		double result = new Expression(newFormula, args.toArray(new Argument[0])).calculate();
-		return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
+		String result = expr.evaluate(context).toString();
+
+		if (NumberUtils.isNumber(result)) {
+			return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
+		}
+		return result;
 	}
 
 	private String formatFormula(String formula) {

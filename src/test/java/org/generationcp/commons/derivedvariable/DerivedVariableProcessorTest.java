@@ -7,15 +7,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mariuszgromada.math.mxparser.Argument;
-import org.mariuszgromada.math.mxparser.Expression;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.hamcrest.Matchers.is;
 
 public class DerivedVariableProcessorTest {
 
@@ -152,21 +148,6 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testMXParser() {
-		this.formula = FORMULA_1;
-		this.terms = this.derivedVariableProcessor.extractTermsFromFormula(this.formula);
-		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(terms, this.createMeasurementRowTestData());
-		this.formula = this.derivedVariableProcessor.replaceBraces(formula);
-		this.formula = this.derivedVariableProcessor.removeAllInvalidCharacters(this.formula);
-		List<Argument> args = new ArrayList<>();
-		for (Map.Entry<String, Object> term : terms.entrySet()) {
-			args.add(new Argument(term.getKey() + "=" + term.getValue()));
-		}
-		Expression e = new Expression(this.formula, args.toArray(new Argument[0]));
-		Assert.assertThat(String.valueOf(e.calculate()), is("10.0"));
-	}
-
-	@Test
 	public void testGetDerivedVariableValue() {
 		String result =
 				this.derivedVariableProcessor.getDerivedVariableValue(DerivedVariableProcessorTest.FORMULA_2,
@@ -186,4 +167,10 @@ public class DerivedVariableProcessorTest {
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
+
+	@Test(expected = Exception.class)
+	public void testSecurityEval() {
+		this.derivedVariableProcessor.evaluateFormula("System.exit(0)", new HashMap<String, Object>());
+	}
+
 }
