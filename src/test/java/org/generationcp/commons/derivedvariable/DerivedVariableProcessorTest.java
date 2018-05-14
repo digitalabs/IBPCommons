@@ -167,6 +167,20 @@ public class DerivedVariableProcessorTest {
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
 
+	@Test
+	public void testAggregations() {
+		final String formula = "fn:avg({" + TERM_1 + "})";
+		final Map<String, Object> terms = new HashMap<>();
+		final HashMap<String, List<Object>> data = new HashMap<>();
+		final List<Object> termData = new ArrayList<>();
+		termData.add(5.5d);
+		termData.add(45d);
+		termData.add(12.2d);
+		data.put(TERM_1, termData);
+		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
+		Assert.assertEquals("Should evaluate concat function", "20.9", result);
+	}
+
 	@Test(expected = Exception.class)
 	public void testSecurityEval() {
 		this.derivedVariableProcessor.evaluateFormula("System.exit(0)", new HashMap<String, Object>());

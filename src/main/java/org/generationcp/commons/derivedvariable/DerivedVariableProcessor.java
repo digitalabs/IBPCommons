@@ -11,6 +11,7 @@ import org.generationcp.middleware.domain.etl.MeasurementRow;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,15 @@ public class DerivedVariableProcessor {
 				sb.append(arg);
 			}
 			return sb.toString();
+		}
+
+		@SuppressWarnings("unused")
+		public Double avg(List<Double> args) {
+			double sum = 0;
+			for (Double arg : args) {
+				sum += arg;
+			}
+			return sum / args.size();
 		}
 	}
 
@@ -118,18 +128,35 @@ public class DerivedVariableProcessor {
 	}
 
 	/**
-	 * @param formula String
-	 * @param terms Map<String,String>
-	 * @return result of evaluating the formula from term values
-	 *
-	 *         Evaluate formula from the value of input variables
+	 * @see DerivedVariableProcessor#evaluateFormula(String, Map, HashMap)
 	 */
 	public String evaluateFormula(String formula, Map<String, Object> terms) {
+		return this.evaluateFormula(formula, terms, new HashMap<String, List<Object>>());
+	}
+
+	/**
+	 * Evaluate formula from the value of input variables
+	 *
+	 * @param formula
+	 * @param terms   arguments for the formula
+	 * @param data    data for aggregations.
+	 * @return result of evaluating the formula from term values
+	 */
+	public String evaluateFormula(final String formula, final Map<String, Object> terms, final HashMap<String, List<Object>> data) {
 		String newFormula = this.formatFormula(formula);
 
 		JexlExpression expr = this.engine.createExpression(newFormula);
-		for (Map.Entry<String, Object> term : terms.entrySet()) {
-			this.context.set(term.getKey(), term.getValue());
+
+		if (terms != null) {
+			for (Map.Entry<String, Object> term : terms.entrySet()) {
+				this.context.set(term.getKey(), term.getValue());
+			}
+		}
+
+		if (data != null) {
+			for (Map.Entry<String, List<Object>> term : data.entrySet()) {
+				this.context.set(term.getKey(), term.getValue());
+			}
 		}
 
 		String result = expr.evaluate(this.context).toString();
@@ -147,7 +174,6 @@ public class DerivedVariableProcessor {
 	}
 
 	// FIXME this should not be a responsibility of the processor
-
 	/**
 	 * Get the value of the derived variable from a formula and values of input variables
 	 *
