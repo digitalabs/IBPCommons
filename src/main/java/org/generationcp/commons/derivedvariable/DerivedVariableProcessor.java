@@ -1,7 +1,6 @@
 package org.generationcp.commons.derivedvariable;
 
 import org.apache.commons.jexl3.JexlBuilder;
-import org.apache.commons.jexl3.JexlContext;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JexlExpression;
 import org.apache.commons.jexl3.MapContext;
@@ -37,16 +36,13 @@ public class DerivedVariableProcessor {
 
 	public DerivedVariableProcessor() {
 		Map<String, Object> functions = new HashMap<>();
-		functions.put("f", new Functions());
+		functions.put("fn", new Functions());
 		this.engine = new JexlBuilder().namespaces(functions).create();
 		this.context = new MapContext();
 	}
 
 	/**
-	 * @param formula String
-	 * @return Map of <String,String>
-	 *
-	 *         Extract term names from formula then store them in a map with null as the default value
+	 * Extract term names from formula then store them in a map with null as the default value
 	 */
 	public Map<String, Object> extractTermsFromFormula(String formula) {
 		Map<String, Object> inputVariables = new HashMap<>();
@@ -61,10 +57,7 @@ public class DerivedVariableProcessor {
 	}
 
 	/**
-	 * @param text String
-	 * @return String text with no invalid characters
-	 *
-	 *         Remove invalid characters from text: percent, double quotes
+	 * Remove invalid characters from text: percent, double quotes
 	 */
 	public String removeAllInvalidCharacters(final String text) {
 		String newText = text;
@@ -75,18 +68,16 @@ public class DerivedVariableProcessor {
 		return newText;
 	}
 
-	public String removeWhitespace(final String text) {
+	private String removeWhitespace(final String text) {
 		if (text != null) {
 			return text.replaceAll("\\s", "");
 		}
 		return "";
 	}
 
+	// FIXME this should not be a responsibility of the processor
 	/**
-	 * @param terms Map<String, String>
-	 * @param measurementRow MeasurementRow
-	 *
-	 *        Update values of terms from the measurement
+	 * Update values of terms from the measurement
 	 */
 	public void fetchTermValuesFromMeasurement(Map<String, Object> terms, MeasurementRow measurementRow) {
 		if (measurementRow != null && measurementRow.getDataList() != null) {
@@ -100,11 +91,9 @@ public class DerivedVariableProcessor {
 		}
 	}
 
+	// FIXME this should not be a responsibility of the processor
 	/**
-	 * @param measurementData MeasurementData
-	 * @return String value of measurementData
-	 *
-	 *         Update values of terms from the measurement
+	 * Update values of terms from the measurement
 	 */
 	private Object getMeasurementValue(MeasurementData measurementData) {
 		String value = measurementData.getcValueId();
@@ -115,10 +104,9 @@ public class DerivedVariableProcessor {
 	}
 
 	/**
-	 * @param formula String
-	 * @return String formula with no curly braces
+	 * Replace curly braces in formula
 	 *
-	 *         Replace curly braces in formula
+	 * @return formula with no curly braces
 	 */
 	public String replaceBraces(String formula) {
 		String updatedFormula = formula;
@@ -158,12 +146,12 @@ public class DerivedVariableProcessor {
 		return newFormula;
 	}
 
+	// FIXME this should not be a responsibility of the processor
+
 	/**
-	 * @param formula String
-	 * @param measurementRow MeasurementRow
-	 * @return String result of evaluating the formula from measurementRow
+	 * Get the value of the derived variable from a formula and values of input variables
 	 *
-	 *         Get the value of the derived variable from a formula and values of input variables
+	 * @return String result of evaluating the formula from measurementRow
 	 */
 	public String getDerivedVariableValue(String formula, MeasurementRow measurementRow) {
 		Map<String, Object> terms = this.extractTermsFromFormula(formula);
