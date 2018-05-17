@@ -17,7 +17,7 @@ public class BreedersCrossIDTemplateProvider implements KeyTemplateProvider{
 	@Override
 	public String getKeyTemplate() {
 		String breedersCrossIDTemplate = "";
-		breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDTrial();
+		breedersCrossIDTemplate = this.germplasmNamingProperties.getBreedersCrossIDStudy();
 		return breedersCrossIDTemplate;
 	}
 }

@@ -11,32 +11,32 @@ public class SeedSourceTemplateProviderTest {
 	public void testGetKeyTemplate() {
 
 		final GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
-		germplasmNamingProperties.setGermplasmOriginNurseriesDefault("[NAME]:[PLOTNO]");
-		germplasmNamingProperties.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
-		germplasmNamingProperties.setGermplasmOriginNurseriesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 
-		germplasmNamingProperties.setGermplasmOriginTrialsDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]");
-		germplasmNamingProperties.setGermplasmOriginTrialsMaize("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
-		germplasmNamingProperties.setGermplasmOriginTrialsWheat("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION][SEASON]-[NAME]-[PLOTNO]");
 
-		// Nurseries
-		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginNurseriesDefault(),
+		// Studies
+		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N"), "rice").getKeyTemplate());
 
-		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginNurseriesMaize(),
+		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N"), "maize").getKeyTemplate());
 
-		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginNurseriesWheat(),
+		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N"), "wheat").getKeyTemplate());
 
 		// Trials
-		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginTrialsDefault(),
+		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T"), "rice").getKeyTemplate());
 
-		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginTrialsMaize(),
+		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T"), "maize").getKeyTemplate());
 
-		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginTrialsWheat(),
+		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T"), "wheat").getKeyTemplate());
 	}
 }

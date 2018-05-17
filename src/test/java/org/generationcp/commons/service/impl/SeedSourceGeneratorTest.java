@@ -46,12 +46,12 @@ public class SeedSourceGeneratorTest {
 		MockitoAnnotations.initMocks(this);
 
 		final GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
-		germplasmNamingProperties.setGermplasmOriginNurseriesDefault("[NAME]:[PLOTNO]:[PLANT_NO]");
-		germplasmNamingProperties.setGermplasmOriginNurseriesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
-		germplasmNamingProperties.setGermplasmOriginNurseriesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
-		germplasmNamingProperties.setGermplasmOriginTrialsDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]:[PLANT_NO]");
-		germplasmNamingProperties.setGermplasmOriginTrialsMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
-		germplasmNamingProperties.setGermplasmOriginTrialsWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[PLOTNO]:[PLANT_NO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]:[PLANT_NO]");
+		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
+		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 
 		this.seedSourceGenerator =
 				new SeedSourceGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil);

@@ -28,14 +28,14 @@ public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 	public String getKeyTemplate() {
 		String seedSourceTemplate;
 
-		seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsDefault();
+		seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesDefault();
 
 		if (this.crop.equals(WHEAT)) {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsWheat();
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesWheat();
 		} else if (this.crop.equals(MAIZE)) {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsMaize();
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesMaize();
 		} else {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesDefault();
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesDefault();
 		}
 		return seedSourceTemplate;
 	}

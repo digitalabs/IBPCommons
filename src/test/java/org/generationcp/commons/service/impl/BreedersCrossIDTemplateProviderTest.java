@@ -12,15 +12,15 @@ public class BreedersCrossIDTemplateProviderTest {
 
 		final GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
 
-		germplasmNamingProperties.setBreedersCrossIDNursery("[PROJECT_PREFIX][HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
-		germplasmNamingProperties.setBreedersCrossIDTrial("[PROJECT_PREFIX][HABITAT_DESIGNATION]-[SEASON]:[LOCATION]");
+		germplasmNamingProperties.setBreedersCrossIDStudy("[PROJECT_PREFIX][HABITAT_DESIGNATION]-[SEASON]-[LOCATION]");
+		germplasmNamingProperties.setBreedersCrossIDStudy("[PROJECT_PREFIX][HABITAT_DESIGNATION]-[SEASON]:[LOCATION]");
 
-		// Nursery
-		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDNursery(),
+		// Study
+		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
 				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N")).getKeyTemplate());
 
 		// Trial
-		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDTrial(),
+		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
 				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T")).getKeyTemplate());
 	}
 }
