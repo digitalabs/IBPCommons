@@ -169,16 +169,28 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testAggregations() {
-		final String formula = "fn:avg({" + TERM_1 + "})";
+		String formula = "fn:avg({" + TERM_1 + "})";
+
 		final Map<String, Object> terms = new HashMap<>();
+
 		final HashMap<String, List<Object>> data = new HashMap<>();
 		final List<Object> termData = new ArrayList<>();
 		termData.add(5.5d);
 		termData.add(45d);
 		termData.add(12.2d);
 		data.put(TERM_1, termData);
+
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
 		Assert.assertEquals("Should evaluate concat function", "20.9", result);
+
+		formula = "fn:avg([{" + TERM_1 + "}, {PH_M_cm}])";
+		final List<Object> term2Data = new ArrayList<>();
+		term2Data.add(14.23d);
+		term2Data.add(134.12);
+		data.put("PH_M_cm", term2Data);
+
+		result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
+		Assert.assertEquals("Should evaluate concat function", "42.21", result);
 	}
 
 	@Test(expected = Exception.class)

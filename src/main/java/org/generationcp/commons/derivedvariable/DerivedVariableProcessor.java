@@ -30,12 +30,16 @@ public class DerivedVariableProcessor {
 		}
 
 		@SuppressWarnings("unused")
-		public Double avg(List<Double> args) {
+		public Double avg(List<Double>... args) {
 			double sum = 0;
-			for (Double arg : args) {
-				sum += arg;
+			int size = 0;
+			for (List<Double> arg : args) {
+				for (Double val : arg) {
+					sum += val;
+				}
+				size += arg.size();
 			}
-			return sum / args.size();
+			return sum / size;
 		}
 	}
 
