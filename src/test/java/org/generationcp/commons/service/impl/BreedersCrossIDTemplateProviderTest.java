@@ -17,10 +17,10 @@ public class BreedersCrossIDTemplateProviderTest {
 
 		// Study
 		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
-				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N")).getKeyTemplate());
+				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME)).getKeyTemplate());
 
 		// Trial
 		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
-				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T")).getKeyTemplate());
+				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME)).getKeyTemplate());
 	}
 }

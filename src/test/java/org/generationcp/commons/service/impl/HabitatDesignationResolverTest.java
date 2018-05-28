@@ -86,7 +86,7 @@ public class HabitatDesignationResolverTest {
 	public void testResolveForTrialWithHabitatVariableAndValue() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto("T"));
+		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1HabitatMV = new MeasurementVariable();
@@ -120,7 +120,7 @@ public class HabitatDesignationResolverTest {
 	public void testResolveForTrialWithHabitatConditions() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto("T"));
+		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1HabitatMV = new MeasurementVariable();

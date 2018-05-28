@@ -102,7 +102,7 @@ public class BreedersCrossIDGeneratorTest {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("StudyName");
-		studyDetails.setStudyType(new StudyTypeDto("N"));
+		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable locationMV = new MeasurementVariable();
@@ -149,7 +149,7 @@ public class BreedersCrossIDGeneratorTest {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("TestStudy");
-		studyDetails.setStudyType(new StudyTypeDto("T"));
+		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();

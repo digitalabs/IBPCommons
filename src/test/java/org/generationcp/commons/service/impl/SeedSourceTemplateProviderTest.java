@@ -21,22 +21,22 @@ public class SeedSourceTemplateProviderTest {
 
 		// Studies
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N"), "rice").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME), "rice").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N"), "maize").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME), "maize").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("N"), "wheat").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME), "wheat").getKeyTemplate());
 
 		// Trials
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T"), "rice").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME), "rice").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T"), "maize").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME), "maize").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto("T"), "wheat").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME), "wheat").getKeyTemplate());
 	}
 }
