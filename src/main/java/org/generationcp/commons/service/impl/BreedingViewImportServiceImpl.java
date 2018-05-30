@@ -164,7 +164,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				final DataSet trialDataSet = this.getTrialDataSet(studyId);
 				// Create or append the experiments to the means dataset
 				this.createOrAppendMeansExperiments(meansDataSet, traitsAndMeans, meansDataSetExists,
-						plotDataSet.getId(), trialDataSet.getId());
+						plotDataSet.getId(), trialDataSet.getId(), studyId);
 
 			}
 		} catch (final Exception e) {
@@ -185,12 +185,12 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 */
 	private void createOrAppendMeansExperiments(final DataSet meansDataSet,
 			final Map<String, List<String>> traitsAndMeans, final boolean meansDataSetExists, final int plotDatasetId,
-			final int trialDatasetId) {
+			final int trialDatasetId, final int studyId) {
 		final List<ExperimentValues> experimentValuesList = new ArrayList<>();
 		final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 		final String envHeader = csvHeader[0];
 		final String entryNoHeader = csvHeader[1];
-		final Map<String, Integer> envNameToNdGeolocationIdMap = this.getEnvNameToNdGeolocationIdMap(envHeader,
+		final Map<String, Integer> envNameToNdGeolocationIdMap = this.getEnvNameToNdGeolocationIdMap(envHeader, studyId,
 				trialDatasetId);
 		final Map<String, Integer> entroNyToStockIdMap = this.getEntryNoToStockIdMap(entryNoHeader, plotDatasetId);
 
@@ -264,12 +264,25 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param trialDatasetId
 	 * @return map of environment factor names to nd_geolocation ids
 	 */
-	private Map<String, Integer> getEnvNameToNdGeolocationIdMap(final String envFactor, final int trialDatasetId) {
+	private Map<String, Integer> getEnvNameToNdGeolocationIdMap(final String envFactor, final int studyId, final int trialDatasetId) {
 		final Map<String, Integer> envNameToGeolocationIdMap = new HashMap<>();
 		final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(trialDatasetId);
+
+		final boolean isSelectedEnvironmentFactorALocation = this.studyDataManager.isLocationIdVariable(studyId, envFactor);
+		final Map<String, String> locationNameMap = this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
+
 		for (final TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
-			envNameToGeolocationIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(),
-					trialEnv.getId());
+			if (isSelectedEnvironmentFactorALocation) {
+				final String locationId = trialEnv.getVariables().findByLocalName(envFactor).getValue();
+				final String locationName = locationNameMap.get(locationId);
+				envNameToGeolocationIdMap.put(locationName,
+						trialEnv.getId());
+			} else  {
+				envNameToGeolocationIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(),
+						trialEnv.getId());
+			}
+
+
 		}
 		return envNameToGeolocationIdMap;
 	}
@@ -624,9 +637,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	protected Map<Integer, String> createGeolocationIdEnvironmentMap(final Set<String> environments, final int studyId,
 			final String environmentFactorName) {
 
+		final int datasetId = this.getTrialDataSet(studyId).getId();
 		final Map<Integer, String> envFactorTolocationIdMap = new LinkedHashMap<>();
 		final TrialEnvironments trialEnvironments = this.studyDataManager
-				.getTrialEnvironmentsInDataset(this.getTrialDataSet(studyId).getId());
+				.getTrialEnvironmentsInDataset(datasetId);
+
+		final boolean isSelectedEnvironmentFactorALocation = this.studyDataManager.isLocationIdVariable(studyId, environmentFactorName);
+		final Map<String, String> locationNameToIdMap = this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId).inverse();
 
 		// Only create map entries for environments present in SSA Output,
 		// because only these have Summary Statistic values
@@ -637,17 +654,37 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			// replaced with semicolon. So we need to replace semicolon with
 			// comma again
 			String sanitizedEnvironmentFactor = environmentName.replace(";", ",");
-			TrialEnvironment trialEnvironment = trialEnvironments.findOnlyOneByLocalName(environmentFactorName,
-					sanitizedEnvironmentFactor);
-			if (trialEnvironment == null) {
-				sanitizedEnvironmentFactor = environmentName;
-				trialEnvironment = trialEnvironments.findOnlyOneByLocalName(environmentFactorName,
-						sanitizedEnvironmentFactor);
+			Integer geolocationId = getTrialEnvironmentId(trialEnvironments, environmentFactorName, sanitizedEnvironmentFactor, isSelectedEnvironmentFactorALocation, locationNameToIdMap);
+			if (geolocationId == null) {
+				geolocationId = getTrialEnvironmentId(trialEnvironments, environmentFactorName, environmentName, isSelectedEnvironmentFactorALocation, locationNameToIdMap);
 			}
-			envFactorTolocationIdMap.put(trialEnvironment.getId(), environmentName);
+
+			envFactorTolocationIdMap.put(geolocationId, environmentName);
 		}
 
 		return envFactorTolocationIdMap;
+	}
+
+	protected Integer getTrialEnvironmentId(final TrialEnvironments trialEnvironments, final String environmentFactor, final String environmentName, final boolean isSelectedEnvironmentFactorALocation,
+			final Map<String, String> locationNameToIdMap) {
+
+		TrialEnvironment trialEnvironment = null;
+
+		if (isSelectedEnvironmentFactorALocation) {
+			String locationId = locationNameToIdMap.get(environmentName);
+			trialEnvironment = trialEnvironments.findOnlyOneByLocalName(environmentFactor,
+					locationId);
+		} else {
+			trialEnvironment = trialEnvironments.findOnlyOneByLocalName(environmentFactor,
+					environmentName);
+		}
+
+		if (trialEnvironment != null) {
+			return trialEnvironment.getId();
+		} else {
+			return null;
+		}
+
 	}
 
 	/**
