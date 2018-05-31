@@ -7,8 +7,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.UserRole;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,7 +41,7 @@ public class SecurityUtil {
 		return Collections.emptyList();
 	}
 
-	public static Collection<? extends GrantedAuthority> getRolesAsAuthorities(User workbenchUser) {
+	public static Collection<? extends GrantedAuthority> getRolesAsAuthorities(WorkbenchUser workbenchUser) {
 		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
 		if (workbenchUser != null) {
 			List<UserRole> userRoles = workbenchUser.getRoles();

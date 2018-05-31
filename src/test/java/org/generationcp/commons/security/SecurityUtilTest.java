@@ -5,8 +5,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.UserRole;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,9 +18,10 @@ public class SecurityUtilTest {
 
 	@Test
 	public void testGetRolesAsAuthorities() {
-		User testUserWorkbench = new User();
+		WorkbenchUser testUserWorkbench = new WorkbenchUser();
 		testUserWorkbench.setName(SecurityUtilTest.TEST_USER);
-		UserRole testUserRole = new UserRole(testUserWorkbench, "ADMIN");
+		// Role ID 1 = ADMIN
+		UserRole testUserRole = new UserRole(testUserWorkbench, 1);
 		testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 
 		Collection<? extends GrantedAuthority> rolesAsAuthorities = SecurityUtil.getRolesAsAuthorities(testUserWorkbench);
@@ -36,13 +37,13 @@ public class SecurityUtilTest {
 
 	@Test
 	public void testGetRolesAsAuthorities3() {
-		Collection<? extends GrantedAuthority> rolesAsAuthorities = SecurityUtil.getRolesAsAuthorities(new User());
+		Collection<? extends GrantedAuthority> rolesAsAuthorities = SecurityUtil.getRolesAsAuthorities(new WorkbenchUser());
 		Assert.assertTrue("Expecting an empty collection when user roles are null.", rolesAsAuthorities.isEmpty());
 	}
 
 	@Test
 	public void testGetRolesAsAuthorities4() {
-		User workbenchUser = new User();
+		WorkbenchUser workbenchUser = new WorkbenchUser();
 		workbenchUser.setRoles(Collections.<UserRole>emptyList());
 		Collection<? extends GrantedAuthority> rolesAsAuthorities = SecurityUtil.getRolesAsAuthorities(workbenchUser);
 		Assert.assertTrue("Expecting an empty collection when user roles are empty.", rolesAsAuthorities.isEmpty());

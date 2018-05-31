@@ -10,12 +10,12 @@ import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Person;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserRowGenerator extends CodesSheetRowGenerator<User> {
+public class UserRowGenerator extends CodesSheetRowGenerator<WorkbenchUser> {
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -24,7 +24,7 @@ public class UserRowGenerator extends CodesSheetRowGenerator<User> {
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Override
-	List<User> getSourceItem() {
+	List<WorkbenchUser> getSourceItem() {
 		final Project project = this.contextUtil.getProjectInContext();
 		return this.workbenchDataManager.getUsersByProjectId(project.getProjectId());
 	}
@@ -50,12 +50,12 @@ public class UserRowGenerator extends CodesSheetRowGenerator<User> {
 	}
 
 	@Override
-	String getFcode(final User user) {
+	String getFcode(final WorkbenchUser user) {
 		return user.getUserid().toString();
 	}
 
 	@Override
-	String getFname(final User user) {
+	String getFname(final WorkbenchUser user) {
 		final Person person = this.workbenchDataManager.getPersonById(user.getPersonid());
 		return person.getDisplayName();
 	}
