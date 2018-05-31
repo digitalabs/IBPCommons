@@ -49,6 +49,16 @@ public class LocationResolver implements KeyComponentValueResolver {
 			});
 		}
 
+		if (conditionsMap != null) {
+			if (conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
+				location = conditionsMap.get(TermId.LOCATION_ABBR.getId()).getValue();
+			} else if (conditionsMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
+				location = conditionsMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
+			} else {
+				location = conditionsMap.get(TermId.TRIAL_INSTANCE_FACTOR.getId()).getValue();
+			}
+		}
+
 		if (this.trailInstanceObservation != null) {
 			final ImmutableMap<Integer, MeasurementData> dataListMap =
 				Maps.uniqueIndex(this.trailInstanceObservation.getDataList(), new Function<MeasurementData, Integer>() {

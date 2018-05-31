@@ -97,7 +97,7 @@ public class SeasonResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable seasonMV = new MeasurementVariable();
@@ -126,7 +126,7 @@ public class SeasonResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
@@ -148,7 +148,7 @@ public class SeasonResolverTest {
 	public void testResolveForTrialWithSeasonVariableAndValue() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();
@@ -183,7 +183,7 @@ public class SeasonResolverTest {
 	public void testResolveForTrialWithSeasonVariableButNoValue() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();
@@ -221,7 +221,7 @@ public class SeasonResolverTest {
 	public void testResolveForTrialWithoutSeasonVariable() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final SimpleDateFormat formatter = new SimpleDateFormat("YYYYMM");
@@ -243,7 +243,7 @@ public class SeasonResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
@@ -268,7 +268,7 @@ public class SeasonResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
@@ -294,7 +294,7 @@ public class SeasonResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
@@ -319,7 +319,7 @@ public class SeasonResolverTest {
 	public void testResolveForTrialWithSeasonVariableConditions() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable firstInstanceSeasonMeasurementVariable = new MeasurementVariable();

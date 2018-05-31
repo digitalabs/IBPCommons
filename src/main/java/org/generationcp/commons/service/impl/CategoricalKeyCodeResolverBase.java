@@ -8,6 +8,8 @@ import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.oms.TermSummary;
+import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 
@@ -44,6 +46,29 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 	@Override
 	public String resolve() {
 		String resolvedValue = "";
+
+		MeasurementVariable measurementVariable = null;
+
+		if (this.conditions != null) {
+			for (final MeasurementVariable mv : this.conditions) {
+				if (mv.getTermId() == this.getKeyCodeId().getId()) {
+					measurementVariable = mv;
+				}
+			}
+		}
+
+		if (measurementVariable != null && StringUtils.isNotBlank(measurementVariable.getValue())) {
+			final Variable variable = this.ontologyVariableDataManager
+				.getVariable(this.contextUtil.getCurrentProgramUUID(), measurementVariable.getTermId(), true, false);
+
+			for (final TermSummary prefix : variable.getScale().getCategories()) {
+				if (measurementVariable.getValue().equals(prefix.getId().toString()) || measurementVariable.getValue()
+					.equals(prefix.getDefinition())) {
+					resolvedValue = this.isAbbreviationRequired() ? prefix.getName() : prefix.getDefinition();
+					break;
+				}
+			}
+		}
 
 		if (this.trailInstanceObservation != null) {
 			for (final MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {

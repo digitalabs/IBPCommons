@@ -62,7 +62,7 @@ public class ProjectPrefixResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable measurementVariable = new MeasurementVariable();
@@ -87,7 +87,7 @@ public class ProjectPrefixResolverTest {
 	public void testResolveForTrialWithProgramVariableAndValue() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1ProgramMV = new MeasurementVariable();
@@ -121,7 +121,7 @@ public class ProjectPrefixResolverTest {
 	public void testResolveForTrialWithProgramVariableConditions() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1ProgramMV = new MeasurementVariable();

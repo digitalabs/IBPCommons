@@ -101,55 +101,8 @@ public class BreedersCrossIDGeneratorTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyName("StudyName");
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
-		workbook.setStudyDetails(studyDetails);
-
-		final MeasurementVariable locationMV = new MeasurementVariable();
-		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
-		locationMV.setValue("IND");
-
-		final MeasurementVariable projectPrefixMV = new MeasurementVariable();
-		projectPrefixMV.setTermId(TermId.PROJECT_PREFIX.getId());
-		projectPrefixMV.setValue(PROJECT_PREFIX_CATEGORY_ID.toString());
-
-		final MeasurementVariable habitatDesignationMV = new MeasurementVariable();
-		habitatDesignationMV.setTermId(TermId.HABITAT_DESIGNATION.getId());
-		habitatDesignationMV.setValue(HABITAT_DESIGNATION_CATEGORY_ID.toString());
-
-		final MeasurementVariable seasonMV = new MeasurementVariable();
-		seasonMV.setTermId(TermId.SEASON_VAR.getId());
-		seasonMV.setValue(SEASON_CATEGORY_ID.toString());
-
-		final Method breedingMethod = new Method();
-		breedingMethod.setMname("Single cross");
-		breedingMethod.setSnametype(5);
-		breedingMethod.setPrefix("pre");
-		breedingMethod.setSeparator("-");
-		breedingMethod.setCount("[CIMCRS]");
-		breedingMethod.setSuffix("suff");
-
-		workbook.setConditions(Lists.newArrayList(locationMV, projectPrefixMV, habitatDesignationMV, seasonMV));
-
-		final String expectedBreedersCrossID = PROJECT_PREFIX_CATEGORY_VALUE + "-" + HABITAT_DESIGNATION_CATEGORY_VALUE + "-"
-				+ SEASON_CATEGORY_VALUE + "-" + locationMV.getValue();
-
-		final List<MeasurementVariable> conditions = workbook.getConditions();
-		final MeasurementRow row = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
-
-		final String actualBreedersCrossID = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getStudyType(),
-				conditions, row, breedingMethod, importedGermplasm);
-		Assert.assertEquals(expectedBreedersCrossID, actualBreedersCrossID);
-	}
-
-	@Test
-	public void testGenerateBreedersCrossIDTrial() {
-
-		final Workbook workbook = new Workbook();
-		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("TestStudy");
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();

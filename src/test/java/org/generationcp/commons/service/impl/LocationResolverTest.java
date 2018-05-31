@@ -21,7 +21,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable locationMV = new MeasurementVariable();
@@ -43,7 +43,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable locationMV = new MeasurementVariable();
@@ -64,7 +64,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final List<MeasurementVariable> conditions = workbook.getConditions();
@@ -81,7 +81,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
@@ -113,7 +113,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1MV = new MeasurementVariable();
@@ -137,7 +137,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.NURSERY_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
@@ -165,7 +165,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
@@ -199,7 +199,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
@@ -237,7 +237,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
@@ -278,7 +278,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1MV = new MeasurementVariable();
@@ -305,7 +305,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
@@ -340,7 +340,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
@@ -375,7 +375,7 @@ public class LocationResolverTest {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable locationMV = new MeasurementVariable();

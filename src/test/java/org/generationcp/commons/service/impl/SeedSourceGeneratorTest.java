@@ -46,12 +46,9 @@ public class SeedSourceGeneratorTest {
 		MockitoAnnotations.initMocks(this);
 
 		final GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
-		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[PLOTNO]:[PLANT_NO]");
 		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
 		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]:[PLANT_NO]");
-		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
-		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 
 		this.seedSourceGenerator =
 				new SeedSourceGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil);
@@ -75,52 +72,12 @@ public class SeedSourceGeneratorTest {
 	}
 
 	@Test
-	public void testGenerateSeedSourceNursery() {
-
-		final Workbook workbook = new Workbook();
-		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyName("StudyName");
-		studyDetails.setStudyType(new StudyTypeDto("N"));
-		workbook.setStudyDetails(studyDetails);
-
-		final MeasurementVariable locationMV = new MeasurementVariable();
-		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
-		locationMV.setValue("IND");
-
-		final MeasurementVariable seasonMV = new MeasurementVariable();
-		seasonMV.setTermId(TermId.SEASON_VAR.getId());
-		seasonMV.setValue(SEASON_CATEGORY_ID.toString());
-
-		workbook.setConditions(Lists.newArrayList(locationMV, seasonMV));
-
-		setCurrentCrop("rice");
-		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("StudyName:3:", seedSource);
-		// with plant number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), "1");
-		Assert.assertEquals("StudyName:3:1", seedSource);
-
-		setCurrentCrop("wheat");
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("IND\\Dry Season\\StudyName\\3", seedSource);
-
-		setCurrentCrop("maize");
-		// with selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, "2", "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("INDDry Season-StudyName-3-2", seedSource);
-
-		// without selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, null, null, "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("INDDry Season-StudyName-3", seedSource);
-	}
-
-	@Test
-	public void testGenerateSeedSourceTrial() {
+	public void testGenerateSeedSourceStudy() {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("TestStudy");
-		studyDetails.setStudyType(new StudyTypeDto(StudyTypeDto.TRIAL_NAME));
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
@@ -149,8 +106,8 @@ public class SeedSourceGeneratorTest {
 		setCurrentCrop("rice");
 		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("TestStudy:IND:Dry Season:3:", seedSource);
-		
-		// with Plant Number 
+
+		// with Plant Number
 		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), "4");
 		Assert.assertEquals("TestStudy:IND:Dry Season:3:4", seedSource);
 
@@ -172,7 +129,7 @@ public class SeedSourceGeneratorTest {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("StudyName");
-		studyDetails.setStudyType(new StudyTypeDto("N"));
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable locationMV = new MeasurementVariable();
@@ -193,7 +150,7 @@ public class SeedSourceGeneratorTest {
 		setCurrentCrop("rice");
 		crossSeedSource =
 				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "MaleStudyName", "FemaleStudyName");
-		Assert.assertEquals("FemaleStudyName:2:/MaleStudyName:1:", crossSeedSource);
+		Assert.assertEquals("FemaleStudyName:IND:Dry Season:2:/MaleStudyName:IND:Dry Season:1:", crossSeedSource);
 	}
 
 }

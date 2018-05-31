@@ -21,22 +21,22 @@ public class SeedSourceTemplateProviderTest {
 
 		// Studies
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME), "rice").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "rice").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME), "maize").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "maize").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.NURSERY_NAME), "wheat").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "wheat").getKeyTemplate());
 
 		// Trials
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME), "rice").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "rice").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME), "maize").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "maize").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, new StudyTypeDto(StudyTypeDto.TRIAL_NAME), "wheat").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "wheat").getKeyTemplate());
 	}
 }
