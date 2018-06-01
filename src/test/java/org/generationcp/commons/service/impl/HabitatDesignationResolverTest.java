@@ -117,7 +117,7 @@ public class HabitatDesignationResolverTest {
 	}
 	
 	@Test
-	public void testResolveForTrialWithHabitatConditions() {
+	public void testResolveForStudyWithHabitatConditions() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());

@@ -29,7 +29,7 @@ public class SeedSourceTemplateProviderTest {
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "wheat").getKeyTemplate());
 
-		// Trials
+		// Studies
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
 				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "rice").getKeyTemplate());
 

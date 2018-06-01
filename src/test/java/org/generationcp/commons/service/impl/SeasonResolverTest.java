@@ -180,7 +180,7 @@ public class SeasonResolverTest {
 	}
 
 	@Test
-	public void testResolveForTrialWithSeasonVariableButNoValue() {
+	public void testResolveForStudyWithSeasonVariableButNoValue() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
@@ -218,7 +218,7 @@ public class SeasonResolverTest {
 	}
 
 	@Test
-	public void testResolveForTrialWithoutSeasonVariable() {
+	public void testResolveForStudyWithoutSeasonVariable() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
@@ -239,7 +239,7 @@ public class SeasonResolverTest {
 	}
 
 	@Test
-	public void testGetValueFromTrialInstanceMeasurementDataSeasonDesscriptionIsPresentInPossibleValues() {
+	public void testGetValueFromStudyInstanceMeasurementDataSeasonDesscriptionIsPresentInPossibleValues() {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
@@ -264,7 +264,7 @@ public class SeasonResolverTest {
 	}
 
 	@Test
-	public void testGetValueFromTrialInstanceMeasurementDataSeasonDesscriptionDoesNotExistInPossibleValues() {
+	public void testGetValueFromStudyInstanceMeasurementDataSeasonDesscriptionDoesNotExistInPossibleValues() {
 
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
@@ -316,7 +316,7 @@ public class SeasonResolverTest {
 	}
 
 	@Test
-	public void testResolveForTrialWithSeasonVariableConditions() {
+	public void testResolveForStudyWithSeasonVariableConditions() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());

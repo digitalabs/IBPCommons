@@ -19,7 +19,7 @@ public class BreedersCrossIDTemplateProviderTest {
 		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
 				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto()).getKeyTemplate());
 
-		// Trial
+		// Study
 		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
 				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto()).getKeyTemplate());
 	}

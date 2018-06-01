@@ -52,7 +52,7 @@ public class OutlierCSVTest {
 	public void testGetData() throws IOException {
 		final Map<String, Map<String, List<String>>> data = this.outlierCSV.getData();
 
-		// Expecting only Trial Environment "1" to be parsed
+		// Expecting only Study Environment "1" to be parsed
 		final String environmentName = "1";
 		Assert.assertEquals(1, data.keySet().size());
 		Assert.assertEquals(environmentName, data.keySet().iterator().next());

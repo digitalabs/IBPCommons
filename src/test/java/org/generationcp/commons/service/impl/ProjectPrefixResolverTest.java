@@ -118,7 +118,7 @@ public class ProjectPrefixResolverTest {
 	}
 	
 	@Test
-	public void testResolveForTrialWithProgramVariableConditions() {
+	public void testResolveForStudyWithProgramVariableConditions() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
