@@ -335,27 +335,6 @@ public class GermplasmExportedWorkbookTest {
 
 		}
 
-		rowIndex = rowIndex + 2;
-
-		for (final Variable stdVariable : variateVariables.values()) {
-
-			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(),
-					stdVariable.getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-					stdVariable.getDefinition());
-			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(),
-					stdVariable.getProperty().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(),
-					stdVariable.getScale().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(),
-					stdVariable.getMethod().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(),
-					stdVariable.getScale().getDataType().getName().substring(0, 1).toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
-
-		}
-
 	}
 
 }
