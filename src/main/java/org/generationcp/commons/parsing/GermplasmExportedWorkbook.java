@@ -608,18 +608,32 @@ public class GermplasmExportedWorkbook {
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
 		int actualRow = startingRow;
-		final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
-		conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.VARIATE);
-		conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
-		conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
-		conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
-		conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
-		conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
-		conditionDetailsHeading.createCell(6, this.headingStyle, "");
-		conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
-		this.writeAttributesInTheListVariatesSection(descriptionSheet, ++actualRow);
+		if(this.hasAttributes()) {
+			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
+			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.VARIATE);
+			conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
+			conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
+			conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
+			conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
+			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
+			conditionDetailsHeading.createCell(6, this.headingStyle, "");
+			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
+			this.writeAttributesInTheListVariatesSection(descriptionSheet, ++actualRow);
+		}
 	}
 	
+	private boolean hasAttributes() {
+		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
+		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+				if(ColumnLabels.get(columnEntry.getKey()) == null) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	void writeAttributesInTheListVariatesSection(HSSFSheet descriptionSheet, int actualRow) {
 		final CellStyle labelStyleVariate = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
 		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
