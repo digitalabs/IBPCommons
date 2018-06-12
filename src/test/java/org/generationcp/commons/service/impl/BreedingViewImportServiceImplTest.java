@@ -13,11 +13,14 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.constant.CommonMessage;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.dao.dms.InstanceMetadata;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.data.initializer.OntologyScaleTestDataInitializer;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -380,6 +383,8 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
 		Mockito.doNothing().when(this.ontologyVariableDataManager)
 				.addVariable(Matchers.any(OntologyVariableInfo.class));
+		Mockito.when(studyDataManager.isLocationIdVariable(BreedingViewImportServiceImplTest.STUDY_ID, "TRIAL_INSTANCE")).thenReturn(false);
+		Mockito.when(studyDataManager.createInstanceLocationIdToNameMapFromStudy(BreedingViewImportServiceImplTest.STUDY_ID)).thenReturn(HashBiMap.<String, String>create());
 
 		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummary.csv").toURI());
 		this.bvImportService.importSummaryStatsData(file, BreedingViewImportServiceImplTest.STUDY_ID);
@@ -1135,12 +1140,15 @@ public class BreedingViewImportServiceImplTest {
 
 		final int testGeolocationId1 = 100;
 		final String testLocationName1 = "Agua Fria (AF)";
+		final String testLocationId1 = "1001";
 
 		final int testGeolocationId2 = 101;
 		final String testLocationName2 = "Africa";
+		final String testLocationId2 = "1002";
 
 		final int testGeolocationId3 = 102;
 		final String testLocationName3 = "UP Los Banos, Philippines";
+		final String testLocationId3 = "1003";
 
 		final List<DataSet> summaryDataDatasets = new ArrayList<>();
 		summaryDataDatasets.add(this.createTrialDataSet());
@@ -1151,20 +1159,29 @@ public class BreedingViewImportServiceImplTest {
 
 		final TrialEnvironment trialEnvironment1 = this.createTrialEnvironment(testGeolocationId1);
 		trialEnvironment1.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME)
-				.setValue(testLocationName1);
+				.setValue(testLocationId1);
 		final TrialEnvironment trialEnvironment2 = this.createTrialEnvironment(testGeolocationId2);
 		trialEnvironment2.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME)
-				.setValue(testLocationName2);
+				.setValue(testLocationId2);
 		final TrialEnvironment trialEnvironment3 = this.createTrialEnvironment(testGeolocationId3);
 		trialEnvironment3.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME)
-				.setValue(testLocationName3);
+				.setValue(testLocationId3);
 
 		testTrialEnvironments.add(trialEnvironment1);
 		testTrialEnvironments.add(trialEnvironment2);
 		testTrialEnvironments.add(trialEnvironment3);
 
+		final BiMap<String, String> locationMap = HashBiMap.create();
+		locationMap.put(testLocationId1, testLocationName1);
+		locationMap.put(testLocationId2, testLocationName2);
+		locationMap.put(testLocationId3, testLocationName3);
+
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt()))
 				.thenReturn(testTrialEnvironments);
+		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(Matchers.anyInt()))
+				.thenReturn(locationMap);
+		Mockito.when(this.studyDataManager.isLocationIdVariable(Matchers.anyInt(), Matchers.anyString()))
+				.thenReturn(true);
 
 		// Only add environments 1 and 3
 		final Set<String> environments = new HashSet<>();
