@@ -47,7 +47,7 @@ public class SecurityUtil {
 			List<UserRole> userRoles = workbenchUser.getRoles();
 			if (userRoles != null && !userRoles.isEmpty()) {
 				for (UserRole role : userRoles) {
-					authorities.add(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + role.getRole().getCapitalizedName()));
+					authorities.add(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + role.getRole().getCapitalizedRole()));
 				}
 			}
 		}

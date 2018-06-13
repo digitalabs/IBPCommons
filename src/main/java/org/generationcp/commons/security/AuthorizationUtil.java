@@ -21,7 +21,7 @@ public class AuthorizationUtil {
 		}
 		final List<String> permittedRoleNames = new ArrayList<>();
 		for (final Role role : configuredRoles) {
-			permittedRoleNames.add(role.getName());
+			permittedRoleNames.add(role.getDescription());
 		}
 		
 		for (final GrantedAuthority grantedAuthority : authorities) {
