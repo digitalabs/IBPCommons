@@ -1,8 +1,6 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
 import org.generationcp.middleware.domain.etl.MeasurementData;
@@ -10,30 +8,32 @@ import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.etl.StudyDetails;
 import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.junit.Test;
+
+import java.util.List;
 
 public class LocationResolverTest {
 
 	@Test
 	public void testResolveForNurseryWithLocationVariableAndValue() {
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable locationMV = new MeasurementVariable();
+		final MeasurementVariable locationMV = new MeasurementVariable();
 		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
 		locationMV.setValue("MEX");
 
 		workbook.setConditions(Lists.newArrayList(locationMV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, null, studyType).resolve();
+		final String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in Nursery settings.", "MEX",
 				location);
 	}
@@ -41,20 +41,20 @@ public class LocationResolverTest {
 	@Test
 	public void testResolveForNurseryWithLocationVariableButNoValue() {
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable locationMV = new MeasurementVariable();
+		final MeasurementVariable locationMV = new MeasurementVariable();
 		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
 
 		workbook.setConditions(Lists.newArrayList(locationMV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, null, studyType).resolve();
+		final String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is present but has no value.", "",
 				location);
 	}
@@ -62,15 +62,15 @@ public class LocationResolverTest {
 	@Test
 	public void testLocationForNurseryWithoutLocationVariable() {
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, null, studyType).resolve();
+		final String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is not present.", "", location);
 	}
 
@@ -79,29 +79,29 @@ public class LocationResolverTest {
 		final String locationAbbr = "MEX";
 		final String nurseryLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
 		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
 		instance1LocationAbbrMV.setValue(locationAbbr);
 
-		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
 		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
 		instance1LocationNameMV.setValue(nurseryLocation);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		instance1MV.setValue("1");
 
 		workbook.setConditions(Lists.newArrayList(instance1LocationAbbrMV, instance1LocationNameMV, instance1MV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, null, studyType).resolve();
+		final String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in nursery settings.",
 				locationAbbr,
 				location);
@@ -111,21 +111,21 @@ public class LocationResolverTest {
 	public void testResolveForNurseryWithoutLocationVariable() {
 		final String trialInstance = "1";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		instance1MV.setValue("1");
 
 		workbook.setConditions(Lists.newArrayList(instance1MV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, null, studyType).resolve();
+		final String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to TRIAL_INSTANCE when LOCATION_ABBR and LOCATION_NAME variables are not present in nursery settings.",
 				trialInstance, location);
@@ -135,95 +135,95 @@ public class LocationResolverTest {
 	public void testResolveForNurseryWithLocationName() {
 		final String nurseryLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.N);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
 		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
 		instance1LocationNameMV.setValue(nurseryLocation);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		instance1MV.setValue("1");
 
 		workbook.setConditions(Lists.newArrayList(instance1LocationNameMV, instance1MV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, null, studyType).resolve();
+		final String location = new LocationResolver(conditions, null, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in nursery settings.",
 				nurseryLocation,
 				location);
 	}
 
 	@Test
-	public void testResolveForTrialWithLocationVariableAndValue() {
+	public void testResolveForStudyWithLocationVariableAndValue() {
 		final String locationAbbr = "MEX";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
 		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
-		MeasurementData instance1LocationAbbrMD = new MeasurementData();
+		final MeasurementData instance1LocationAbbrMD = new MeasurementData();
 		instance1LocationAbbrMD.setValue(locationAbbr);
 		instance1LocationAbbrMD.setMeasurementVariable(instance1LocationAbbrMV);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD, instance1LocationAbbrMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
+		final String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in environment level settings.",
 				locationAbbr,
 				location);
 	}
 
 	@Test
-	public void testResolveForTrialWithLocationVariableButNoValue() {
+	public void testResolveForStudyWithLocationVariableButNoValue() {
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
 		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
-		MeasurementData instance1LocationAbbrMD = new MeasurementData();
+		final MeasurementData instance1LocationAbbrMD = new MeasurementData();
 		// No value
 		instance1LocationAbbrMD.setMeasurementVariable(instance1LocationAbbrMV);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD, instance1LocationAbbrMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, trailInstanceObservation, studyType).resolve();
+		final String location = new LocationResolver(conditions, trailInstanceObservation, studyType).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to an empty string when LOCATION_ABBR variable is present in environment level settings, but has no value.",
 				"",
@@ -231,180 +231,180 @@ public class LocationResolverTest {
 	}
 
 	@Test
-	public void testResolveForTrialWithLocationAbbreviationAndLocationName() {
+	public void testResolveForStudyWithLocationAbbreviationAndLocationName() {
 		final String locationAbbr = "MEX";
-		final String trialLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
+		final String studyLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
 		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
-		MeasurementData instance1LocationAbbrMD = new MeasurementData();
+		final MeasurementData instance1LocationAbbrMD = new MeasurementData();
 		instance1LocationAbbrMD.setValue(locationAbbr);
 		instance1LocationAbbrMD.setMeasurementVariable(instance1LocationAbbrMV);
 
-		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
 		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
-		MeasurementData instance1LocationNameMD = new MeasurementData();
-		instance1LocationNameMD.setValue(trialLocation);
+		final MeasurementData instance1LocationNameMD = new MeasurementData();
+		instance1LocationNameMD.setValue(studyLocation);
 		instance1LocationNameMD.setMeasurementVariable(instance1LocationNameMV);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD, instance1LocationAbbrMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
+		final String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in environment level settings.",
 				locationAbbr,
 				location);
 	}
 
 	@Test
-	public void testResolveForTrialWithoutLocationVariable() {
+	public void testResolveForStudyWithoutLocationVariable() {
 		final String trialInstance = "1";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue(trialInstance);
 		instance1MD.setMeasurementVariable(instance1MV);
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD));
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
+		final String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to TRIAL_INSTANCE when LOCATION_ABBR and LOCATION_NAME variables are not present in environment level settings.",
 				trialInstance, location);
 	}
 
 	@Test
-	public void testResolveForTrialWithLocationName() {
-		final String trialLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
+	public void testResolveForStudyWithLocationName() {
+		final String studyLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
 		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
-		MeasurementData instance1LocationNameMD = new MeasurementData();
-		instance1LocationNameMD.setValue(trialLocation);
+		final MeasurementData instance1LocationNameMD = new MeasurementData();
+		instance1LocationNameMD.setValue(studyLocation);
 		instance1LocationNameMD.setMeasurementVariable(instance1LocationNameMV);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD, instance1LocationNameMD));
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
+		final String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in environment level settings.",
-				trialLocation,
+				studyLocation,
 				location);
 	}
 
 	@Test
-	public void testResolveForTrialWithLocationNameFromSettings() {
-		final String trialLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
+	public void testResolveForStudyWithLocationNameFromSettings() {
+		final String studyLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
 		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
-		instance1LocationNameMV.setValue(trialLocation);
+		instance1LocationNameMV.setValue(studyLocation);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD));
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
 		workbook.setConditions(Lists.newArrayList(instance1LocationNameMV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
-		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in trial settings.",
-				trialLocation,
+		final String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
+		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in Study settings.",
+				studyLocation,
 				location);
 	}
 
 	@Test
-	public void testResolveForTrialWithLocationNameFromEnvironmentAndLocationAbbrFromSettings() {
-		final String trialLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
+	public void testResolveForStudyWithLocationNameFromEnvironmentAndLocationAbbrFromSettings() {
+		final String studyLocation = "INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)";
 		final String locationAbbr = "MEX";
 
-		Workbook workbook = new Workbook();
-		StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyType(StudyType.T);
+		final Workbook workbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		workbook.setStudyDetails(studyDetails);
 
-		MeasurementVariable locationMV = new MeasurementVariable();
+		final MeasurementVariable locationMV = new MeasurementVariable();
 		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
 		locationMV.setValue(locationAbbr);
 
-		MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
+		final MeasurementVariable instance1LocationNameMV = new MeasurementVariable();
 		instance1LocationNameMV.setTermId(TermId.TRIAL_LOCATION.getId());
-		MeasurementData instance1LocationNameMD = new MeasurementData();
-		instance1LocationNameMD.setValue(trialLocation);
+		final MeasurementData instance1LocationNameMD = new MeasurementData();
+		instance1LocationNameMD.setValue(studyLocation);
 		instance1LocationNameMD.setMeasurementVariable(instance1LocationNameMV);
 
-		MeasurementVariable instance1MV = new MeasurementVariable();
+		final MeasurementVariable instance1MV = new MeasurementVariable();
 		instance1MV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
-		MeasurementData instance1MD = new MeasurementData();
+		final MeasurementData instance1MD = new MeasurementData();
 		instance1MD.setValue("1");
 		instance1MD.setMeasurementVariable(instance1MV);
 
-		MeasurementRow instance1Measurements = new MeasurementRow();
+		final MeasurementRow instance1Measurements = new MeasurementRow();
 		instance1Measurements.setDataList(Lists.newArrayList(instance1MD, instance1LocationNameMD));
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
 		workbook.setConditions(Lists.newArrayList(locationMV));
 
-		List<MeasurementVariable> conditions = workbook.getConditions();
-		StudyType studyType = workbook.getStudyDetails().getStudyType();
+		final List<MeasurementVariable> conditions = workbook.getConditions();
+		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
-		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in trial settings.",
+		final String location = new LocationResolver(conditions, instance1Measurements, studyType).resolve();
+		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in Study settings.",
 				locationAbbr,
 				location);
 	}

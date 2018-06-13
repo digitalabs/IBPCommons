@@ -7,8 +7,8 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.oms.StudyType;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +18,7 @@ public class ProjectPrefixResolver extends CategoricalKeyCodeResolverBase {
 	private static final Logger LOG = LoggerFactory.getLogger(ProjectPrefixResolver.class);
 
 	public ProjectPrefixResolver(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
-			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyType studyType) {
+			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyTypeDto studyType) {
 		super(ontologyVariableDataManager, contextUtil, conditions, trailInstanceObservation, studyType);
 	}
 

@@ -3,7 +3,7 @@ package org.generationcp.commons.service.impl;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyTemplateProvider;
-import org.generationcp.middleware.domain.oms.StudyType;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 
 /**
  * Locates the key code templates for seed source (currently, from properties file, in future this may be loaded from database configuration
@@ -12,11 +12,13 @@ import org.generationcp.middleware.domain.oms.StudyType;
  */
 public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 
+	public static final String WHEAT = "wheat";
+	public static final String MAIZE = "maize";
 	private GermplasmNamingProperties germplasmNamingProperties;
-	private StudyType studyType;
-	private String crop;
+	private final StudyTypeDto studyType;
+	private final String crop;
 
-	public SeedSourceTemplateProvider(GermplasmNamingProperties germplasmNamingProperties, StudyType studyType, String crop) {
+	public SeedSourceTemplateProvider(final GermplasmNamingProperties germplasmNamingProperties, final StudyTypeDto studyType, final String crop) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
 		this.studyType = studyType;
 		this.crop = crop;
@@ -24,27 +26,21 @@ public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 
 	@Override
 	public String getKeyTemplate() {
-		String seedSourceTemplate = "";
-		if (this.studyType.equals(StudyType.N)) {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesDefault();
-			if (this.crop.equals("wheat")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesWheat();
-			} else if (this.crop.equals("maize")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginNurseriesMaize();
-			}
-		} else if (this.studyType.equals(StudyType.T)) {
-			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsDefault();
+		String seedSourceTemplate;
 
-			if (this.crop.equals("wheat")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsWheat();
-			} else if (this.crop.equals("maize")) {
-				seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginTrialsMaize();
-			}
+		seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesDefault();
+
+		if (this.crop.equals(WHEAT)) {
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesWheat();
+		} else if (this.crop.equals(MAIZE)) {
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesMaize();
+		} else {
+			seedSourceTemplate = this.germplasmNamingProperties.getGermplasmOriginStudiesDefault();
 		}
 		return seedSourceTemplate;
 	}
 
-	public void setGermplasmNamingProperties(GermplasmNamingProperties germplasmNamingProperties) {
+	public void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
 	}
 
