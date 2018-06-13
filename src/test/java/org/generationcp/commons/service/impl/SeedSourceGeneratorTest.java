@@ -15,19 +15,24 @@ import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 /**
  * This is more of an integration test (not a pure unit test) of all key code generation pieces for the seed source use case.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SeedSourceGeneratorTest {
 
 	@Mock
@@ -36,22 +41,25 @@ public class SeedSourceGeneratorTest {
 	@Mock
 	private ContextUtil contextUtil;
 
+	@Mock
+	private StudyDataManager studyDataManager;
+
 	private static final Integer SEASON_CATEGORY_ID = 10290;
 	private static final String SEASON_CATEGORY_VALUE = "Dry Season";
 
+	@InjectMocks
 	private SeedSourceGenerator seedSourceGenerator;
 
 	@Before
 	public void setUp() {
-		MockitoAnnotations.initMocks(this);
 
 		final GermplasmNamingProperties germplasmNamingProperties = new GermplasmNamingProperties();
 		germplasmNamingProperties.setGermplasmOriginStudiesMaize("[LOCATION][SEASON]-[NAME]-[PLOTNO][SELECTION_NUMBER]");
 		germplasmNamingProperties.setGermplasmOriginStudiesWheat("[LOCATION]\\[SEASON]\\[NAME]\\[PLOTNO]");
 		germplasmNamingProperties.setGermplasmOriginStudiesDefault("[NAME]:[LOCATION]:[SEASON]:[PLOTNO]:[PLANT_NO]");
 
-		this.seedSourceGenerator =
-				new SeedSourceGenerator(germplasmNamingProperties, this.ontologyVariableDataManager, this.contextUtil);
+		seedSourceGenerator.setGermplasmNamingProperties(germplasmNamingProperties);
+
 	}
 
 	private void setCurrentCrop(final String crop) {
@@ -78,6 +86,7 @@ public class SeedSourceGeneratorTest {
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("TestStudy");
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
+		studyDetails.setId(1);
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
@@ -130,6 +139,7 @@ public class SeedSourceGeneratorTest {
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("StudyName");
 		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
+		studyDetails.setId(1);
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable locationMV = new MeasurementVariable();

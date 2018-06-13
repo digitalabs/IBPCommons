@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Revolves Location value for Nurseries and Trials.
@@ -24,14 +25,16 @@ public class LocationResolver implements KeyComponentValueResolver {
 	protected List<MeasurementVariable> conditions;
 	protected MeasurementRow trailInstanceObservation;
 	protected StudyTypeDto studyType;
+	protected Map<String, String> locationIdNameMap;
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocationResolver.class);
 
 	public LocationResolver(final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
-			final StudyTypeDto studyType) {
+			final StudyTypeDto studyType, final Map<String, String> locationIdNameMap) {
 		this.studyType = studyType;
 		this.trailInstanceObservation = trailInstanceObservation;
 		this.conditions = conditions;
+		this.locationIdNameMap = locationIdNameMap;
 	}
 
 	@Override
@@ -73,10 +76,9 @@ public class LocationResolver implements KeyComponentValueResolver {
 				location = dataListMap.get(TermId.LOCATION_ABBR.getId()).getValue();
 			} else if (conditionsMap != null && conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
 				location = conditionsMap.get(TermId.LOCATION_ABBR.getId()).getValue();
-			} else if (dataListMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
-				location = dataListMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
-			} else if (conditionsMap != null && conditionsMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
-				location = conditionsMap.get(TermId.TRIAL_LOCATION.getId()).getValue();
+			} else if (dataListMap.containsKey(TermId.LOCATION_ID.getId())) {
+				final String locationId = dataListMap.get(TermId.LOCATION_ID.getId()).getValue();
+				location = this.locationIdNameMap.get(locationId);
 			}
 
 			if (StringUtils.isBlank(location)) {
