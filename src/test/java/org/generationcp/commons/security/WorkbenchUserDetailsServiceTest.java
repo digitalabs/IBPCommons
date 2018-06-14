@@ -68,8 +68,7 @@ public class WorkbenchUserDetailsServiceTest {
 		WorkbenchUser testUserWorkbench = new WorkbenchUser();
 		testUserWorkbench.setName(rawUTF8Username);
 		testUserWorkbench.setPassword("password");
-		// Role ID 1 = ADMIN
-		UserRole testUserRole = new UserRole(testUserWorkbench, 1);
+		UserRole testUserRole = new UserRole(testUserWorkbench, new Role(1, "Admin"));
 		testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 		matchingUsers.add(testUserWorkbench);
 
