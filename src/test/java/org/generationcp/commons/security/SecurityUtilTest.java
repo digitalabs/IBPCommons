@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.generationcp.middleware.pojos.workbench.Role;
 import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.junit.Assert;
@@ -20,13 +21,12 @@ public class SecurityUtilTest {
 	public void testGetRolesAsAuthorities() {
 		WorkbenchUser testUserWorkbench = new WorkbenchUser();
 		testUserWorkbench.setName(SecurityUtilTest.TEST_USER);
-		// Role ID 1 = ADMIN
-		UserRole testUserRole = new UserRole(testUserWorkbench, 1);
+		UserRole testUserRole = new UserRole(testUserWorkbench, new Role(1, "Admin"));
 		testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 
 		Collection<? extends GrantedAuthority> rolesAsAuthorities = SecurityUtil.getRolesAsAuthorities(testUserWorkbench);
 		Assert.assertEquals(1, rolesAsAuthorities.size());
-		Assert.assertTrue(rolesAsAuthorities.contains(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + testUserRole.getRole())));
+		Assert.assertTrue(rolesAsAuthorities.contains(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + testUserRole.getRole().getCapitalizedRole())));
 	}
 
 	@Test
