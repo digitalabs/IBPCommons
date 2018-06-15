@@ -190,7 +190,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 		final String envHeader = csvHeader[0];
 		final String entryNoHeader = csvHeader[1];
-		final Map<String, Integer> envNameToNdGeolocationIdMap = this.getEnvNameToNdGeolocationIdMap(envHeader, studyId,
+		final Map<String, Integer> envNameToNdGeolocationIdMap = this.createEnvironmentNameToNdGeolocationIdMap(envHeader, studyId,
 				trialDatasetId);
 		final Map<String, Integer> entroNyToStockIdMap = this.getEntryNoToStockIdMap(entryNoHeader, plotDatasetId);
 
@@ -264,8 +264,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param trialDatasetId
 	 * @return map of environment factor names to nd_geolocation ids
 	 */
-	private Map<String, Integer> getEnvNameToNdGeolocationIdMap(final String envFactor, final int studyId, final int trialDatasetId) {
-		final Map<String, Integer> envNameToGeolocationIdMap = new HashMap<>();
+	protected Map<String, Integer> createEnvironmentNameToNdGeolocationIdMap(final String envFactor, final int studyId, final int trialDatasetId) {
+		final Map<String, Integer> environmentNameToGeolocationIdMap = new HashMap<>();
 		final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(trialDatasetId);
 
 		final boolean isSelectedEnvironmentFactorALocation = this.studyDataManager.isLocationIdVariable(studyId, envFactor);
@@ -275,16 +275,15 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			if (isSelectedEnvironmentFactorALocation) {
 				final String locationId = trialEnv.getVariables().findByLocalName(envFactor).getValue();
 				final String locationName = locationNameMap.get(locationId);
-				envNameToGeolocationIdMap.put(locationName,
+				environmentNameToGeolocationIdMap.put(locationName,
 						trialEnv.getId());
 			} else  {
-				envNameToGeolocationIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(),
+				environmentNameToGeolocationIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(),
 						trialEnv.getId());
 			}
 
-
 		}
-		return envNameToGeolocationIdMap;
+		return environmentNameToGeolocationIdMap;
 	}
 
 	/**

@@ -105,6 +105,7 @@ public class BreedingViewImportServiceImplTest {
 	private static final String LS_MEAN = "LS MEAN";
 	private static final Integer LS_MEAN_ID = 16090;
 	public static final String LOCATION_NAME = "LOCATION_NAME";
+	public static final String TRIAL_INSTANCE = "TRIAL_INSTANCE";
 
 	private final List<DMSVariableType> factorVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> variateVariableTypes = new ArrayList<>();
@@ -176,7 +177,7 @@ public class BreedingViewImportServiceImplTest {
 				BreedingViewImportServiceImplTest.STUDY_NAME, BreedingViewImportServiceImplTest.PROGRAM_UUID))
 				.when(this.studyDataManager).getProject(BreedingViewImportServiceImplTest.STUDY_ID);
 
-		this.factorVariableTypes.add(this.createEnvironmentVariableType("TRIAL_INSTANCE"));
+		this.factorVariableTypes.add(this.createEnvironmentVariableType(TRIAL_INSTANCE));
 		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("ENTRY_NO", TermId.ENTRY_NO.getId()));
 		this.factorVariableTypes.add(this.createGermplasmFactorVariableType("GID", TermId.GID.getId()));
 
@@ -1130,7 +1131,7 @@ public class BreedingViewImportServiceImplTest {
 	}
 
 	@Test
-	public void testCreateGeolocationIdEnvironmentMap() {
+	public void testCreateGeolocationIdEnvironmentMapEnvironmentFactorIsLocationIDVariable() {
 
 		this.factorVariableTypes
 				.add(this.createEnvironmentVariableType(BreedingViewImportServiceImplTest.LOCATION_NAME));
@@ -1194,6 +1195,66 @@ public class BreedingViewImportServiceImplTest {
 		Assert.assertEquals(result.get(testGeolocationId1), testLocationName1);
 		Assert.assertEquals(result.get(testGeolocationId3), testLocationName3);
 		Assert.assertFalse(result.containsKey(testGeolocationId2));
+
+	}
+
+	@Test
+	public void testCreateGeolocationIdEnvironmentMapEnvironmentFactorIsTrialInstance() {
+
+		final int testGeolocationId1 = 100;
+		final String testTrialInstance1 = "1";
+
+		final int testGeolocationId2 = 101;
+		final String testTrialInstance2 = "2";
+
+		final int testGeolocationId3 = 102;
+		final String testTrialInstance3 = "3";
+
+
+		final List<DataSet> summaryDataDatasets = new ArrayList<>();
+		summaryDataDatasets.add(this.createDataSet());
+		Mockito.doReturn(summaryDataDatasets).when(this.studyDataManager)
+				.getDataSetsByType(BreedingViewImportServiceImplTest.STUDY_ID, DataSetType.SUMMARY_DATA);
+
+		final TrialEnvironments testEnvironments = new TrialEnvironments();
+
+		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		environment1.getVariables().findByLocalName(BreedingViewImportServiceImplTest.TRIAL_INSTANCE)
+				.setValue(testTrialInstance1);
+		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		environment2.getVariables().findByLocalName(BreedingViewImportServiceImplTest.TRIAL_INSTANCE)
+				.setValue(testTrialInstance2);
+		final TrialEnvironment environment3 = this.createEnvironment(testGeolocationId3);
+		environment3.getVariables().findByLocalName(BreedingViewImportServiceImplTest.TRIAL_INSTANCE)
+				.setValue(testTrialInstance3);
+
+		testEnvironments.add(environment1);
+		testEnvironments.add(environment2);
+		testEnvironments.add(environment3);
+
+		final BiMap<String, String> locationMap = HashBiMap.create();
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt()))
+				.thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(Matchers.anyInt()))
+				.thenReturn(locationMap);
+		Mockito.when(this.studyDataManager.isLocationIdVariable(Matchers.anyInt(), Matchers.anyString()))
+				.thenReturn(false);
+
+
+		// Only add environments 1 and 3
+		final Set<String> environments = new HashSet<>();
+		environments.add(testTrialInstance1);
+		environments.add(testTrialInstance3);
+
+		final Map<Integer, String> result = this.bvImportService.createGeolocationIdEnvironmentMap(environments,
+				BreedingViewImportServiceImplTest.STUDY_ID, BreedingViewImportServiceImplTest.TRIAL_INSTANCE);
+
+		// Verify that only environments 1 and 3 are in the
+		// geolocationIDEnvironmentMap
+		Assert.assertEquals(result.get(testGeolocationId1), testTrialInstance1);
+		Assert.assertEquals(result.get(testGeolocationId3), testTrialInstance3);
+		Assert.assertFalse(result.containsKey(testTrialInstance2));
 
 	}
 
@@ -1275,5 +1336,80 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.scaleDataManager).getScaleById(scale.getId(), true);
 		Mockito.verify(this.ontologyDataManager).findTermByName(scaleName, CvId.SCALES);
 		Mockito.verify(this.scaleDataManager, Mockito.never()).addScale(Matchers.any(Scale.class));
+	}
+
+	@Test
+	public void testCreateEnvironmentNameToNdGeolocationIdMapEnvironmentFactorIsLocationIDVariable() {
+
+		this.factorVariableTypes
+				.add(this.createEnvironmentVariableType(BreedingViewImportServiceImplTest.LOCATION_NAME));
+
+		final Integer testGeolocationId1 = 100;
+		final String testLocationName1 = "Agua Fria (AF)";
+		final String testLocationId1 = "1001";
+
+		final Integer testGeolocationId2 = 101;
+		final String testLocationName2 = "Africa";
+		final String testLocationId2 = "1002";
+
+		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		environment1.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME)
+				.setValue(testLocationId1);
+		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		environment2.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME)
+				.setValue(testLocationId2);
+
+		final TrialEnvironments testEnvironments = new TrialEnvironments();
+		testEnvironments.add(environment1);
+		testEnvironments.add(environment2);
+
+		final BiMap<String, String> locationMap = HashBiMap.create();
+		locationMap.put(testLocationId1, testLocationName1);
+		locationMap.put(testLocationId2, testLocationName2);
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.isLocationIdVariable(STUDY_ID, LOCATION_NAME)).thenReturn(true);
+		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(STUDY_ID)).thenReturn(locationMap);
+
+		final Map<String, Integer> result = this.bvImportService.createEnvironmentNameToNdGeolocationIdMap(LOCATION_NAME, STUDY_ID, TRIAL_DATASET_ID);
+
+		Assert.assertEquals(result.size(), testEnvironments.size());
+		Assert.assertEquals(testGeolocationId1, result.get(testLocationName1));
+		Assert.assertEquals(testGeolocationId2, result.get(testLocationName2));
+
+	}
+
+	@Test
+	public void testCreateEnvironmentNameToNdGeolocationIdMapEnvironmentFactorIsTrialInstance() {
+
+		final Integer testGeolocationId1 = 100;
+		final String testTrialInstance1 = "1";
+
+		final Integer testGeolocationId2 = 101;
+		final String testTrialInstance2 = "2";
+
+		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		environment1.getVariables().findByLocalName(TRIAL_INSTANCE)
+				.setValue(testTrialInstance1);
+		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		environment2.getVariables().findByLocalName(TRIAL_INSTANCE)
+				.setValue(testTrialInstance2);
+
+		final TrialEnvironments testEnvironments = new TrialEnvironments();
+		testEnvironments.add(environment1);
+		testEnvironments.add(environment2);
+
+		final BiMap<String, String> locationMap = HashBiMap.create();
+
+		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.isLocationIdVariable(STUDY_ID, TRIAL_INSTANCE)).thenReturn(false);
+		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(STUDY_ID)).thenReturn(locationMap);
+
+		final Map<String, Integer> result = this.bvImportService.createEnvironmentNameToNdGeolocationIdMap(TRIAL_INSTANCE, STUDY_ID, TRIAL_DATASET_ID);
+
+		Assert.assertEquals(result.size(), testEnvironments.size());
+		Assert.assertEquals(testGeolocationId1, result.get(testTrialInstance1));
+		Assert.assertEquals(testGeolocationId2, result.get(testTrialInstance2));
+
 	}
 }
