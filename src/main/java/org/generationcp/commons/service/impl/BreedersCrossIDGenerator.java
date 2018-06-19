@@ -30,24 +30,26 @@ public class BreedersCrossIDGenerator {
 	@Resource
 	private StudyDataManager studyDataManager;
 
-
 	public String generateBreedersCrossID(final int studyId, final StudyTypeDto studyType, final List<MeasurementVariable> conditions,
 			final MeasurementRow trailInstanceObservation) {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
-		Map<String, String> locationIdNameMap = studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
+		final Map<String, String> locationIdNameMap = studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
-		keyComponentValueResolvers.put(KeyComponent.PROJECT_PREFIX, new ProjectPrefixResolver(this.ontologyVariableDataManager,
-				this.contextUtil, conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.HABITAT_DESIGNATION, new HabitatDesignationResolver(this.ontologyVariableDataManager,
-						this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers.put(KeyComponent.PROJECT_PREFIX,
+				new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation,
+						studyType));
+		keyComponentValueResolvers.put(KeyComponent.HABITAT_DESIGNATION,
+				new HabitatDesignationResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation,
+						studyType));
 		keyComponentValueResolvers.put(KeyComponent.SEASON,
 				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType, locationIdNameMap));
+		keyComponentValueResolvers
+				.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType, locationIdNameMap));
 
-		return service.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType),
-				keyComponentValueResolvers);
+		return service
+				.generateKey(new BreedersCrossIDTemplateProvider(this.germplasmNamingProperties, studyType), keyComponentValueResolvers);
 	}
 
 	protected void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {

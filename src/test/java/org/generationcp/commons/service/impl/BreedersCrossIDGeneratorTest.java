@@ -40,9 +40,6 @@ public class BreedersCrossIDGeneratorTest {
 	private OntologyVariableDataManager ontologyVariableDataManager;
 
 	@Mock
-	private GermplasmDataManager germplasmDataManager;
-
-	@Mock
 	private ContextUtil contextUtil;
 
 	@Mock

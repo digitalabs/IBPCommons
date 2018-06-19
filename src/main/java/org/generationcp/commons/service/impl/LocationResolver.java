@@ -1,4 +1,3 @@
-
 package org.generationcp.commons.service.impl;
 
 import com.google.common.base.Function;
@@ -64,13 +63,13 @@ public class LocationResolver implements KeyComponentValueResolver {
 
 		if (this.trailInstanceObservation != null) {
 			final ImmutableMap<Integer, MeasurementData> dataListMap =
-				Maps.uniqueIndex(this.trailInstanceObservation.getDataList(), new Function<MeasurementData, Integer>() {
+					Maps.uniqueIndex(this.trailInstanceObservation.getDataList(), new Function<MeasurementData, Integer>() {
 
-					@Override
-					public Integer apply(final MeasurementData measurementData) {
-						return measurementData.getMeasurementVariable().getTermId();
-					}
-				});
+						@Override
+						public Integer apply(final MeasurementData measurementData) {
+							return measurementData.getMeasurementVariable().getTermId();
+						}
+					});
 
 			if (dataListMap.containsKey(TermId.LOCATION_ABBR.getId())) {
 				location = dataListMap.get(TermId.LOCATION_ABBR.getId()).getValue();
@@ -87,9 +86,9 @@ public class LocationResolver implements KeyComponentValueResolver {
 		}
 
 		if (StringUtils.isBlank(location)) {
-			LocationResolver.LOG.debug(
-				"No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in " + this.studyType.getLabel()
-					+ ". Or it is present but no value is set. " + "Resolving location value to be an empty string.");
+			LocationResolver.LOG
+					.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in " + this.studyType
+							.getLabel() + ". Or it is present but no value is set. " + "Resolving location value to be an empty string.");
 			return "";
 		}
 

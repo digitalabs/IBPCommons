@@ -1,4 +1,3 @@
-
 package org.generationcp.commons.service.impl;
 
 import java.util.HashMap;
@@ -82,7 +81,7 @@ public class SeedSourceGenerator {
 				return true;
 			}
 		};
-		
+
 		final KeyComponentValueResolver plantNumberResolver = new KeyComponentValueResolver() {
 
 			@Override
@@ -102,26 +101,30 @@ public class SeedSourceGenerator {
 		final MeasurementRow trailInstanceObservation;
 
 		trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(instanceNumber));
-		Map<String, String> locationIdNameMap = studyDataManager.createInstanceLocationIdToNameMapFromStudy(workbook.getStudyDetails().getId());
+		final Map<String, String> locationIdNameMap =
+				studyDataManager.createInstanceLocationIdToNameMapFromStudy(workbook.getStudyDetails().getId());
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
-		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType, locationIdNameMap));
-		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers
+				.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType, locationIdNameMap));
+		keyComponentValueResolvers.put(KeyComponent.SEASON,
+				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.PLANT_NO, plantNumberResolver);
 
-		return service
-				.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
-						this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
+		return service.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
+				this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
-		final String femaleSeedSource = generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
-		final String maleSeedSource = generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
+		final String femaleSeedSource =
+				generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
+		final String maleSeedSource =
+				generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
 
