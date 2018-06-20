@@ -1,4 +1,3 @@
-
 package org.generationcp.commons.service.impl;
 
 import java.util.HashMap;
@@ -14,20 +13,29 @@ import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
+import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+
+import javax.annotation.Resource;
 
 public class SeedSourceGenerator {
 
 	private final static String INSTANCE_NUMBER = "1";
-	private final GermplasmNamingProperties germplasmNamingProperties;
-	private final OntologyVariableDataManager ontologyVariableDataManager;
-	private final ContextUtil contextUtil;
 
-	public SeedSourceGenerator(final GermplasmNamingProperties germplasmNamingProperties, final OntologyVariableDataManager ontologyVariableDataManager,
-			final ContextUtil contextUtil) {
-		this.germplasmNamingProperties = germplasmNamingProperties;
-		this.ontologyVariableDataManager = ontologyVariableDataManager;
-		this.contextUtil = contextUtil;
+	@Resource
+	private GermplasmNamingProperties germplasmNamingProperties;
+
+	@Resource
+	private OntologyVariableDataManager ontologyVariableDataManager;
+
+	@Resource
+	private ContextUtil contextUtil;
+
+	@Resource
+	private StudyDataManager studyDataManager;
+
+	public SeedSourceGenerator() {
+
 	}
 
 	public String generateSeedSource(final Workbook workbook, final String instanceNumber, final String selectionNumber,
@@ -73,7 +81,7 @@ public class SeedSourceGenerator {
 				return true;
 			}
 		};
-		
+
 		final KeyComponentValueResolver plantNumberResolver = new KeyComponentValueResolver() {
 
 			@Override
@@ -93,25 +101,35 @@ public class SeedSourceGenerator {
 		final MeasurementRow trailInstanceObservation;
 
 		trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(instanceNumber));
+		final Map<String, String> locationIdNameMap =
+				studyDataManager.createInstanceLocationIdToNameMapFromStudy(workbook.getStudyDetails().getId());
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
-		keyComponentValueResolvers.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType));
-		keyComponentValueResolvers.put(KeyComponent.SEASON, new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
+		keyComponentValueResolvers
+				.put(KeyComponent.LOCATION, new LocationResolver(conditions, trailInstanceObservation, studyType, locationIdNameMap));
+		keyComponentValueResolvers.put(KeyComponent.SEASON,
+				new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, trailInstanceObservation, studyType));
 		keyComponentValueResolvers.put(KeyComponent.PLOTNO, plotNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.PLANT_NO, plantNumberResolver);
 
-		return service
-				.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
-						this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
+		return service.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties, workbook.getStudyDetails().getStudyType(),
+				this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
-		final String femaleSeedSource = generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
-		final String maleSeedSource = generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
+		final String femaleSeedSource =
+				generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
+		final String maleSeedSource =
+				generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
+
+	protected void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {
+		this.germplasmNamingProperties = germplasmNamingProperties;
+	}
+
 }
