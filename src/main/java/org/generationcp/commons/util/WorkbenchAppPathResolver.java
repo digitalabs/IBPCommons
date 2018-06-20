@@ -51,13 +51,10 @@ public class WorkbenchAppPathResolver {
 		appPath = appPath.endsWith("/") ? appPath.substring(0, appPath.length() - 1) : appPath;
 
 		if (!"null".equals(idParam) && !StringUtil.isEmptyOrWhitespaceOnly(idParam)) {
-			if (ToolName.TRIAL_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
+			if (ToolName.STUDY_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
 				appPath += "/openTrial/";
-			} else if (ToolName.NURSERY_MANAGER_FIELDBOOK_WEB.getName().equals(tool.getToolName())) {
-				appPath += "/editNursery/";
-
 			} else if (tool.getToolName().equals(ToolName.GERMPLASM_BROWSER.getName()) ||
-					tool.getToolName().equals(ToolName.STUDY_BROWSER_WITH_ID.getName())) {
+				tool.getToolName().equals(ToolName.STUDY_BROWSER_WITH_ID.getName())) {
 				appPath += "-";
 			}
 

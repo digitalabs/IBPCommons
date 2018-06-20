@@ -79,7 +79,7 @@ public class SummaryStatsCSVTest {
 	}
 
 	@Test
-	public void testGetTrialHeader() throws IOException {
+	public void testGetStudyHeader() throws IOException {
 		Assert.assertEquals(SummaryStatsCSVTest.TRIAL_INSTANCE, this.summaryStatsCSV.getTrialHeader());
 	}
 
@@ -88,7 +88,7 @@ public class SummaryStatsCSVTest {
 		final String environmentName = "1";
 		final Map<String, Map<String, List<String>>> summaryData = this.summaryStatsCSV.getData();
 
-		// Expecting only Trial Environment "1" to be parsed
+		// Expecting only Study Environment "1" to be parsed
 		Assert.assertEquals(1, summaryData.keySet().size());
 		Assert.assertEquals(environmentName, summaryData.keySet().iterator().next());
 
