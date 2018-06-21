@@ -12,7 +12,7 @@ import org.generationcp.middleware.data.initializer.PersonTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserTestDataInitializer;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,14 +41,14 @@ public class UserRowGeneratorTest {
 	@InjectMocks
 	private UserRowGenerator userRowGenerator;
 
-	private List<User> userList;
+	private List<WorkbenchUser> userList;
 
 
 	@Before
 	public void setUp() {
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
 
-		this.userList = UserTestDataInitializer.createUserList();
+		this.userList = UserTestDataInitializer.createWorkbenchUserList();
 		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userList);
 
 		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
@@ -69,7 +69,7 @@ public class UserRowGeneratorTest {
 	@Test
 	public void testGetFname() {
 		// Test data - Make user id not equal to person id
-		final User user = this.userList.get(0);
+		final WorkbenchUser user = this.userList.get(0);
 		final int personId = user.getUserid() + 1;
 		user.setPersonid(personId);
 
@@ -81,7 +81,7 @@ public class UserRowGeneratorTest {
 
 	@Test
 	public void testGetFcode() {
-		final User user = this.userList.get(0);
+		final WorkbenchUser user = this.userList.get(0);
 
 		final String fcode = this.userRowGenerator.getFcode(user);
 

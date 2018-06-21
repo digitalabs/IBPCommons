@@ -1,5 +1,8 @@
 package org.generationcp.commons.security;
 
+import java.util.Collections;
+
+import org.generationcp.middleware.pojos.workbench.Role;
 import org.junit.Test;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +23,7 @@ public class AuthorizationUtilTest {
 		this.loggedInUser = new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
 		try {
-			AuthorizationUtil.preAuthorize("Admin");
+			AuthorizationUtil.preAuthorize(Collections.singletonList(new Role(1, "Admin")));
 		} catch (AccessDeniedException e) {
 			Assert.fail("Access Import germplsm link should not throw Access Denied exception.");
 		}
@@ -33,7 +36,7 @@ public class AuthorizationUtilTest {
 		this.loggedInUser = new UsernamePasswordAuthenticationToken("admin", "admin", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
 		try {
-			AuthorizationUtil.preAuthorize("Admin");
+			AuthorizationUtil.preAuthorize(Collections.singletonList(new Role(1, "Admin")));
 		} catch (AccessDeniedException e) {
 			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
 		}

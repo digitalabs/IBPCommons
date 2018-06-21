@@ -5,9 +5,9 @@ import com.google.common.cache.CacheBuilder;
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
@@ -84,7 +84,7 @@ public class ContextUtil {
 		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
 	}
 
-	public User getCurrentWorkbenchUser() {
+	public WorkbenchUser getCurrentWorkbenchUser() {
 		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUser(this.workbenchDataManager, this.request);
 	}
 
@@ -94,7 +94,7 @@ public class ContextUtil {
 
 	public void logProgramActivity(final String activityTitle, final String activityDescription) {
 		final Project currentProject = this.getProjectInContext();
-		final User currentUser = this.getCurrentWorkbenchUser();
+		final WorkbenchUser currentUser = this.getCurrentWorkbenchUser();
 
 		final ProjectActivity projAct =
 				new ProjectActivity(currentProject.getProjectId().intValue(), currentProject, activityTitle, activityDescription,

@@ -12,8 +12,9 @@ import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.Role;
 import org.generationcp.middleware.pojos.workbench.UserRole;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,11 +53,11 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 					BMSPreAuthenticatedUsersRolePopulatorTest.AUTH_TOKEN);
 			this.rolesPopulator.buildDetails(this.request);
 
-			List<User> matchingUsers = new ArrayList<User>();
-			User testUserWorkbench = new User();
+			List<WorkbenchUser> matchingUsers = new ArrayList<WorkbenchUser>();
+			WorkbenchUser testUserWorkbench = new WorkbenchUser();
 			testUserWorkbench.setName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER);
 			testUserWorkbench.setPassword("password");
-			UserRole testUserRole = new UserRole(testUserWorkbench, "ADMIN");
+			UserRole testUserRole = new UserRole(testUserWorkbench, new Role(1, "ADMIN"));
 			testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 			matchingUsers.add(testUserWorkbench);
 
@@ -67,7 +68,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 			PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails roleDetails =
 					(PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) this.rolesPopulator.buildDetails(this.request);
 			Assert.assertEquals(testUserWorkbench.getRoles().size(), roleDetails.getGrantedAuthorities().size());
-			Assert.assertEquals(SecurityUtil.ROLE_PREFIX + testUserRole.getRole(), roleDetails.getGrantedAuthorities().get(0)
+			Assert.assertEquals(SecurityUtil.ROLE_PREFIX + testUserRole.getRole().getCapitalizedRole(), roleDetails.getGrantedAuthorities().get(0)
 					.getAuthority());
 
 		} catch (MiddlewareQueryException e) {

@@ -14,8 +14,8 @@ import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.User;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.util.cache.FunctionBasedGuavaCacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +39,7 @@ public class ContextUtil {
 	/**
 	 * Main goal prevent excessive querying to retrieve user information information.
 	 */
-	private static final Cache<Integer, User> USERS_CACHE = CacheBuilder.newBuilder().maximumSize(100).
+	private static final Cache<Integer, WorkbenchUser> USERS_CACHE = CacheBuilder.newBuilder().maximumSize(100).
 			expireAfterWrite(60, TimeUnit.MINUTES).build();
 
 	
@@ -103,15 +103,15 @@ public class ContextUtil {
 	
 
 	
-	public static User getCurrentWorkbenchUser(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
+	public static WorkbenchUser getCurrentWorkbenchUser(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
 			throws MiddlewareQueryException {
 		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
 		String userName = SecurityUtil.decodeToken(contextInfo.getAuthToken());
 
-		User user = null;
+		WorkbenchUser user = null;
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
 			// resolve from token if existing
-			List<User> matchedUsers = workbenchDataManager.getUserByName(userName, 0, 1, Operation.EQUAL);
+			List<WorkbenchUser> matchedUsers = workbenchDataManager.getUserByName(userName, 0, 1, Operation.EQUAL);
 
 			if (matchedUsers != null && !matchedUsers.isEmpty()) {
 				user = matchedUsers.get(0);
@@ -229,17 +229,17 @@ public class ContextUtil {
 							authToken));
 	}
 	
-	static User getUserById(final WorkbenchDataManager workbenchDataManager, final Integer userId) {
-		final FunctionBasedGuavaCacheLoader<Integer, User> cacheLoader =
-				new FunctionBasedGuavaCacheLoader<Integer, User>(USERS_CACHE, new Function<Integer, User>() {
+	static WorkbenchUser getUserById(final WorkbenchDataManager workbenchDataManager, final Integer userId) {
+		final FunctionBasedGuavaCacheLoader<Integer, WorkbenchUser> cacheLoader =
+				new FunctionBasedGuavaCacheLoader<Integer, WorkbenchUser>(USERS_CACHE, new Function<Integer, WorkbenchUser>() {
 
 					@Override
-					public User apply(Integer key) {
+					public WorkbenchUser apply(Integer key) {
 						return workbenchDataManager.getUserById(key);
 					}
 				});
 		
-		final Optional<User> loadedUserId = cacheLoader.get(userId);
+		final Optional<WorkbenchUser> loadedUserId = cacheLoader.get(userId);
 
 		if (loadedUserId.isPresent()) {
 			return loadedUserId.get();
