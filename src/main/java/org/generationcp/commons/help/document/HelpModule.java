@@ -4,7 +4,7 @@ package org.generationcp.commons.help.document;
 public enum HelpModule {
 
 	DASHBOARD("dashboard"), PROGRAM_CREATION("program.creation"), MANAGE_LIST(
-			"manage.list"), DESIGN_CROSSES("design.crosses"), MANAGE_NURSERIES("manage.nurseries"), MANAGE_TRIALS("manage.trials"), MAKE_LABELS(
+			"manage.list"), DESIGN_CROSSES("design.crosses"), MANAGE_NURSERIES("manage.nurseries"), MANAGE_STUDIES("manage.studies"), MANAGE_TRIALS("manage.trials"), MAKE_LABELS(
 			"make.labels"), MAKE_FIELD_MAPS("make.field.maps"), IMPORT_GERMPLASM("import.germplasm"), MANAGE_GENOTYPING_DATA(
 			"manage.genotyping.data"), BROWSE_STUDIES("browse.studies"), MANAGE_ONTOLOGIES("manage.ontologies"), HEAD_TO_HEAD(
 			"head.to.head"), ADAPTED_GERMPLASM("adapted.germplasm"), TRAIT_DONOR("trait.donor"), SINGLE_SITE_ANALYSIS(

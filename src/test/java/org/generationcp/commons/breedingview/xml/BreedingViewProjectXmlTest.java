@@ -29,51 +29,51 @@ public class BreedingViewProjectXmlTest {
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		// instantiate the objects for the xml
-		List<Trait> traits = new ArrayList<Trait>();
+		final List<Trait> traits = new ArrayList<Trait>();
 
-		Trait trait1 = new Trait();
+		final Trait trait1 = new Trait();
 		trait1.setName("MAT50");
 		trait1.setActive(true);
 		traits.add(trait1);
 
-		Trait trait2 = new Trait();
+		final Trait trait2 = new Trait();
 		trait2.setName("PODWT");
 		trait2.setActive(true);
 		traits.add(trait2);
 
-		Trait trait3 = new Trait();
+		final Trait trait3 = new Trait();
 		trait3.setName("SEEDWT");
 		trait3.setActive(true);
 		traits.add(trait3);
 
-		EnvironmentLabel envLabel = new EnvironmentLabel();
+		final EnvironmentLabel envLabel = new EnvironmentLabel();
 		envLabel.setName("HN96b");
 		envLabel.setTrial("HN96b");
 		envLabel.setSubset(true);
 
-		Environment environments = new Environment();
+		final Environment environments = new Environment();
 		environments.setName("E");
 		environments.setLabel(envLabel);
 
-		Genotypes genotypes = new Genotypes();
+		final Genotypes genotypes = new Genotypes();
 		genotypes.setName("Genotype");
 
-		Blocks blocks = new Blocks();
+		final Blocks blocks = new Blocks();
 		blocks.setName("BLOCK");
 
-		Replicates replicates = new Replicates();
+		final Replicates replicates = new Replicates();
 		replicates.setName("REP");
 
-		Rows rows = new Rows();
+		final Rows rows = new Rows();
 		rows.setName("ROWS");
 
-		Columns columns = new Columns();
+		final Columns columns = new Columns();
 		columns.setName("COLUMNS");
 
-		Data fieldbook = new Data();
+		final Data fieldbook = new Data();
 		fieldbook.setFieldBookFile("c:/my documents/fieldbook.xls");
 
-		Phenotypic phenotypic = new Phenotypic();
+		final Phenotypic phenotypic = new Phenotypic();
 		phenotypic.setTraits(traits);
 		phenotypic.setEnvironments(environments);
 		phenotypic.setGenotypes(genotypes);
@@ -83,10 +83,10 @@ public class BreedingViewProjectXmlTest {
 		phenotypic.setColumns(columns);
 		phenotypic.setFieldbook(fieldbook);
 
-		BreedingViewProjectType projectType = new BreedingViewProjectType();
+		final BreedingViewProjectType projectType = new BreedingViewProjectType();
 		projectType.setDesign("Resolvable incomplete block design");
-		projectType.setEnvname("Field Trial");
-		projectType.setType("field trial");
+		projectType.setEnvname("Field Study");
+		projectType.setType("field study");
 
 		BreedingViewProjectXmlTest.project = new BreedingViewProject();
 		BreedingViewProjectXmlTest.project.setName("MAT50");
@@ -97,8 +97,8 @@ public class BreedingViewProjectXmlTest {
 
 	@Test
 	public void testWriting() throws Exception {
-		JAXBContext context = JAXBContext.newInstance(BreedingViewProject.class);
-		Marshaller marshaller = context.createMarshaller();
+		final JAXBContext context = JAXBContext.newInstance(BreedingViewProject.class);
+		final Marshaller marshaller = context.createMarshaller();
 		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 		marshaller.marshal(BreedingViewProjectXmlTest.project, System.out);
 	}

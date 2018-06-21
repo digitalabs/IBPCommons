@@ -1,9 +1,5 @@
 package org.generationcp.commons.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyCodeGenerationService;
@@ -12,10 +8,13 @@ import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.oms.StudyType;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.Method;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class BreedersCrossIDGenerator {
 
@@ -30,7 +29,7 @@ public class BreedersCrossIDGenerator {
 		this.contextUtil = contextUtil;
 	}
 
-	public String generateBreedersCrossID(final StudyType studyType, final List<MeasurementVariable> conditions,
+	public String generateBreedersCrossID(final StudyTypeDto studyType, final List<MeasurementVariable> conditions,
 			final MeasurementRow trailInstanceObservation, final Method breedingMethod, final ImportedGermplasm importedGermplasm) {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
