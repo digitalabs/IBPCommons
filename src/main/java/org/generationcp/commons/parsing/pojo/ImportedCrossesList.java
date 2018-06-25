@@ -39,7 +39,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	 * @param type the type
 	 * @param date the date
 	 */
-	public ImportedCrossesList(String filename, String name, String title, String type, Date date) {
+	public ImportedCrossesList(final String filename, final String name, final String title, final String type, final Date date) {
 		super(filename, name, title, type, date);
 		this.importedCrosses = new ArrayList<>();
 	}
@@ -64,7 +64,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	 *
 	 * @param importedCrosses the new imported crosses
 	 */
-	public void setImportedGermplasms(List<ImportedCrosses> importedCrosses) {
+	public void setImportedGermplasms(final List<ImportedCrosses> importedCrosses) {
 		this.importedCrosses = importedCrosses;
 	}
 
@@ -73,7 +73,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	 *
 	 * @param importedCrosses the imported crosses
 	 */
-	public void addImportedCrosses(ImportedCrosses importedCrosses) {
+	public void addImportedCrosses(final ImportedCrosses importedCrosses) {
 		this.importedCrosses.add(importedCrosses);
 	}
 
@@ -81,7 +81,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 		return this.errorMessages;
 	}
 
-	public void addErrorMessages(String errorMsg) {
+	public void addErrorMessages(final String errorMsg) {
 		this.errorMessages.add(errorMsg);
 	}
 
@@ -89,7 +89,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 		return this.warningMessages;
 	}
 
-	public void addWarningMessages(String warningMsg) {
+	public void addWarningMessages(final String warningMsg) {
 		this.warningMessages.add(warningMsg);
 	}
 

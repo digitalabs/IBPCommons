@@ -43,11 +43,6 @@ public class MessageNotifier {
 		window.showNotification(notification);
 	}
 
-	@Deprecated
-	public static void showWarning(Window window, String caption, String description, int position) {
-		MessageNotifier.showWarning(window, caption, description);
-	}
-
 	/**
 	 * Show message.
 	 *
@@ -57,11 +52,6 @@ public class MessageNotifier {
 	 */
 	public static void showMessage(Window window, String caption, String description) {
 		MessageNotifier.showMessage(window, caption, description, MessageNotifier.DEFAULT_MESSAGE_DELAY);
-	}
-
-	@Deprecated
-	public static void showMessage(Window window, String caption, String description, int delayMs, int position) {
-		MessageNotifier.showMessage(window, caption, description, delayMs);
 	}
 
 	/**
@@ -99,17 +89,12 @@ public class MessageNotifier {
 	 * Show error for required fields.
 	 *
 	 * @param window the window
-	 * @param caption the caption
 	 * @param description the description
 	 */
 	public static void showRequiredFieldError(Window window, String description) {
 		MessageNotifier.showError(window, "Invalid Input", description);
 	}
 
-	@Deprecated
-	public static void showError(Window window, String caption, String description, int position) {
-		MessageNotifier.showError(window, caption, description);
-	}
 
 	/**
 	 * Show tray notification.
