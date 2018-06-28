@@ -56,7 +56,7 @@ public class SaveTreeStateListener implements Window.CloseListener {
         this.userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentUserLocalId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
     }
 
-    protected List<String> getExpandedIds() {
+    public List<String> getExpandedIds() {
         return sourceTable != null ? getTableItemIds(new TreeTableFunction()) : sourceTree != null ? getTableItemIds(new TreeFunction()) : null;
     }
 
