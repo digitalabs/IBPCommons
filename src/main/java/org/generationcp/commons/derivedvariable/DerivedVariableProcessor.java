@@ -43,7 +43,8 @@ public class DerivedVariableProcessor {
 		}
 	}
 
-	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
+	public static final String TERM_INTERNAL_WRAPPER = "__";
+	private static final String TERM_INSIDE_BRACES_REGEX = "\\{\\{(.*?)\\}\\}";
 
 	private final JexlEngine engine;
 	private final MapContext context;
@@ -63,23 +64,11 @@ public class DerivedVariableProcessor {
 		Pattern pattern = Pattern.compile(DerivedVariableProcessor.TERM_INSIDE_BRACES_REGEX);
 		Matcher matcher = pattern.matcher(formula);
 		while (matcher.find()) {
-			String term = this.removeAllInvalidCharacters(matcher.group(1));
+			String term = matcher.group(1);
 			term = this.removeWhitespace(term);
-			inputVariables.put(term, null);
+			inputVariables.put(TERM_INTERNAL_WRAPPER + term + TERM_INTERNAL_WRAPPER, null);
 		}
 		return inputVariables;
-	}
-
-	/**
-	 * Remove invalid characters from text: percent, double quotes
-	 */
-	public String removeAllInvalidCharacters(final String text) {
-		String newText = text;
-		if (newText != null) {
-			newText = newText.replaceAll("%", "");
-			newText = newText.replaceAll("\"", "");
-		}
-		return newText;
 	}
 
 	private String removeWhitespace(final String text) {
@@ -96,8 +85,9 @@ public class DerivedVariableProcessor {
 	public void fetchTermValuesFromMeasurement(Map<String, Object> terms, MeasurementRow measurementRow) {
 		if (measurementRow != null && measurementRow.getDataList() != null) {
 			for (MeasurementData measurementData : measurementRow.getDataList()) {
-				String term = this.removeAllInvalidCharacters(measurementData.getLabel());
+				String term = String.valueOf(measurementData.getMeasurementVariable().getTermId());
 				term = this.removeWhitespace(term);
+				term = TERM_INTERNAL_WRAPPER + term + TERM_INTERNAL_WRAPPER;
 				if (terms.containsKey(term)) {
 					terms.put(term, this.getMeasurementValue(measurementData));
 				}
@@ -125,8 +115,8 @@ public class DerivedVariableProcessor {
 	public String replaceBraces(String formula) {
 		String updatedFormula = formula;
 		if (updatedFormula != null) {
-			updatedFormula = updatedFormula.replaceAll("\\{", "");
-			updatedFormula = updatedFormula.replaceAll("\\}", "");
+			updatedFormula = updatedFormula.replaceAll("\\{\\{", TERM_INTERNAL_WRAPPER);
+			updatedFormula = updatedFormula.replaceAll("\\}\\}", TERM_INTERNAL_WRAPPER);
 		}
 		return updatedFormula;
 	}
@@ -173,7 +163,6 @@ public class DerivedVariableProcessor {
 
 	private String formatFormula(String formula) {
 		String newFormula = this.replaceBraces(formula);
-		newFormula = this.removeAllInvalidCharacters(newFormula);
 		return newFormula;
 	}
 
