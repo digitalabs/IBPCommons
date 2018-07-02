@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ public class DerivedVariableProcessorTest {
 	private static final String EXPECTED_FORMULA_1_RESULT = "10";
 	private static final String FORMULA_2 = "{{20358}}*6.23";
 	private static final String EXPECTED_FORMULA_2_RESULT = "62.3";
+
 	private DerivedVariableProcessor derivedVariableProcessor;
 	private Map<String, Object> terms;
 	private String formula;
@@ -44,17 +46,13 @@ public class DerivedVariableProcessorTest {
 		Assert.assertNotNull("Terms should be extracted from formula", this.terms);
 		Assert.assertTrue(
 			DerivedVariableProcessorTest.TERM_1 + " should be one of the extracted terms",
-			this.terms.containsKey(
-				DerivedVariableProcessor.TERM_INTERNAL_WRAPPER
-					+ DerivedVariableProcessorTest.TERM_1 + DerivedVariableProcessor.TERM_INTERNAL_WRAPPER));
+			this.terms.containsKey(wrapTerm(DerivedVariableProcessorTest.TERM_1)));
 		Assert.assertTrue(
 			DerivedVariableProcessorTest.TERM_2 + " should be one of the extracted terms",
-			this.terms.containsKey(DerivedVariableProcessor.TERM_INTERNAL_WRAPPER + DerivedVariableProcessorTest.TERM_2.trim()
-				+ DerivedVariableProcessor.TERM_INTERNAL_WRAPPER));
+			this.terms.containsKey(wrapTerm(DerivedVariableProcessorTest.TERM_2.trim())));
 		Assert.assertFalse(
 			DerivedVariableProcessorTest.TERM_NOT_FOUND + " should not be one of the extracted terms",
-			this.terms.containsKey(DerivedVariableProcessor.TERM_INTERNAL_WRAPPER + DerivedVariableProcessorTest.TERM_NOT_FOUND
-				+ DerivedVariableProcessor.TERM_INTERNAL_WRAPPER));
+			this.terms.containsKey(wrapTerm(DerivedVariableProcessorTest.TERM_NOT_FOUND)));
 	}
 
 	@Test
@@ -121,6 +119,10 @@ public class DerivedVariableProcessorTest {
 		measurementData.setcValueId(cValueId);
 		return measurementData;
 	}
+	
+	private static String wrapTerm(String term) {
+		return DerivedVariableProcessor.wrapTerm(term);
+	}
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula() {
@@ -150,11 +152,23 @@ public class DerivedVariableProcessorTest {
 		String formula = "{ \"mapkey\" : {{TERM1}} + {{TERM2}} }";
 
 		final Map<String, Object> terms = new HashMap<>();
-		terms.put(DerivedVariableProcessor.TERM_INTERNAL_WRAPPER + "TERM1" + DerivedVariableProcessor.TERM_INTERNAL_WRAPPER, "TERM1VALUE");
-		terms.put(DerivedVariableProcessor.TERM_INTERNAL_WRAPPER + "TERM2" + DerivedVariableProcessor.TERM_INTERNAL_WRAPPER, "TERM2VALUE");
+		terms.put(wrapTerm("TERM1"), "TERM1VALUE");
+		terms.put(wrapTerm("TERM2"), "TERM2VALUE");
 
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate map value", "{mapkey=TERM1VALUETERM2VALUE}", result);
+	}
+	
+	@Test
+	public void testEvaluateNumericData() {
+		String formula = "{{TERM1}} + {{TERM2}}";
+
+		final Map<String, Object> terms = new HashMap<>();
+		terms.put(wrapTerm("TERM1"), 12.3);
+		terms.put(wrapTerm("TERM2"), new BigDecimal("2.34"));
+
+		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
+		Assert.assertEquals("Should evaluate Numberica data", "14.64", result);
 	}
 
 	@Test
@@ -169,7 +183,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
-		final String formula = "fn:concat('" + param1 + "', {{20358}})";
+		final String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
 		final Map<String, Object> terms = this.derivedVariableProcessor.extractTermsFromFormula(formula);
 		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(terms, this.createMeasurementRowTestData());
 
@@ -188,7 +202,7 @@ public class DerivedVariableProcessorTest {
 		termData.add(5.5d);
 		termData.add(45d);
 		termData.add(12.2d);
-		data.put(DerivedVariableProcessor.TERM_INTERNAL_WRAPPER + TERM_1 + DerivedVariableProcessor.TERM_INTERNAL_WRAPPER, termData);
+		data.put(wrapTerm(TERM_1), termData);
 
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
 		Assert.assertEquals("Should evaluate concat function", "20.9", result);
@@ -197,7 +211,7 @@ public class DerivedVariableProcessorTest {
 		final List<Object> term2Data = new ArrayList<>();
 		term2Data.add(14.23d);
 		term2Data.add(134.12);
-		data.put(DerivedVariableProcessor.TERM_INTERNAL_WRAPPER + "PH_M_cm" + DerivedVariableProcessor.TERM_INTERNAL_WRAPPER, term2Data);
+		data.put(wrapTerm("PH_M_cm"), term2Data);
 
 		result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
 		Assert.assertEquals("Should evaluate concat function", "42.21", result);

@@ -21,9 +21,9 @@ public class DerivedVariableProcessor {
 	public static class Functions {
 
 		@SuppressWarnings("unused")
-		public String concat(final String... args) {
+		public String concat(final Object... args) {
 			final StringBuilder sb = new StringBuilder();
-			for (String arg : args) {
+			for (Object arg : args) {
 				sb.append(arg);
 			}
 			return sb.toString();
@@ -44,6 +44,11 @@ public class DerivedVariableProcessor {
 	}
 
 	public static final String TERM_INTERNAL_WRAPPER = "__";
+
+	public static String wrapTerm(String term) {
+		return TERM_INTERNAL_WRAPPER + term + TERM_INTERNAL_WRAPPER;
+	}
+
 	private static final String TERM_INSIDE_BRACES_REGEX = "\\{\\{(.*?)\\}\\}";
 
 	private final JexlEngine engine;
@@ -66,7 +71,7 @@ public class DerivedVariableProcessor {
 		while (matcher.find()) {
 			String term = matcher.group(1);
 			term = this.removeWhitespace(term);
-			inputVariables.put(TERM_INTERNAL_WRAPPER + term + TERM_INTERNAL_WRAPPER, null);
+			inputVariables.put(wrapTerm(term), null);
 		}
 		return inputVariables;
 	}
@@ -78,7 +83,6 @@ public class DerivedVariableProcessor {
 		return "";
 	}
 
-	// FIXME this should not be a responsibility of the processor
 	/**
 	 * Update values of terms from the measurement
 	 */
@@ -87,7 +91,7 @@ public class DerivedVariableProcessor {
 			for (MeasurementData measurementData : measurementRow.getDataList()) {
 				String term = String.valueOf(measurementData.getMeasurementVariable().getTermId());
 				term = this.removeWhitespace(term);
-				term = TERM_INTERNAL_WRAPPER + term + TERM_INTERNAL_WRAPPER;
+				term = wrapTerm(term);
 				if (terms.containsKey(term)) {
 					terms.put(term, this.getMeasurementValue(measurementData));
 				}
@@ -95,7 +99,6 @@ public class DerivedVariableProcessor {
 		}
 	}
 
-	// FIXME this should not be a responsibility of the processor
 	/**
 	 * Update values of terms from the measurement
 	 */
@@ -103,6 +106,9 @@ public class DerivedVariableProcessor {
 		String value = measurementData.getcValueId();
 		if (value == null) {
 			value = measurementData.getValue();
+		}
+		if (NumberUtils.isNumber(value)) {
+			return new BigDecimal(value);
 		}
 		return value;
 	}
@@ -166,7 +172,6 @@ public class DerivedVariableProcessor {
 		return newFormula;
 	}
 
-	// FIXME this should not be a responsibility of the processor
 	/**
 	 * Get the value of the derived variable from a formula and values of input variables
 	 *
