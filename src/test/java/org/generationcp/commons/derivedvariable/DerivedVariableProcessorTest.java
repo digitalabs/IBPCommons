@@ -11,14 +11,23 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static org.generationcp.commons.derivedvariable.DerivedVariableProcessor.wrapTerm;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.Is.is;
 
 public class DerivedVariableProcessorTest {
 
 	private static final String TERM_1 = "51496"; // GW_DW_g100grn - Grain weight BY GW DW - Measurement IN G/100grain
 	private static final String TERM_2 = "50889"; // GMoi_NIRS_pct - Grain moisture BY NIRS Moi - Measurement IN %
 	private static final String TERM_3 = "20358"; // PlotArea_m2 - Plot size
+	private static final String TERM_4_EMPTY_VALUE = "20439"; // MRFVInc_Cmp_pct
 	private static final String TERM_VALUE_1 = "1000";
 	private static final String TERM_VALUE_2 = "12.5";
 	private static final String TERM_VALUE_3 = "10";
@@ -38,10 +47,39 @@ public class DerivedVariableProcessorTest {
 		this.derivedVariableProcessor = new DerivedVariableProcessor();
 	}
 
+	private MeasurementRow createMeasurementRowTestData() {
+		MeasurementRow measurementRow = new MeasurementRow();
+		measurementRow.setDataList(this.createMeasurementDataListTestData());
+		return measurementRow;
+	}
+
+	private List<MeasurementData> createMeasurementDataListTestData() {
+		List<MeasurementData> measurementDataList = new ArrayList<>();
+		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_1,
+			DerivedVariableProcessorTest.TERM_VALUE_1, null));
+		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_2,
+			DerivedVariableProcessorTest.TERM_VALUE_2, null));
+		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_3,
+			DerivedVariableProcessorTest.TERM_VALUE_3, null));
+		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_4_EMPTY_VALUE, "", ""));
+		return measurementDataList;
+	}
+
+	private MeasurementData createMeasurementDataTestData(String label, String value, String cValueId) {
+		MeasurementData measurementData = new MeasurementData();
+		measurementData.setLabel(label);
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(Integer.valueOf(label));
+		measurementData.setMeasurementVariable(measurementVariable);
+		measurementData.setValue(value);
+		measurementData.setcValueId(cValueId);
+		return measurementData;
+	}
+
 	@Test
 	public void testExtractTermsFromFormula() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
+			this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
 		}
 		Assert.assertNotNull("Terms should be extracted from formula", this.terms);
 		Assert.assertTrue(
@@ -58,9 +96,9 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFetchTermValuesFromMeasurement() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
+			this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
 		}
-		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
+		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData());
 		Assert.assertNotNull("Terms should not be null", this.terms);
 		for (Map.Entry<String, Object> entry : this.terms.entrySet()) {
 			String key = entry.getKey();
@@ -70,9 +108,22 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
+	public void testFetchTermValuesFromMeasurement_MissingData() {
+		if (this.terms == null) {
+			this.terms = this.derivedVariableProcessor.extractTerms("{{" + TERM_4_EMPTY_VALUE + "}}");
+		}
+		final Set<String> termMissingData = new HashSet<>();
+
+		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData(), termMissingData);
+
+		Assert.assertThat("Should have missing data", termMissingData, is(not(empty())));
+		Assert.assertThat("Should report missing data label", termMissingData.iterator().next(), is(TERM_4_EMPTY_VALUE));
+	}
+
+	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementRow() {
-		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
-		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(testTerms, null);
+		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		this.derivedVariableProcessor.extractValues(testTerms, null);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
@@ -82,46 +133,15 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementDataList() {
-		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
+		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
-		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(testTerms, measurementRow);
+		this.derivedVariableProcessor.extractValues(testTerms, measurementRow);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			Assert.assertNull(key + " should not have a value", value);
 		}
-	}
-
-	private MeasurementRow createMeasurementRowTestData() {
-		MeasurementRow measurementRow = new MeasurementRow();
-		measurementRow.setDataList(this.createMeasurementDataListTestData());
-		return measurementRow;
-	}
-
-	private List<MeasurementData> createMeasurementDataListTestData() {
-		List<MeasurementData> measurementDataList = new ArrayList<>();
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_1,
-				DerivedVariableProcessorTest.TERM_VALUE_1, null));
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_2,
-				DerivedVariableProcessorTest.TERM_VALUE_2, null));
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_3,
-				DerivedVariableProcessorTest.TERM_VALUE_3, null));
-		return measurementDataList;
-	}
-
-	private MeasurementData createMeasurementDataTestData(String label, String value, String cValueId) {
-		MeasurementData measurementData = new MeasurementData();
-		final MeasurementVariable measurementVariable = new MeasurementVariable();
-		measurementVariable.setTermId(Integer.valueOf(label));
-		measurementData.setMeasurementVariable(measurementVariable);
-		measurementData.setValue(value);
-		measurementData.setcValueId(cValueId);
-		return measurementData;
-	}
-	
-	private static String wrapTerm(String term) {
-		return DerivedVariableProcessor.wrapTerm(term);
 	}
 
 	@Test
@@ -140,11 +160,16 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testEvaluateFormula() {
 		this.formula = FORMULA_1;
-		this.terms = this.derivedVariableProcessor.extractTermsFromFormula(DerivedVariableProcessorTest.FORMULA_1);
-		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(this.terms, this.createMeasurementRowTestData());
+		this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData());
 		String result = this.derivedVariableProcessor.evaluateFormula(this.formula, this.terms);
 		Assert.assertEquals("The result of " + this.formula + " should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT
 				+ " but got " + result, DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT, result);
+
+		this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData());
+		result = this.derivedVariableProcessor.evaluateFormula(DerivedVariableProcessorTest.FORMULA_2, this.terms);
+		Assert.assertEquals("Should evaluate formula: " + FORMULA_2, DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT, result);
 	}
 
 	@Test
@@ -172,20 +197,11 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testGetDerivedVariableValue() {
-		String result =
-				this.derivedVariableProcessor.getDerivedVariableValue(DerivedVariableProcessorTest.FORMULA_2,
-						this.createMeasurementRowTestData());
-		Assert.assertEquals("The derived variable value should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT,
-				DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT, result);
-	}
-
-	@Test
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
 		final String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
-		final Map<String, Object> terms = this.derivedVariableProcessor.extractTermsFromFormula(formula);
-		this.derivedVariableProcessor.fetchTermValuesFromMeasurement(terms, this.createMeasurementRowTestData());
+		final Map<String, Object> terms = this.derivedVariableProcessor.extractTerms(formula);
+		this.derivedVariableProcessor.extractValues(terms, this.createMeasurementRowTestData());
 
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
