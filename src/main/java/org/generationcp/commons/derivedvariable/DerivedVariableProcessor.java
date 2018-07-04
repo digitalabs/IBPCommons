@@ -119,11 +119,14 @@ public class DerivedVariableProcessor {
 	 * Update values of terms from the measurement
 	 */
 	private Object getMeasurementValue(MeasurementData measurementData, final Set<String> termMissingData) {
-		String value = measurementData.getcValueId();
-		if (value == null) {
+		String value = null;
+		if (!StringUtils.isBlank(measurementData.getcValueId())) {
+			value = measurementData.getDisplayValueForCategoricalData().getName();
+		}
+		if (StringUtils.isBlank(value)) {
 			value = measurementData.getValue();
 		}
-		if (StringUtils.isEmpty(value) && termMissingData != null) {
+		if (StringUtils.isBlank(value) && termMissingData != null) {
 			termMissingData.add(measurementData.getLabel());
 		}
 		if (NumberUtils.isNumber(value)) {
