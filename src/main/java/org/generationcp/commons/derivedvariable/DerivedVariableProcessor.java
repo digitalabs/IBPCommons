@@ -78,7 +78,7 @@ public class DerivedVariableProcessor {
 		while (matcher.find()) {
 			String term = matcher.group(1);
 			term = this.removeWhitespace(term);
-			inputVariables.put(wrapTerm(term), null);
+			inputVariables.put(wrapTerm(term), "");
 		}
 		return inputVariables;
 	}

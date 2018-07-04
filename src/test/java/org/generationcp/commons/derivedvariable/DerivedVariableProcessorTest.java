@@ -19,7 +19,6 @@ import java.util.Set;
 import static org.generationcp.commons.derivedvariable.DerivedVariableProcessor.wrapTerm;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 
 public class DerivedVariableProcessorTest {
@@ -127,7 +126,7 @@ public class DerivedVariableProcessorTest {
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
-			Assert.assertNull(key + " should not have a value", value);
+			Assert.assertTrue(key + " should not have a value", "".equals(value));
 		}
 	}
 
@@ -140,7 +139,7 @@ public class DerivedVariableProcessorTest {
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
-			Assert.assertNull(key + " should not have a value", value);
+			Assert.assertTrue(key + " should not have a value", "".equals(value));
 		}
 	}
 
