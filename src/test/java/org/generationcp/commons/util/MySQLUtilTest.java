@@ -132,8 +132,6 @@ public class MySQLUtilTest {
 
 		Assert.assertEquals("UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`phenotype_id`)/500)+100 AS sequence_value FROM `phenotype`) WHERE `sequence_name` = 'phenotype';",
 				this.mysqlUtil.buildSequenceTableUpdateQueryString("phenotype", "phenotype_id"));
-		Assert.assertEquals("UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_phenotype_id`)/500)+100 AS sequence_value FROM `nd_experiment_phenotype`) WHERE `sequence_name` = 'nd_experiment_phenotype';",
-				this.mysqlUtil.buildSequenceTableUpdateQueryString("nd_experiment_phenotype", "nd_experiment_phenotype_id"));
 		Assert.assertEquals("UPDATE `sequence` SET `sequence_value`= (SELECT CEIL(MAX(`nd_experiment_id`)/500)+100 AS sequence_value FROM `nd_experiment`) WHERE `sequence_name` = 'nd_experiment';",
 				this.mysqlUtil.buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
 

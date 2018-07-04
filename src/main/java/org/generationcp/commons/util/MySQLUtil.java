@@ -416,9 +416,8 @@ public class MySQLUtil {
 		try {
 			this.executeQuery(connection, "USE " + databaseName);
 			this.executeQuery(connection, buildSequenceTableUpdateQueryString("phenotype", "phenotype_id"));
-			this.executeQuery(connection, buildSequenceTableUpdateQueryString("nd_experiment_phenotype", "nd_experiment_phenotype_id"));
 			this.executeQuery(connection, buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			MySQLUtil.LOG.error("Cannot update the `sequence` table", e);
 		}
 
@@ -498,7 +497,7 @@ public class MySQLUtil {
 	}
 
 	public void runScriptFromFile(final String dbName, final File sqlFile) throws SQLFileException {
-		ProcessBuilder pb;
+		final ProcessBuilder pb;
 		String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
 		if (this.mysqlPath != null) {
 			mysqlAbsolutePath = new File(this.mysqlPath).getAbsolutePath();
@@ -528,14 +527,14 @@ public class MySQLUtil {
 				MySQLUtil.LOG.error(errorOut);
 				throw new IOException(errorOut);
 			}
-		} catch (IOException | InterruptedException e) {
+		} catch (final IOException | InterruptedException e) {
 			throw new SQLFileException(e);
 		}
 
 	}
 
 	public void runScriptFromFile(final File sqlFile) throws SQLFileException {
-		ProcessBuilder pb;
+		final ProcessBuilder pb;
 		String mysqlAbsolutePath = new File("infrastructure/mysql/bin/mysql.exe").getAbsolutePath();
 		if (this.mysqlPath != null) {
 			mysqlAbsolutePath = new File(this.mysqlPath).getAbsolutePath();
@@ -563,7 +562,7 @@ public class MySQLUtil {
 				// fail
 				throw new IOException("Could not run the file:" + sqlFile.getAbsolutePath());
 			}
-		} catch (IOException | InterruptedException e) {
+		} catch (final IOException | InterruptedException e) {
 			throw new SQLFileException(e);
 		}
 	}
@@ -576,7 +575,7 @@ public class MySQLUtil {
 		 * returns
 		 */
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-		String line = null;
+		String line;
 		while ((line = reader.readLine()) != null) {
 
 		}
@@ -633,7 +632,7 @@ public class MySQLUtil {
 			stmt.executeUpdate(query);
 			return true;
 		} catch (final SQLException e) {
-			MySQLUtil.LOG.debug("Error executing query: " + query.toString());
+			MySQLUtil.LOG.debug("Error executing query: " + query);
 			return false;
 		} finally {
 			if (stmt != null) {
