@@ -16,7 +16,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.generationcp.commons.derivedvariable.DerivedVariableProcessor.wrapTerm;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractTerms;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractValues;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceBraces;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.wrapTerm;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
@@ -78,7 +81,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testExtractTermsFromFormula() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+			this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
 		}
 		Assert.assertNotNull("Terms should be extracted from formula", this.terms);
 		Assert.assertTrue(
@@ -95,9 +98,9 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFetchTermValuesFromMeasurement() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+			this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
 		}
-		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData());
+		extractValues(this.terms, this.createMeasurementRowTestData());
 		Assert.assertNotNull("Terms should not be null", this.terms);
 		for (Map.Entry<String, Object> entry : this.terms.entrySet()) {
 			String key = entry.getKey();
@@ -109,11 +112,11 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFetchTermValuesFromMeasurement_MissingData() {
 		if (this.terms == null) {
-			this.terms = this.derivedVariableProcessor.extractTerms("{{" + TERM_4_EMPTY_VALUE + "}}");
+			this.terms = extractTerms("{{" + TERM_4_EMPTY_VALUE + "}}");
 		}
 		final Set<String> termMissingData = new HashSet<>();
 
-		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData(), termMissingData);
+		extractValues(this.terms, this.createMeasurementRowTestData(), termMissingData);
 
 		Assert.assertThat("Should have missing data", termMissingData, is(not(empty())));
 		Assert.assertThat("Should report missing data label", termMissingData.iterator().next(), is(TERM_4_EMPTY_VALUE));
@@ -121,8 +124,8 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementRow() {
-		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
-		this.derivedVariableProcessor.extractValues(testTerms, null);
+		Map<String, Object> testTerms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		extractValues(testTerms, null);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
@@ -132,10 +135,10 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementDataList() {
-		Map<String, Object> testTerms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		Map<String, Object> testTerms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
-		this.derivedVariableProcessor.extractValues(testTerms, measurementRow);
+		extractValues(testTerms, measurementRow);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
@@ -145,28 +148,28 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula() {
-		this.formula = this.derivedVariableProcessor.replaceBraces(DerivedVariableProcessorTest.FORMULA_1);
+		this.formula = replaceBraces(DerivedVariableProcessorTest.FORMULA_1);
 		Assert.assertFalse(this.formula.contains("{{"));
 		Assert.assertFalse(this.formula.contains("}}"));
 	}
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula_NullFormula() {
-		String nullFormula = this.derivedVariableProcessor.replaceBraces(null);
+		String nullFormula = replaceBraces(null);
 		Assert.assertNull(nullFormula);
 	}
 
 	@Test
 	public void testEvaluateFormula() {
 		this.formula = FORMULA_1;
-		this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
-		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData());
+		this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		extractValues(this.terms, this.createMeasurementRowTestData());
 		String result = this.derivedVariableProcessor.evaluateFormula(this.formula, this.terms);
 		Assert.assertEquals("The result of " + this.formula + " should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT
 				+ " but got " + result, DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT, result);
 
-		this.terms = this.derivedVariableProcessor.extractTerms(DerivedVariableProcessorTest.FORMULA_1);
-		this.derivedVariableProcessor.extractValues(this.terms, this.createMeasurementRowTestData());
+		this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		extractValues(this.terms, this.createMeasurementRowTestData());
 		result = this.derivedVariableProcessor.evaluateFormula(DerivedVariableProcessorTest.FORMULA_2, this.terms);
 		Assert.assertEquals("Should evaluate formula: " + FORMULA_2, DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT, result);
 	}
@@ -199,8 +202,8 @@ public class DerivedVariableProcessorTest {
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
 		final String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
-		final Map<String, Object> terms = this.derivedVariableProcessor.extractTerms(formula);
-		this.derivedVariableProcessor.extractValues(terms, this.createMeasurementRowTestData());
+		final Map<String, Object> terms = extractTerms(formula);
+		extractValues(terms, this.createMeasurementRowTestData());
 
 		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
