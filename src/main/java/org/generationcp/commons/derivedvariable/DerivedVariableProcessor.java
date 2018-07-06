@@ -39,6 +39,7 @@ public class DerivedVariableProcessor {
 		}
 	}
 
+
 	private final JexlEngine engine;
 	private final MapContext context;
 
@@ -57,17 +58,13 @@ public class DerivedVariableProcessor {
 	}
 
 	/**
-	 * Evaluate formula from the value of input variables
+	 * Evaluate the formula using an expression engine
 	 *
-	 * @param formula
-	 * @param terms   arguments for the formula
-	 * @param data    data for aggregations.
-	 * @return result of evaluating the formula from term values
+	 * @param terms arguments for the formula
+	 * @param data data for aggregations.
 	 */
 	public String evaluateFormula(final String formula, final Map<String, Object> terms, final Map<String, List<Object>> data) {
-		String newFormula = DerivedVariableUtils.formatFormula(formula);
-
-		JexlExpression expr = this.engine.createExpression(newFormula);
+		JexlExpression expr = this.engine.createExpression(formula);
 
 		if (terms != null) {
 			for (Map.Entry<String, Object> term : terms.entrySet()) {

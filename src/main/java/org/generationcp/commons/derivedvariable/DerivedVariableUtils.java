@@ -19,33 +19,32 @@ public final class DerivedVariableUtils {
 		// utility class
 	}
 
+	private static final String TERM_LEFT_DELIMITER = "\\{\\{";
+	private static final String TERM_RIGHT_DELIMITER = "\\}\\}";
+	public static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
+	public static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
+
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
 	 */
-	public static final String TERM_INTERNAL_WRAPPER = "__";
-	public static final String TERM_INSIDE_BRACES_REGEX = "\\{\\{(.*?)\\}\\}";
-	public static final Pattern TERM_INSIDE_BRACES_PATTERN = Pattern.compile(TERM_INSIDE_BRACES_REGEX);
-
-	public static String wrapTerm(String term) {
-		return TERM_INTERNAL_WRAPPER + term + TERM_INTERNAL_WRAPPER;
-	}
+	private static final String TERM_INTERNAL_DELIMITER = "__";
 
 	/**
-	 * Extract term names from formula then store them in a map with null as the default value
+	 * Extract term names from formula
 	 */
 	public static Map<String, Object> extractTerms(String formula) {
 		Map<String, Object> inputVariables = new HashMap<>();
-		Matcher matcher = TERM_INSIDE_BRACES_PATTERN.matcher(formula);
+		Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formula);
 		while (matcher.find()) {
 			String term = matcher.group(1);
-			term = removeWhitespace(term);
+			term = StringUtils.deleteWhitespace(term);
 			inputVariables.put(wrapTerm(term), "");
 		}
 		return inputVariables;
 	}
 
 	/**
-	 * Extract values of terms from the measurement
+	 * @see DerivedVariableUtils#extractValues(Map, MeasurementRow, Set)
 	 */
 	public static void extractValues(Map<String, Object> terms, MeasurementRow measurementRow) {
 		extractValues(terms, measurementRow, new HashSet<String>());
@@ -53,13 +52,13 @@ public final class DerivedVariableUtils {
 
 	/**
 	 * Extract values of terms from the measurement
-	 * @param termMissingData list of term labels with missing data
+	 * @param termMissingData list to be filled with term labels with missing data
 	 */
 	public static void extractValues(Map<String, Object> terms, MeasurementRow measurementRow, final Set<String> termMissingData) {
 		if (measurementRow != null && measurementRow.getDataList() != null) {
 			for (MeasurementData measurementData : measurementRow.getDataList()) {
 				String term = String.valueOf(measurementData.getMeasurementVariable().getTermId());
-				term = removeWhitespace(term);
+				term = StringUtils.deleteWhitespace(term);
 				term = wrapTerm(term);
 				if (terms.containsKey(term)) {
 					terms.put(term, getMeasurementValue(measurementData, termMissingData));
@@ -68,9 +67,6 @@ public final class DerivedVariableUtils {
 		}
 	}
 
-	/**
-	 * Update values of terms from the measurement
-	 */
 	private static Object getMeasurementValue(MeasurementData measurementData, final Set<String> termMissingData) {
 		String value = null;
 		if (!StringUtils.isBlank(measurementData.getcValueId())) {
@@ -89,28 +85,21 @@ public final class DerivedVariableUtils {
 	}
 
 	/**
-	 * Replace curly braces in formula
-	 *
-	 * @return formula with no curly braces
+	 * @return formula with internal delimiters
 	 */
-	public static String replaceBraces(String formula) {
+	public static String replaceDelimiters(String formula) {
 		String updatedFormula = formula;
 		if (updatedFormula != null) {
-			updatedFormula = updatedFormula.replaceAll("\\{\\{", TERM_INTERNAL_WRAPPER);
-			updatedFormula = updatedFormula.replaceAll("\\}\\}", TERM_INTERNAL_WRAPPER);
+			updatedFormula = updatedFormula.replaceAll(TERM_LEFT_DELIMITER, TERM_INTERNAL_DELIMITER);
+			updatedFormula = updatedFormula.replaceAll(TERM_RIGHT_DELIMITER, TERM_INTERNAL_DELIMITER);
 		}
 		return updatedFormula;
 	}
 
-	public static String formatFormula(String formula) {
-		String newFormula = replaceBraces(formula);
-		return newFormula;
-	}
-
-	private static String removeWhitespace(final String text) {
-		if (text != null) {
-			return text.replaceAll("\\s", "");
-		}
-		return "";
+	/**
+	 * Wrap term to be used as engine parameter
+	 */
+	static String wrapTerm(String term) {
+		return TERM_INTERNAL_DELIMITER + term + TERM_INTERNAL_DELIMITER;
 	}
 }

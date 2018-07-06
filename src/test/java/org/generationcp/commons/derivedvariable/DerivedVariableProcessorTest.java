@@ -18,7 +18,7 @@ import java.util.Set;
 
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractTerms;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractValues;
-import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceBraces;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceDelimiters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.wrapTerm;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
@@ -34,19 +34,18 @@ public class DerivedVariableProcessorTest {
 	private static final String TERM_VALUE_2 = "12.5";
 	private static final String TERM_VALUE_3 = "10";
 	private static final String TERM_NOT_FOUND = "TermNotFound";
-	private static final String FORMULA_1 = "({{" + DerivedVariableProcessorTest.TERM_1 + "}}/100)*((100-{{"
-			+ DerivedVariableProcessorTest.TERM_2 + "}})/(100-12.5))*(10/{{" + DerivedVariableProcessorTest.TERM_3 + "}})";
+	private static final String FORMULA_1 = "({{" + TERM_1 + "}}/100)*((100-{{" + TERM_2 + "}})/(100-12.5))*(10/{{" + TERM_3 + "}})";
 	private static final String EXPECTED_FORMULA_1_RESULT = "10";
 	private static final String FORMULA_2 = "{{20358}}*6.23";
 	private static final String EXPECTED_FORMULA_2_RESULT = "62.3";
 
-	private DerivedVariableProcessor derivedVariableProcessor;
+	private DerivedVariableProcessor processor;
 	private Map<String, Object> terms;
 	private String formula;
 
 	@Before
 	public void setUp() {
-		this.derivedVariableProcessor = new DerivedVariableProcessor();
+		this.processor = new DerivedVariableProcessor();
 	}
 
 	private MeasurementRow createMeasurementRowTestData() {
@@ -57,13 +56,10 @@ public class DerivedVariableProcessorTest {
 
 	private List<MeasurementData> createMeasurementDataListTestData() {
 		List<MeasurementData> measurementDataList = new ArrayList<>();
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_1,
-			DerivedVariableProcessorTest.TERM_VALUE_1, null));
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_2,
-			DerivedVariableProcessorTest.TERM_VALUE_2, null));
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_3,
-			DerivedVariableProcessorTest.TERM_VALUE_3, null));
-		measurementDataList.add(this.createMeasurementDataTestData(DerivedVariableProcessorTest.TERM_4_EMPTY_VALUE, "", ""));
+		measurementDataList.add(this.createMeasurementDataTestData(TERM_1, TERM_VALUE_1, null));
+		measurementDataList.add(this.createMeasurementDataTestData(TERM_2, TERM_VALUE_2, null));
+		measurementDataList.add(this.createMeasurementDataTestData(TERM_3, TERM_VALUE_3, null));
+		measurementDataList.add(this.createMeasurementDataTestData(TERM_4_EMPTY_VALUE, "", ""));
 		return measurementDataList;
 	}
 
@@ -81,24 +77,18 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testExtractTermsFromFormula() {
 		if (this.terms == null) {
-			this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+			this.terms = extractTerms(FORMULA_1);
 		}
 		Assert.assertNotNull("Terms should be extracted from formula", this.terms);
-		Assert.assertTrue(
-			DerivedVariableProcessorTest.TERM_1 + " should be one of the extracted terms",
-			this.terms.containsKey(wrapTerm(DerivedVariableProcessorTest.TERM_1)));
-		Assert.assertTrue(
-			DerivedVariableProcessorTest.TERM_2 + " should be one of the extracted terms",
-			this.terms.containsKey(wrapTerm(DerivedVariableProcessorTest.TERM_2.trim())));
-		Assert.assertFalse(
-			DerivedVariableProcessorTest.TERM_NOT_FOUND + " should not be one of the extracted terms",
-			this.terms.containsKey(wrapTerm(DerivedVariableProcessorTest.TERM_NOT_FOUND)));
+		Assert.assertTrue(TERM_1 + " should be one of the extracted terms", this.terms.containsKey(wrapTerm(TERM_1)));
+		Assert.assertTrue(TERM_2 + " should be one of the extracted terms", this.terms.containsKey(wrapTerm(TERM_2.trim())));
+		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted terms", this.terms.containsKey(wrapTerm(TERM_NOT_FOUND)));
 	}
 
 	@Test
 	public void testFetchTermValuesFromMeasurement() {
 		if (this.terms == null) {
-			this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+			this.terms = extractTerms(FORMULA_1);
 		}
 		extractValues(this.terms, this.createMeasurementRowTestData());
 		Assert.assertNotNull("Terms should not be null", this.terms);
@@ -124,7 +114,7 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementRow() {
-		Map<String, Object> testTerms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		Map<String, Object> testTerms = extractTerms(FORMULA_1);
 		extractValues(testTerms, null);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
@@ -135,7 +125,7 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testFetchTermValuesFromMeasurement_NullMeasurementDataList() {
-		Map<String, Object> testTerms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		Map<String, Object> testTerms = extractTerms(FORMULA_1);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
 		extractValues(testTerms, measurementRow);
@@ -148,30 +138,34 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula() {
-		this.formula = replaceBraces(DerivedVariableProcessorTest.FORMULA_1);
+		this.formula = replaceDelimiters(FORMULA_1);
 		Assert.assertFalse(this.formula.contains("{{"));
 		Assert.assertFalse(this.formula.contains("}}"));
 	}
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula_NullFormula() {
-		String nullFormula = replaceBraces(null);
+		String nullFormula = replaceDelimiters(null);
 		Assert.assertNull(nullFormula);
 	}
 
 	@Test
 	public void testEvaluateFormula() {
 		this.formula = FORMULA_1;
-		this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		this.terms = extractTerms(FORMULA_1);
 		extractValues(this.terms, this.createMeasurementRowTestData());
-		String result = this.derivedVariableProcessor.evaluateFormula(this.formula, this.terms);
-		Assert.assertEquals("The result of " + this.formula + " should be " + DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT
-				+ " but got " + result, DerivedVariableProcessorTest.EXPECTED_FORMULA_1_RESULT, result);
+		this.formula = replaceDelimiters(this.formula);
 
-		this.terms = extractTerms(DerivedVariableProcessorTest.FORMULA_1);
+		String result = this.processor.evaluateFormula(this.formula, this.terms);
+		Assert.assertEquals("The result of " + this.formula + " should be " + EXPECTED_FORMULA_1_RESULT
+			+ " but got " + result, EXPECTED_FORMULA_1_RESULT, result);
+
+		this.terms = extractTerms(FORMULA_2);
 		extractValues(this.terms, this.createMeasurementRowTestData());
-		result = this.derivedVariableProcessor.evaluateFormula(DerivedVariableProcessorTest.FORMULA_2, this.terms);
-		Assert.assertEquals("Should evaluate formula: " + FORMULA_2, DerivedVariableProcessorTest.EXPECTED_FORMULA_2_RESULT, result);
+		this.formula = replaceDelimiters(FORMULA_2);
+
+		result = this.processor.evaluateFormula(this.formula, this.terms);
+		Assert.assertEquals("Should evaluate formula: " + FORMULA_2, EXPECTED_FORMULA_2_RESULT, result);
 	}
 
 	@Test
@@ -182,10 +176,11 @@ public class DerivedVariableProcessorTest {
 		terms.put(wrapTerm("TERM1"), "TERM1VALUE");
 		terms.put(wrapTerm("TERM2"), "TERM2VALUE");
 
-		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate map value", "{mapkey=TERM1VALUETERM2VALUE}", result);
 	}
-	
+
 	@Test
 	public void testEvaluateNumericData() {
 		String formula = "{{TERM1}} + {{TERM2}}";
@@ -194,18 +189,20 @@ public class DerivedVariableProcessorTest {
 		terms.put(wrapTerm("TERM1"), 12.3);
 		terms.put(wrapTerm("TERM2"), new BigDecimal("2.34"));
 
-		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate Numberica data", "14.64", result);
 	}
 
 	@Test
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
-		final String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
+		String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
 		final Map<String, Object> terms = extractTerms(formula);
 		extractValues(terms, this.createMeasurementRowTestData());
 
-		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms);
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
 
@@ -222,7 +219,8 @@ public class DerivedVariableProcessorTest {
 		termData.add(12.2d);
 		data.put(wrapTerm(TERM_1), termData);
 
-		String result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms, data);
 		Assert.assertEquals("Should evaluate concat function", "20.9", result);
 
 		formula = "fn:avg([{{" + TERM_1 + "}}, {{PH_M_cm}}])";
@@ -231,13 +229,14 @@ public class DerivedVariableProcessorTest {
 		term2Data.add(134.12);
 		data.put(wrapTerm("PH_M_cm"), term2Data);
 
-		result = this.derivedVariableProcessor.evaluateFormula(formula, terms, data);
+		formula = replaceDelimiters(formula);
+		result = this.processor.evaluateFormula(formula, terms, data);
 		Assert.assertEquals("Should evaluate concat function", "42.21", result);
 	}
 
 	@Test(expected = Exception.class)
 	public void testSecurityEval() {
-		this.derivedVariableProcessor.evaluateFormula("System.exit(0)", new HashMap<String, Object>());
+		this.processor.evaluateFormula("System.exit(0)", new HashMap<String, Object>());
 	}
 
 }
