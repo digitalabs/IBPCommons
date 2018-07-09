@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.ontology.FormulaVariable;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -101,5 +102,18 @@ public final class DerivedVariableUtils {
 	 */
 	static String wrapTerm(String term) {
 		return TERM_INTERNAL_DELIMITER + term + TERM_INTERNAL_DELIMITER;
+	}
+
+	public static String replaceTermIdsWithVariableNames(final String formulaDefinition,
+			final Map<String, FormulaVariable> formulaVariableMap) {
+		String replaceText = formulaDefinition;
+		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
+		while (matcher.find()) {
+			String term = matcher.group(0);
+			final String termId = matcher.group(1);
+			term = StringUtils.trim(term);
+			replaceText = StringUtils.replace(replaceText, term, formulaVariableMap.get(termId).getName());
+		}
+		return replaceText;
 	}
 }
