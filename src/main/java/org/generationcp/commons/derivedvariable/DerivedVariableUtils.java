@@ -112,7 +112,10 @@ public final class DerivedVariableUtils {
 			String term = matcher.group(0);
 			final String termId = matcher.group(1);
 			term = StringUtils.trim(term);
-			replaceText = StringUtils.replace(replaceText, term, formulaVariableMap.get(termId).getName());
+			if (formulaVariableMap.containsKey(termId)) {
+				replaceText = StringUtils.replace(replaceText, term, formulaVariableMap.get(termId).getName());
+			}
+
 		}
 		return replaceText;
 	}
