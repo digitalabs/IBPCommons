@@ -33,9 +33,9 @@ public final class DerivedVariableUtils {
 	/**
 	 * Extract term names from formula
 	 */
-	public static Map<String, Object> extractTerms(String formula) {
-		Map<String, Object> inputVariables = new HashMap<>();
-		Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formula);
+	public static Map<String, Object> extractTerms(final String formula) {
+		final Map<String, Object> inputVariables = new HashMap<>();
+		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formula);
 		while (matcher.find()) {
 			String term = matcher.group(1);
 			term = StringUtils.deleteWhitespace(term);
@@ -47,7 +47,7 @@ public final class DerivedVariableUtils {
 	/**
 	 * @see DerivedVariableUtils#extractValues(Map, MeasurementRow, Set)
 	 */
-	public static void extractValues(Map<String, Object> terms, MeasurementRow measurementRow) {
+	public static void extractValues(final Map<String, Object> terms, final MeasurementRow measurementRow) {
 		extractValues(terms, measurementRow, new HashSet<String>());
 	}
 
@@ -55,9 +55,9 @@ public final class DerivedVariableUtils {
 	 * Extract values of terms from the measurement
 	 * @param termMissingData list to be filled with term labels with missing data
 	 */
-	public static void extractValues(Map<String, Object> terms, MeasurementRow measurementRow, final Set<String> termMissingData) {
+	public static void extractValues(final Map<String, Object> terms, final MeasurementRow measurementRow, final Set<String> termMissingData) {
 		if (measurementRow != null && measurementRow.getDataList() != null) {
-			for (MeasurementData measurementData : measurementRow.getDataList()) {
+			for (final MeasurementData measurementData : measurementRow.getDataList()) {
 				String term = String.valueOf(measurementData.getMeasurementVariable().getTermId());
 				term = StringUtils.deleteWhitespace(term);
 				term = wrapTerm(term);
@@ -68,7 +68,7 @@ public final class DerivedVariableUtils {
 		}
 	}
 
-	private static Object getMeasurementValue(MeasurementData measurementData, final Set<String> termMissingData) {
+	private static Object getMeasurementValue(final MeasurementData measurementData, final Set<String> termMissingData) {
 		String value = null;
 		if (!StringUtils.isBlank(measurementData.getcValueId())) {
 			value = measurementData.getDisplayValueForCategoricalData().getName();
@@ -88,7 +88,7 @@ public final class DerivedVariableUtils {
 	/**
 	 * @return formula with internal delimiters
 	 */
-	public static String replaceDelimiters(String formula) {
+	public static String replaceDelimiters(final String formula) {
 		String updatedFormula = formula;
 		if (updatedFormula != null) {
 			updatedFormula = updatedFormula.replaceAll(TERM_LEFT_DELIMITER, TERM_INTERNAL_DELIMITER);
@@ -100,7 +100,7 @@ public final class DerivedVariableUtils {
 	/**
 	 * Wrap term to be used as engine parameter
 	 */
-	static String wrapTerm(String term) {
+	static String wrapTerm(final String term) {
 		return TERM_INTERNAL_DELIMITER + term + TERM_INTERNAL_DELIMITER;
 	}
 
