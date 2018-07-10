@@ -220,7 +220,8 @@ public class DerivedVariableProcessorTest {
 		data.put(wrapTerm(TERM_1), termData);
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms, data);
+		this.processor.setData(data);
+		String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate concat function", "20.9", result);
 
 		formula = "fn:avg([{{" + TERM_1 + "}}, {{PH_M_cm}}])";
@@ -230,7 +231,9 @@ public class DerivedVariableProcessorTest {
 		data.put(wrapTerm("PH_M_cm"), term2Data);
 
 		formula = replaceDelimiters(formula);
-		result = this.processor.evaluateFormula(formula, terms, data);
+		this.processor = new DerivedVariableProcessor();
+		this.processor.setData(data);
+		result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate concat function", "42.21", result);
 	}
 

@@ -39,10 +39,14 @@ public class DerivedVariableProcessor {
 		}
 	}
 
-
 	private final JexlEngine engine;
 	private final MapContext context;
 
+	/**
+	 * The processor should be a request bean as it contains data that should be initialized for each execution<br/>
+	 * Terms -> scope: current evaluation<br/>
+	 * Data  -> scope: current execution (shared accross evaluations)
+	 */
 	public DerivedVariableProcessor() {
 		Map<String, Object> functions = new HashMap<>();
 		functions.put("fn", new Functions());
@@ -51,29 +55,15 @@ public class DerivedVariableProcessor {
 	}
 
 	/**
-	 * @see DerivedVariableProcessor#evaluateFormula(String, Map, HashMap)
-	 */
-	public String evaluateFormula(String formula, Map<String, Object> terms) {
-		return this.evaluateFormula(formula, terms, new HashMap<String, List<Object>>());
-	}
-
-	/**
 	 * Evaluate the formula using an expression engine
 	 *
 	 * @param terms arguments for the formula
-	 * @param data data for aggregations.
 	 */
-	public String evaluateFormula(final String formula, final Map<String, Object> terms, final Map<String, List<Object>> data) {
+	public String evaluateFormula(final String formula, final Map<String, Object> terms) {
 		JexlExpression expr = this.engine.createExpression(formula);
 
 		if (terms != null) {
 			for (Map.Entry<String, Object> term : terms.entrySet()) {
-				this.context.set(term.getKey(), term.getValue());
-			}
-		}
-
-		if (data != null) {
-			for (Map.Entry<String, List<Object>> term : data.entrySet()) {
 				this.context.set(term.getKey(), term.getValue());
 			}
 		}
@@ -84,6 +74,17 @@ public class DerivedVariableProcessor {
 			return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
 		}
 		return result;
+	}
+
+	/**
+	 * @param data data for aggregations.
+	 */
+	public void setData(final Map<String, List<Object>> data) {
+		if (data != null) {
+			for (Map.Entry<String, List<Object>> term : data.entrySet()) {
+				this.context.set(term.getKey(), term.getValue());
+			}
+		}
 	}
 
 }
