@@ -1,168 +1,90 @@
-
 package org.generationcp.commons.derivedvariable;
+
+import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlExpression;
+import org.apache.commons.jexl3.MapContext;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.mvel2.MVEL;
 
 public class DerivedVariableProcessor {
 
-	private static final String TERM_INSIDE_BRACES_REGEX = "\\{(.*?)\\}";
-	public static final String MVEL_BIG_DECIMAL_POSTFIX = "B";
-	private static DerivedVariableProcessor instance;
+	public static class Functions {
 
-	private DerivedVariableProcessor() {
-		// private constructor
-	}
-
-	public static DerivedVariableProcessor getInstance() {
-		if (DerivedVariableProcessor.instance == null) {
-			DerivedVariableProcessor.instance = new DerivedVariableProcessor();
+		@SuppressWarnings("unused")
+		public String concat(final Object... args) {
+			final StringBuilder sb = new StringBuilder();
+			for (final Object arg : args) {
+				sb.append(arg);
+			}
+			return sb.toString();
 		}
-		return DerivedVariableProcessor.instance;
-	}
 
-	/**
-	 * @param formula String
-	 * @return Map of <String,String>
-	 *
-	 *         Extract term names from formula then store them in a map with null as the default value
-	 */
-	public Map<String, String> extractTermsFromFormula(String formula) {
-		Map<String, String> inputVariables = new HashMap<String, String>();
-		Pattern pattern = Pattern.compile(DerivedVariableProcessor.TERM_INSIDE_BRACES_REGEX);
-		Matcher matcher = pattern.matcher(formula);
-		while (matcher.find()) {
-			inputVariables.put(this.removeAllInvalidCharacters(matcher.group(1)), null);
-		}
-		return inputVariables;
-	}
-
-	/**
-	 * @param text String
-	 * @return String text with no invalid characters
-	 *
-	 *         Remove invalid characters from text: whites spaces, percent, double quotes
-	 */
-	public String removeAllInvalidCharacters(String text) {
-		String newText = text;
-		if (newText != null) {
-			newText = newText.replaceAll("\\s", "");
-			newText = newText.replaceAll("%", "");
-			newText = newText.replaceAll("\"", "");
-		}
-		return newText;
-	}
-
-	/**
-	 * @param terms Map<String, String>
-	 * @param measurementRow MeasurementRow
-	 *
-	 *        Update values of terms from the measurement
-	 */
-	public void fetchTermValuesFromMeasurement(Map<String, String> terms, MeasurementRow measurementRow) {
-		if (measurementRow != null && measurementRow.getDataList() != null) {
-			for (MeasurementData measurementData : measurementRow.getDataList()) {
-				String term = this.removeAllInvalidCharacters(measurementData.getLabel());
-				if (terms.containsKey(term)) {
-					terms.put(term, this.getMeasurementValue(measurementData));
+		@SuppressWarnings("unused")
+		public Double avg(final List<Double>... args) {
+			double sum = 0;
+			int size = 0;
+			for (final List<Double> arg : args) {
+				for (final Double val : arg) {
+					sum += val;
 				}
+				size += arg.size();
+			}
+			return sum / size;
+		}
+	}
+
+	private final JexlEngine engine;
+	private final MapContext context;
+
+	/**
+	 * The processor should be a request bean as it contains data that should be initialized for each execution<br/>
+	 * Terms -> scope: current evaluation<br/>
+	 * Data  -> scope: current execution (shared accross evaluations)
+	 */
+	public DerivedVariableProcessor() {
+		final Map<String, Object> functions = new HashMap<>();
+		functions.put("fn", new Functions());
+		this.engine = new JexlBuilder().namespaces(functions).create();
+		this.context = new MapContext();
+	}
+
+	/**
+	 * Evaluate the formula using an expression engine
+	 *
+	 * @param terms arguments for the formula
+	 */
+	public String evaluateFormula(final String formula, final Map<String, Object> terms) {
+		final JexlExpression expr = this.engine.createExpression(formula);
+
+		if (terms != null) {
+			for (final Map.Entry<String, Object> term : terms.entrySet()) {
+				this.context.set(term.getKey(), term.getValue());
+			}
+		}
+
+		final String result = expr.evaluate(this.context).toString();
+
+		if (NumberUtils.isNumber(result)) {
+			return new BigDecimal(result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
+		}
+		return result;
+	}
+
+	/**
+	 * @param data data for aggregations.
+	 */
+	public void setData(final Map<String, List<Object>> data) {
+		if (data != null) {
+			for (final Map.Entry<String, List<Object>> term : data.entrySet()) {
+				this.context.set(term.getKey(), term.getValue());
 			}
 		}
 	}
 
-	/**
-	 * @param measurementData MeasurementData
-	 * @return String value of measurementData
-	 *
-	 *         Update values of terms from the measurement
-	 */
-	private String getMeasurementValue(MeasurementData measurementData) {
-		String value = measurementData.getcValueId();
-		if (value == null) {
-			value = measurementData.getValue();
-		}
-		return value;
-	}
-
-	/**
-	 * @param formula String
-	 * @return String formula with no curly braces
-	 *
-	 *         Remove curly braces from formula
-	 */
-	public String removeCurlyBracesFromFormula(String formula) {
-		String updatedFormula = formula;
-		if (updatedFormula != null) {
-			updatedFormula = updatedFormula.replaceAll("\\{", "");
-			updatedFormula = updatedFormula.replaceAll("\\}", "");
-		}
-		return updatedFormula;
-	}
-
-	/**
-	 * @param value String
-	 * @return String new value with the postfix appended after numbers
-	 *
-	 *         Append postfix to numbers
-	 */
-	public String addPostfixToNumbers(String value, String postfix) {
-		StringBuilder newValue = new StringBuilder();
-		Pattern pattern = Pattern.compile("\\d[.\\d]*");
-		Matcher matcher = pattern.matcher(value);
-		int start = 0;
-		while (matcher.find()) {
-			int end = matcher.end();
-			newValue.append(value.substring(start, end));
-			newValue.append(postfix);
-			start = end;
-		}
-		newValue.append(value.substring(start));
-		return newValue.toString();
-	}
-
-	/**
-	 * @param formula String
-	 * @param terms Map<String,String>
-	 * @return result of evaluating the formula from term values
-	 *
-	 *         Evaluate formula from the value of input variables
-	 */
-	public String evaluateFormula(String formula, Map<String, String> terms) {
-		String newFormula = this.formatFormula(formula);
-		Object result = MVEL.eval(newFormula, terms);
-		if (result instanceof BigDecimal) {
-			return ((BigDecimal) result).setScale(4, RoundingMode.HALF_DOWN).stripTrailingZeros().toPlainString();
-		} else if (result instanceof String) {
-			return (String) result;
-		}
-		return formula;
-	}
-
-	private String formatFormula(String formula) {
-		String newFormula = this.removeCurlyBracesFromFormula(formula);
-		newFormula = this.removeAllInvalidCharacters(newFormula);
-		newFormula = this.addPostfixToNumbers(newFormula, DerivedVariableProcessor.MVEL_BIG_DECIMAL_POSTFIX);
-		return newFormula;
-	}
-
-	/**
-	 * @param formula String
-	 * @param measurementRow MeasurementRow
-	 * @return String result of evaluating the formula from measurementRow
-	 *
-	 *         Get the value of the derived variable from a formula and values of input variables
-	 */
-	public String getDerivedVariableValue(String formula, MeasurementRow measurementRow) {
-		Map<String, String> terms = this.extractTermsFromFormula(formula);
-		this.fetchTermValuesFromMeasurement(terms, measurementRow);
-		return this.evaluateFormula(formula, terms);
-	}
 }
