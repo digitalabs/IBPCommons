@@ -77,7 +77,7 @@ public class GermplasmExportedWorkbook {
 	// Sheet Generators
 	@Resource
 	private CodesSheetGenerator codesSheetGenerator;
-
+	
 	/**
 	 * Default constructor
 	 */
@@ -254,7 +254,6 @@ public class GermplasmExportedWorkbook {
 		final Map<Integer, Variable> inventoryStandardVariableMap = this.input.getInventoryVariableMap();
 		final List<? extends GermplasmExportSource> listData = this.input.getListData();
 		final Map<Integer, GermplasmParents> germplasmParentsMap = this.input.getGermplasmParents();
-		final Map<Integer, Variable> variateVariableMap = this.input.getVariateVariableMap();
 
 		this.createListEntriesHeaderRow(observationSheet);
 
@@ -345,27 +344,24 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
-			if (variateVariableMap.containsKey(this.getColumnNamesTermId(ColumnLabels.NOTES))) {
-				listEntry.createCell(j).setCellValue(data.getNotes());
-				j++;
-			}
-
 			final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
 			if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
 				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-					columnEntry.getKey();
-					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
-					final ListDataColumnValues listDataColumnValues =
-						(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
-
-							public boolean evaluate(final Object object) {
-								return ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId());
-							}
-						});
-					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
-
-					listEntry.createCell(j).setCellValue(value);
-					j++;
+					if(ColumnLabels.get(columnEntry.getKey()) == null) {
+						columnEntry.getKey();
+						final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+						final ListDataColumnValues listDataColumnValues =
+							(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
+	
+								public boolean evaluate(final Object object) {
+									return ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId());
+								}
+							});
+						final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
+	
+						listEntry.createCell(j).setCellValue(value);
+						j++;
+					}
 				}
 			}
 			i += 1;
@@ -611,13 +607,8 @@ public class GermplasmExportedWorkbook {
 	}
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
-
-		final CellStyle labelStyleVariate = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
-
 		int actualRow = startingRow;
-
-		if (!this.input.getVariateVariableMap().isEmpty()) {
-
+		if(this.hasAttributes()) {
 			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
 			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.VARIATE);
 			conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
@@ -627,12 +618,37 @@ public class GermplasmExportedWorkbook {
 			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
 			conditionDetailsHeading.createCell(6, this.headingStyle, "");
 			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
+			this.writeAttributesInTheListVariatesSection(descriptionSheet, ++actualRow);
+		}
+	}
+	
+	private boolean hasAttributes() {
+		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
+		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+				if(ColumnLabels.get(columnEntry.getKey()) == null) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
-			for (final Variable stdVar : this.input.getVariateVariableMap().values()) {
-				final ExcelWorkbookRow row = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
-				row.writeStandardVariableToRow(labelStyleVariate, this.textStyle, stdVar);
-				if (stdVar.getId() == TermId.NOTES.getId()) {
-					row.createCell(7, this.textStyle, "Optional");
+	void writeAttributesInTheListVariatesSection(HSSFSheet descriptionSheet, int actualRow) {
+		final CellStyle labelStyleVariate = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
+		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
+		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+				if(ColumnLabels.get(columnEntry.getKey()) == null) {
+					final ExcelWorkbookRow attributeRow = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow++));
+					attributeRow.createCell(0, labelStyleVariate, columnEntry.getKey());
+					attributeRow.createCell(1, this.textStyle, "Additional details about germplasm");
+					attributeRow.createCell(2, this.textStyle, "ATTRIBUTE");
+					attributeRow.createCell(3, this.textStyle, "TEXT");
+					attributeRow.createCell(4, this.textStyle, "OBSERVED");
+					attributeRow.createCell(5, this.textStyle, "C");
+					attributeRow.createCell(6, this.textStyle, "");
+					attributeRow.createCell(7, this.textStyle, "Optional");
 				}
 			}
 		}
@@ -643,7 +659,6 @@ public class GermplasmExportedWorkbook {
 		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 		final Map<Integer, Term> columnTermMap = this.input.getColumnTermMap();
 		final Map<Integer, Variable> inventoryStandardVariableMap = this.input.getInventoryVariableMap();
-		final Map<Integer, Variable> variateStandardVariableMap = this.input.getVariateVariableMap();
 		final HSSFRow listEntriesHeader = observationSheet.createRow(0);
 		listEntriesHeader.setHeightInPoints(18);
 
@@ -768,22 +783,16 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
-		if (variateStandardVariableMap.containsKey(TermId.NOTES.getId())) {
-			final Cell notesCell = listEntriesHeader.createCell(columnIndex);
-			notesCell.setCellValue(variateStandardVariableMap.get(TermId.NOTES.getId()).getName().toUpperCase());
-			notesCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
-			observationSheet.setDefaultColumnStyle(columnIndex,
-					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.TEXT_DATA_FORMAT_STYLE));
-		}
-
 		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
 		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-				final String column = columnEntry.getKey();
-				final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
-				entryTypeCell.setCellValue(column);
-				entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-				columnIndex++;
+				if(ColumnLabels.get(columnEntry.getKey()) == null) {
+					final String column = columnEntry.getKey();
+					final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+					entryTypeCell.setCellValue(column);
+					entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+					columnIndex++;
+				}
 			}
 		}
 	}
