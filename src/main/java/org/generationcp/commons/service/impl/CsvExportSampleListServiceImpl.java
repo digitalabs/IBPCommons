@@ -78,7 +78,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		return new FileExportInfo(filenamePath, cleanFilenameWithoutExtension + FILE_EXTENSION);
 	}
 
-	private List<Map<Integer, ExportColumnValue>> getExportColumnValues(List<ExportColumnHeader> columnHeaders,
+	protected List<Map<Integer, ExportColumnValue>> getExportColumnValues(List<ExportColumnHeader> columnHeaders,
 			List<SampleDetailsDTO> sampleDetailsDTOs) {
 		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
 		int i = 1;
@@ -91,7 +91,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 
 	}
 
-	private List<ExportColumnHeader> getExportColumnHeaders(List<String> visibleColumns) {
+	protected List<ExportColumnHeader> getExportColumnHeaders(List<String> visibleColumns) {
 		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
 		int i = 0;
