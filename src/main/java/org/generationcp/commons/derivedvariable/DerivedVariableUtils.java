@@ -7,8 +7,10 @@ import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.ontology.FormulaVariable;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -30,39 +32,51 @@ public final class DerivedVariableUtils {
 	 */
 	private static final String TERM_INTERNAL_DELIMITER = "__";
 
-	/**
-	 * Extract term names from formula
-	 */
-	public static Map<String, Object> extractTerms(final String formula) {
-		final Map<String, Object> inputVariables = new HashMap<>();
+	public static List<String> extractInputs(final String formula) {
+		final List<String> inputVariables = new ArrayList<>();
 		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formula);
 		while (matcher.find()) {
 			String term = matcher.group(1);
 			term = StringUtils.deleteWhitespace(term);
-			inputVariables.put(wrapTerm(term), "");
+			inputVariables.add(term);
 		}
 		return inputVariables;
 	}
 
 	/**
+	 * Extract parameters from formula.
+	 * @return map of parameters with internal delimiters to be evaluated by the formula engine
+	 */
+	public static Map<String, Object> extractParameters(final String formula) {
+		final Map<String, Object> inputVariables = new HashMap<>();
+		for (final String input : extractInputs(formula)) {
+			inputVariables.put(wrapTerm(input), "");
+		}
+		return inputVariables;
+	}
+
+
+	/**
 	 * @see DerivedVariableUtils#extractValues(Map, MeasurementRow, Set)
 	 */
-	public static void extractValues(final Map<String, Object> terms, final MeasurementRow measurementRow) {
-		extractValues(terms, measurementRow, new HashSet<String>());
+	public static void extractValues(final Map<String, Object> parameters, final MeasurementRow measurementRow) {
+		extractValues(parameters, measurementRow, new HashSet<String>());
 	}
 
 	/**
-	 * Extract values of terms from the measurement
+	 * Extract values of parameters from the measurement
 	 * @param termMissingData list to be filled with term labels with missing data
 	 */
-	public static void extractValues(final Map<String, Object> terms, final MeasurementRow measurementRow, final Set<String> termMissingData) {
+	public static void extractValues(
+		final Map<String, Object> parameters, final MeasurementRow measurementRow, final Set<String> termMissingData) {
+
 		if (measurementRow != null && measurementRow.getDataList() != null) {
 			for (final MeasurementData measurementData : measurementRow.getDataList()) {
 				String term = String.valueOf(measurementData.getMeasurementVariable().getTermId());
 				term = StringUtils.deleteWhitespace(term);
 				term = wrapTerm(term);
-				if (terms.containsKey(term)) {
-					terms.put(term, getMeasurementValue(measurementData, termMissingData));
+				if (parameters.containsKey(term)) {
+					parameters.put(term, getMeasurementValue(measurementData, termMissingData));
 				}
 			}
 		}

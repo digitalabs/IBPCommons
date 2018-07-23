@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractTerms;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractInputs;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractParameters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractValues;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceDelimiters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.wrapTerm;
@@ -40,7 +41,7 @@ public class DerivedVariableProcessorTest {
 	private static final String EXPECTED_FORMULA_2_RESULT = "62.3";
 
 	private DerivedVariableProcessor processor;
-	private Map<String, Object> terms;
+	private Map<String, Object> parameters;
 	private String formula;
 
 	@Before
@@ -75,24 +76,34 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testExtractTermsFromFormula() {
-		if (this.terms == null) {
-			this.terms = extractTerms(FORMULA_1);
+	public void testExtractParametersFromFormula() {
+		if (this.parameters == null) {
+			this.parameters = extractParameters(FORMULA_1);
 		}
-		Assert.assertNotNull("Terms should be extracted from formula", this.terms);
-		Assert.assertTrue(TERM_1 + " should be one of the extracted terms", this.terms.containsKey(wrapTerm(TERM_1)));
-		Assert.assertTrue(TERM_2 + " should be one of the extracted terms", this.terms.containsKey(wrapTerm(TERM_2.trim())));
-		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted terms", this.terms.containsKey(wrapTerm(TERM_NOT_FOUND)));
+		Assert.assertNotNull("Terms should be extracted from formula", this.parameters);
+		Assert.assertTrue(TERM_1 + " should be one of the extracted parameters", this.parameters.containsKey(wrapTerm(TERM_1)));
+		Assert.assertTrue(TERM_2 + " should be one of the extracted parameters", this.parameters.containsKey(wrapTerm(TERM_2.trim())));
+		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted parameters", this.parameters.containsKey(wrapTerm(TERM_NOT_FOUND)));
+	}
+
+	@Test
+	public void testExtractInputsFromFormula() {
+		final List<String> inputs = extractInputs(FORMULA_1);
+
+		Assert.assertNotNull("Terms should be extracted from formula", inputs);
+		Assert.assertTrue(TERM_1 + " should be one of the extracted parameters", inputs.contains(TERM_1));
+		Assert.assertTrue(TERM_2 + " should be one of the extracted parameters", inputs.contains(TERM_2.trim()));
+		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted parameters", inputs.contains(TERM_NOT_FOUND));
 	}
 
 	@Test
 	public void testFetchTermValuesFromMeasurement() {
-		if (this.terms == null) {
-			this.terms = extractTerms(FORMULA_1);
+		if (this.parameters == null) {
+			this.parameters = extractParameters(FORMULA_1);
 		}
-		extractValues(this.terms, this.createMeasurementRowTestData());
-		Assert.assertNotNull("Terms should not be null", this.terms);
-		for (Map.Entry<String, Object> entry : this.terms.entrySet()) {
+		extractValues(this.parameters, this.createMeasurementRowTestData());
+		Assert.assertNotNull("Terms should not be null", this.parameters);
+		for (Map.Entry<String, Object> entry : this.parameters.entrySet()) {
 			String key = entry.getKey();
 			Object value = entry.getValue();
 			Assert.assertNotNull(key + " should have a value", value);
@@ -100,21 +111,21 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFetchTermValuesFromMeasurement_MissingData() {
-		if (this.terms == null) {
-			this.terms = extractTerms("{{" + TERM_4_EMPTY_VALUE + "}}");
+	public void testFetchParameterValuesFromMeasurement_MissingData() {
+		if (this.parameters == null) {
+			this.parameters = extractParameters("{{" + TERM_4_EMPTY_VALUE + "}}");
 		}
 		final Set<String> termMissingData = new HashSet<>();
 
-		extractValues(this.terms, this.createMeasurementRowTestData(), termMissingData);
+		extractValues(this.parameters, this.createMeasurementRowTestData(), termMissingData);
 
 		Assert.assertThat("Should have missing data", termMissingData, is(not(empty())));
 		Assert.assertThat("Should report missing data label", termMissingData.iterator().next(), is(TERM_4_EMPTY_VALUE));
 	}
 
 	@Test
-	public void testFetchTermValuesFromMeasurement_NullMeasurementRow() {
-		Map<String, Object> testTerms = extractTerms(FORMULA_1);
+	public void testFetchParameterValuesFromMeasurement_NullMeasurementRow() {
+		Map<String, Object> testTerms = extractParameters(FORMULA_1);
 		extractValues(testTerms, null);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			String key = entry.getKey();
@@ -124,8 +135,8 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFetchTermValuesFromMeasurement_NullMeasurementDataList() {
-		Map<String, Object> testTerms = extractTerms(FORMULA_1);
+	public void testFetchParameterValuesFromMeasurement_NullMeasurementDataList() {
+		Map<String, Object> testTerms = extractParameters(FORMULA_1);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
 		extractValues(testTerms, measurementRow);
@@ -152,19 +163,19 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testEvaluateFormula() {
 		this.formula = FORMULA_1;
-		this.terms = extractTerms(FORMULA_1);
-		extractValues(this.terms, this.createMeasurementRowTestData());
+		this.parameters = extractParameters(FORMULA_1);
+		extractValues(this.parameters, this.createMeasurementRowTestData());
 		this.formula = replaceDelimiters(this.formula);
 
-		String result = this.processor.evaluateFormula(this.formula, this.terms);
+		String result = this.processor.evaluateFormula(this.formula, this.parameters);
 		Assert.assertEquals("The result of " + this.formula + " should be " + EXPECTED_FORMULA_1_RESULT
 			+ " but got " + result, EXPECTED_FORMULA_1_RESULT, result);
 
-		this.terms = extractTerms(FORMULA_2);
-		extractValues(this.terms, this.createMeasurementRowTestData());
+		this.parameters = extractParameters(FORMULA_2);
+		extractValues(this.parameters, this.createMeasurementRowTestData());
 		this.formula = replaceDelimiters(FORMULA_2);
 
-		result = this.processor.evaluateFormula(this.formula, this.terms);
+		result = this.processor.evaluateFormula(this.formula, this.parameters);
 		Assert.assertEquals("Should evaluate formula: " + FORMULA_2, EXPECTED_FORMULA_2_RESULT, result);
 	}
 
@@ -198,7 +209,7 @@ public class DerivedVariableProcessorTest {
 	public void testFunctions() {
 		final String param1 = "number of plots: ";
 		String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
-		final Map<String, Object> terms = extractTerms(formula);
+		final Map<String, Object> terms = extractParameters(formula);
 		extractValues(terms, this.createMeasurementRowTestData());
 
 		formula = replaceDelimiters(formula);
