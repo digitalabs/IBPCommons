@@ -118,14 +118,20 @@ public class SeedSourceGenerator {
 				this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
-	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
-			final String maleStudyName, final String femaleStudyName) {
+	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final String malePlotNo, final String femalePlotNo,
+			final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
 		final String femaleSeedSource =
-				generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
+				generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
 		final String maleSeedSource =
-				generateSeedSource(workbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
+				generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
+	}
+	
+	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
+			final String maleStudyName, final String femaleStudyName) {
+		//for single study context where male and female workbook is the same.
+		return this.generateSeedSourceForCross(workbook, malePlotNo, femalePlotNo, maleStudyName, femaleStudyName, workbook);
 	}
 
 	protected void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {
