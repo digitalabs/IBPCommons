@@ -18,10 +18,6 @@ import java.util.regex.Pattern;
 
 public final class DerivedVariableUtils {
 
-	private DerivedVariableUtils() {
-		// utility class
-	}
-
 	private static final String TERM_LEFT_DELIMITER = "\\{\\{";
 	private static final String TERM_RIGHT_DELIMITER = "\\}\\}";
 	public static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
@@ -31,6 +27,10 @@ public final class DerivedVariableUtils {
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
 	 */
 	private static final String TERM_INTERNAL_DELIMITER = "__";
+
+	private DerivedVariableUtils() {
+		// utility class
+	}
 
 	public static List<String> extractInputs(final String formula) {
 		final List<String> inputVariables = new ArrayList<>();
@@ -118,16 +118,39 @@ public final class DerivedVariableUtils {
 		return TERM_INTERNAL_DELIMITER + term + TERM_INTERNAL_DELIMITER;
 	}
 
-	public static String replaceTermIdsWithVariableNames(final String formulaDefinition,
-			final Map<String, FormulaVariable> formulaVariableMap) {
+	/**
+	 * @param formulaVariableMap to retrieve variable names by term id
+	 * @return the formula definition with variable names and <strong>no</strong> delimiters
+	 */
+	public static String getDisplayableFormat(final String formulaDefinition, final Map<String, FormulaVariable> formulaVariableMap) {
 		String replaceText = formulaDefinition;
 		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
 		while (matcher.find()) {
-			String term = matcher.group(0);
+			String parameter = matcher.group(0);
 			final String termId = matcher.group(1);
-			term = StringUtils.trim(term);
+			parameter = StringUtils.trim(parameter);
 			if (formulaVariableMap.containsKey(termId)) {
-				replaceText = StringUtils.replace(replaceText, term, formulaVariableMap.get(termId).getName());
+				replaceText = StringUtils.replace(replaceText, parameter, formulaVariableMap.get(termId).getName());
+			}
+
+		}
+		return replaceText;
+	}
+
+	/**
+	 * @param formulaVariableMap to retrieve variable names by term id
+	 * @return the formula definition with variable names and delimiters
+	 */
+	public static String getEditableFormat(final String formulaDefinition, final Map<String, FormulaVariable> formulaVariableMap) {
+		String replaceText = formulaDefinition;
+		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
+		while (matcher.find()) {
+			String parameter = matcher.group(0);
+			final String termId = matcher.group(1);
+			parameter = StringUtils.trim(parameter);
+			if (formulaVariableMap.containsKey(termId)) {
+				// Replace only termid
+				replaceText = StringUtils.replace(replaceText, termId, formulaVariableMap.get(termId).getName());
 			}
 
 		}

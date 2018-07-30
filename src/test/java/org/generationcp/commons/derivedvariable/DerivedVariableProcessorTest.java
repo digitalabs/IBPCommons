@@ -4,6 +4,7 @@ package org.generationcp.commons.derivedvariable;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.domain.ontology.FormulaVariable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +20,9 @@ import java.util.Set;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractInputs;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractParameters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractValues;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getEditableFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceDelimiters;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getDisplayableFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.wrapTerm;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
@@ -158,6 +161,42 @@ public class DerivedVariableProcessorTest {
 	public void testRemoveCurlyBracesFromFormula_NullFormula() {
 		String nullFormula = replaceDelimiters(null);
 		Assert.assertNull(nullFormula);
+	}
+
+	@Test
+	public void testGetDisplayableFormat() {
+		String formula = "({{" + TERM_1 + "}}-{{" + TERM_2 + "}})/(100-12.5)*10/{{" + TERM_1 + "}}";
+		final Map<String, FormulaVariable> variableMap = new HashMap<>();
+		final FormulaVariable variable1 = new FormulaVariable();
+		variable1.setName("GW_DW_g100grn");
+		variableMap.put(TERM_1, variable1);
+		final FormulaVariable variable2 = new FormulaVariable();
+		variable2.setName("GMoi_NIRS_pct");
+		variableMap.put(TERM_2, variable2);
+
+		formula = getDisplayableFormat(formula, variableMap);
+
+		Assert.assertThat(
+			formula,
+			is("(" + variable1.getName() + "-" + variable2.getName() + ")/(100-12.5)*10/" + variable1.getName()));
+	}
+
+	@Test
+	public void testGetEditableFormat() {
+		String formula = "({{" + TERM_1 + "}}-{{" + TERM_2 + "}})/(100-12.5)*10/{{" + TERM_1 + "}}";
+		final Map<String, FormulaVariable> variableMap = new HashMap<>();
+		final FormulaVariable variable1 = new FormulaVariable();
+		variable1.setName("GW_DW_g100grn");
+		variableMap.put(TERM_1, variable1);
+		final FormulaVariable variable2 = new FormulaVariable();
+		variable2.setName("GMoi_NIRS_pct");
+		variableMap.put(TERM_2, variable2);
+
+		formula = getEditableFormat(formula, variableMap);
+
+		Assert.assertThat(
+			formula,
+			is("({{" + variable1.getName() + "}}-{{" + variable2.getName() + "}})/(100-12.5)*10/{{" + variable1.getName() + "}}"));
 	}
 
 	@Test
