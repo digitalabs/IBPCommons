@@ -21,6 +21,7 @@ import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extr
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractParameters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractValues;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getEditableFormat;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getStorageFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceDelimiters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getDisplayableFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.wrapTerm;
@@ -197,6 +198,27 @@ public class DerivedVariableProcessorTest {
 		Assert.assertThat(
 			formula,
 			is("({{" + variable1.getName() + "}}-{{" + variable2.getName() + "}})/(100-12.5)*10/{{" + variable1.getName() + "}}"));
+	}
+
+	@Test
+	public void testGetStorageFormat() {
+		final Map<String, FormulaVariable> variableMap = new HashMap<>();
+		final FormulaVariable variable1 = new FormulaVariable();
+		variable1.setId(Integer.valueOf(TERM_1));
+		variable1.setName("GW_DW_g100grn");
+		variableMap.put(variable1.getName(), variable1);
+		final FormulaVariable variable2 = new FormulaVariable();
+		variable1.setId(Integer.valueOf(TERM_2));
+		variable2.setName("GMoi_NIRS_pct");
+		variableMap.put(variable2.getName(), variable2);
+
+		String formula = "({{" + variable1.getName() + "}}-{{" + variable2.getName() + "}})/(100-12.5)*10/{{" + variable1.getName() + "}}";
+
+		formula = getStorageFormat(formula, variableMap);
+
+		Assert.assertThat(
+			formula,
+			is("({{" + variable1.getId() + "}}-{{" + variable2.getId() + "}})/(100-12.5)*10/{{" + variable1.getId() + "}}"));
 	}
 
 	@Test

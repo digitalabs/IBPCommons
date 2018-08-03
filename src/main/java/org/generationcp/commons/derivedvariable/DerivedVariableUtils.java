@@ -149,11 +149,32 @@ public final class DerivedVariableUtils {
 			final String termId = matcher.group(1);
 			parameter = StringUtils.trim(parameter);
 			if (formulaVariableMap.containsKey(termId)) {
-				// Replace only termid
+				// Replace the termid inside delimiters
 				replaceText = StringUtils.replace(replaceText, termId, formulaVariableMap.get(termId).getName());
 			}
 
 		}
 		return replaceText;
 	}
+
+	/**
+	 * @param formulaVariableMap to retrieve variable ids by name
+	 * @return the formula definition with termids names and delimiters, to be stored in the database
+	 */
+	public static String getStorageFormat(final String formulaDefinition, final Map<String, FormulaVariable> formulaVariableMap) {
+		String replaceText = formulaDefinition;
+		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
+		while (matcher.find()) {
+			String parameter = matcher.group(0);
+			final String name = matcher.group(1);
+			parameter = StringUtils.trim(parameter);
+			if (formulaVariableMap.containsKey(name)) {
+				// Replace the name inside delimiters
+				replaceText = StringUtils.replace(replaceText, name, String.valueOf(formulaVariableMap.get(name).getId()));
+			}
+
+		}
+		return replaceText;
+	}
+
 }
