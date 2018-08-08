@@ -1,10 +1,9 @@
 
 package org.generationcp.commons.service.impl;
 
-import com.google.common.collect.Lists;
-import junit.framework.Assert;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.data.initializer.MeasurementVariableTestDataInitializer;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
@@ -15,6 +14,7 @@ import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
+import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.workbench.CropType;
@@ -26,8 +26,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import com.google.common.collect.Lists;
+
+import junit.framework.Assert;
 
 /**
  * This is more of an integration test (not a pure unit test) of all key code generation pieces for the seed source use case.
@@ -44,9 +47,7 @@ public class SeedSourceGeneratorTest {
 	@Mock
 	private StudyDataManager studyDataManager;
 
-	private static final Integer SEASON_CATEGORY_ID = 10290;
-	private static final String SEASON_CATEGORY_VALUE = "Dry Season";
-
+	
 	@InjectMocks
 	private SeedSourceGenerator seedSourceGenerator;
 
@@ -72,7 +73,7 @@ public class SeedSourceGeneratorTest {
 
 		final Variable seasonVariable = new Variable();
 		final Scale seasonScale = new Scale();
-		final TermSummary seasonCategory = new TermSummary(SEASON_CATEGORY_ID, SEASON_CATEGORY_VALUE, SEASON_CATEGORY_VALUE);
+		final TermSummary seasonCategory = new TermSummary(TermId.SEASON_DRY.getId(), Season.DRY.getDefinition(), Season.DRY.getDefinition());
 		seasonScale.addCategory(seasonCategory);
 		seasonVariable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
@@ -98,7 +99,7 @@ public class SeedSourceGeneratorTest {
 		final MeasurementVariable instance1SeasonMV = new MeasurementVariable();
 		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
 		final MeasurementData instance1SeasonMD = new MeasurementData();
-		instance1SeasonMD.setValue(SEASON_CATEGORY_VALUE);
+		instance1SeasonMD.setValue(Season.DRY.getDefinition());
 		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
 
 		final MeasurementVariable instance1InstanceNumberMV = new MeasurementVariable();
@@ -114,23 +115,23 @@ public class SeedSourceGeneratorTest {
 
 		setCurrentCrop("rice");
 		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("TestStudy:IND:Dry Season:3:", seedSource);
+		Assert.assertEquals("TestStudy:IND:Dry season:3:", seedSource);
 
 		// with Plant Number
 		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), "4");
-		Assert.assertEquals("TestStudy:IND:Dry Season:3:4", seedSource);
+		Assert.assertEquals("TestStudy:IND:Dry season:3:4", seedSource);
 
 		setCurrentCrop("wheat");
 		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("IND\\Dry Season\\TestStudy\\3", seedSource);
+		Assert.assertEquals("IND\\Dry season\\TestStudy\\3", seedSource);
 
 		setCurrentCrop("maize");
 		// with selection number
 		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("INDDry Season-TestStudy-3-2", seedSource);
+		Assert.assertEquals("INDDry season-TestStudy-3-2", seedSource);
 		// without selection number
 		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", null, "3", studyDetails.getStudyName(), null);
-		Assert.assertEquals("INDDry Season-TestStudy-3", seedSource);
+		Assert.assertEquals("INDDry season-TestStudy-3", seedSource);
 	}
 
 	@Test
@@ -142,25 +143,54 @@ public class SeedSourceGeneratorTest {
 		studyDetails.setId(1);
 		workbook.setStudyDetails(studyDetails);
 
-		final MeasurementVariable locationMV = new MeasurementVariable();
-		locationMV.setTermId(TermId.LOCATION_ABBR.getId());
-		locationMV.setValue("IND");
-
-		final MeasurementVariable seasonMV = new MeasurementVariable();
-		seasonMV.setTermId(TermId.SEASON_VAR.getId());
-		seasonMV.setValue(SEASON_CATEGORY_ID.toString());
-
+		final MeasurementVariable locationMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.LOCATION_ABBR.getId(), "IND");
+		final MeasurementVariable seasonMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.SEASON_VAR.getId(), Season.DRY.getDefinition());
 		workbook.setConditions(Lists.newArrayList(locationMV, seasonMV));
 
 		setCurrentCrop("maize");
 		String crossSeedSource =
-				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "MaleStudyName", "FemaleStudyName");
-		Assert.assertEquals("INDDry Season-FemaleStudyName-2/INDDry Season-MaleStudyName-1", crossSeedSource);
+				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "StudyName", "StudyName");
+		Assert.assertEquals("INDDry season-StudyName-2/INDDry season-StudyName-1", crossSeedSource);
 		
 		setCurrentCrop("rice");
 		crossSeedSource =
-				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "MaleStudyName", "FemaleStudyName");
-		Assert.assertEquals("FemaleStudyName:IND:Dry Season:2:/MaleStudyName:IND:Dry Season:1:", crossSeedSource);
+				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "StudyName", "StudyName");
+		Assert.assertEquals("StudyName:IND:Dry season:2:/StudyName:IND:Dry season:1:", crossSeedSource);
+	}
+	
+	@Test
+	public void testGenerateSeedSourceForCrossesWhereMaleAndFemaleStudyAreDifferent() {
+		final Workbook femaleStudyWorkbook = new Workbook();
+		final StudyDetails studyDetails = new StudyDetails();
+		studyDetails.setStudyName("femaleStudyName");
+		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
+		studyDetails.setId(1);
+		femaleStudyWorkbook.setStudyDetails(studyDetails);
+
+		final MeasurementVariable locationMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.LOCATION_ABBR.getId(), "IND");
+		final MeasurementVariable seasonMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.SEASON_VAR.getId(), Season.DRY.getDefinition());
+		femaleStudyWorkbook.setConditions(Lists.newArrayList(locationMV, seasonMV));
+
+		final Workbook maleStudyWorkbook = new Workbook();
+		final StudyDetails maleStudyDetails = new StudyDetails();
+		maleStudyDetails.setStudyName("maleStudyName");
+		maleStudyDetails.setStudyType(StudyTypeDto.getNurseryDto());
+		maleStudyDetails.setId(1);
+		maleStudyWorkbook.setStudyDetails(maleStudyDetails);
+
+		final MeasurementVariable malelocationMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.LOCATION_ABBR.getId(), "CIMMYT");
+		final MeasurementVariable maleSeasonMv = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.SEASON_VAR.getId(), Season.WET.getDefinition());
+		maleStudyWorkbook.setConditions(Lists.newArrayList(malelocationMV, maleSeasonMv));
+
+		setCurrentCrop("maize");
+		String crossSeedSource =
+				this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, "1", "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
+		Assert.assertEquals("INDDry season-femaleStudyName-2/CIMMYTWet season-maleStudyName-1", crossSeedSource);
+		
+		setCurrentCrop("rice");
+		crossSeedSource =
+				this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, "1", "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
+		Assert.assertEquals("femaleStudyName:IND:Dry season:2:/maleStudyName:CIMMYT:Wet season:1:", crossSeedSource);
 	}
 
 }
