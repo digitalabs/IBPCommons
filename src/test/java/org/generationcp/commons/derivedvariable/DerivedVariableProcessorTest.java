@@ -249,7 +249,7 @@ public class DerivedVariableProcessorTest {
 		terms.put(wrapTerm("TERM2"), "TERM2VALUE");
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms);
+		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate map value", "{mapkey=TERM1VALUETERM2VALUE}", result);
 	}
 
@@ -262,8 +262,21 @@ public class DerivedVariableProcessorTest {
 		terms.put(wrapTerm("TERM2"), new BigDecimal("2.34"));
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms);
+		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate Numberica data", "14.64", result);
+	}
+
+	@Test
+	public void testEvaluateDivisionOfWholeNumbers() {
+		String formula = "{{TERM1}} / {{TERM2}}";
+
+		final Map<String, Object> terms = new HashMap<>();
+		terms.put(wrapTerm("TERM1"), 6);
+		terms.put(wrapTerm("TERM2"), 4);
+
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms);
+		Assert.assertEquals("1.5", result);
 	}
 
 	@Test
@@ -274,7 +287,7 @@ public class DerivedVariableProcessorTest {
 		extractValues(terms, this.createMeasurementRowTestData());
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms);
+		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
 
