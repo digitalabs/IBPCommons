@@ -1,9 +1,6 @@
 package org.generationcp.commons.derivedvariable;
 
-import org.apache.commons.jexl3.JexlBuilder;
-import org.apache.commons.jexl3.JexlEngine;
-import org.apache.commons.jexl3.JexlExpression;
-import org.apache.commons.jexl3.MapContext;
+import org.apache.commons.jexl3.*;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.math.BigDecimal;
@@ -50,7 +47,7 @@ public class DerivedVariableProcessor {
 	public DerivedVariableProcessor() {
 		final Map<String, Object> functions = new HashMap<>();
 		functions.put("fn", new Functions());
-		this.engine = new JexlBuilder().namespaces(functions).create();
+		this.engine = new JexlBuilder().namespaces(functions).arithmetic(new FormulaArithmetic()).create();
 		this.context = new MapContext();
 	}
 
