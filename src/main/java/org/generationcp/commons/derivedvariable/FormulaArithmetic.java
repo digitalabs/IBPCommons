@@ -7,11 +7,11 @@ public class FormulaArithmetic extends JexlArithmetic {
     }
 
     public FormulaArithmetic() {
-        this(false);
+        this(true);
     }
 
     @Override
     public Object divide(final Object left, final Object right) {
-        return super.divide(((Number) left).doubleValue(), right);
+        return super.divide(this.toDouble(left), right);
     }
 }
