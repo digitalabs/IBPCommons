@@ -43,9 +43,9 @@ import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.domain.ontology.Method;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.VariableType;
+import org.generationcp.middleware.manager.DaoFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
@@ -81,7 +81,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	private OntologyDataManager ontologyDataManager;
 
 	@Autowired
-	private OntologyDaoFactory ontologyDaoFactory;
+	private DaoFactory daoFactory;
 
 	@Autowired
 	private Cloner cloner;
@@ -109,11 +109,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	public BreedingViewImportServiceImpl(final StudyDataManager studyDataManager,
 			final OntologyVariableDataManager ontologyVariableDataManager, final OntologyMethodDataManager methodDataManager,
-			final OntologyDaoFactory ontologyDaoFactory, final StandardVariableTransformer standardVariableTransformer) {
+			final DaoFactory daoFactory, final StandardVariableTransformer standardVariableTransformer) {
 		this.studyDataManager = studyDataManager;
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.methodDataManager = methodDataManager;
-		this.ontologyDaoFactory = ontologyDaoFactory;
+		this.daoFactory = daoFactory;
 		this.standardVariableTransformer = standardVariableTransformer;
 	}
 
@@ -126,7 +126,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		boolean meansDataSetExists = false;
 		final CVTerm lsMean =
-				this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(BreedingViewImportServiceImpl.LS_MEAN, CvId.METHODS.getId());
+				this.daoFactory.getCvTermDao().getByNameAndCvId(BreedingViewImportServiceImpl.LS_MEAN, CvId.METHODS.getId());
 
 		try {
 
@@ -457,7 +457,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 */
 	private Integer findOrSaveMethod(final String methodName, final String methodDefinition) {
 		Integer methodId = null;
-		final CVTerm cvterm = this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(methodName, CvId.METHODS.getId());
+		final CVTerm cvterm = this.daoFactory.getCvTermDao().getByNameAndCvId(methodName, CvId.METHODS.getId());
 		if (cvterm == null) {
 			methodId = this.saveMethod(methodName, methodDefinition);
 		} else {
@@ -489,7 +489,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @return boolean - true if variable exists, else false
 	 */
 	private boolean isVariableExisting(final String variableName) {
-		final CVTerm cvterm = this.ontologyDaoFactory.getCvTermDao().getByNameAndCvId(variableName, CvId.VARIABLES.getId());
+		final CVTerm cvterm = this.daoFactory.getCvTermDao().getByNameAndCvId(variableName, CvId.VARIABLES.getId());
 		return cvterm != null;
 	}
 
