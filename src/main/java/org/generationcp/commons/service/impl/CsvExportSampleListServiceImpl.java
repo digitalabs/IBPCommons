@@ -49,10 +49,12 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 	public static final String PLANT_UID = "PLANT_UID";
 	public static final String PLOT_ID = "PLOT_ID";
 	public static final String GID = "GID";
+	public static final String PLATE_ID = "PLATE_ID";
+	public static final String WELL = "WELL";
 
 	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(
 			Arrays.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, PLANT_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE, SAMPLE_UID, PLANT_UID,
-					PLOT_ID, GID));
+				PLOT_ID, GID, PLATE_ID, WELL));
 
 	@Resource
 	private ContextUtil contextUtil;
@@ -156,6 +158,12 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 				break;
 			case GID:
 				columnValue = new ExportColumnValue(column.getId(), String.valueOf(sampleDetailsDTO.getGid()));
+				break;
+			case PLATE_ID:
+				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getPlateId());
+				break;
+			case WELL:
+				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getWell());
 				break;
 			default:
 				break;
