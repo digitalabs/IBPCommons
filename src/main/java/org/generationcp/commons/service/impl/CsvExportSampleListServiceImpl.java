@@ -52,9 +52,9 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 	public static final String PLATE_ID = "PLATE_ID";
 	public static final String WELL = "WELL";
 
-	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(
-			Arrays.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, PLANT_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE, SAMPLE_UID, PLANT_UID,
-				PLOT_ID, GID, PLATE_ID, WELL));
+	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(Arrays
+		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, PLANT_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE, SAMPLE_UID, PLATE_ID, WELL, PLANT_UID,
+			PLOT_ID, GID));
 
 	@Resource
 	private ContextUtil contextUtil;
