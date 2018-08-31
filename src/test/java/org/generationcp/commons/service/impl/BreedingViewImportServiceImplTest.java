@@ -18,7 +18,6 @@ import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.dao.dms.InstanceMetadata;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.data.initializer.OntologyScaleTestDataInitializer;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -43,10 +42,10 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.VariableType;
+import org.generationcp.middleware.manager.DaoFactory;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.manager.ontology.OntologyDaoFactory;
 import org.generationcp.middleware.manager.ontology.api.OntologyMethodDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyScaleDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
@@ -118,7 +117,7 @@ public class BreedingViewImportServiceImplTest {
 	private StudyDataManager studyDataManager;
 
 	@Mock
-	private OntologyDaoFactory ontologyDaoFactory;
+	private DaoFactory daoFactory;
 
 	@Mock
 	private OntologyScaleDataManager scaleDataManager;
@@ -165,7 +164,7 @@ public class BreedingViewImportServiceImplTest {
 		MockitoAnnotations.initMocks(this);
 
 		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
-		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
+		Mockito.doReturn(cvTermDao).when(this.daoFactory).getCvTermDao();
 
 		this.meansCVTerm = this.createCVTerm(BreedingViewImportServiceImplTest.LS_MEAN_ID, BreedingViewImportServiceImplTest.LS_MEAN);
 		Mockito.doReturn(this.meansCVTerm).when(cvTermDao)
@@ -364,7 +363,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(Matchers.anyInt())).thenReturn(this.createEnvironments());
 
 		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
-		Mockito.doReturn(cvTermDao).when(this.ontologyDaoFactory).getCvTermDao();
+		Mockito.doReturn(cvTermDao).when(this.daoFactory).getCvTermDao();
 		Mockito.doReturn(this.createCVTerm(888, "DUMMYTERM")).when(cvTermDao).getByNameAndCvId("DUMMYTERM", CvId.METHODS.getId());
 
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(Matchers.any(VariableFilter.class));
