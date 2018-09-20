@@ -9,14 +9,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.generationcp.commons.pojo.ExportColumnHeader;
-import org.generationcp.commons.pojo.ExportColumnValue;
+import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.FileExportInfo;
 import org.generationcp.commons.service.CsvExportSampleListService;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -67,29 +65,29 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		LOG.debug("Initialize export");
 
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeaders(visibleColumns);
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
+		final List<ExportRow> exportRows = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
 
 		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(filenameWithoutExtension);
 		final String filenamePath = this.installationDirectoryUtil
 				.getTempFileInOutputDirectoryForProjectAndTool(cleanFilenameWithoutExtension, FILE_EXTENSION,
 						this.contextUtil.getProjectInContext(), ToolName.FIELDBOOK_WEB);
-		this.generateCSVFile(exportColumnValues, exportColumnHeaders, filenamePath);
+		this.generateCSVFile(exportRows, exportColumnHeaders, filenamePath);
 
 		LOG.debug("Finished export");
 
 		return new FileExportInfo(filenamePath, cleanFilenameWithoutExtension + FILE_EXTENSION);
 	}
 
-	protected List<Map<Integer, ExportColumnValue>> getExportColumnValues(List<ExportColumnHeader> columnHeaders,
+	protected List<ExportRow> getExportColumnValues(List<ExportColumnHeader> columnHeaders,
 			List<SampleDetailsDTO> sampleDetailsDTOs) {
-		final List<Map<Integer, ExportColumnValue>> exportColumnValues = new ArrayList<>();
+		final List<ExportRow> exportRows = new ArrayList<>();
 		int i = 1;
 		for (final SampleDetailsDTO sampleDetailsDTO : sampleDetailsDTOs) {
 			sampleDetailsDTO.setSampleEntryNo(i++);
-			exportColumnValues.add(this.getColumnValueMap(columnHeaders, sampleDetailsDTO));
+			exportRows.add(this.getColumnValueMap(columnHeaders, sampleDetailsDTO));
 		}
 
-		return exportColumnValues;
+		return exportRows;
 
 	}
 
@@ -110,60 +108,60 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		return exportColumnHeaders;
 	}
 
-	private Map<Integer, ExportColumnValue> getColumnValueMap(final List<ExportColumnHeader> columns,
+	private ExportRow getColumnValueMap(final List<ExportColumnHeader> columns,
 			final SampleDetailsDTO sampleDetailsDTO) {
-		final Map<Integer, ExportColumnValue> columnValueMap = new HashMap<>();
+		final ExportRow row = new ExportRow();
 
 		for (final ExportColumnHeader column : columns) {
 			final Integer id = column.getId();
-			columnValueMap.put(id, this.getColumnValue(sampleDetailsDTO, column));
+			row.addColumnValue(id, this.getColumnValue(sampleDetailsDTO, column));
 		}
 
-		return columnValueMap;
+		return row;
 	}
 
-	private ExportColumnValue getColumnValue(final SampleDetailsDTO sampleDetailsDTO, final ExportColumnHeader column) {
-		ExportColumnValue columnValue = null;
+	private String getColumnValue(final SampleDetailsDTO sampleDetailsDTO, final ExportColumnHeader column) {
+		String columnValue = null;
 
 		switch (column.getName()) {
 			case SAMPLE_ENTRY:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getSampleEntryNo().toString());
+				columnValue = sampleDetailsDTO.getSampleEntryNo().toString();
 				break;
 			case DESIGNATION:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getDesignation());
+				columnValue = sampleDetailsDTO.getDesignation();
 				break;
 			case PLOT_NO:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getPlotNumber());
+				columnValue = sampleDetailsDTO.getPlotNumber();
 				break;
 			case PLANT_NO:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getPlantNo().toString());
+				columnValue = sampleDetailsDTO.getPlantNo().toString();
 				break;
 			case SAMPLE_NAME:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getSampleName());
+				columnValue = sampleDetailsDTO.getSampleName();
 				break;
 			case TAKEN_BY:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getTakenBy());
+				columnValue = sampleDetailsDTO.getTakenBy();
 				break;
 			case SAMPLING_DATE:
-				columnValue = setSampleDateVale(column.getId(), sampleDetailsDTO.getSampleDate());
+				columnValue = setSampleDateValue(column.getId(), sampleDetailsDTO.getSampleDate());
 				break;
 			case SAMPLE_UID:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getSampleBusinessKey());
+				columnValue = sampleDetailsDTO.getSampleBusinessKey();
 				break;
 			case PLANT_UID:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getPlantBusinessKey());
+				columnValue = sampleDetailsDTO.getPlantBusinessKey();
 				break;
 			case PLOT_ID:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getPlotId());
+				columnValue = sampleDetailsDTO.getPlotId();
 				break;
 			case GID:
-				columnValue = new ExportColumnValue(column.getId(), String.valueOf(sampleDetailsDTO.getGid()));
+				columnValue = String.valueOf(sampleDetailsDTO.getGid());
 				break;
 			case PLATE_ID:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getPlateId());
+				columnValue = sampleDetailsDTO.getPlateId();
 				break;
 			case WELL:
-				columnValue = new ExportColumnValue(column.getId(), sampleDetailsDTO.getWell());
+				columnValue = sampleDetailsDTO.getWell();
 				break;
 			default:
 				break;
@@ -171,24 +169,21 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		return columnValue;
 	}
 
-	private ExportColumnValue setSampleDateVale(final Integer id, final Date sampleDate) {
+	private String setSampleDateValue(final Integer id, final Date sampleDate) {
 		if (null != sampleDate) {
 			final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-			final String convertedCurrentDate = sdf.format(sampleDate);
-			return new ExportColumnValue(id, convertedCurrentDate);
-		} else {
-			return new ExportColumnValue(id, "-");
-		}
+			return sdf.format(sampleDate);
+		} 
+		return "-";
 	}
 
-	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
-			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath) throws IOException {
-		return this.generateCSVFile(exportColumnValues, exportColumnHeaders, fileNameFullPath, true);
+	public File generateCSVFile(final List<ExportRow> exportRows, final List<ExportColumnHeader> exportColumnHeaders,
+			final String fileNameFullPath) throws IOException {
+		return this.generateCSVFile(exportRows, exportColumnHeaders, fileNameFullPath, true);
 	}
 
-	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
-			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath, final boolean includeHeader)
-			throws IOException {
+	public File generateCSVFile(final List<ExportRow> exportRows, final List<ExportColumnHeader> exportColumnHeaders,
+			final String fileNameFullPath, final boolean includeHeader) throws IOException {
 		final File newFile = new File(fileNameFullPath);
 
 		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
@@ -198,24 +193,19 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		if (includeHeader) {
 			rowValues.add(this.getColumnHeaderNames(exportColumnHeaders));
 		}
-		for (final Map<Integer, ExportColumnValue> exportColumnValue : exportColumnValues) {
-			rowValues.add(this.getColumnValues(exportColumnValue, exportColumnHeaders));
+		for (final ExportRow row : exportRows) {
+			rowValues.add(this.getColumnValues(row, exportColumnHeaders));
 		}
 		writer.writeAll(rowValues);
 		writer.close();
 		return newFile;
 	}
 
-	private String[] getColumnValues(final Map<Integer, ExportColumnValue> exportColumnMap,
-			final List<ExportColumnHeader> exportColumnHeaders) {
+	private String[] getColumnValues(final ExportRow row, final List<ExportColumnHeader> exportColumnHeaders) {
 		final List<String> values = new ArrayList<>();
 		for (final ExportColumnHeader exportColumnHeader : exportColumnHeaders) {
 			if (exportColumnHeader.isDisplay()) {
-				final ExportColumnValue exportColumnValue = exportColumnMap.get(exportColumnHeader.getId());
-				String colName = "";
-				if (exportColumnValue != null) {
-					colName = exportColumnValue.getValue();
-				}
+				String colName = row.getValueForColumn(exportColumnHeader.getId());
 				values.add(colName);
 			}
 		}
