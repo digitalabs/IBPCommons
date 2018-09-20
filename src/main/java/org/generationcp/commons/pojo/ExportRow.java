@@ -18,5 +18,9 @@ public class ExportRow {
 		}
 		return "";
 	}
+	
+	public Integer size() {
+		return this.valuesMap.size();
+	}
 
 }
