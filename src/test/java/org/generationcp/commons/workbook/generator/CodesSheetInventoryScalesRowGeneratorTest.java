@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class InventoryScalesRowGeneratorTest {
+public class CodesSheetInventoryScalesRowGeneratorTest {
 
 	private static final String FOR_KG_WEIGHED = "for kg - Weighed";
 	private static final String SEED_AMOUNT_KG = "SEED_AMOUNT_kg";
@@ -29,7 +29,7 @@ public class InventoryScalesRowGeneratorTest {
 	OntologyService ontologyService;
 
 	@InjectMocks
-	InventoryScalesRowGenerator inventoryScalesRowGenerator;
+	CodesSheetInventoryScalesRowGenerator inventoryScalesRowGenerator;
 	
 	private ScaleTestDataInitializer scaleTestDataInitializer;
 	
@@ -47,9 +47,9 @@ public class InventoryScalesRowGeneratorTest {
 				RowColumnType.SCALES_FOR_INVENTORY_UNITS.getSection(), row.getCell(0).toString());
 		Assert.assertEquals("Second cell's content should be " + RowColumnType.SCALES_FOR_INVENTORY_UNITS.toString(),
 				RowColumnType.SCALES_FOR_INVENTORY_UNITS.toString(), row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be " + InventoryScalesRowGeneratorTest.SEED_AMOUNT_KG,
-				InventoryScalesRowGeneratorTest.SEED_AMOUNT_KG, row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be " + InventoryScalesRowGeneratorTest.FOR_KG_WEIGHED,
-				InventoryScalesRowGeneratorTest.FOR_KG_WEIGHED, row.getCell(3).toString());
+		Assert.assertEquals("Third cell's content should be " + CodesSheetInventoryScalesRowGeneratorTest.SEED_AMOUNT_KG,
+				CodesSheetInventoryScalesRowGeneratorTest.SEED_AMOUNT_KG, row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be " + CodesSheetInventoryScalesRowGeneratorTest.FOR_KG_WEIGHED,
+				CodesSheetInventoryScalesRowGeneratorTest.FOR_KG_WEIGHED, row.getCell(3).toString());
 	}
 }

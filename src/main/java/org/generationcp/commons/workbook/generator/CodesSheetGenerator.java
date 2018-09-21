@@ -42,22 +42,22 @@ public class CodesSheetGenerator {
 	private OntologyService ontologyService;
 
 	@Resource
-	private ListTypeRowGenerator listTypeRowGenerator;
+	private CodesSheetListTypeRowGenerator listTypeRowGenerator;
 
 	@Resource
-	private UserRowGenerator userRowGenerator;
+	private CodesSheetUserRowGenerator userRowGenerator;
 
 	@Resource
-	private NameTypesRowGenerator nameTypesRowGenerator;
+	private CodesSheetNameTypesRowGenerator nameTypesRowGenerator;
 
 	@Resource
-	private InventoryScalesRowGenerator inventoryScalesRowGenerator;
+	private CodesSheetInventoryScalesRowGenerator inventoryScalesRowGenerator;
 
 	@Resource
-	private AttributeTypesRowGenerator attributeTypesRowGenerator;
+	private CodesSheetAttributeTypesRowGenerator attributeTypesRowGenerator;
 
 	@Resource
-	private PassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
+	private CodesSheetPassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
 
 	private HSSFWorkbook wb;
 	private HSSFSheet codesSheet;

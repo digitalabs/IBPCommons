@@ -18,10 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PassportAttributeTypesRowGeneratorTest {
+public class CodesSheetNameTypesRowGeneratorTest {
 
-	private static final String TAXONOMY = "Taxonomy";
-	private static final String TAXNO = "TAXNO";
+	private static final String CROSS_NAME = "CROSS NAME";
+	private static final String CRSNM = "CRSNM";
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
@@ -31,26 +31,24 @@ public class PassportAttributeTypesRowGeneratorTest {
 	GermplasmDataManager germplasmDataManager;
 
 	@InjectMocks
-	PassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
+	CodesSheetNameTypesRowGenerator nameTypesRowGenerator;
 
 	@Before
 	public void setUp() {
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList(PassportAttributeTypesRowGeneratorTest.TAXNO,
-						PassportAttributeTypesRowGeneratorTest.TAXONOMY));
+				.thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList(CodesSheetNameTypesRowGeneratorTest.CRSNM,
+						CodesSheetNameTypesRowGeneratorTest.CROSS_NAME));
 	}
 
 	@Test
 	public void testNameTypesRowsToCodesSheet() {
-		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.nameTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
 		final HSSFRow row = this.codesSheet.getRow(1);
-		Assert.assertEquals("First cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(),
-				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(), row.getCell(0).toString());
-		Assert.assertEquals("Second cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString(),
-				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString(), row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be TAXNO", PassportAttributeTypesRowGeneratorTest.TAXNO,
-				row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be Taxonomy", PassportAttributeTypesRowGeneratorTest.TAXONOMY,
-				row.getCell(3).toString());
+		Assert.assertEquals("First cell's content should be " + RowColumnType.NAME_TYPES.getSection(),
+				RowColumnType.NAME_TYPES.getSection(), row.getCell(0).toString());
+		Assert.assertEquals("Second cell's content should be " + RowColumnType.NAME_TYPES.toString(), RowColumnType.NAME_TYPES.toString(),
+				row.getCell(1).toString());
+		Assert.assertEquals("Third cell's content should be CRSNM", CodesSheetNameTypesRowGeneratorTest.CRSNM, row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be CROSS NAME", CodesSheetNameTypesRowGeneratorTest.CROSS_NAME, row.getCell(3).toString());
 	}
 }
