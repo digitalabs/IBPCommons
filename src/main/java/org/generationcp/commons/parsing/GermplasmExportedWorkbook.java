@@ -345,8 +345,9 @@ public class GermplasmExportedWorkbook {
 			}
 
 			final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
-			if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
+			if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
 				for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+					// TODO check against attribute types from DB
 					if(ColumnLabels.get(columnEntry.getKey()) == null) {
 						columnEntry.getKey();
 						final List<ListDataColumnValues> columnValues = columnEntry.getValue();
@@ -626,6 +627,7 @@ public class GermplasmExportedWorkbook {
 		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
 		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+				// TODO check against attribute types from DB 
 				if(ColumnLabels.get(columnEntry.getKey()) == null) {
 					return true;
 				}
@@ -638,10 +640,11 @@ public class GermplasmExportedWorkbook {
 		final CellStyle labelStyleVariate = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
 		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
 		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-				if(ColumnLabels.get(columnEntry.getKey()) == null) {
+			for (final String column : columnsInfo.getColumnValuesMap().keySet()) {
+				// TODO check against attribute types from DB
+				if(ColumnLabels.get(column) == null) {
 					final ExcelWorkbookRow attributeRow = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow++));
-					attributeRow.createCell(0, labelStyleVariate, columnEntry.getKey());
+					attributeRow.createCell(0, labelStyleVariate, column);
 					attributeRow.createCell(1, this.textStyle, "Additional details about germplasm");
 					attributeRow.createCell(2, this.textStyle, "ATTRIBUTE");
 					attributeRow.createCell(3, this.textStyle, "TEXT");

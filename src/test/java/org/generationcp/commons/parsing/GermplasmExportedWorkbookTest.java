@@ -7,10 +7,10 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
@@ -99,6 +99,12 @@ public class GermplasmExportedWorkbookTest {
 		Assert.assertEquals("Expecting correct header for " + TermId.SEED_AMOUNT_G.toString(), TermId.SEED_AMOUNT_G.toString(),
 				row.getCell(columnIndex).getStringCellValue());
 		columnIndex++;
+		
+		for (final String addedColumn : GermplasmExportTestHelper.ADDED_COLUMNS) {
+			Assert.assertEquals("Expecting correct header for " + addedColumn, addedColumn,
+					row.getCell(columnIndex).getStringCellValue());
+			columnIndex++;
+		}
 
 		// Assert Row Values
 		int rowIndex = 1;
@@ -152,6 +158,13 @@ public class GermplasmExportedWorkbookTest {
 
 			Assert.assertEquals("Expecting correct value for " + TermId.SEED_AMOUNT_G.toString() + " at Row " + (rowIndex + 1),
 					listData.getSeedAmount(), row.getCell(columnIndex).getStringCellValue());
+			columnIndex++;
+			
+			for (final String addedColumn : GermplasmExportTestHelper.ADDED_COLUMNS) {
+				Assert.assertEquals("Expecting correct value for " + addedColumn, addedColumn + ":" + rowIndex,
+						row.getCell(columnIndex).getStringCellValue());
+				columnIndex++;
+			}
 
 			rowIndex++;
 		}
@@ -166,7 +179,6 @@ public class GermplasmExportedWorkbookTest {
 
 		final Map<Integer, Term> columnTerms = this.input.getColumnTermMap();
 		final Map<Integer, Variable> inventoryVariables = this.input.getInventoryVariableMap();
-		final Map<Integer, Variable> variateVariables = this.input.getVariateVariableMap();
 
 		// to test
 		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
@@ -316,6 +328,7 @@ public class GermplasmExportedWorkbookTest {
 
 		rowIndex = rowIndex + 2;
 
+		// Verify Inventory section
 		for (final Variable stdVariable : inventoryVariables.values()) {
 
 			row = descriptionSheet.getRow(++rowIndex);
@@ -333,6 +346,23 @@ public class GermplasmExportedWorkbookTest {
 					stdVariable.getScale().getDataType().getName().substring(0, 1).toUpperCase());
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
+		}
+		
+		rowIndex = rowIndex + 2;
+		
+		// Verify Variate section
+		for (final String addedColumn : GermplasmExportTestHelper.ADDED_COLUMNS) {
+
+			row = descriptionSheet.getRow(++rowIndex);
+			Assert.assertEquals(addedColumn, row.getCell(0).getStringCellValue());
+			Assert.assertEquals("Additional details about germplasm", row.getCell(1).getStringCellValue());
+			Assert.assertEquals("ATTRIBUTE", row.getCell(2).getStringCellValue());
+			Assert.assertEquals("TEXT", row.getCell(3).getStringCellValue());
+			Assert.assertEquals("OBSERVED", row.getCell(4).getStringCellValue());
+			Assert.assertEquals("C", row.getCell(5).getStringCellValue());
+			Assert.assertEquals("", row.getCell(6).getStringCellValue());
+			Assert.assertEquals("Optional", row.getCell(7).getStringCellValue());
+			
 		}
 
 	}
