@@ -11,12 +11,15 @@
 
 package org.generationcp.commons.sea.xml;
 
-import java.io.Serializable;
+import org.generationcp.commons.breedingview.xml.Covariate;
+import org.generationcp.commons.breedingview.xml.Genotypes;
+import org.generationcp.commons.breedingview.xml.Trait;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-
-import org.generationcp.commons.breedingview.xml.Genotypes;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import java.io.Serializable;
+import java.util.List;
 
 public class DataConfiguration implements Serializable {
 
@@ -24,7 +27,8 @@ public class DataConfiguration implements Serializable {
 
 	private Environments environments;
 	private MegaEnvironments megaEnvironments;
-	private Traits traits;
+	private List<Trait> traits;
+	private List<Covariate> covariates;
 	private Design design;
 	private Genotypes genotypes;
 	private Heritabilities heritabilities;
@@ -39,13 +43,24 @@ public class DataConfiguration implements Serializable {
 		this.environments = environments;
 	}
 
-	@XmlElement(name = "Traits")
-	public Traits getTraits() {
+	@XmlElementWrapper(name = "Traits")
+	@XmlElement(name = "Trait")
+	public List<Trait> getTraits() {
 		return this.traits;
 	}
 
-	public void setTraits(Traits traits) {
+	public void setTraits(List<Trait> traits) {
 		this.traits = traits;
+	}
+
+	@XmlElementWrapper(name = "Covariates")
+	@XmlElement(name = "Covariate")
+	public List<Covariate> getCovariates() {
+		return covariates;
+	}
+
+	public void setCovariates(final List<Covariate> covariates) {
+		this.covariates = covariates;
 	}
 
 	@XmlElement(name = "Design")
