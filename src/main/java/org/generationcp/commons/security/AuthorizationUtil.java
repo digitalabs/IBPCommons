@@ -52,6 +52,16 @@ public class AuthorizationUtil {
 		preAuthorizeUser(Arrays.asList(Role.SUPERADMIN, Role.ADMIN));
 	}
 	
+	public static Boolean isSuperAdminUser() {
+		try {
+			preAuthorizeUser(Arrays.asList(Role.SUPERADMIN));
+			return true;
+		} catch (final AccessDeniedException exception){
+			// we are just checking if user has SUPERADMIN role, no need to re-throw or log exception
+		}
+		return false;
+	}
+	
 	
 	
 	
