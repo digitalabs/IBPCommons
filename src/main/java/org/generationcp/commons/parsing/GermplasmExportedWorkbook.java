@@ -78,7 +78,11 @@ public class GermplasmExportedWorkbook {
 	// Sheet Generators
 	@Resource
 	private CodesSheetGenerator codesSheetGenerator;
+
+	@Resource
 	private GermplasmAttributesWorkbookExporter attributesGenerator;
+
+	@Resource
 	private GermplasmNamesWorkbookExporter namesGenerator;
 	
 	/**
@@ -337,7 +341,7 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 			
-			this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
+			j = this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
 
 			if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 				listEntry.createCell(j).setCellValue(data.getStockIDs());
@@ -554,9 +558,7 @@ public class GermplasmExportedWorkbook {
 			}
 		}
 		
-		this.namesGenerator.addRowsToDescriptionSheet(descriptionSheet, actualRow);
-
-		return actualRow;
+		return this.namesGenerator.addRowsToDescriptionSheet(descriptionSheet, actualRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
 	}
 
 	private int writeListInventorySection(final HSSFSheet descriptionSheet, final int startingRow) {
@@ -597,6 +599,7 @@ public class GermplasmExportedWorkbook {
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
 		int actualRow = startingRow;
+		this.attributesGenerator.setColumnsInfo(this.input.getCurrentColumnsInfo());
 		if (this.attributesGenerator.hasItems()) {
 			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
 			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.VARIATE);
@@ -607,7 +610,7 @@ public class GermplasmExportedWorkbook {
 			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
 			conditionDetailsHeading.createCell(6, this.headingStyle, "");
 			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
-			this.attributesGenerator.addRowsToDescriptionSheet(descriptionSheet, ++actualRow);
+			this.attributesGenerator.addRowsToDescriptionSheet(descriptionSheet, actualRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
 		}
 	}
 

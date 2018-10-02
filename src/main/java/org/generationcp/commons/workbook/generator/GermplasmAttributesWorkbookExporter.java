@@ -21,20 +21,19 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 	
 	private List<String> addedAttributeColumns = new ArrayList<>();
 	
-	public GermplasmAttributesWorkbookExporter(ExcelCellStyleBuilder sheetStyles, GermplasmListNewColumnsInfo columnsInfo) {
-		super(sheetStyles, columnsInfo);
-	}
-	
 	@Override
 	List<UserDefinedField> getSourceItems() {
-		final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
 		final List<UserDefinedField> attributeTypeColumns = new ArrayList<>();
-		final Set<String> addedColumns = this.columnsInfo.getColumns();
-		for (final UserDefinedField field : attributeTypes) {
-			final String attributeTypeCode = field.getFcode().toUpperCase();
-			if (addedColumns.contains(attributeTypeCode)) {
-				this.addedAttributeColumns.add(attributeTypeCode);
-				attributeTypeColumns.add(field);
+		//columnsInfo is null when exporting germplasm list from Study Manager
+		if(this.columnsInfo != null) {
+			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
+			final Set<String> addedColumns = this.columnsInfo.getColumns();
+			for (final UserDefinedField field : attributeTypes) {
+				final String attributeTypeCode = field.getFcode().toUpperCase();
+				if (addedColumns.contains(attributeTypeCode)) {
+					this.addedAttributeColumns.add(attributeTypeCode);
+					attributeTypeColumns.add(field);
+				}
 			}
 		}
 		return attributeTypeColumns;
@@ -93,6 +92,10 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 	@Override
 	Boolean doIncludeColumn(String column) {
 		return this.addedAttributeColumns.contains(column);
+	}
+
+	public void setColumnsInfo(final GermplasmListNewColumnsInfo columnsInfo) {
+		this.columnsInfo =  columnsInfo;
 	}
 	
 }

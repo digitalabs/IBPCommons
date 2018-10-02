@@ -8,32 +8,31 @@ import javax.annotation.Resource;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
-import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter<UserDefinedField> {
 
 	@Resource
 	private GermplasmListManager germplasmListManager;
 	
 	private List<String> addedNameTypesColumns = new ArrayList<>();
-	
-	public GermplasmNamesWorkbookExporter(final ExcelCellStyleBuilder sheetStyles, final GermplasmListNewColumnsInfo columnsInfo) {
-		super(sheetStyles, columnsInfo);
-	}
 
 	@Override
 	List<UserDefinedField> getSourceItems() {
-		final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
 		final List<UserDefinedField> nameTypesColumns = new ArrayList<>();
-		final Set<String> addedColumns = this.columnsInfo.getColumns();
-		for (final UserDefinedField field : nameTypes) {
-			final String nameType = field.getFname().toUpperCase();
-			if (addedColumns.contains(nameType)) {
-				addedNameTypesColumns.add(nameType);
-				nameTypesColumns.add(field);
+		//columnsInfo is null when exporting germplasm list from Study Manager
+		if(this.columnsInfo != null) {
+			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+			final Set<String> addedColumns = this.columnsInfo.getColumns();
+			for (final UserDefinedField field : nameTypes) {
+				final String nameType = field.getFname().toUpperCase();
+				if (addedColumns.contains(nameType)) {
+					addedNameTypesColumns.add(nameType);
+					nameTypesColumns.add(field);
+				}
 			}
 		}
 		return nameTypesColumns;

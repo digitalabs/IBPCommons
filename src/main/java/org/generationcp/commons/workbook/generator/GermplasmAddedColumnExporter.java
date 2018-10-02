@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.ExcelWorkbookRow;
@@ -18,19 +19,14 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	protected ExcelCellStyleBuilder sheetStyles;
 	protected GermplasmListNewColumnsInfo columnsInfo;
 	
-	public GermplasmAddedColumnExporter(ExcelCellStyleBuilder sheetStyles, GermplasmListNewColumnsInfo columnsInfo) {
-		super();
+	public Integer addRowsToDescriptionSheet(final HSSFSheet descriptionSheet, Integer startingRow, final ExcelCellStyleBuilder sheetStyles, final GermplasmListNewColumnsInfo columnsInfo) {
 		this.sheetStyles = sheetStyles;
-		this.columnsInfo = columnsInfo;
-	}
-
-	public void addRowsToDescriptionSheet(final HSSFSheet descriptionSheet, final Integer startingRow) {
+		this. columnsInfo = columnsInfo;
 		final List<SOURCE> items = this.getSourceItems();
 		final CellStyle labelStyle = this.getLabelStyle();
 		final CellStyle dataStyle = this.getDataStyle();
-		Integer currentRow = startingRow;
 		for (final SOURCE source : items) {
-			ExcelWorkbookRow itemRow = new ExcelWorkbookRow(descriptionSheet.createRow(currentRow));
+			ExcelWorkbookRow itemRow = new ExcelWorkbookRow(descriptionSheet.createRow(++startingRow));
 			itemRow.createCell(0, labelStyle, getName(source));
 			itemRow.createCell(1, dataStyle, getDescription(source));
 			itemRow.createCell(2, dataStyle, getProperty(source));
@@ -39,16 +35,15 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 			itemRow.createCell(5, dataStyle, getDatatype(source));
 			itemRow.createCell(6, dataStyle, getValue(source));
 			itemRow.createCell(7, dataStyle, getComments(source));
-			currentRow++;
 		}
+		return startingRow;
 	}
 	
-	public void generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex){
+	public Integer generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex){
 		Integer columnIndex = startingColumnIndex;
 		if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
 			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
 				if (doIncludeColumn(columnEntry.getKey())) {
-					columnEntry.getKey();
 					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
 					final ListDataColumnValues listDataColumnValues =
 							(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
@@ -58,12 +53,12 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 								}
 							});
 					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
-					
 					row.createCell(columnIndex).setCellValue(value);
 					columnIndex++;
 				}
 			}
 		}
+		return  columnIndex;
 	}
 	
 	public Boolean hasItems(){
