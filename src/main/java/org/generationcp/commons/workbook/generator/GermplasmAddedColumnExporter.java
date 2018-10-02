@@ -60,6 +60,21 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 		}
 		return  columnIndex;
 	}
+
+	public Integer generateAddedColumnHeader(final HSSFRow headerRow, final Integer startingColumnIndex){
+		Integer columnIndex = startingColumnIndex;
+		if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
+			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
+				if (doIncludeColumn(columnEntry.getKey())) {
+					final Cell entryTypeCell = headerRow.createCell(columnIndex);
+					entryTypeCell.setCellValue(columnEntry.getKey());
+					entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+					columnIndex++;
+				}
+			}
+		}
+		return  columnIndex;
+	}
 	
 	public Boolean hasItems(){
 		return !this.getSourceItems().isEmpty();

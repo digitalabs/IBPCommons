@@ -725,6 +725,8 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
+		columnIndex = this.namesGenerator.generateAddedColumnHeader(listEntriesHeader, columnIndex);
+
 		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 			final Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
 			stockIDCell.setCellValue(this.input.getInventoryVariableMap().get(TermId.STOCKID.getId()).getName().toUpperCase());
@@ -743,18 +745,7 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
-		final GermplasmListNewColumnsInfo columnsInfo = this.input.getCurrentColumnsInfo();
-		if (columnsInfo != null && columnsInfo.getColumnValuesMap() != null && columnsInfo.getColumnValuesMap().entrySet() != null) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-				if(ColumnLabels.get(columnEntry.getKey()) == null) {
-					final String column = columnEntry.getKey();
-					final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
-					entryTypeCell.setCellValue(column);
-					entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-					columnIndex++;
-				}
-			}
-		}
+		this.attributesGenerator.generateAddedColumnHeader(listEntriesHeader, columnIndex);
 	}
 
 	private void fillSheetWithCellStyle(final HSSFSheet sheet) {
