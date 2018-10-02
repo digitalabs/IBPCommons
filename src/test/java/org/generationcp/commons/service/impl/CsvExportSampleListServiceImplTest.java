@@ -19,7 +19,6 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.InstallationDirectoryUtil;
 import org.generationcp.commons.util.SampleListUtilTest;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
-import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.sample.SampleDetailsDTO;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.junit.After;
@@ -112,8 +111,8 @@ public class CsvExportSampleListServiceImplTest {
 		for (int i = 0; i < sampleDetailsDTOS.size(); i++) {
 
 			final Map<Integer, ExportColumnValue> map = columnValues.get(i);
-			for (ExportColumnHeader columnHeader : exportColumnHeaders) {
-				verifyExportColumnValue(columnHeader, sampleDetailsDTOS.get(i), map.get(columnHeader.getId()));
+			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
+				this.verifyExportColumnValue(columnHeader, sampleDetailsDTOS.get(i), map.get(columnHeader.getId()));
 			}
 		}
 
@@ -150,8 +149,8 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.PLANT_UID:
 				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getPlantBusinessKey());
 				break;
-			case CsvExportSampleListServiceImpl.PLOT_ID:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getPlotId());
+			case CsvExportSampleListServiceImpl.OBS_UNIT_ID:
+				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getObsUnitId());
 				break;
 			case CsvExportSampleListServiceImpl.GID:
 				Assert.assertEquals(exportColumnValue.getValue(), String.valueOf(sampleDetailDTO.getGid()));
@@ -177,7 +176,7 @@ public class CsvExportSampleListServiceImplTest {
 			item.setSampleDate(new Date("01/01/2017"));
 			item.setSampleBusinessKey("SampleBusinessKeyId" + i);
 			item.setPlantBusinessKey("PlantBusinessKeyId" + i);
-			item.setPlotId(String.valueOf(i));
+			item.setObsUnitId(String.valueOf(i));
 			item.setGid(i);
 			sampleDetailsDTOS.add(item);
 
