@@ -25,7 +25,7 @@ import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmNamesWorkbookExporterTest {
-	private static String CODE1 = "CODE1";
+	private static final String CODE1 = "CODE1";
 	private ExcelCellStyleBuilder styleBuilder;
 	private HSSFWorkbook wb;
 

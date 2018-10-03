@@ -49,49 +49,49 @@ public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter
 	}
 
 	@Override
-	String getName(UserDefinedField source) {
+	String getName(final UserDefinedField source) {
 		// Use Fcode for the exported to be import-able in Germplasm Import - the tool
 		// expects name type variables to use Fcode in first column
 		return source.getFcode().toUpperCase();
 	}
 
 	@Override
-	String getDescription(UserDefinedField source) {
+	String getDescription(final UserDefinedField source) {
 		return source.getFname().toUpperCase();
 	}
 
 	@Override
-	String getProperty(UserDefinedField source) {
+	String getProperty(final UserDefinedField source) {
 		return "GERMPLASM ID";
 	}
 
 	@Override
-	String getScale(UserDefinedField source) {
+	String getScale(final UserDefinedField source) {
 		return "NAME";
 	}
 
 	@Override
-	String getMethod(UserDefinedField source) {
+	String getMethod(final UserDefinedField source) {
 		return "ASSIGNED";
 	}
 
 	@Override
-	String getValue(UserDefinedField source) {
+	String getValue(final UserDefinedField source) {
 		return "";
 	}
 
 	@Override
-	String getDatatype(UserDefinedField source) {
+	String getDatatype(final UserDefinedField source) {
 		return "C";
 	}
 
 	@Override
-	String getComments(UserDefinedField source) {
+	String getComments(final UserDefinedField source) {
 		return "See valid name types on Codes sheet for more options";
 	}
 
 	@Override
-	Boolean doIncludeColumn(String column) {
+	Boolean doIncludeColumn(final String column) {
 		return this.addedNameTypesColumns.contains(column);
 	}
 

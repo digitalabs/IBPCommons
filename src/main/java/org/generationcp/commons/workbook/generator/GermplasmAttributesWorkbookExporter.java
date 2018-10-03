@@ -50,51 +50,51 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 	}
 
 	@Override
-	String getName(UserDefinedField source) {
+	String getName(final UserDefinedField source) {
 		return source.getFcode().toUpperCase();
 	}
 
 	@Override
-	String getDescription(UserDefinedField source) {
+	String getDescription(final UserDefinedField source) {
 		return "Additional details about germplasm";
 	}
 
 	@Override
-	String getProperty(UserDefinedField source) {
+	String getProperty(final UserDefinedField source) {
 		return "ATTRIBUTE";
 	}
 
 	@Override
-	String getScale(UserDefinedField source) {
+	String getScale(final UserDefinedField source) {
 		return "TEXT";
 	}
 
 	@Override
-	String getMethod(UserDefinedField source) {
+	String getMethod(final UserDefinedField source) {
 		return "OBSERVED";
 	}
 
 	@Override
-	String getValue(UserDefinedField source) {
+	String getValue(final UserDefinedField source) {
 		return "";
 	}
 
 	@Override
-	String getDatatype(UserDefinedField source) {
+	String getDatatype(final UserDefinedField source) {
 		return "C";
 	}
 
 	@Override
-	String getComments(UserDefinedField source) {
+	String getComments(final UserDefinedField source) {
 		return "Optional";
 	}
 
 	@Override
-	Boolean doIncludeColumn(String column) {
+	Boolean doIncludeColumn(final String column) {
 		return this.addedAttributeColumns.contains(column);
 	}
 
-	public void setAddedAttributeColumns(List<String> addedAttributeColumns) {
+	public void setAddedAttributeColumns(final List<String> addedAttributeColumns) {
 		this.addedAttributeColumns = addedAttributeColumns;
 	}
 	

@@ -26,7 +26,7 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 		final CellStyle labelStyle = this.getLabelStyle();
 		final CellStyle dataStyle = this.getDataStyle();
 		for (final SOURCE source : items) {
-			ExcelWorkbookRow itemRow = new ExcelWorkbookRow(descriptionSheet.createRow(++startingRow));
+			final ExcelWorkbookRow itemRow = new ExcelWorkbookRow(descriptionSheet.createRow(++startingRow));
 			itemRow.createCell(0, labelStyle, getName(source));
 			itemRow.createCell(1, dataStyle, getDescription(source));
 			itemRow.createCell(2, dataStyle, getProperty(source));
@@ -104,7 +104,7 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	
 	abstract Boolean doIncludeColumn(String column);
 
-	public void setSheetStyles(ExcelCellStyleBuilder sheetStyles) {
+	public void setSheetStyles(final ExcelCellStyleBuilder sheetStyles) {
 		this.sheetStyles = sheetStyles;
 	}
 
