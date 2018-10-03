@@ -94,8 +94,8 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 		return this.addedAttributeColumns.contains(column);
 	}
 
-	public void setColumnsInfo(final GermplasmListNewColumnsInfo columnsInfo) {
-		this.columnsInfo =  columnsInfo;
+	public void setAddedAttributeColumns(List<String> addedAttributeColumns) {
+		this.addedAttributeColumns = addedAttributeColumns;
 	}
 	
 }

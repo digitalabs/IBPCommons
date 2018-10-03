@@ -23,8 +23,6 @@ import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.commons.workbook.generator.GermplasmAttributesWorkbookExporter;
 import org.generationcp.commons.workbook.generator.GermplasmNamesWorkbookExporter;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
-import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -89,15 +87,6 @@ public class GermplasmExportedWorkbook {
 	 * Default constructor
 	 */
 	public GermplasmExportedWorkbook() {
-	}
-
-	/**
-	 * Test constructor
-	 *
-	 * @param codesSheetGenerator mock codesSheetGenerator
-	 */
-	public GermplasmExportedWorkbook(final CodesSheetGenerator codesSheetGenerator) {
-		this.codesSheetGenerator = codesSheetGenerator;
 	}
 
 	public void init(final GermplasmListExportInputValues input) {
@@ -557,7 +546,7 @@ public class GermplasmExportedWorkbook {
 				groupIdRow.createCell(8, this.textStyle, "Group ID of a germplasm");
 			}
 		}
-		
+
 		return this.namesGenerator.addRowsToDescriptionSheet(descriptionSheet, actualRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
 	}
 

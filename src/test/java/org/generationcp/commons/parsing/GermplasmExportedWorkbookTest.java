@@ -10,30 +10,58 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
+import org.generationcp.commons.workbook.generator.GermplasmAttributesWorkbookExporter;
+import org.generationcp.commons.workbook.generator.GermplasmNamesWorkbookExporter;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
+import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
 
 import junit.framework.Assert;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class GermplasmExportedWorkbookTest {
 
 	private final GermplasmListExportInputValues input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
 
+	@Mock
+	private CodesSheetGenerator codesSheetGenerator;
+
+	@Mock
+	private GermplasmAttributesWorkbookExporter attributesGenerator;
+
+	@Mock
+	private GermplasmNamesWorkbookExporter namesGenerator;
+
+	@InjectMocks
+	private GermplasmExportedWorkbook germplasmExportedWorkbook;
+
+	@Before
+	public void setUp() {
+		Mockito.when(this.namesGenerator.addRowsToDescriptionSheet(Matchers.any(HSSFSheet.class), Matchers.anyInt(), Matchers.any(ExcelCellStyleBuilder.class), Matchers.eq(this.input.getCurrentColumnsInfo()))). thenReturn(18);
+		Mockito.when(this.namesGenerator.generateAddedColumnHeader(Matchers.any(HSSFRow.class), Matchers.anyInt())).thenReturn(7);
+		Mockito.when(this.namesGenerator.generateAddedColumnValue(Matchers.any(HSSFRow.class), Matchers.any(GermplasmExportSource.class), Matchers.anyInt())).thenReturn(7);
+	}
 	@Test
 	public void testGetNoOfVisibleColumns() {
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
+
 		Assert.assertTrue("Expected that the number of visibleColums = " + this.input.getVisibleColumnMap().size(),
-				germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap()) == this.input.getVisibleColumnMap()
+				this.germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap()) == this.input.getVisibleColumnMap()
 						.size());
 
 		this.input.getVisibleColumnMap().put(ColumnLabels.SEED_SOURCE.getName(), false);
-		final int visibleColumns = germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
+		final int visibleColumns = this.germplasmExportedWorkbook.getNoOfVisibleColumns(this.input.getVisibleColumnMap());
 		Assert.assertTrue("Expected that the number of visibleColums = " + (this.input.getVisibleColumnMap().size() - 1),
 				visibleColumns == this.input.getVisibleColumnMap().size() - 1);
 	}
@@ -46,11 +74,8 @@ public class GermplasmExportedWorkbookTest {
 		final List<GermplasmListData> listDatas = germplasmList.getListData();
 		final ExcelCellStyleBuilder styles = new ExcelCellStyleBuilder(wb);
 
-		// to test
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
-		germplasmExportedWorkbook.init(this.input);
-
-		final HSSFSheet observationSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Observation");
+		this.germplasmExportedWorkbook.init(this.input);
+		final HSSFSheet observationSheet = this.germplasmExportedWorkbook.getWorkbook().getSheet("Observation");
 
 		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
 		// Assert Header Row
@@ -99,13 +124,6 @@ public class GermplasmExportedWorkbookTest {
 		Assert.assertEquals("Expecting correct header for " + TermId.SEED_AMOUNT_G.toString(), TermId.SEED_AMOUNT_G.toString(),
 				row.getCell(columnIndex).getStringCellValue());
 		columnIndex++;
-		
-		for (final String addedColumn : GermplasmExportTestHelper.ADDED_COLUMNS) {
-			Assert.assertEquals("Expecting correct header for " + addedColumn, addedColumn,
-					row.getCell(columnIndex).getStringCellValue());
-			columnIndex++;
-		}
-
 		// Assert Row Values
 		int rowIndex = 1;
 		for (final GermplasmListData listData : listDatas) {
@@ -158,21 +176,12 @@ public class GermplasmExportedWorkbookTest {
 
 			Assert.assertEquals("Expecting correct value for " + TermId.SEED_AMOUNT_G.toString() + " at Row " + (rowIndex + 1),
 					listData.getSeedAmount(), row.getCell(columnIndex).getStringCellValue());
-			columnIndex++;
-			
-			for (final String addedColumn : GermplasmExportTestHelper.ADDED_COLUMNS) {
-				Assert.assertEquals("Expecting correct value for " + addedColumn, addedColumn + ":" + rowIndex,
-						row.getCell(columnIndex).getStringCellValue());
-				columnIndex++;
-			}
-
 			rowIndex++;
 		}
 	}
 
 	@Test
 	public void testGenerateDescriptionSheet() throws GermplasmListExporterException {
-
 		// input data
 		final GermplasmList germplasmList = this.input.getGermplasmList();
 		final Map<String, Boolean> visibleColumnMap = this.input.getVisibleColumnMap();
@@ -180,11 +189,8 @@ public class GermplasmExportedWorkbookTest {
 		final Map<Integer, Term> columnTerms = this.input.getColumnTermMap();
 		final Map<Integer, Variable> inventoryVariables = this.input.getInventoryVariableMap();
 
-		// to test
-		final GermplasmExportedWorkbook germplasmExportedWorkbook = new GermplasmExportedWorkbook(Mockito.mock(CodesSheetGenerator.class));
-		germplasmExportedWorkbook.init(this.input);
-
-		final HSSFSheet descriptionSheet = germplasmExportedWorkbook.getWorkbook().getSheet("Description");
+		this.germplasmExportedWorkbook.init(this.input);
+		final HSSFSheet descriptionSheet = this.germplasmExportedWorkbook.getWorkbook().getSheet("Description");
 
 		Assert.assertNotNull("Expected to successfully generated the description sheet.", descriptionSheet);
 		Assert.assertTrue("The sheet name is Description.", "Description".equalsIgnoreCase(descriptionSheet.getSheetName()));
@@ -347,24 +353,6 @@ public class GermplasmExportedWorkbookTest {
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
 		}
-		
-		rowIndex = rowIndex + 2;
-		
-		// Verify Variate section
-		for (final String addedColumn : GermplasmExportTestHelper.ADDED_COLUMNS) {
-
-			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals(addedColumn, row.getCell(0).getStringCellValue());
-			Assert.assertEquals("Additional details about germplasm", row.getCell(1).getStringCellValue());
-			Assert.assertEquals("ATTRIBUTE", row.getCell(2).getStringCellValue());
-			Assert.assertEquals("TEXT", row.getCell(3).getStringCellValue());
-			Assert.assertEquals("OBSERVED", row.getCell(4).getStringCellValue());
-			Assert.assertEquals("C", row.getCell(5).getStringCellValue());
-			Assert.assertEquals("", row.getCell(6).getStringCellValue());
-			Assert.assertEquals("Optional", row.getCell(7).getStringCellValue());
-			
-		}
-
 	}
 
 }

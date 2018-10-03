@@ -21,7 +21,7 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	
 	public Integer addRowsToDescriptionSheet(final HSSFSheet descriptionSheet, Integer startingRow, final ExcelCellStyleBuilder sheetStyles, final GermplasmListNewColumnsInfo columnsInfo) {
 		this.sheetStyles = sheetStyles;
-		this. columnsInfo = columnsInfo;
+		this.columnsInfo = columnsInfo;
 		final List<SOURCE> items = this.getSourceItems();
 		final CellStyle labelStyle = this.getLabelStyle();
 		final CellStyle dataStyle = this.getDataStyle();
@@ -103,5 +103,13 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	abstract String getComments(SOURCE source);
 	
 	abstract Boolean doIncludeColumn(String column);
+
+	public void setSheetStyles(ExcelCellStyleBuilder sheetStyles) {
+		this.sheetStyles = sheetStyles;
+	}
+
+	public void setColumnsInfo(final GermplasmListNewColumnsInfo columnsInfo) {
+		this.columnsInfo =  columnsInfo;
+	}
 
 }

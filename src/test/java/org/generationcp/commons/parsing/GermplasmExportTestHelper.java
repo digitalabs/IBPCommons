@@ -51,12 +51,12 @@ public class GermplasmExportTestHelper {
 		input.setColumnTermMap(getColumnTerms());
 		input.setInventoryVariableMap(getInventoryVariables());
 		input.setVariateVariableMap(getVariateVariables());
-		input.setListData(generateListEntries());
+		input.setListData(generateListEntries(NO_OF_LIST_ENTRIES));
 		input.setCurrentColumnsInfo(generateAddedColumnsInfo());
 		return input;
 	}
 
-	private static GermplasmListNewColumnsInfo generateAddedColumnsInfo() {
+	public static GermplasmListNewColumnsInfo generateAddedColumnsInfo() {
 		final GermplasmListNewColumnsInfo newColumnsInfo = new GermplasmListNewColumnsInfo(1);
 		final Map<String, List<ListDataColumnValues>> columnValuesMap = new HashMap<>();
 		for (final String column : ADDED_COLUMNS) {
@@ -78,15 +78,15 @@ public class GermplasmExportTestHelper {
 		germplasmList.setType("LST");
 		germplasmList.setDate(20141112L);
 		germplasmList.setNotes("Sample Notes");
-		germplasmList.setListData(generateListEntries());
+		germplasmList.setListData(generateListEntries(NO_OF_LIST_ENTRIES));
 
 		return germplasmList;
 	}
 
-	public static  List<GermplasmListData> generateListEntries() {
+	public static  List<GermplasmListData> generateListEntries(final int noOfENtries) {
 		final List<GermplasmListData> entries = new ArrayList<>();
 
-		for (int x = 1; x <= NO_OF_LIST_ENTRIES; x++) {
+		for (int x = 1; x <= noOfENtries; x++) {
 			final GermplasmListData germplasmListData = new GermplasmListData();
 			germplasmListData.setId(x);
 			germplasmListData.setEntryId(x);

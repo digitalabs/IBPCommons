@@ -94,5 +94,8 @@ public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter
 	Boolean doIncludeColumn(String column) {
 		return this.addedNameTypesColumns.contains(column);
 	}
-	
+
+	public void setAddedNameTypesColumns(final List<String> addedNameTypesColumns) {
+		this.addedNameTypesColumns = addedNameTypesColumns;
+	}
 }
