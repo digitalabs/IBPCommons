@@ -64,13 +64,12 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	public Integer generateAddedColumnHeader(final HSSFRow headerRow, final Integer startingColumnIndex){
 		Integer columnIndex = startingColumnIndex;
 		if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-				if (doIncludeColumn(columnEntry.getKey())) {
-					final Cell entryTypeCell = headerRow.createCell(columnIndex);
-					entryTypeCell.setCellValue(columnEntry.getKey());
-					entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-					columnIndex++;
-				}
+			final List<SOURCE> items = this.getSourceItems();
+			for (final SOURCE source : items) {
+				final Cell entryTypeCell = headerRow.createCell(columnIndex);
+				entryTypeCell.setCellValue(getName(source));
+				entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+				columnIndex++;
 			}
 		}
 		return  columnIndex;

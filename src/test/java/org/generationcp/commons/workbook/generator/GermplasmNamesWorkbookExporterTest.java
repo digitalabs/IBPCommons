@@ -57,7 +57,6 @@ public class GermplasmNamesWorkbookExporterTest {
 	@Test
 	public void testGenerateAddedColumnHeader() {
 		this.namesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
-		this.namesWorkbookExporter.setAddedNameTypesColumns(Arrays.asList(GermplasmNamesWorkbookExporterTest.CODE1));
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
 		final HSSFRow headerRow = observationSheet.createRow(0);
 		this.namesWorkbookExporter.generateAddedColumnHeader(headerRow, 0);

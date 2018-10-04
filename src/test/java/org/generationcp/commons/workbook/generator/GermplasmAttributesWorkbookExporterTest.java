@@ -60,8 +60,9 @@ public class GermplasmAttributesWorkbookExporterTest {
 
 	@Test
 	public void testGenerateAddedColumnHeader() {
+		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
+				GermplasmAttributesWorkbookExporterTest.NOTES, GermplasmAttributesWorkbookExporterTest.NOTES)));
 		this.attributesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
-		this.attributesWorkbookExporter.setAddedAttributeColumns(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTES));
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
 		final HSSFRow headerRow = observationSheet.createRow(0);
 		this.attributesWorkbookExporter.generateAddedColumnHeader(headerRow, 0);
