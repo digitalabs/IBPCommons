@@ -150,8 +150,8 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.PLANT_UID:
 				Assert.assertEquals(value, sampleDetailDTO.getPlantBusinessKey());
 				break;
-			case CsvExportSampleListServiceImpl.PLOT_ID:
-				Assert.assertEquals(value, sampleDetailDTO.getPlotId());
+			case CsvExportSampleListServiceImpl.OBS_UNIT_ID:
+				Assert.assertEquals(value, sampleDetailDTO.getObsUnitId());
 				break;
 			case CsvExportSampleListServiceImpl.GID:
 				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getGid()));
@@ -177,7 +177,7 @@ public class CsvExportSampleListServiceImplTest {
 			item.setSampleDate(new Date("01/01/2017"));
 			item.setSampleBusinessKey("SampleBusinessKeyId" + i);
 			item.setPlantBusinessKey("PlantBusinessKeyId" + i);
-			item.setPlotId(String.valueOf(i));
+			item.setObsUnitId(String.valueOf(i));
 			item.setGid(i);
 			sampleDetailsDTOS.add(item);
 

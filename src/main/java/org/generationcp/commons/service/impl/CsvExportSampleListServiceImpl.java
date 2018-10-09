@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,19 +46,19 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 	public static final String SAMPLING_DATE = "SAMPLING_DATE";
 	public static final String SAMPLE_UID = "SAMPLE_UID";
 	public static final String PLANT_UID = "PLANT_UID";
-	public static final String PLOT_ID = "PLOT_ID";
+	public static final String OBS_UNIT_ID = "OBS_UNIT_ID";
 	public static final String GID = "GID";
 	public static final String PLATE_ID = "PLATE_ID";
 	public static final String WELL = "WELL";
 
 	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(Arrays
 		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, PLANT_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE, SAMPLE_UID, PLATE_ID, WELL, PLANT_UID,
-			PLOT_ID, GID));
+			OBS_UNIT_ID, GID));
 
 	@Resource
 	private ContextUtil contextUtil;
 
-	private InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
+	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
 
 	@Override
 	public FileExportInfo export(final List<SampleDetailsDTO> sampleDetailsDTOs, final String filenameWithoutExtension,
@@ -91,7 +92,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 
 	}
 
-	protected List<ExportColumnHeader> getExportColumnHeaders(List<String> visibleColumns) {
+	protected List<ExportColumnHeader> getExportColumnHeaders(final List<String> visibleColumns) {
 		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
 		int i = 0;
@@ -151,8 +152,8 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 			case PLANT_UID:
 				columnValue = sampleDetailsDTO.getPlantBusinessKey();
 				break;
-			case PLOT_ID:
-				columnValue = sampleDetailsDTO.getPlotId();
+			case OBS_UNIT_ID:
+				columnValue = sampleDetailsDTO.getObsUnitId();
 				break;
 			case GID:
 				columnValue = String.valueOf(sampleDetailsDTO.getGid());
@@ -186,7 +187,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 			final String fileNameFullPath, final boolean includeHeader) throws IOException {
 		final File newFile = new File(fileNameFullPath);
 
-		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
+		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), StandardCharsets.UTF_8), ',');
 
 		// feed in your array (or convert your data to an array)
 		final List<String[]> rowValues = new ArrayList<>();
@@ -222,7 +223,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		return values.toArray(new String[values.size()]);
 	}
 
-	public void setContextUtil(ContextUtil contextUtil) {
+	public void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
 	}
 
