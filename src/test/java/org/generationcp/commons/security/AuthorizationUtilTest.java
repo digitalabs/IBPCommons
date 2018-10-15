@@ -93,9 +93,35 @@ public class AuthorizationUtilTest {
 		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
 		try {
 			AuthorizationUtil.preAuthorizeAdminAuthority();
-			Assert.fail("Expecting to throw AccessDeniedException but was not.");
+			Assert.fail("Expecting to throw AccessDeniedException but did not.");
 		} catch (AccessDeniedException e) {
 			Assert.assertEquals("Access Denied. User does not have appropriate role to access the functionality.", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testIsSuperAdminUserWithSuperAdminRoleLoggedIn() {
+		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + Role.SUPERADMIN);
+
+		this.loggedInUser = new UsernamePasswordAuthenticationToken(USERNAME, PASSWORD, Lists.newArrayList(roleAuthority));
+		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
+		try {
+			Assert.assertTrue(AuthorizationUtil.isSuperAdminUser());
+		} catch (AccessDeniedException e) {
+			Assert.fail("Expecting not to throw AccessDeniedException but was thrown.");
+		}
+	}
+	
+	@Test
+	public void testIsSuperAdminUserWithAdminRoleLoggedIn() {
+		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + Role.ADMIN);
+
+		this.loggedInUser = new UsernamePasswordAuthenticationToken(USERNAME, PASSWORD, Lists.newArrayList(roleAuthority));
+		SecurityContextHolder.getContext().setAuthentication(this.loggedInUser);
+		try {
+			Assert.assertFalse(AuthorizationUtil.isSuperAdminUser());
+		} catch (AccessDeniedException e) {
+			Assert.fail("Expecting not to throw AccessDeniedException but was thrown.");
 		}
 	}
 }
