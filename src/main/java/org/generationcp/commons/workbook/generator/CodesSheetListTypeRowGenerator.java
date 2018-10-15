@@ -5,27 +5,28 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.WordUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AttributeTypesRowGenerator extends CodesSheetRowGenerator<UserDefinedField> {
+public class CodesSheetListTypeRowGenerator extends CodesSheetRowGenerator<UserDefinedField> {
 
 	@Resource
-	private GermplasmDataManager germplasmDataManager;
+	private GermplasmListManager germplasmListManager;
 
 	@Override
 	List<UserDefinedField> getSourceItem() {
-		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.ATTRIBUTE_TYPES.getFtable(),
-				RowColumnType.ATTRIBUTE_TYPES.getFtype());
+		return this.germplasmListManager.getGermplasmListTypes();
 	}
 
 	@Override
 	CellStyle getLabelStyle() {
-		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LIST_HEADER_STYLE);
 	}
 
 	@Override
@@ -35,12 +36,12 @@ public class AttributeTypesRowGenerator extends CodesSheetRowGenerator<UserDefin
 
 	@Override
 	String getSection() {
-		return RowColumnType.ATTRIBUTE_TYPES.getSection();
+		return RowColumnType.LIST_TYPE.getSection();
 	}
 
 	@Override
 	String getInfoType() {
-		return RowColumnType.ATTRIBUTE_TYPES.toString();
+		return RowColumnType.LIST_TYPE.toString();
 	}
 
 	@Override
@@ -50,6 +51,6 @@ public class AttributeTypesRowGenerator extends CodesSheetRowGenerator<UserDefin
 
 	@Override
 	String getFname(final UserDefinedField udField) {
-		return udField.getFname();
+		return WordUtils.capitalizeFully(udField.getFname());
 	}
 }

@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserRowGeneratorTest {
+public class CodesSheetUserRowGeneratorTest {
 
 	private static final String TEST_PERSON = "Test Person";
 	private static final String USER_ID = "1";
@@ -39,7 +39,7 @@ public class UserRowGeneratorTest {
 	WorkbenchDataManager workbenchDataManager;
 
 	@InjectMocks
-	private UserRowGenerator userRowGenerator;
+	private CodesSheetUserRowGenerator userRowGenerator;
 
 	private List<WorkbenchUser> userList;
 
@@ -62,8 +62,8 @@ public class UserRowGeneratorTest {
 				row.getCell(0).toString());
 		Assert.assertEquals("Second cell's content should be " + RowColumnType.USER.toString(), RowColumnType.USER.toString(),
 				row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be 1", UserRowGeneratorTest.USER_ID, row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be Test Person", UserRowGeneratorTest.TEST_PERSON, row.getCell(3).toString());
+		Assert.assertEquals("Third cell's content should be 1", CodesSheetUserRowGeneratorTest.USER_ID, row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be Test Person", CodesSheetUserRowGeneratorTest.TEST_PERSON, row.getCell(3).toString());
 	}
 
 	@Test

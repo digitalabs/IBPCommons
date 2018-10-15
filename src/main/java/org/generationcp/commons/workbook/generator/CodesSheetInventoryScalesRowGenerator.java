@@ -12,7 +12,7 @@ import org.generationcp.middleware.service.api.OntologyService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class InventoryScalesRowGenerator extends CodesSheetRowGenerator<org.generationcp.middleware.domain.oms.Scale> {
+public class CodesSheetInventoryScalesRowGenerator extends CodesSheetRowGenerator<org.generationcp.middleware.domain.oms.Scale> {
 
 	@Resource
 	private OntologyService ontologyService;

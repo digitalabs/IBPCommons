@@ -1,6 +1,8 @@
 package org.generationcp.commons.parsing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +10,8 @@ import java.util.Map;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -27,6 +31,7 @@ public class GermplasmExportTestHelper {
 	public static final int NO_OF_LIST_ENTRIES = 10;
 	public static final String TEST_FILE_NAME = "test.csv";
 	public static final String SCALE = "KG";
+	public static final List<String> ADDED_COLUMNS = Arrays.asList("CODE1", "NOTES");
 
 	public static HSSFWorkbook createWorkbook() {
 		final HSSFWorkbook wb = new HSSFWorkbook();
@@ -46,8 +51,23 @@ public class GermplasmExportTestHelper {
 		input.setColumnTermMap(getColumnTerms());
 		input.setInventoryVariableMap(getInventoryVariables());
 		input.setVariateVariableMap(getVariateVariables());
-		input.setListData(generateListEntries());
+		input.setListData(generateListEntries(NO_OF_LIST_ENTRIES));
+		input.setCurrentColumnsInfo(generateAddedColumnsInfo());
 		return input;
+	}
+
+	public static GermplasmListNewColumnsInfo generateAddedColumnsInfo() {
+		final GermplasmListNewColumnsInfo newColumnsInfo = new GermplasmListNewColumnsInfo(1);
+		final Map<String, List<ListDataColumnValues>> columnValuesMap = new HashMap<>();
+		for (final String column : ADDED_COLUMNS) {
+			final List<ListDataColumnValues> valuesList = new ArrayList<>();
+			for (int x = 1; x <= NO_OF_LIST_ENTRIES; x++) {
+				valuesList.add(new ListDataColumnValues(column, x, column + ":" + x));
+			}
+			columnValuesMap.put(column, valuesList);
+		}
+		newColumnsInfo.setColumnValuesMap(columnValuesMap);
+		return newColumnsInfo;
 	}
 
 	public static GermplasmList generateGermplasmList() {
@@ -58,15 +78,15 @@ public class GermplasmExportTestHelper {
 		germplasmList.setType("LST");
 		germplasmList.setDate(20141112L);
 		germplasmList.setNotes("Sample Notes");
-		germplasmList.setListData(generateListEntries());
+		germplasmList.setListData(generateListEntries(NO_OF_LIST_ENTRIES));
 
 		return germplasmList;
 	}
 
-	public static  List<GermplasmListData> generateListEntries() {
+	public static  List<GermplasmListData> generateListEntries(final int noOfENtries) {
 		final List<GermplasmListData> entries = new ArrayList<>();
 
-		for (int x = 1; x <= NO_OF_LIST_ENTRIES; x++) {
+		for (int x = 1; x <= noOfENtries; x++) {
 			final GermplasmListData germplasmListData = new GermplasmListData();
 			germplasmListData.setId(x);
 			germplasmListData.setEntryId(x);

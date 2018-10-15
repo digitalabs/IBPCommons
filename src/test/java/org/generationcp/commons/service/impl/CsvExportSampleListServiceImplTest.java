@@ -10,10 +10,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Maps;
+import javax.annotation.Nullable;
+
 import org.generationcp.commons.pojo.ExportColumnHeader;
-import org.generationcp.commons.pojo.ExportColumnValue;
+import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.FileExportInfo;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.util.InstallationDirectoryUtil;
@@ -30,7 +30,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import javax.annotation.Nullable;
+import com.google.common.base.Function;
+import com.google.common.collect.Maps;
 
 public class CsvExportSampleListServiceImplTest {
 	
@@ -105,55 +106,55 @@ public class CsvExportSampleListServiceImplTest {
 				this.csvExportSampleListService.getExportColumnHeaders(CsvExportSampleListServiceImpl.AVAILABLE_COLUMNS);
 		final List<SampleDetailsDTO> sampleDetailsDTOS = this.createSampleDetailsDTOS(2);
 
-		final List<Map<Integer, ExportColumnValue>> columnValues =
+		final List<ExportRow> exportRows =
 				this.csvExportSampleListService.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOS);
 
 		for (int i = 0; i < sampleDetailsDTOS.size(); i++) {
 
-			final Map<Integer, ExportColumnValue> map = columnValues.get(i);
-			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
-				this.verifyExportColumnValue(columnHeader, sampleDetailsDTOS.get(i), map.get(columnHeader.getId()));
+			final ExportRow row = exportRows.get(i);
+			for (ExportColumnHeader columnHeader : exportColumnHeaders) {
+				verifyExportColumnValue(columnHeader, sampleDetailsDTOS.get(i), row.getValueForColumn(columnHeader.getId()));
 			}
 		}
 
 	}
 
 	private void verifyExportColumnValue(final ExportColumnHeader header, final SampleDetailsDTO sampleDetailDTO,
-			final ExportColumnValue exportColumnValue) {
+			final String value) {
 
 		switch (header.getName()) {
 			case CsvExportSampleListServiceImpl.SAMPLE_ENTRY:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getSampleEntryNo().toString());
+				Assert.assertEquals(value, sampleDetailDTO.getSampleEntryNo().toString());
 				break;
 			case CsvExportSampleListServiceImpl.DESIGNATION:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getDesignation());
+				Assert.assertEquals(value, sampleDetailDTO.getDesignation());
 				break;
 			case CsvExportSampleListServiceImpl.PLOT_NO:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getPlotNumber());
+				Assert.assertEquals(value, sampleDetailDTO.getPlotNumber());
 				break;
 			case CsvExportSampleListServiceImpl.PLANT_NO:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getPlantNo().toString());
+				Assert.assertEquals(value, sampleDetailDTO.getPlantNo().toString());
 				break;
 			case CsvExportSampleListServiceImpl.SAMPLE_NAME:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getSampleName());
+				Assert.assertEquals(value, sampleDetailDTO.getSampleName());
 				break;
 			case CsvExportSampleListServiceImpl.TAKEN_BY:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getTakenBy());
+				Assert.assertEquals(value, sampleDetailDTO.getTakenBy());
 				break;
 			case CsvExportSampleListServiceImpl.SAMPLING_DATE:
 				Assert.assertEquals(new Date("01/01/2017"), sampleDetailDTO.getSampleDate());
 				break;
 			case CsvExportSampleListServiceImpl.SAMPLE_UID:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getSampleBusinessKey());
+				Assert.assertEquals(value, sampleDetailDTO.getSampleBusinessKey());
 				break;
 			case CsvExportSampleListServiceImpl.PLANT_UID:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getPlantBusinessKey());
+				Assert.assertEquals(value, sampleDetailDTO.getPlantBusinessKey());
 				break;
 			case CsvExportSampleListServiceImpl.OBS_UNIT_ID:
-				Assert.assertEquals(exportColumnValue.getValue(), sampleDetailDTO.getObsUnitId());
+				Assert.assertEquals(value, sampleDetailDTO.getObsUnitId());
 				break;
 			case CsvExportSampleListServiceImpl.GID:
-				Assert.assertEquals(exportColumnValue.getValue(), String.valueOf(sampleDetailDTO.getGid()));
+				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getGid()));
 				break;
 			default:
 				break;

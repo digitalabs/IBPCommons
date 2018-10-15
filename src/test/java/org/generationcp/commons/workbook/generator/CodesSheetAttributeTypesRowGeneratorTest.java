@@ -18,10 +18,10 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NameTypeRowGeneratorTest {
+public class CodesSheetAttributeTypesRowGeneratorTest {
 
-	private static final String CROSS_NAME = "CROSS NAME";
-	private static final String CRSNM = "CRSNM";
+	private static final String NOTES = "NOTES";
+	private static final String NOTE = "NOTE";
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
@@ -31,24 +31,24 @@ public class NameTypeRowGeneratorTest {
 	GermplasmDataManager germplasmDataManager;
 
 	@InjectMocks
-	NameTypesRowGenerator nameTypesRowGenerator;
+	CodesSheetAttributeTypesRowGenerator attributeTypesRowGenerator;
 
 	@Before
 	public void setUp() {
 		Mockito.when(this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(Matchers.anyString(), Matchers.anyString()))
-				.thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList(NameTypeRowGeneratorTest.CRSNM,
-						NameTypeRowGeneratorTest.CROSS_NAME));
+				.thenReturn(UserDefinedFieldTestDataInitializer.createUserDefinedFieldList(CodesSheetAttributeTypesRowGeneratorTest.NOTE,
+						CodesSheetAttributeTypesRowGeneratorTest.NOTES));
 	}
 
 	@Test
 	public void testNameTypesRowsToCodesSheet() {
-		this.nameTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
 		final HSSFRow row = this.codesSheet.getRow(1);
-		Assert.assertEquals("First cell's content should be " + RowColumnType.NAME_TYPES.getSection(),
-				RowColumnType.NAME_TYPES.getSection(), row.getCell(0).toString());
-		Assert.assertEquals("Second cell's content should be " + RowColumnType.NAME_TYPES.toString(), RowColumnType.NAME_TYPES.toString(),
-				row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be CRSNM", NameTypeRowGeneratorTest.CRSNM, row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be CROSS NAME", NameTypeRowGeneratorTest.CROSS_NAME, row.getCell(3).toString());
+		Assert.assertEquals("First cell's content should be " + RowColumnType.ATTRIBUTE_TYPES.getSection(),
+				RowColumnType.ATTRIBUTE_TYPES.getSection(), row.getCell(0).toString());
+		Assert.assertEquals("Second cell's content should be " + RowColumnType.ATTRIBUTE_TYPES.toString(),
+				RowColumnType.ATTRIBUTE_TYPES.toString(), row.getCell(1).toString());
+		Assert.assertEquals("Third cell's content should be NOTE", CodesSheetAttributeTypesRowGeneratorTest.NOTE, row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be NOTES", CodesSheetAttributeTypesRowGeneratorTest.NOTES, row.getCell(3).toString());
 	}
 }

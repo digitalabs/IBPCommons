@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -25,7 +24,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.parsing.GermplasmExportedWorkbook;
 import org.generationcp.commons.pojo.ExportColumnHeader;
-import org.generationcp.commons.pojo.ExportColumnValue;
+import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.service.GermplasmExportService;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -67,15 +66,14 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	@Override
-	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
-			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath) throws IOException {
-		return this.generateCSVFile(exportColumnValues, exportColumnHeaders, fileNameFullPath, true);
+	public File generateCSVFile(final List<ExportRow> exportRows, final List<ExportColumnHeader> exportColumnHeaders,
+			final String fileNameFullPath) throws IOException {
+		return this.generateCSVFile(exportRows, exportColumnHeaders, fileNameFullPath, true);
 	}
 
 	@Override
-	public File generateCSVFile(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
-			final List<ExportColumnHeader> exportColumnHeaders, final String fileNameFullPath, final boolean includeHeader)
-			throws IOException {
+	public File generateCSVFile(final List<ExportRow> exportRows, final List<ExportColumnHeader> exportColumnHeaders,
+			final String fileNameFullPath, final boolean includeHeader) throws IOException {
 		final File newFile = new File(fileNameFullPath);
 
 		final CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(fileNameFullPath), "UTF-8"), ',');
@@ -85,25 +83,19 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		if (includeHeader) {
 			rowValues.add(this.getColumnHeaderNames(exportColumnHeaders));
 		}
-		for (final Map<Integer, ExportColumnValue> exportColumnValue : exportColumnValues) {
-			rowValues.add(this.getColumnValues(exportColumnValue, exportColumnHeaders));
+		for (final ExportRow row : exportRows) {
+			rowValues.add(this.getColumnValues(row, exportColumnHeaders));
 		}
 		writer.writeAll(rowValues);
 		writer.close();
 		return newFile;
 	}
 
-	protected String[] getColumnValues(final Map<Integer, ExportColumnValue> exportColumnMap,
-			final List<ExportColumnHeader> exportColumnHeaders) {
+	protected String[] getColumnValues(final ExportRow row, final List<ExportColumnHeader> exportColumnHeaders) {
 		final List<String> values = new ArrayList<>();
 		for (final ExportColumnHeader exportColumnHeader : exportColumnHeaders) {
 			if (exportColumnHeader.isDisplay()) {
-				final ExportColumnValue exportColumnValue = exportColumnMap.get(exportColumnHeader.getId());
-				String colName = "";
-				if (exportColumnValue != null) {
-					colName = exportColumnValue.getValue();
-				}
-				values.add(colName);
+				values.add(row.getValueForColumn(exportColumnHeader.getId()));
 			}
 		}
 		return values.toArray(new String[values.size()]);
@@ -120,10 +112,10 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 	}
 
 	@Override
-	public FileOutputStream generateExcelFileForSingleSheet(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
+	public FileOutputStream generateExcelFileForSingleSheet(final List<ExportRow> exportRows,
 			final List<ExportColumnHeader> exportColumnHeaders, final String filename, final String sheetName) throws IOException {
 
-		final HSSFWorkbook wb = this.createWorkbookForSingleSheet(exportColumnValues, exportColumnHeaders, sheetName);
+		final HSSFWorkbook wb = this.createWorkbookForSingleSheet(exportRows, exportColumnHeaders, sheetName);
 
 		try {
 			// write the excel file
@@ -136,7 +128,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		}
 	}
 
-	protected HSSFWorkbook createWorkbookForSingleSheet(final List<Map<Integer, ExportColumnValue>> exportColumnValues,
+	protected HSSFWorkbook createWorkbookForSingleSheet(final List<ExportRow> exportRows,
 			final List<ExportColumnHeader> exportColumnHeaders, final String sheetName) {
 		final HSSFWorkbook wb = new HSSFWorkbook();
 		final HSSFSheet sheet = wb.createSheet(sheetName);
@@ -145,7 +137,7 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		this.writeColumHeaders(exportColumnHeaders, wb, sheet, rowIndex);
 		rowIndex++;
 
-		rowIndex = this.writeColumnValues(exportColumnHeaders, exportColumnValues, sheet, rowIndex, wb);
+		rowIndex = this.writeColumnValues(exportColumnHeaders, exportRows, sheet, rowIndex, wb);
 
 		for (int ctr = 0; ctr < rowIndex; ctr++) {
 			sheet.autoSizeColumn(rowIndex);
@@ -153,22 +145,20 @@ public class GermplasmExportServiceImpl implements GermplasmExportService {
 		return wb;
 	}
 
-	protected int writeColumnValues(final List<ExportColumnHeader> exportColumnHeaders,
-			final List<Map<Integer, ExportColumnValue>> exportColumnValues, final HSSFSheet sheet, final int rowIndex,
-			final Workbook workbook) {
+	protected int writeColumnValues(final List<ExportColumnHeader> exportColumnHeaders, final List<ExportRow> exportRows,
+			final HSSFSheet sheet, final int rowIndex, final Workbook workbook) {
 		// Initialize once - cell style with values formatted as decimal
 		final CellStyle cellStyle = workbook.createCellStyle();
 		cellStyle.setDataFormat(workbook.getCreationHelper().createDataFormat().getFormat("0.0"));
 
 		int currentRowIndex = rowIndex;
-		for (final Map<Integer, ExportColumnValue> exportRowValue : exportColumnValues) {
+		for (final ExportRow exportRow : exportRows) {
 			final HSSFRow row = sheet.createRow(currentRowIndex);
 
 			int columnIndex = 0;
 			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
 				final Integer id = columnHeader.getId();
-				final ExportColumnValue columnValue = exportRowValue.get(id);
-				final String value = columnValue.getValue();
+				final String value = exportRow.getValueForColumn(id);
 				final HSSFCell cell = row.createCell(columnIndex);
 				// Cannot check data type at this point without additional Middleware query,
 				// Format inventory amount as numeric cell type and cast GID, ENTRY_NO as numeric values

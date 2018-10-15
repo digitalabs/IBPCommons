@@ -23,22 +23,22 @@ public class CodesSheetGeneratorTest {
 	ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
 
 	@Mock
-	ListTypeRowGenerator listTypeRowGenerator;
+	CodesSheetListTypeRowGenerator listTypeRowGenerator;
 
 	@Mock
-	UserRowGenerator userRowGenerator;
+	CodesSheetUserRowGenerator userRowGenerator;
 
 	@Mock
-	NameTypesRowGenerator nameTypesRowGenerator;
+	CodesSheetNameTypesRowGenerator nameTypesRowGenerator;
 
 	@Mock
-	InventoryScalesRowGenerator inventoryScalesRowGenerator;
+	CodesSheetInventoryScalesRowGenerator inventoryScalesRowGenerator;
 
 	@Mock
-	AttributeTypesRowGenerator attributeTypesRowGenerator;
+	CodesSheetAttributeTypesRowGenerator attributeTypesRowGenerator;
 
 	@Mock
-	PassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
+	CodesSheetPassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
 
 	@InjectMocks
 	private CodesSheetGenerator codesSheetGenerator;

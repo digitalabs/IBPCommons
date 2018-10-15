@@ -15,7 +15,7 @@ import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserRowGenerator extends CodesSheetRowGenerator<WorkbenchUser> {
+public class CodesSheetUserRowGenerator extends CodesSheetRowGenerator<WorkbenchUser> {
 
 	@Resource
 	private ContextUtil contextUtil;

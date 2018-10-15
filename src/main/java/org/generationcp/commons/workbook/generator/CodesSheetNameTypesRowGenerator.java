@@ -12,20 +12,20 @@ import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PassportAttributeTypesRowGenerator extends CodesSheetRowGenerator<UserDefinedField> {
+public class CodesSheetNameTypesRowGenerator extends CodesSheetRowGenerator<UserDefinedField> {
 
 	@Resource
 	private GermplasmDataManager germplasmDataManager;
 
 	@Override
 	List<UserDefinedField> getSourceItem() {
-		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtable(),
-				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtype());
+		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.NAME_TYPES.getFtable(),
+				RowColumnType.NAME_TYPES.getFtype());
 	}
 
 	@Override
 	CellStyle getLabelStyle() {
-		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_VARIATE);
+		return this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_FACTOR);
 	}
 
 	@Override
@@ -35,12 +35,12 @@ public class PassportAttributeTypesRowGenerator extends CodesSheetRowGenerator<U
 
 	@Override
 	String getSection() {
-		return RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection();
+		return RowColumnType.NAME_TYPES.getSection();
 	}
 
 	@Override
 	String getInfoType() {
-		return RowColumnType.PASSPORT_ATTRIBUTE_TYPES.toString();
+		return RowColumnType.NAME_TYPES.toString();
 	}
 
 	@Override

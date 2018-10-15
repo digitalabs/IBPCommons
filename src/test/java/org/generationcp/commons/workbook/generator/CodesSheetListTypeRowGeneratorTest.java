@@ -17,7 +17,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ListTypeRowGeneratorTest {
+public class CodesSheetListTypeRowGeneratorTest {
 
 	private static final String GENERIC_LIST = "Generic List";
 	private static final String LST = "LST";
@@ -29,7 +29,7 @@ public class ListTypeRowGeneratorTest {
 	private GermplasmListManager germplasmListManager;
 
 	@InjectMocks
-	ListTypeRowGenerator listTypeRowGenerator;
+	CodesSheetListTypeRowGenerator listTypeRowGenerator;
 
 	@Before
 	public void setUp() {
@@ -45,8 +45,8 @@ public class ListTypeRowGeneratorTest {
 				row.getCell(0).toString());
 		Assert.assertEquals("Second cell's content should be " + RowColumnType.LIST_TYPE.toString(), RowColumnType.LIST_TYPE.toString(),
 				row.getCell(1).toString());
-		Assert.assertEquals("Third cell's content should be LST", ListTypeRowGeneratorTest.LST, row.getCell(2).toString());
-		Assert.assertEquals("Fourth cell's content should be Generic List", ListTypeRowGeneratorTest.GENERIC_LIST,
+		Assert.assertEquals("Third cell's content should be LST", CodesSheetListTypeRowGeneratorTest.LST, row.getCell(2).toString());
+		Assert.assertEquals("Fourth cell's content should be Generic List", CodesSheetListTypeRowGeneratorTest.GENERIC_LIST,
 				row.getCell(3).toString());
 	}
 }
