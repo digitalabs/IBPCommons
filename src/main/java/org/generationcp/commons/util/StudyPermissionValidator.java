@@ -20,17 +20,13 @@ public class StudyPermissionValidator {
 
 	public Boolean userLacksPermissionForStudy(final Integer studyId) {
 		final StudyReference study = this.studyDataManager.getStudyReference(studyId);
-		if (study != null) {
-			return userLacksPermissionForStudy(study.getIsLocked(), study.getOwnerId(),
-					this.contextUtil.getContextInfoFromSession().getLoggedInUserId());
-		}
-		return false;
+		return userLacksPermissionForStudy(study);
 	}
 	
 	public Boolean userLacksPermissionForStudy(final StudyReference study) {
 		if (study != null) {
 			return userLacksPermissionForStudy(study.getIsLocked(), study.getOwnerId(),
-					this.contextUtil.getContextInfoFromSession().getLoggedInUserId());
+					this.contextUtil.getCurrentIbdbUserId());
 		}
 		return false;
 	}
