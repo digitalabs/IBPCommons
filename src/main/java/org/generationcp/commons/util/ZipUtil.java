@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -20,11 +21,47 @@ import org.slf4j.LoggerFactory;
 
 public class ZipUtil {
 
+	private static final String TEMP_FILE_DIR = new File(System.getProperty("java.io.tmpdir")).getPath();
 	public static final String ZIP_EXTENSION = ".zip";
 	private static final int BUFFER_SIZE = 4096;
 	private static final Logger LOG = LoggerFactory.getLogger(ZipUtil.class);
 	
-	private InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
+	final private InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
+
+	public File zipFiles(final List<File> files)
+		throws IOException {
+		final byte[] buffer = new byte[1024];
+
+		final String zipPath = TEMP_FILE_DIR + UUID.randomUUID() + ZIP_EXTENSION;
+		FileOutputStream fos = new FileOutputStream(zipPath);
+
+		final ZipOutputStream zos = new ZipOutputStream(fos);
+
+		try {
+
+			for (File file : files) {
+
+				ZipEntry ze = new ZipEntry(file.getName());
+				zos.putNextEntry(ze);
+
+				FileInputStream in = new FileInputStream(file);
+
+				int len;
+				while ((len = in.read(buffer)) > 0) {
+					zos.write(buffer, 0, len);
+				}
+
+				in.close();
+			}
+			zos.closeEntry();
+
+		} finally {
+			// remember close it
+			zos.close();
+		}
+
+		return new File(zipPath);
+	}
 
 	public String zipIt(final String fileNameWithoutExtension, final List<String> filenameList, final Project project, final ToolName tool)
 			throws IOException {
