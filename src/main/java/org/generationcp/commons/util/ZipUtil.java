@@ -1,6 +1,12 @@
 
 package org.generationcp.commons.util;
 
+import com.google.common.io.Files;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ToolName;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,30 +14,25 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.pojos.workbench.ToolName;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ZipUtil {
 
-	private static final String TEMP_FILE_DIR = new File(System.getProperty("java.io.tmpdir")).getPath();
 	public static final String ZIP_EXTENSION = ".zip";
 	private static final int BUFFER_SIZE = 4096;
 	private static final Logger LOG = LoggerFactory.getLogger(ZipUtil.class);
 
 	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
 
-	public File zipFiles(final List<File> files)
+	public File zipFiles(final String fileName, final List<File> files)
 		throws IOException {
 		final byte[] buffer = new byte[1024];
 
-		final String zipPath = TEMP_FILE_DIR + UUID.randomUUID() + ZIP_EXTENSION;
+		final File temporaryFolder = Files.createTempDir();
+		final String sanitizedFileName = FileUtils.sanitizeFileName(fileName + ZIP_EXTENSION);
+		final String zipPath = temporaryFolder.getAbsolutePath() + "/" + sanitizedFileName;
 		final FileOutputStream fos = new FileOutputStream(zipPath);
 
 		final ZipOutputStream zos = new ZipOutputStream(fos);
