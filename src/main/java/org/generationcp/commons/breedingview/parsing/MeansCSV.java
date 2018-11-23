@@ -12,6 +12,7 @@ import java.util.Map;
 import org.generationcp.commons.exceptions.BreedingViewInvalidFormatException;
 
 import au.com.bytecode.opencsv.CSVReader;
+import org.generationcp.middleware.domain.oms.TermId;
 
 /**
  * This class parses a file and creates a map of variable names to a list of trait and means values
@@ -65,6 +66,10 @@ public class MeansCSV {
 			} else if (newHeaderName.endsWith(MeansCSV.UNIT_ERRORS_SUFFIX)) {
 				columnIndexesToSkip.add(columnIndex);
 
+			} else if (TermId.ENTRY_NO.name().equals(actualLocalName) && columnIndex == 2) {
+				columnIndexesToSkip.add(1);
+				csvMap.put(newHeaderName, new ArrayList<String>());
+				csvMap.remove(headers[1]);
 			} else {
 				csvMap.put(newHeaderName, new ArrayList<String>());
 			}

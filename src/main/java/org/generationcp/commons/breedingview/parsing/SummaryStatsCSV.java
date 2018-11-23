@@ -23,8 +23,8 @@ public class SummaryStatsCSV {
 	public static final String[] SUMMARY_STATS_METHODS = {"MEAN", "MEANSED", "CV", "HERITABILITY", "PVALUE"};
 	protected static final String FORMAT_IS_INVALID_FOR_SUMMARY_STATISTICS =
 			"Cannot parse the file because the format is invalid for Summary Statistics.";
+	private static final String TRAIT = "Trait";
 	private static final int ENVIRONMENT_INDEX = 0;
-	private static final int TRAIT_INDEX = 1;
 	private static final int SUMMARY_METHODS_START_INDEX = 2;
 	private final File file;
 	private Map<String, Map<String, List<String>>> data;
@@ -70,6 +70,9 @@ public class SummaryStatsCSV {
 		for (int i=0; i<SUMMARY_METHODS_START_INDEX; i++) {
 			list.remove(0);
 		}
+		if(SummaryStatsCSV.TRAIT.equalsIgnoreCase(list.get(0))) {
+			list.remove(0);
+		}
 		return list;
 	}
 
@@ -104,7 +107,9 @@ public class SummaryStatsCSV {
 		
 		// Include columns for environment factor and "Trait"
 		finalHeaders.add(originalHeaders[ENVIRONMENT_INDEX].toUpperCase());
-		finalHeaders.add(originalHeaders[TRAIT_INDEX].toUpperCase());
+		final int traitIndex = SummaryStatsCSV.TRAIT.equalsIgnoreCase(originalHeaders[1])? 1: 2;
+		finalHeaders.add(originalHeaders[traitIndex].toUpperCase());
+
 		// Filter to the summary methods we are interested in
 		for (int i=SUMMARY_METHODS_START_INDEX; i < originalHeaders.length; i++){
 			final String originalHeader = originalHeaders[i];
@@ -121,13 +126,13 @@ public class SummaryStatsCSV {
 			final String environment = nextLine[0].trim();
 			String trait = null;
 
-			final String traitString = this.nameToAliasMapping.get(nextLine[1]);
+			final String traitString = this.nameToAliasMapping.get(nextLine[traitIndex]);
 			if (traitString != null) {
 				trait = traitString.trim();
 			}
 
 			if (trait == null) {
-				trait = nextLine[1].trim();
+				trait = nextLine[traitIndex].trim();
 			}
 
 			if (!this.data.containsKey(environment)) {
