@@ -85,6 +85,17 @@ public class SummaryStatsCSVTest {
 
 	@Test
 	public void testGetData() throws IOException {
+		assertDataValues();
+	}
+
+	@Test
+	public void testGetDataWhereEnvironmentFactorIsNotTrialInstance() throws IOException, URISyntaxException {
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSSummaryWithLocNameEnvFactor.csv").toURI());
+		this.summaryStatsCSV = new SummaryStatsCSV(file, new HashMap<String, String>());
+		assertDataValues();
+	}
+
+	private void assertDataValues() throws IOException {
 		final String environmentName = "1";
 		final Map<String, Map<String, List<String>>> summaryData = this.summaryStatsCSV.getData();
 
@@ -132,7 +143,7 @@ public class SummaryStatsCSVTest {
 		Assert.assertEquals("1.91999971810297E-007", valuesForTrait4.get(3).toUpperCase());
 		Assert.assertEquals("0.761300383072833", valuesForTrait4.get(4).toUpperCase());
 	}
-	
+
 	@Test
 	public void testGetTraits() throws IOException {
 		Assert.assertEquals(SummaryStatsCSVTest.TRAITS_LIST, this.summaryStatsCSV.getTraits());
