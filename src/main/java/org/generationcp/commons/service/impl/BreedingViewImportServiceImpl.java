@@ -20,7 +20,6 @@ import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.constant.CommonMessage;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.service.BreedingViewImportService;
-import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
 import org.generationcp.middleware.domain.dms.DataSet;
 import org.generationcp.middleware.domain.dms.DataSetType;
@@ -57,9 +56,9 @@ import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
 import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.generationcp.middleware.util.DatasetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.rits.cloning.Cloner;
-import org.springframework.context.support.ResourceBundleMessageSource;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
@@ -94,9 +93,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	@Autowired
 	private OntologyScaleDataManager scaleDataManager;
-
-	@Autowired
-	private ContextUtil contextUtil;
 
 	@Autowired
 	private ResourceBundleMessageSource messageSource;
@@ -235,8 +231,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 
 		// Save the experiments for mean dataset
-		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList,
-				this.contextUtil.getProjectInContext().getCropType().getPlotCodePrefix());
+		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
 	}
 
 	/**
