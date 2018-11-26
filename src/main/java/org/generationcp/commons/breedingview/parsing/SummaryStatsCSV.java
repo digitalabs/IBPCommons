@@ -70,6 +70,7 @@ public class SummaryStatsCSV {
 		for (int i=0; i<SUMMARY_METHODS_START_INDEX; i++) {
 			list.remove(0);
 		}
+		//Remove the additional column, happens when the environment factor is not TRIAL_INSTANCE
 		if(SummaryStatsCSV.TRAIT.equalsIgnoreCase(list.get(0))) {
 			list.remove(0);
 		}
@@ -107,6 +108,7 @@ public class SummaryStatsCSV {
 		
 		// Include columns for environment factor and "Trait"
 		finalHeaders.add(originalHeaders[ENVIRONMENT_INDEX].toUpperCase());
+		//Trait index is 2 when the selected environment factor is not TRIAL_INSTANCE
 		final int traitIndex = SummaryStatsCSV.TRAIT.equalsIgnoreCase(originalHeaders[1])? 1: 2;
 		finalHeaders.add(originalHeaders[traitIndex].toUpperCase());
 

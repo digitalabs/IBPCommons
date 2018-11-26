@@ -66,6 +66,7 @@ public class MeansCSV {
 			} else if (newHeaderName.endsWith(MeansCSV.UNIT_ERRORS_SUFFIX)) {
 				columnIndexesToSkip.add(columnIndex);
 
+				//Exclude the additional column, happens when the environment factor is not TRIAL_INSTANCE
 			} else if (TermId.ENTRY_NO.name().equals(actualLocalName) && columnIndex == 2) {
 				columnIndexesToSkip.add(1);
 				csvMap.put(newHeaderName, new ArrayList<String>());
