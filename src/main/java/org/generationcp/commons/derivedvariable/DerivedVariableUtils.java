@@ -123,7 +123,7 @@ public final class DerivedVariableUtils {
 	/**
 	 * Wrap term to be used as engine parameter
 	 */
-	static String wrapTerm(final String term) {
+	public static String wrapTerm(final String term) {
 		return TERM_INTERNAL_DELIMITER + term + TERM_INTERNAL_DELIMITER;
 	}
 
