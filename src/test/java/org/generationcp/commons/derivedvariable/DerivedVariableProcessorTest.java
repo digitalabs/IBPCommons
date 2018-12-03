@@ -4,12 +4,14 @@ package org.generationcp.commons.derivedvariable;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.FormulaVariable;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,6 +40,10 @@ public class DerivedVariableProcessorTest {
 	private static final String TERM_VALUE_1 = "1000";
 	private static final String TERM_VALUE_2 = "12.5";
 	private static final String TERM_VALUE_3 = "10";
+	private static final String DATE_TERM1 = "8630";
+	private static final String DATE_TERM2 = "8830";
+	private static final String DATE_TERM1_VALUE = "20180101";
+	private static final String DATE_TERM2_VALUE = "20180201";
 	private static final String TERM_NOT_FOUND = "TermNotFound";
 	private static final String FORMULA_1 = "({{" + TERM_1 + "}}/100)*((100-{{" + TERM_2 + "}})/(100-12.5))*(10/{{" + TERM_3 + "}})";
 	private static final String EXPECTED_FORMULA_1_RESULT = "10";
@@ -65,6 +71,13 @@ public class DerivedVariableProcessorTest {
 		measurementDataList.add(this.createMeasurementDataTestData(TERM_2, TERM_VALUE_2, null));
 		measurementDataList.add(this.createMeasurementDataTestData(TERM_3, TERM_VALUE_3, null));
 		measurementDataList.add(this.createMeasurementDataTestData(TERM_4_EMPTY_VALUE, "", ""));
+		
+		final MeasurementData dateData1 = this.createMeasurementDataTestData(DATE_TERM1, DATE_TERM1_VALUE, null);
+		dateData1.getMeasurementVariable().setDataTypeId(TermId.DATE_VARIABLE.getId());
+		measurementDataList.add(dateData1);
+		final MeasurementData dateData2 = this.createMeasurementDataTestData(DATE_TERM2, DATE_TERM2_VALUE, null);
+		dateData2.getMeasurementVariable().setDataTypeId(TermId.DATE_VARIABLE.getId());
+		measurementDataList.add(dateData2);
 		return measurementDataList;
 	}
 
@@ -101,7 +114,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFetchTermValuesFromMeasurement() {
+	public void testFetchTermValuesFromMeasurement() throws ParseException {
 		if (this.parameters == null) {
 			this.parameters = extractParameters(FORMULA_1);
 		}
@@ -115,7 +128,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFetchParameterValuesFromMeasurement_MissingData() {
+	public void testFetchParameterValuesFromMeasurement_MissingData() throws ParseException {
 		if (this.parameters == null) {
 			this.parameters = extractParameters("{{" + TERM_4_EMPTY_VALUE + "}}");
 		}
@@ -128,7 +141,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFetchParameterValuesFromMeasurement_NullMeasurementRow() {
+	public void testFetchParameterValuesFromMeasurement_NullMeasurementRow() throws ParseException {
 		Map<String, Object> testTerms = extractParameters(FORMULA_1);
 		extractValues(testTerms, null);
 		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
@@ -139,7 +152,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFetchParameterValuesFromMeasurement_NullMeasurementDataList() {
+	public void testFetchParameterValuesFromMeasurement_NullMeasurementDataList() throws ParseException {
 		Map<String, Object> testTerms = extractParameters(FORMULA_1);
 		MeasurementRow measurementRow = new MeasurementRow();
 		measurementRow.setDataList(null);
@@ -222,7 +235,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testEvaluateFormula() {
+	public void testEvaluateFormula() throws ParseException {
 		this.formula = FORMULA_1;
 		this.parameters = extractParameters(FORMULA_1);
 		extractValues(this.parameters, this.createMeasurementRowTestData());
@@ -280,7 +293,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testFunctions() {
+	public void testConcatFunction() throws ParseException {
 		final String param1 = "number of plots: ";
 		String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
@@ -289,6 +302,29 @@ public class DerivedVariableProcessorTest {
 		formula = replaceDelimiters(formula);
 		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
+	}
+	
+	@Test
+	public void testDaysDiffFunction() throws ParseException {
+		String formula = "fn:daysdiff({{" + DATE_TERM1 + "}}, {{" + DATE_TERM2 + "}})";
+		final Map<String, Object> terms = extractParameters(formula);
+		extractValues(terms, this.createMeasurementRowTestData());
+
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms);
+		Assert.assertEquals("31", result);
+	}
+	
+	@Test
+	public void testDaysDiffFunctionNegativeDifference() throws ParseException {
+		// Having later date for first parameter should give negative value
+		String formula = "fn:daysdiff({{" + DATE_TERM2 + "}}, {{" + DATE_TERM1 + "}})";
+		final Map<String, Object> terms = extractParameters(formula);
+		extractValues(terms, this.createMeasurementRowTestData());
+
+		formula = replaceDelimiters(formula);
+		String result = this.processor.evaluateFormula(formula, terms);
+		Assert.assertEquals("-31", result);
 	}
 
 	@Test
@@ -307,7 +343,7 @@ public class DerivedVariableProcessorTest {
 		formula = replaceDelimiters(formula);
 		this.processor.setData(data);
 		String result = this.processor.evaluateFormula(formula, terms);
-		Assert.assertEquals("Should evaluate concat function", "20.9", result);
+		Assert.assertEquals("Should evaluate avg function", "20.9", result);
 
 		formula = "fn:avg([{{" + TERM_1 + "}}, {{PH_M_cm}}])";
 		final List<Object> term2Data = new ArrayList<>();
@@ -319,12 +355,22 @@ public class DerivedVariableProcessorTest {
 		this.processor = new DerivedVariableProcessor();
 		this.processor.setData(data);
 		result = this.processor.evaluateFormula(formula, terms);
-		Assert.assertEquals("Should evaluate concat function", "42.21", result);
+		Assert.assertEquals("Should evaluate avg function", "42.21", result);
 	}
 
 	@Test(expected = Exception.class)
 	public void testSecurityEval() {
 		this.processor.evaluateFormula("System.exit(0)", new HashMap<String, Object>());
+	}
+	
+	@Test (expected = ParseException.class)
+	public void testInvalidDateFormatParsing() throws ParseException {
+		final MeasurementRow testRow = this.createMeasurementRowTestData();
+		final MeasurementData dateData = testRow.getMeasurementData(DATE_TERM2);
+		dateData.setValue("2018-03-31");
+		final String formula = "({{" + DATE_TERM2 + "}}/100)";
+		final Map<String, Object> terms = extractParameters(formula);
+		extractValues(terms, testRow);
 	}
 
 }
