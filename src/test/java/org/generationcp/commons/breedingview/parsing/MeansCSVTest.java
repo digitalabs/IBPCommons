@@ -51,6 +51,17 @@ public class MeansCSVTest {
 
 	@Test
 	public void testGetData() throws IOException {
+		assertDataValues();
+	}
+
+	@Test
+	public void testGetDataWhereEnvironmentFactorIsNotTrialInstance() throws IOException, URISyntaxException {
+		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputWithLocNameEnvFactor.csv").toURI());
+		this.meansCSV = new MeansCSV(file, new HashMap<String, String>());
+		assertDataValues();
+	}
+
+	private void assertDataValues() throws IOException {
 		final Map<String, List<String>> data = this.meansCSV.getData();
 
 		// Number of map keys should be equal to sum of factors list + # of traits analyzed. Unit Errors variables are excluded
