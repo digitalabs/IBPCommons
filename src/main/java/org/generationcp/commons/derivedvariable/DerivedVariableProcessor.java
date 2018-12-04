@@ -1,19 +1,23 @@
 package org.generationcp.commons.derivedvariable;
 
-import org.apache.commons.jexl3.*;
-import org.apache.commons.lang3.math.NumberUtils;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlExpression;
+import org.apache.commons.jexl3.MapContext;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class DerivedVariableProcessor {
 
 	public static class Functions {
 
-		@SuppressWarnings("unused")
 		public String concat(final Object... args) {
 			final StringBuilder sb = new StringBuilder();
 			for (final Object arg : args) {
@@ -22,7 +26,6 @@ public class DerivedVariableProcessor {
 			return sb.toString();
 		}
 
-		@SuppressWarnings("unused")
 		public Double avg(final List<Double>... args) {
 			double sum = 0;
 			int size = 0;
@@ -33,6 +36,13 @@ public class DerivedVariableProcessor {
 				size += arg.size();
 			}
 			return sum / size;
+		}
+		
+		public Integer daysdiff(final Date date1, final Date date2) {
+			final boolean isNegative = date2.before(date1);
+			long diffInMillies = Math.abs(date2.getTime() - date1.getTime());
+		    Integer diffInDays =  Long.valueOf(TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS)).intValue();
+		    return isNegative? ((-1) * diffInDays) : diffInDays;
 		}
 	}
 
