@@ -996,7 +996,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 */
 	protected StandardVariable createStandardardVariable(final int termId, final String programUUID, final PhenotypicType phenotypicType) {
 		final org.generationcp.middleware.domain.ontology.Variable ontologyVariable =
-				this.ontologyVariableDataManager.getVariable(programUUID, termId, false, false);
+				this.ontologyVariableDataManager.getVariable(programUUID, termId, false);
 		final StandardVariable standardVariable = this.standardVariableTransformer.transformVariable(ontologyVariable);
 		standardVariable.setPhenotypicType(phenotypicType);
 		return standardVariable;

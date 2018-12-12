@@ -59,7 +59,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 
 		if (measurementVariable != null && StringUtils.isNotBlank(measurementVariable.getValue())) {
 			final Variable variable = this.ontologyVariableDataManager
-				.getVariable(this.contextUtil.getCurrentProgramUUID(), measurementVariable.getTermId(), true, false);
+					.getVariable(this.contextUtil.getCurrentProgramUUID(), measurementVariable.getTermId(), true);
 
 			for (final TermSummary prefix : variable.getScale().getCategories()) {
 				if (measurementVariable.getValue().equals(prefix.getId().toString()) || measurementVariable.getValue()
