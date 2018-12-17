@@ -53,7 +53,7 @@ public class HabitatDesignationResolverTest {
 		seasonScale.addCategory(categories);
 		variable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.HABITAT_DESIGNATION.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(variable);
+				Matchers.eq(TermId.HABITAT_DESIGNATION.getId()), Matchers.eq(true))).thenReturn(variable);
 	}
 
 	@Test

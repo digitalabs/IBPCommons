@@ -54,7 +54,7 @@ public class ProjectPrefixResolverTest {
 		seasonScale.addCategory(categories);
 		variable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.PROJECT_PREFIX.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(variable);
+				Matchers.eq(TermId.PROJECT_PREFIX.getId()), Matchers.eq(true))).thenReturn(variable);
 	}
 
 	@Test

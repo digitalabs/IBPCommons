@@ -62,8 +62,7 @@ public class SeasonResolverTest {
 		seasonScale.addCategory(seasonCategory);
 		seasonVariable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(seasonVariable);
-
+				Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true))).thenReturn(seasonVariable);
 		this.valueReferenceTestDataInitializer = new ValueReferenceTestDataInitializer();
 	}
 

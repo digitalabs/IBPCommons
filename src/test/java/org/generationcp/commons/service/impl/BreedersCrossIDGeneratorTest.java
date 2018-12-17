@@ -2,7 +2,6 @@ package org.generationcp.commons.service.impl;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
-import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
@@ -15,7 +14,6 @@ import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.Method;
@@ -28,7 +26,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
@@ -79,7 +76,7 @@ public class BreedersCrossIDGeneratorTest {
 		projectPrefixScale.addCategory(projectPrefixCategory);
 		projectPrefixVariable.setScale(projectPrefixScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.PROJECT_PREFIX.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(projectPrefixVariable);
+				Matchers.eq(TermId.PROJECT_PREFIX.getId()), Matchers.eq(true))).thenReturn(projectPrefixVariable);
 
 		final Variable habitatDesignationVariable = new Variable();
 		final Scale habitatDesignationScale = new Scale();
@@ -88,7 +85,7 @@ public class BreedersCrossIDGeneratorTest {
 		habitatDesignationScale.addCategory(habitatDesignationCategory);
 		habitatDesignationVariable.setScale(habitatDesignationScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.HABITAT_DESIGNATION.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(habitatDesignationVariable);
+				Matchers.eq(TermId.HABITAT_DESIGNATION.getId()), Matchers.eq(true))).thenReturn(habitatDesignationVariable);
 
 		final Variable seasonVariable = new Variable();
 		final Scale seasonScale = new Scale();
@@ -96,7 +93,7 @@ public class BreedersCrossIDGeneratorTest {
 		seasonScale.addCategory(seasonCategory);
 		seasonVariable.setScale(seasonScale);
 		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true), Matchers.eq(false))).thenReturn(seasonVariable);
+				Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true))).thenReturn(seasonVariable);
 	}
 
 	@Test
