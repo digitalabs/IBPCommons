@@ -90,13 +90,7 @@ public class ImportedGermplasm implements Serializable {
 	/** StockIDs associated with Germplsm **/
 	private String stockIDs;
 
-	public Integer getIndex() {
-		return this.index;
-	}
-
-	public void setIndex(Integer index) {
-		this.index = index;
-	}
+	private Integer locationId;
 
 	/**
 	 * Instantiates a new imported germplasm.
@@ -485,5 +479,21 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setPlantNumber(final String plantNumber) {
 		this.plantNumber = plantNumber;
+	}
+
+	public Integer getIndex() {
+		return this.index;
+	}
+
+	public void setIndex(Integer index) {
+		this.index = index;
+	}
+
+	public Integer getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(final Integer locationId) {
+		this.locationId = locationId;
 	}
 }
