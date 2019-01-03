@@ -1,7 +1,6 @@
 
 package org.generationcp.commons.help.document;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -34,16 +33,6 @@ public class HelpDocumentUtil {
 		}
 	}
 
-	public static boolean isDocumentsFolderFound() {
-		String docsDirectory = "Documents" + File.separator;
-		File docsDirectoryFile = new File(docsDirectory);
-		if (docsDirectoryFile.exists() && docsDirectoryFile.isDirectory()) {
-			return true;
-		}
-		return false;
-	}
-
-	
 	public static String getOnLineLink(String link) {
 		String onlineLink = "";
 		if (!link.isEmpty()) {
@@ -53,18 +42,4 @@ public class HelpDocumentUtil {
 		return onlineLink;
 	}
 
-	public static String getOffLineLink(URL currentURL, String link) {
-		String offlineLink = "";
-		if (!link.isEmpty()) {
-			StringBuilder offlineLinkBuilder = new StringBuilder();
-			offlineLinkBuilder.append("BMS_HTML/");
-			offlineLinkBuilder.append(link);
-			offlineLinkBuilder.append(".html");
-
-			String host = currentURL.getHost();
-			Integer port = currentURL.getPort();
-			offlineLink = "http://" + host + ":" + port + "/" + offlineLinkBuilder.toString();
-		}
-		return offlineLink;
-	}
 }

@@ -6,7 +6,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Properties;
 
-import org.generationcp.commons.tomcat.util.TomcatUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,9 +26,6 @@ public class HelpButtonClickListenerTest {
 
 	private HelpButtonClickListener listener;
 	private HelpModule link;
-
-	@Mock
-	private TomcatUtil tomcatUtil;
 	
 	@Mock
 	private Properties helpProperties;
@@ -52,7 +48,6 @@ public class HelpButtonClickListenerTest {
 		this.link = HelpModule.MANAGE_LIST;
 		this.listener = Mockito.spy(new HelpButtonClickListener(this.link));
 		this.listener.setHelpProperties(this.helpProperties);
-		this.listener.setTomcatUtil(this.tomcatUtil);
 
 		Mockito.when(this.event.getComponent()).thenReturn(this.component);
 		Mockito.when(this.component.getWindow()).thenReturn(this.window);
@@ -86,7 +81,6 @@ public class HelpButtonClickListenerTest {
 		URL offlineURL = new URL(HelpDocumentUtil.getOnLineLink(offlineLink));
 
 		Mockito.doReturn(offlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
-		Mockito.when(this.listener.getOfflineLink(this.link, offlineURL)).thenReturn(offlineLink);
 
 		ExternalResource tutorialLink = new ExternalResource(offlineURL);
 		Mockito.doReturn(tutorialLink).when(this.listener).getTutorialLink(this.link, this.window, false);
@@ -106,7 +100,6 @@ public class HelpButtonClickListenerTest {
 		URL offlineURL = new URL(HelpDocumentUtil.getOnLineLink(offlineLink));
 
 		Mockito.doReturn(offlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
-		Mockito.when(this.listener.getOfflineLink(this.link, offlineURL)).thenReturn(offlineLink);
 
 		ExternalResource tutorialLink = new ExternalResource(offlineURL);
 		Mockito.doReturn(tutorialLink).when(this.listener).getTutorialLink(this.link, this.window, false);
@@ -152,8 +145,6 @@ public class HelpButtonClickListenerTest {
 
 		String offlineLink = "www.offlinelink.com";
 		Mockito.doReturn(offlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
-
-		Mockito.when(this.listener.getOfflineLink(this.link, currentURL)).thenReturn(offlineLink);
 
 		ExternalResource actualResult = this.listener.getTutorialLink(this.link, currentWindow, false);
 

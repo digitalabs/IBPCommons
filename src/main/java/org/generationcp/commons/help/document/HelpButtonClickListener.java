@@ -1,13 +1,10 @@
 
 package org.generationcp.commons.help.document;
 
-import java.net.URL;
 import java.util.Properties;
 
 import javax.annotation.Resource;
 
-import org.generationcp.commons.tomcat.util.TomcatUtil;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.vaadin.terminal.ExternalResource;
@@ -19,12 +16,6 @@ import com.vaadin.ui.Window;
 public class HelpButtonClickListener implements Button.ClickListener {
 
 	private static final long serialVersionUID = -7357700787477929587L;
-
-	@Resource
-	private TomcatUtil tomcatUtil;
-
-	@Resource
-	private WorkbenchDataManager workbenchDataManager;
 
 	@Resource
 	private Properties helpProperties;
@@ -43,10 +34,10 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		Window currentWindow = event.getComponent().getWindow();
 		ExternalResource tutorialLink = this.getTutorialLink(this.link, currentWindow, hasInternetConnection);
 
-		if (!propertyLink.isEmpty() && (hasInternetConnection || HelpDocumentUtil.isDocumentsFolderFound())) {
+		if (!propertyLink.isEmpty() && hasInternetConnection) {
 			event.getComponent().getWindow().open(tutorialLink, " _BLANK");
-		} else if (!hasInternetConnection && !HelpDocumentUtil.isDocumentsFolderFound()) {
-			HelpWindow helpWindow = new HelpWindow(this.tomcatUtil);
+		} else if (!hasInternetConnection) {
+			HelpWindow helpWindow = new HelpWindow();
 			event.getComponent().getParent().getWindow().addWindow(helpWindow);
 		}
 	}
@@ -55,27 +46,12 @@ public class HelpButtonClickListener implements Button.ClickListener {
 		return HelpDocumentUtil.getOnLineLink(this.helpProperties.getProperty(link.getPropertyName()));
 	}
 
-	String getOfflineLink(final HelpModule link, URL currentUrl) {
-		return HelpDocumentUtil.getOffLineLink(currentUrl, this.helpProperties.getProperty(link.getPropertyName()));
-	}
-
 	ExternalResource getTutorialLink(final HelpModule link, Window currentWindow, boolean hasInternetConnection) {
 		ExternalResource tutorialLink = null;
 		if (hasInternetConnection) {
 			tutorialLink = new ExternalResource(this.getOnlineLink(link));
-		} else {
-			String offlineLink = this.getOfflineLink(link, currentWindow.getURL());
-			tutorialLink = new ExternalResource(offlineLink);
-		}
+		} 
 		return tutorialLink;
-	}
-
-	public void setTomcatUtil(TomcatUtil tomcatUtil) {
-		this.tomcatUtil = tomcatUtil;
-	}
-
-	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
 	}
 
 	public void setHelpProperties(Properties helpProperties) {
