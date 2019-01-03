@@ -183,14 +183,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.5</version>
-			<scope>test</scope>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.kubek2k</groupId>
-			<artifactId>springockito</artifactId>
-			<version>1.0.8</version>
+			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
 		
@@ -213,6 +206,13 @@
     		<artifactId>hamcrest</artifactId>
     		<version>2.1</version>
     		<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>2.5.1</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Web-app Integration Optimization -->

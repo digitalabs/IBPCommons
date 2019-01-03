@@ -1,32 +1,33 @@
 package org.generationcp.commons.util;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.core.env.Environment;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath*:/testContext.xml" })
 public class MySQLUtilTest {
+
 	private static final String DATABASE = "ibdbv2_maize_merged";
 	private static final String BACKUP_FILENAME = "C:\\GCP\\Commons\\temp\\ibdbv2_maize_merged_20170209_033042_735_.sql";
 
@@ -34,21 +35,28 @@ public class MySQLUtilTest {
 
 	@Mock
 	private ContextUtil contextUtil;
-	
+
+	@Mock
+	private WorkbenchDataManager workbenchDataManager;
+
 	@Mock
 	private Connection connection;
-	
+
 	@Mock
 	private Statement statement;
-	
-	
+
+	private Properties dbProperties;
+
 	@Autowired
 	@InjectMocks
 	private MySQLUtil mysqlUtil;
-	
+
 	@Before
-	public void setup() throws SQLException, ClassNotFoundException {
+	public void setup() throws SQLException, ClassNotFoundException, IOException{
 		MockitoAnnotations.initMocks(this);
+		dbProperties = new Properties();
+		dbProperties.load(new FileInputStream(Thread.currentThread().getContextClassLoader().getResource("").getPath() + "test.properties"));
+		mysqlUtil.setMysqlDumpPath(dbProperties.getProperty("workbench.mysqlDumpPath"));
 		this.project = ProjectTestDataInitializer.createProject();
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(this.project);
 		Mockito.when(this.connection.createStatement()).thenReturn(this.statement);
@@ -136,16 +144,16 @@ public class MySQLUtilTest {
 				this.mysqlUtil.buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
 
 	}
-	
+
 	@Test
 	public void testUpdateCropTypeAndOwnerOfRestoredPrograms() throws SQLException {
 		// Setup mocks
 		final int userId = 2;
 		Mockito.when(this.contextUtil.getCurrentWorkbenchUserId()).thenReturn(userId);
-		
+
 		// Method to test
 		this.mysqlUtil.updateCropTypeAndCreatorOfRestoredPrograms(this.connection);
-		
+
 		// Verify SQL queries executed
 		final ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.forClass(String.class);
 		Mockito.verify(this.statement, Mockito.times(3)).execute(queryStringCaptor.capture());
@@ -156,13 +164,13 @@ public class MySQLUtilTest {
 								+ "' where user_id = 9999;", queries.get(1));
 		Assert.assertEquals("UPDATE workbench_project set user_id = '" + userId + "' where user_id = 9999;", queries.get(2));
 	}
-	
+
 	@Test
 	public void testExecuteDeleteScriptsForWorkbenchCropData() throws SQLException {
-		
+
 		final String programIdToDelete = Integer.valueOf(101).toString();
 		this.mysqlUtil.executeDeleteScriptsForWorkbenchCropData(this.connection, programIdToDelete);
-		
+
 		// Verify SQL queries executed
 		final ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.forClass(String.class);
 		Mockito.verify(this.statement, Mockito.times(4)).execute(queryStringCaptor.capture());
@@ -173,5 +181,5 @@ public class MySQLUtilTest {
 		Assert.assertEquals("DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete, queries.get(2));
 		Assert.assertEquals("DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete, queries.get(3));
 	}
-	
+
 }

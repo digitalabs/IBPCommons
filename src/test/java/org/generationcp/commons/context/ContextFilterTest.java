@@ -70,8 +70,6 @@ public class ContextFilterTest {
 		Mockito.when(httpServletRequest.getRequestURI()).thenReturn(contextPath);
 		Mockito.when(httpServletRequest.getSession()).thenReturn(httpSession);
 
-		Mockito.when(this.httpSession.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
-
 		Cookie[] requestCookies = new Cookie[3];
 		requestCookies[0] = this.getCookie(ContextConstants.PARAM_LOGGED_IN_USER_ID, "11", contextPath);
 		requestCookies[1] = this.getCookie(ContextConstants.PARAM_SELECTED_PROJECT_ID, "12", contextPath);
@@ -92,8 +90,6 @@ public class ContextFilterTest {
 		final String contextPath = "/contextPath";
 		Mockito.when(httpServletRequest.getRequestURI()).thenReturn(contextPath);
 
-		Mockito.when(this.httpSession.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
-
 		Cookie[] requestCookies = null;
 		Mockito.when(httpServletRequest.getCookies()).thenReturn(requestCookies);
 
@@ -110,7 +106,6 @@ public class ContextFilterTest {
 		Mockito.when(httpServletRequest.getRequestURI()).thenReturn(contextPath);
 
 		ContextInfo sessionContextInfo = new ContextInfo(11, 12L, "AuthenticationToken");
-		Mockito.when(this.httpSession.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(sessionContextInfo);
 
 		contextFilter.doFilter(httpServletRequest, httpServletResponse, filterChain);
 		Mockito.verify(httpSession, Mockito.never()).setAttribute(Matchers.eq(ContextConstants.SESSION_ATTR_CONTEXT_INFO), Matchers.anyObject());

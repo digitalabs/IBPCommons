@@ -127,7 +127,6 @@ public class DatabaseConnectionFilterTest {
 		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
 		Project project = Mockito.mock(Project.class);
 		Mockito.when(project.getProjectId()).thenReturn((long) 1);
-		Mockito.when(project.getDatabaseName()).thenReturn(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME);
 
 		sessionFactoryMap.put(project.getProjectId(), sessionFactory);
 

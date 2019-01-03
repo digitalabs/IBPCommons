@@ -76,9 +76,6 @@ public class GermplasmCodeGenerationServiceImplTest {
 
 		Mockito.doReturn(NEXT_NUMBER).when(this.keySequenceRegisterService).getNextSequence(PREFIX, SUFFIX);
 		Mockito.doReturn(NEXT_NUMBER_WITH_SPACE).when(this.keySequenceRegisterService).getNextSequence(PREFIX + " ", " " + SUFFIX);
-		Mockito.doReturn(NEXT_NUMBER).when(this.keySequenceRegisterService).incrementAndGetNextSequence(PREFIX, SUFFIX);
-		Mockito.doReturn(NEXT_NUMBER_WITH_SPACE).when(this.keySequenceRegisterService)
-				.incrementAndGetNextSequence(PREFIX + " ", " " + SUFFIX);
 		Mockito.doReturn(NEXT_NUMBER_WITHOUT_PREFIX).when(this.keySequenceRegisterService).getNextSequence(PREFIX, "");
 	}
 

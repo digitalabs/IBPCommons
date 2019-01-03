@@ -65,18 +65,13 @@ public class BreedersCrossIDGeneratorTest {
 		final Project testProject = new Project();
 		testProject.setUniqueID("e8e4be0a-5d63-452f-8fde-b1c794ec7b1a");
 		testProject.setCropType(new CropType("maize"));
-
-		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(testProject);
-		Mockito.when(this.contextUtil.getCurrentProgramUUID()).thenReturn(testProject.getUniqueID());
-
+		
 		final Variable projectPrefixVariable = new Variable();
 		final Scale projectPrefixScale = new Scale();
 		final TermSummary projectPrefixCategory = new TermSummary(PROJECT_PREFIX_CATEGORY_ID, PROJECT_PREFIX_CATEGORY_VALUE,
 				PROJECT_PREFIX_CATEGORY_VALUE);
 		projectPrefixScale.addCategory(projectPrefixCategory);
 		projectPrefixVariable.setScale(projectPrefixScale);
-		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.PROJECT_PREFIX.getId()), Matchers.eq(true))).thenReturn(projectPrefixVariable);
 
 		final Variable habitatDesignationVariable = new Variable();
 		final Scale habitatDesignationScale = new Scale();
@@ -84,16 +79,13 @@ public class BreedersCrossIDGeneratorTest {
 				HABITAT_DESIGNATION_CATEGORY_VALUE);
 		habitatDesignationScale.addCategory(habitatDesignationCategory);
 		habitatDesignationVariable.setScale(habitatDesignationScale);
-		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.HABITAT_DESIGNATION.getId()), Matchers.eq(true))).thenReturn(habitatDesignationVariable);
 
 		final Variable seasonVariable = new Variable();
 		final Scale seasonScale = new Scale();
 		final TermSummary seasonCategory = new TermSummary(SEASON_CATEGORY_ID, SEASON_CATEGORY_VALUE, SEASON_CATEGORY_VALUE);
 		seasonScale.addCategory(seasonCategory);
 		seasonVariable.setScale(seasonScale);
-		Mockito.when(this.ontologyVariableDataManager.getVariable(Matchers.eq(testProject.getUniqueID()),
-				Matchers.eq(TermId.SEASON_VAR.getId()), Matchers.eq(true))).thenReturn(seasonVariable);
+
 	}
 
 	@Test
