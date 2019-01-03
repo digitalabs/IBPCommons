@@ -32,8 +32,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 3/20/2015 Time: 3:31 PM
  */

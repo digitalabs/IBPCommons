@@ -26,8 +26,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -65,7 +64,7 @@ public class BreedersCrossIDGeneratorTest {
 		final Project testProject = new Project();
 		testProject.setUniqueID("e8e4be0a-5d63-452f-8fde-b1c794ec7b1a");
 		testProject.setCropType(new CropType("maize"));
-		
+
 		final Variable projectPrefixVariable = new Variable();
 		final Scale projectPrefixScale = new Scale();
 		final TermSummary projectPrefixCategory = new TermSummary(PROJECT_PREFIX_CATEGORY_ID, PROJECT_PREFIX_CATEGORY_VALUE,
