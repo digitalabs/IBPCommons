@@ -7,16 +7,6 @@ import org.junit.Test;
 public class HelpDocumentUtilTest {
 
 	@Test
-	public void testIsIBPDomainReachableReturnsFalseForEmptyURL() {
-		Assert.assertFalse("Expecting to return false for empty url.", HelpDocumentUtil.isIBPDomainReachable(""));
-	}
-
-	@Test
-	public void testIsIBPDomainReachableReturnsFalseForInvalidURL() {
-		Assert.assertFalse("Expecting to return false for malformed url.", HelpDocumentUtil.isIBPDomainReachable("google.com"));
-	}
-
-	@Test
 	public void testGetOnLineLinkReturnsAnEmptyStringForEmptyLink() {
 		Assert.assertTrue("Expecting to return an empty link for empty url but didn't.",
 				"".equalsIgnoreCase(HelpDocumentUtil.getOnLineLink("")));

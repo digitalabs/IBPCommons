@@ -64,7 +64,6 @@ public class HelpButtonClickListenerTest {
 
 		URL onlineURL = new URL(HelpDocumentUtil.getOnLineLink(onlineLink));
 		ExternalResource tutorialLink = new ExternalResource(onlineURL);
-		Mockito.doReturn(tutorialLink).when(this.listener).getTutorialLink(this.link, this.window, true);
 
 		this.listener.buttonClick(this.event);
 
@@ -81,9 +80,6 @@ public class HelpButtonClickListenerTest {
 		URL offlineURL = new URL(HelpDocumentUtil.getOnLineLink(offlineLink));
 
 		Mockito.doReturn(offlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
-
-		ExternalResource tutorialLink = new ExternalResource(offlineURL);
-		Mockito.doReturn(tutorialLink).when(this.listener).getTutorialLink(this.link, this.window, false);
 
 		this.listener.buttonClick(this.event);
 
@@ -102,7 +98,6 @@ public class HelpButtonClickListenerTest {
 		Mockito.doReturn(offlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
 
 		ExternalResource tutorialLink = new ExternalResource(offlineURL);
-		Mockito.doReturn(tutorialLink).when(this.listener).getTutorialLink(this.link, this.window, false);
 
 		this.listener.buttonClick(this.event);
 
@@ -122,35 +117,4 @@ public class HelpButtonClickListenerTest {
 
 	}
 
-	@Test
-	public void testGetTutorialLink_ForOnlineLink() {
-		Window currentWindow = Mockito.mock(Window.class);
-		String onlineLink = "www.onlinelink.com";
-		Mockito.doReturn(onlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
-		Mockito.when(this.listener.getOnlineLink(this.link)).thenReturn(onlineLink);
-
-		ExternalResource actualResult = this.listener.getTutorialLink(this.link, currentWindow, true);
-
-		Assert.assertNotNull("Expecting to return an ExternalResource link but didn't.", actualResult);
-		Assert.assertTrue("Expecting the online link is contained inside the generated tutorial links.",
-				actualResult.getURL().contains(onlineLink));
-		Assert.assertTrue("Expecting the online ", actualResult.getURL().startsWith("https://"));
-	}
-
-	@Test
-	public void testGetTutorialLink_ForOfflineLink() throws MalformedURLException {
-		URL currentURL = new URL("http:\\localhost:8080\\www.google.com");
-		Window currentWindow = Mockito.mock(Window.class);
-		Mockito.when(currentWindow.getURL()).thenReturn(currentURL);
-
-		String offlineLink = "www.offlinelink.com";
-		Mockito.doReturn(offlineLink).when(this.helpProperties).getProperty(this.link.getPropertyName());
-
-		ExternalResource actualResult = this.listener.getTutorialLink(this.link, currentWindow, false);
-
-		Assert.assertNotNull("Expecting to return an ExternalResource link but didn't.", actualResult);
-		Assert.assertTrue("Expecting the offline link is containeds inside the generated tutorial links.",
-				actualResult.getURL().contains(offlineLink));
-		Assert.assertTrue("Expecting the offline ", actualResult.getURL().startsWith("http://"));
-	}
 }
