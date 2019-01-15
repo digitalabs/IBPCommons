@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Window;
 
 @Configurable
 public class HelpButtonClickListener implements Button.ClickListener {
