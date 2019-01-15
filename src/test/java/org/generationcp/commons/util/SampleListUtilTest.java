@@ -10,12 +10,11 @@ public abstract class SampleListUtilTest {
 
 	public static List<SampleDetailsDTO> initSampleDetailsDTOs() {
 		final List<SampleDetailsDTO> sampleDetailsDTOs = new ArrayList<>();
-		final SampleDetailsDTO sampleDetailsDTO = new SampleDetailsDTO(1, "ADFETYESDADF", "saDSAFHGRHSRT", "ADFFSYKASCAF");
+		final SampleDetailsDTO sampleDetailsDTO = new SampleDetailsDTO(1, "ADFETYESDADF", "saDSAFHGRHSRT");
 		sampleDetailsDTO.setDesignation("AAB");
 		sampleDetailsDTO.setSampleName("SAMPLE1");
 		sampleDetailsDTO.setSampleDate(new Date());
 		sampleDetailsDTO.setPlotNumber("1");
-		sampleDetailsDTO.setPlantNo(2);
 		sampleDetailsDTOs.add(sampleDetailsDTO);
 
 		return sampleDetailsDTOs;
@@ -26,7 +25,6 @@ public abstract class SampleListUtilTest {
 		visibleColumns.add("SAMPLE_ENTRY");
 		visibleColumns.add("DESIGNATION");
 		visibleColumns.add("PLOT_NO");
-		visibleColumns.add("PLANT_NO");
 		visibleColumns.add("SAMPLE_NAME");
 		visibleColumns.add("TAKEN_BY");
 		visibleColumns.add("SAMPLING_DATE");
@@ -35,7 +33,7 @@ public abstract class SampleListUtilTest {
 	}
 
 	public static String getColumnsExport() {
-		return "SAMPLE_ENTRY,DESIGNATION,PLOT_NO,PLANT_NO,SAMPLE_NAME,TAKEN_BY,SAMPLING_DATE";
+		return "SAMPLE_ENTRY,DESIGNATION,PLOT_NO,SAMPLE_NAME,TAKEN_BY,SAMPLING_DATE";
 	}
 
 }
