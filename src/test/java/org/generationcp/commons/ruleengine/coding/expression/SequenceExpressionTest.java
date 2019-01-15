@@ -3,8 +3,7 @@ package org.generationcp.commons.ruleengine.coding.expression;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
