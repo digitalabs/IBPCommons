@@ -15,6 +15,7 @@ import java.util.Set;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.dao.oms.CVTermDao;
 import org.generationcp.middleware.data.initializer.OntologyScaleTestDataInitializer;
 import org.generationcp.middleware.domain.dms.DMSVariableType;
@@ -54,7 +55,6 @@ import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
 import org.generationcp.middleware.pojos.oms.CVTerm;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
@@ -62,10 +62,7 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -73,8 +70,6 @@ import com.rits.cloning.Cloner;
 
 import junit.framework.Assert;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/testContext.xml"})
 public class BreedingViewImportServiceImplTest {
 
 	private static final String ACDTOL_E_1TO5 = "AcdTol_E_1to5";
@@ -107,8 +102,7 @@ public class BreedingViewImportServiceImplTest {
 	private final List<DMSVariableType> meansVariateVariableTypes = new ArrayList<>();
 	private final List<DMSVariableType> summaryVariableTypes = new ArrayList<>();
 
-	@Autowired
-	private ResourceBundleMessageSource messageSource;
+	private ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
 
 	@Mock
 	private StudyDataManager studyDataManager;
@@ -143,6 +137,9 @@ public class BreedingViewImportServiceImplTest {
 	@Mock
 	private SummaryStatsCSV summaryStatsCSV;
 
+	@Mock
+	private ContextUtil contextUtil;
+
 	@Captor
 	private ArgumentCaptor<List<ExperimentValues>> experimentValuesCaptor;
 
@@ -156,6 +153,7 @@ public class BreedingViewImportServiceImplTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		messageSource.setBasename("CommonMessages");
 
 		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
 		Mockito.doReturn(cvTermDao).when(this.daoFactory).getCvTermDao();
@@ -192,6 +190,9 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
 				.transformVariable(Matchers.any(org.generationcp.middleware.domain.ontology.Variable.class));
+
+		Mockito.doReturn(new StandardVariable()).when(this.standardVariableTransformer)
+				.transformVariable(Matchers.isNull(org.generationcp.middleware.domain.ontology.Variable.class));
 
 		Mockito.when(this.scaleDataManager.getScaleById(Matchers.anyInt(), Matchers.anyBoolean()))
 				.thenReturn(OntologyScaleTestDataInitializer.createScale());

@@ -28,8 +28,7 @@ import org.mockito.Mock;
 
 import junit.framework.Assert;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
-
+import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmExportedWorkbookTest {
 
