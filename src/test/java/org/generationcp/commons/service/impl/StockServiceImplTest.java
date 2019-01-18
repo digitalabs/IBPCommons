@@ -246,12 +246,12 @@ public class StockServiceImplTest {
 		this.mockSaveChangesToBulkingDonors(spy);
 		List<InventoryDetails> inventoryDetailsList = this.createInventoryDetailsListTestData(true);
 		spy.executeBulkingInstructions(inventoryDetailsList);
-		Mockito.verify(spy).saveChangesInBulkingProcess(Matchers.anyList(), Matchers.anyList());
+		Mockito.verify(spy).saveChangesInBulkingProcess(Matchers.anyListOf(InventoryDetails.class), Matchers.anyListOf(InventoryDetails.class));
 	}
 
 	@SuppressWarnings("unchecked")
 	private void mockSaveChangesToBulkingDonors(StockServiceImpl spy) throws MiddlewareQueryException {
-		Mockito.doNothing().when(spy).saveChangesInBulkingProcess(Matchers.anyList(), Matchers.anyList());
+		Mockito.doNothing().when(spy).saveChangesInBulkingProcess(Matchers.anyListOf(InventoryDetails.class), Matchers.anyListOf(InventoryDetails.class));
 	}
 
 	private void mockReturnedLots() throws MiddlewareQueryException {
