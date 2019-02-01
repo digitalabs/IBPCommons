@@ -177,7 +177,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		}
 
 		// get the value of enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.)
-		if (StringUtils.isNotBlank(enumeratorVariableName)) {
+		if (StringUtils.isNotBlank(enumeratorVariableName) && column.getName() == enumeratorVariableName) {
 			columnValue = String.valueOf(sampleDetailsDTO.getObservationUnitNumber());
 		}
 		return columnValue;
