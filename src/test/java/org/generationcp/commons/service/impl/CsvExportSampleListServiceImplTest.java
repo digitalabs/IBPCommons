@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -43,6 +44,8 @@ public class CsvExportSampleListServiceImplTest {
 	private static final String CSV_EXT = ".csv";
 
 	private CsvExportSampleListServiceImpl csvExportSampleListService;
+
+	private Random random = new Random();
 
 
 	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
@@ -150,6 +153,14 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.GID:
 				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getGid()));
 				break;
+			case CsvExportSampleListServiceImpl.SAMPLE_NO:
+				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getSampleNumber()));
+				break;
+			case CsvExportSampleListServiceImpl.PLANT_NO:
+			case CsvExportSampleListServiceImpl.QUADRAT_NO:
+			case CsvExportSampleListServiceImpl.DATE_NO:
+				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getObservationUnitNumber()));
+				break;
 			default:
 				break;
 		}
@@ -171,6 +182,8 @@ public class CsvExportSampleListServiceImplTest {
 			item.setSampleBusinessKey("SampleBusinessKeyId" + i);
 			item.setObsUnitId(String.valueOf(i));
 			item.setGid(i);
+			item.setSampleNumber(random.nextInt(100));
+			item.setObservationUnitNumber(random.nextInt(100));
 			sampleDetailsDTOS.add(item);
 
 		}

@@ -44,13 +44,18 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 	public static final String TAKEN_BY = "TAKEN_BY";
 	public static final String SAMPLING_DATE = "SAMPLING_DATE";
 	public static final String SAMPLE_UID = "SAMPLE_UID";
+	public static final String SAMPLE_NO = "SAMPLE_NO";
 	public static final String OBS_UNIT_ID = "OBS_UNIT_ID";
 	public static final String GID = "GID";
 	public static final String PLATE_ID = "PLATE_ID";
 	public static final String WELL = "WELL";
+	public static final String QUADRAT_NO = "QUADRAT_NO";
+	public static final String PLANT_NO = "PLANT_NO";
+	public static final String DATE_NO = "DATE_NO";
 
 	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(Arrays
-		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE, SAMPLE_UID, PLATE_ID, WELL,
+		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, SAMPLE_NO, QUADRAT_NO, PLANT_NO, DATE_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE,
+			SAMPLE_UID, PLATE_ID, WELL,
 			OBS_UNIT_ID, GID));
 
 	@Resource
@@ -132,6 +137,9 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 			case PLOT_NO:
 				columnValue = sampleDetailsDTO.getPlotNumber();
 				break;
+			case SAMPLE_NO:
+				columnValue = String.valueOf(sampleDetailsDTO.getSampleNumber());
+				break;
 			case SAMPLE_NAME:
 				columnValue = sampleDetailsDTO.getSampleName();
 				break;
@@ -155,6 +163,11 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 				break;
 			case WELL:
 				columnValue = sampleDetailsDTO.getWell();
+				break;
+			case PLANT_NO:
+			case QUADRAT_NO:
+			case DATE_NO:
+				columnValue = String.valueOf(sampleDetailsDTO.getObservationUnitNumber());
 				break;
 			default:
 				break;
