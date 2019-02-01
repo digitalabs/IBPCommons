@@ -35,8 +35,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 public class CsvExportSampleListServiceImplTest {
-	
+
 	private static final String FILENAME = "Study 33-Sample List Name";
+	public static final String CUSTOM_ENUMERATOR_VARIABLE_NAME = "CustomEnumeratorVariableName";
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -68,7 +69,7 @@ public class CsvExportSampleListServiceImplTest {
 		final List<SampleDetailsDTO> sampleDetailsDTOs = SampleListUtilTest.initSampleDetailsDTOs();
 		final List<String> visibleColumns = SampleListUtilTest.getVisibleColumns();
 		final FileExportInfo exportInfo =
-				this.csvExportSampleListService.export(sampleDetailsDTOs, CsvExportSampleListServiceImplTest.FILENAME, visibleColumns);
+				this.csvExportSampleListService.export(sampleDetailsDTOs, CsvExportSampleListServiceImplTest.FILENAME, visibleColumns, "");
 		assertThat(CsvExportSampleListServiceImplTest.FILENAME + CSV_EXT, equalTo(exportInfo.getDownloadFileName()));
 		final File outputFilePath = this.getOutputFilePath();
 		assertThat(outputFilePath.getAbsolutePath(), equalTo(exportInfo.getFilePath()));
@@ -76,6 +77,11 @@ public class CsvExportSampleListServiceImplTest {
 
 	@Test
 	public void testGetExportColumnHeaders() {
+
+		this.csvExportSampleListService.setEnumeratorVariableName(CUSTOM_ENUMERATOR_VARIABLE_NAME);
+
+		final List<String> visibleColumns = new ArrayList<>(CsvExportSampleListServiceImpl.AVAILABLE_COLUMNS);
+		visibleColumns.add(CUSTOM_ENUMERATOR_VARIABLE_NAME);
 
 		final List<ExportColumnHeader> exportColumnHeaders =
 				this.csvExportSampleListService.getExportColumnHeaders(CsvExportSampleListServiceImpl.AVAILABLE_COLUMNS);
@@ -156,9 +162,7 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.SAMPLE_NO:
 				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getSampleNumber()));
 				break;
-			case CsvExportSampleListServiceImpl.PLANT_NO:
-			case CsvExportSampleListServiceImpl.QUADRAT_NO:
-			case CsvExportSampleListServiceImpl.DATE_NO:
+			case CUSTOM_ENUMERATOR_VARIABLE_NAME:
 				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getObservationUnitNumber()));
 				break;
 			default:

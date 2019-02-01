@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.FileExportInfo;
@@ -49,24 +51,24 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 	public static final String GID = "GID";
 	public static final String PLATE_ID = "PLATE_ID";
 	public static final String WELL = "WELL";
-	public static final String QUADRAT_NO = "QUADRAT_NO";
-	public static final String PLANT_NO = "PLANT_NO";
-	public static final String DATE_NO = "DATE_NO";
 
 	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(Arrays
-		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, SAMPLE_NO, QUADRAT_NO, PLANT_NO, DATE_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE,
+		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, SAMPLE_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE,
 			SAMPLE_UID, PLATE_ID, WELL,
 			OBS_UNIT_ID, GID));
 
 	@Resource
 	private ContextUtil contextUtil;
 
+	private String enumeratorVariableName = "";
+
 	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
 
 	@Override
 	public FileExportInfo export(final List<SampleDetailsDTO> sampleDetailsDTOs, final String filenameWithoutExtension,
-			final List<String> visibleColumns) throws IOException {
+			final List<String> visibleColumns, final String enumeratorVariableName) throws IOException {
 		LOG.debug("Initialize export");
+		this.enumeratorVariableName = enumeratorVariableName;
 
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeaders(visibleColumns);
 		final List<ExportRow> exportRows = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
@@ -99,13 +101,19 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
 		int i = 0;
+
+		final List<String> availableColumns = new LinkedList<>(AVAILABLE_COLUMNS);
+		if (visibleColumns.contains(enumeratorVariableName)) {
+			// Add enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.) after PLOT_NO column
+			availableColumns.add(availableColumns.indexOf(PLOT_NO), enumeratorVariableName);
+		}
+
 		if (!visibleColumns.contains(SAMPLE_UID)) {
 			visibleColumns.add(SAMPLE_UID);
 		}
-		for (final String column : AVAILABLE_COLUMNS) {
+		for (final String column : availableColumns) {
 			if (visibleColumns.contains(column)) {
 				exportColumnHeaders.add(new ExportColumnHeader(i++, column, true));
-
 			}
 		}
 
@@ -164,13 +172,13 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 			case WELL:
 				columnValue = sampleDetailsDTO.getWell();
 				break;
-			case PLANT_NO:
-			case QUADRAT_NO:
-			case DATE_NO:
-				columnValue = String.valueOf(sampleDetailsDTO.getObservationUnitNumber());
-				break;
 			default:
 				break;
+		}
+
+		// get the value of enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.)
+		if (StringUtils.isNotBlank(enumeratorVariableName)) {
+			columnValue = String.valueOf(sampleDetailsDTO.getObservationUnitNumber());
 		}
 		return columnValue;
 	}
@@ -230,6 +238,10 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 
 	public void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
+	}
+
+	protected void setEnumeratorVariableName(final String enumeratorVariableName) {
+		this.enumeratorVariableName = enumeratorVariableName;
 	}
 
 }
