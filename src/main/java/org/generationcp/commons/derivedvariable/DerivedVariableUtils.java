@@ -1,5 +1,17 @@
 package org.generationcp.commons.derivedvariable;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.generationcp.commons.util.DateUtil;
+import org.generationcp.middleware.domain.dms.ValueReference;
+import org.generationcp.middleware.domain.etl.MeasurementData;
+import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.domain.ontology.DataType;
+import org.generationcp.middleware.domain.ontology.FormulaVariable;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -10,14 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
-import org.generationcp.commons.util.DateUtil;
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
-import org.generationcp.middleware.domain.ontology.DataType;
-import org.generationcp.middleware.domain.ontology.FormulaVariable;
 
 public final class DerivedVariableUtils {
 
@@ -106,6 +110,65 @@ public final class DerivedVariableUtils {
 			return new BigDecimal(value);
 		}
 		return value;
+	}
+
+	/**
+	 * Extract values of parameters from the measurement (ObservationUnitRow)
+	 *
+	 * @param termMissingData list to be filled with term labels with missing data
+	 * @throws ParseException
+	 */
+	public static void extractValues(
+		final Map<String, Object> parameters, final ObservationUnitRow measurementRow,
+		final Map<Integer, MeasurementVariable> measurementVariablesMap,
+		final Set<String> termMissingData) throws ParseException {
+
+		if (measurementRow != null && measurementRow.getVariables() != null) {
+			for (final Map.Entry<String, ObservationUnitData> entry : measurementRow.getVariables().entrySet()) {
+				final ObservationUnitData observationUnitData = entry.getValue();
+				String term = String.valueOf(observationUnitData.getVariableId());
+				term = StringUtils.deleteWhitespace(term);
+				term = wrapTerm(term);
+				if (parameters.containsKey(term)) {
+					parameters.put(term, getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
+				}
+			}
+		}
+	}
+
+	private static Object getMeasurementValue(
+		final ObservationUnitData observationUnitData, final Map<Integer, MeasurementVariable> measurementVariablesMap,
+		final Set<String> termMissingData) throws ParseException {
+		String value = null;
+
+		final MeasurementVariable measurementVariable = measurementVariablesMap.get(observationUnitData.getVariableId());
+
+		if (!StringUtils.isBlank(String.valueOf(observationUnitData.getCategoricalValueId()))) {
+			value = getPossibleValueName(observationUnitData.getCategoricalValueId(), measurementVariable);
+		}
+		if (StringUtils.isBlank(value)) {
+			value = observationUnitData.getValue();
+		}
+		if (StringUtils.isBlank(value) && termMissingData != null) {
+			termMissingData.add(measurementVariable.getLabel());
+		}
+		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementVariable.getDataTypeId())
+			&& !StringUtils.isBlank(observationUnitData.getValue())) {
+			return DateUtil.parseDate(observationUnitData.getValue());
+		}
+		if (NumberUtils.isNumber(value)) {
+			return new BigDecimal(value);
+		}
+		return value;
+	}
+
+	private static String getPossibleValueName(final Integer cagetoricalValueId, final MeasurementVariable measurementVariable) {
+		for (final ValueReference possibleValue : measurementVariable.getPossibleValues()) {
+			if (possibleValue.getId() == cagetoricalValueId) {
+				return possibleValue.getName();
+			}
+		}
+		return "";
 	}
 
 	/**
