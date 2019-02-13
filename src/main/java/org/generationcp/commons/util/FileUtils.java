@@ -185,4 +185,13 @@ public class FileUtils {
 
 	}
 
+	public static String cleanFileName(final String name) {
+		String finalName = name;
+		if (finalName == null) {
+			return null;
+		}
+		finalName = finalName.replaceAll("[:\\\\/*?|<>]", "_");
+		return finalName;
+	}
+
 }
