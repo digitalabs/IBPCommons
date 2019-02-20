@@ -4,7 +4,7 @@ package org.generationcp.commons.ruleengine.cross;
 import org.generationcp.commons.ruleengine.ProcessCodeOrderedRule;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.PedigreeDataManager;
+import org.generationcp.middleware.manager.PedigreeDataManagerImpl;
 import org.springframework.stereotype.Component;
 
 /**
@@ -29,9 +29,9 @@ public class BackCrossSuffixRule extends ProcessCodeOrderedRule<CrossingRuleExec
 			final int computation = context.getPedigreeDataManager().calculateRecurrentParent(context.getMaleGid(), context.getFemaleGid());
 
 			String output = context.getCurrentCrossName() == null ? "" : context.getCurrentCrossName();
-			if (PedigreeDataManager.FEMALE_RECURRENT == computation) {
+			if (PedigreeDataManagerImpl.FEMALE_RECURRENT == computation) {
 				output += FEMALE_RECURRENT_SUFFIX;
-			} else if (PedigreeDataManager.MALE_RECURRENT == computation) {
+			} else if (PedigreeDataManagerImpl.MALE_RECURRENT == computation) {
 				output += MALE_RECURRENT_SUFFIX;
 			}
 
