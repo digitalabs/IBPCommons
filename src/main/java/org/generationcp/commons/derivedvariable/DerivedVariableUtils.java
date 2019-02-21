@@ -143,7 +143,7 @@ public final class DerivedVariableUtils {
 
 		final MeasurementVariable measurementVariable = measurementVariablesMap.get(observationUnitData.getVariableId());
 
-		if (!StringUtils.isBlank(String.valueOf(observationUnitData.getCategoricalValueId()))) {
+		if (observationUnitData.getCategoricalValueId() != null) {
 			value = getPossibleValueName(observationUnitData.getCategoricalValueId(), measurementVariable);
 		}
 		if (StringUtils.isBlank(value)) {
