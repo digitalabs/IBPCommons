@@ -52,6 +52,7 @@ public final class DerivedVariableUtils {
 
 	/**
 	 * Extract parameters from formula.
+	 *
 	 * @return map of parameters with internal delimiters to be evaluated by the formula engine
 	 */
 	public static Map<String, Object> extractParameters(final String formula) {
@@ -62,9 +63,8 @@ public final class DerivedVariableUtils {
 		return inputVariables;
 	}
 
-
 	/**
-	 * @throws ParseException 
+	 * @throws ParseException
 	 * @see DerivedVariableUtils#extractValues(Map, MeasurementRow, Set)
 	 */
 	public static void extractValues(final Map<String, Object> parameters, final MeasurementRow measurementRow) throws ParseException {
@@ -73,11 +73,13 @@ public final class DerivedVariableUtils {
 
 	/**
 	 * Extract values of parameters from the measurement
+	 *
 	 * @param termMissingData list to be filled with term labels with missing data
-	 * @throws ParseException 
+	 * @throws ParseException
 	 */
 	public static void extractValues(
-		final Map<String, Object> parameters, final MeasurementRow measurementRow, final Set<String> termMissingData) throws ParseException {
+		final Map<String, Object> parameters, final MeasurementRow measurementRow, final Set<String> termMissingData)
+		throws ParseException {
 
 		if (measurementRow != null && measurementRow.getDataList() != null) {
 			for (final MeasurementData measurementData : measurementRow.getDataList()) {
@@ -91,7 +93,8 @@ public final class DerivedVariableUtils {
 		}
 	}
 
-	private static Object getMeasurementValue(final MeasurementData measurementData, final Set<String> termMissingData) throws ParseException {
+	private static Object getMeasurementValue(final MeasurementData measurementData, final Set<String> termMissingData)
+		throws ParseException {
 		String value = null;
 		if (!StringUtils.isBlank(measurementData.getcValueId())) {
 			value = measurementData.getDisplayValueForCategoricalData().getName();
@@ -103,7 +106,7 @@ public final class DerivedVariableUtils {
 			termMissingData.add(measurementData.getLabel());
 		}
 		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementData.getMeasurementVariable().getDataTypeId())
-				&& !StringUtils.isBlank(measurementData.getValue())) {
+			&& !StringUtils.isBlank(measurementData.getValue())) {
 			return DateUtil.parseDate(measurementData.getValue());
 		}
 		if (NumberUtils.isNumber(value)) {
@@ -119,12 +122,12 @@ public final class DerivedVariableUtils {
 	 * @throws ParseException
 	 */
 	public static void extractValues(
-		final Map<String, Object> parameters, final ObservationUnitRow measurementRow,
+		final Map<String, Object> parameters, final ObservationUnitRow observationUnitRow,
 		final Map<Integer, MeasurementVariable> measurementVariablesMap,
 		final Set<String> termMissingData) throws ParseException {
 
-		if (measurementRow != null && measurementRow.getVariables() != null) {
-			for (final Map.Entry<String, ObservationUnitData> entry : measurementRow.getVariables().entrySet()) {
+		if (observationUnitRow != null && observationUnitRow.getVariables() != null) {
+			for (final Map.Entry<String, ObservationUnitData> entry : observationUnitRow.getVariables().entrySet()) {
 				final ObservationUnitData observationUnitData = entry.getValue();
 				String term = String.valueOf(observationUnitData.getVariableId());
 				term = StringUtils.deleteWhitespace(term);
@@ -219,7 +222,6 @@ public final class DerivedVariableUtils {
 		while (matcher.find()) {
 			String parameter = matcher.group(0);
 			final String termId = matcher.group(1);
-			parameter = StringUtils.trim(parameter);
 			if (formulaVariableMap.containsKey(termId)) {
 				// Replace the termid inside delimiters
 				replaceText = StringUtils.replace(replaceText, termId, formulaVariableMap.get(termId).getName());
@@ -239,7 +241,6 @@ public final class DerivedVariableUtils {
 		while (matcher.find()) {
 			String parameter = matcher.group(0);
 			final String name = matcher.group(1);
-			parameter = StringUtils.trim(parameter);
 			if (formulaVariableMap.containsKey(name)) {
 				// Replace the name inside delimiters
 				replaceText = StringUtils.replace(replaceText, name, String.valueOf(formulaVariableMap.get(name).getId()));
