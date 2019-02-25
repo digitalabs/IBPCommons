@@ -164,7 +164,7 @@ public final class DerivedVariableUtils {
 
 	private static String getPossibleValueName(final Integer cagetoricalValueId, final MeasurementVariable measurementVariable) {
 		for (final ValueReference possibleValue : measurementVariable.getPossibleValues()) {
-			if (possibleValue.getId() == cagetoricalValueId) {
+			if (possibleValue.getId().equals(cagetoricalValueId)) {
 				return possibleValue.getName();
 			}
 		}
