@@ -26,16 +26,19 @@ public class CrossingUtil {
 	public static Integer determineBreedingMethodBasedOnParentalLine(final Germplasm female, final Germplasm male,
 			final Germplasm motherOfFemale, final Germplasm fatherOfFemale, final Germplasm motherOfMale,
 			final Germplasm fatherOfMale) {
-		Integer methodId = null;
+		// Single Cross is default breeding method in case it doesn't fit in into any of the previous scenarios
+		Integer methodId = Methods.SINGLE_CROSS.getMethodID();
 
 		if (female != null && female.getGnpgs() < 0) {
-			if (male != null && male.getGnpgs() < 0) {
+			if (male == null || male.getGnpgs() < 0) {
 				methodId = Methods.SINGLE_CROSS.getMethodID();
 			} else {
 				methodId = CrossingUtil.determineCrossingMethod(male, female, motherOfMale, fatherOfMale);
 			}
-		} else {
-			if (male != null && male.getGnpgs() < 0) {
+		
+		// Male is null if it's unknown parent
+		} else if (male != null) {
+			if (male.getGnpgs() < 0) {
 				methodId = CrossingUtil.determineCrossingMethod(female, male, motherOfFemale, fatherOfFemale);
 			} else {
 				if (female != null && Objects.equals(Methods.SINGLE_CROSS.getMethodID(), female.getMethodId()) && male != null
@@ -45,12 +48,6 @@ public class CrossingUtil {
 					methodId = Methods.COMPLEX_CROSS.getMethodID();
 				}
 			}
-		}
-
-		// we default to using Single Cross as the breeding method in case it
-		// doesn't fit in into any of the previous scenarios
-		if (methodId == null) {
-			methodId = Methods.SINGLE_CROSS.getMethodID();
 		}
 
 		return methodId;
