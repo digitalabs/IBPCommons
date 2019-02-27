@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.service.impl;
 
+import org.apache.commons.lang.RandomStringUtils;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.MeasurementVariableTestDataInitializer;
@@ -17,8 +18,10 @@ import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.Season;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,9 +30,9 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import com.google.common.collect.Lists;
 
-import junit.framework.Assert;
 
 /**
  * This is more of an integration test (not a pure unit test) of all key code generation pieces for the seed source use case.
@@ -131,6 +134,12 @@ public class SeedSourceGeneratorTest {
 		// without selection number
 		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", null, "3", studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry season-TestStudy-3", seedSource);
+	}
+	
+	@Test
+	public void testGenerateSeedSourceForUnknownPlot() {
+		Assert.assertEquals(Name.UNKNOWN, this.seedSourceGenerator.generateSeedSource(new Workbook(), RandomStringUtils.randomNumeric(2),
+				RandomStringUtils.randomNumeric(2), "0", RandomStringUtils.randomAlphabetic(20), RandomStringUtils.randomNumeric(2)));
 	}
 
 	@Test

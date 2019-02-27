@@ -15,12 +15,13 @@ import org.generationcp.middleware.domain.etl.Workbook;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.pojos.Name;
 
 import javax.annotation.Resource;
 
 public class SeedSourceGenerator {
 
-	private final static String INSTANCE_NUMBER = "1";
+	private static final String INSTANCE_NUMBER = "1";
 
 	@Resource
 	private GermplasmNamingProperties germplasmNamingProperties;
@@ -40,6 +41,10 @@ public class SeedSourceGenerator {
 
 	public String generateSeedSource(final Workbook workbook, final String instanceNumber, final String selectionNumber,
 			final String plotNumber, final String studyName, final String plantNumber) {
+		
+		if ("0".equals(plotNumber)) {
+			return Name.UNKNOWN;
+		}
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 

@@ -1,16 +1,17 @@
 
 package org.generationcp.commons.ruleengine.cross;
 
-import junit.framework.Assert;
-
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.settings.CrossSetting;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.PedigreeDataManagerImpl;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.PedigreeDataManager;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import junit.framework.Assert;
 
 public class BackCrossSuffixRuleTest {
 
@@ -42,7 +43,7 @@ public class BackCrossSuffixRuleTest {
 
 	@Test
 	public void testRunRuleMaleRecurrent() throws RuleException, MiddlewareQueryException {
-		Mockito.when(pedigreeDataManager.calculateRecurrentParent(MALE_GID, FEMALE_GID)).thenReturn(PedigreeDataManager.MALE_RECURRENT);
+		Mockito.when(pedigreeDataManager.calculateRecurrentParent(MALE_GID, FEMALE_GID)).thenReturn(PedigreeDataManagerImpl.MALE_RECURRENT);
 
 		String output = (String) unitUnderTest.runRule(ruleContext);
 		Assert.assertEquals("Unable to add proper suffix for items with recurrent male parent", TEST_BASE_CROSS_NAME
@@ -51,7 +52,7 @@ public class BackCrossSuffixRuleTest {
 
 	@Test
 	public void testRunRuleFemaleRecurrent() throws RuleException, MiddlewareQueryException {
-		Mockito.when(pedigreeDataManager.calculateRecurrentParent(MALE_GID, FEMALE_GID)).thenReturn(PedigreeDataManager.FEMALE_RECURRENT);
+		Mockito.when(pedigreeDataManager.calculateRecurrentParent(MALE_GID, FEMALE_GID)).thenReturn(PedigreeDataManagerImpl.FEMALE_RECURRENT);
 
 		String output = (String) unitUnderTest.runRule(ruleContext);
 		Assert.assertEquals("Unable to add proper suffix for items with recurrent female parent", TEST_BASE_CROSS_NAME
@@ -60,7 +61,7 @@ public class BackCrossSuffixRuleTest {
 
 	@Test
 	public void testRunRuleNonRecurrent() throws RuleException, MiddlewareQueryException {
-		Mockito.when(pedigreeDataManager.calculateRecurrentParent(MALE_GID, FEMALE_GID)).thenReturn(PedigreeDataManager.NONE);
+		Mockito.when(pedigreeDataManager.calculateRecurrentParent(MALE_GID, FEMALE_GID)).thenReturn(PedigreeDataManagerImpl.NONE);
 
 		String output = (String) unitUnderTest.runRule(ruleContext);
 		Assert.assertEquals("Wrong output for items with no recurrent parent", TEST_BASE_CROSS_NAME, output);
