@@ -1,9 +1,11 @@
 package org.generationcp.commons.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
@@ -123,6 +125,7 @@ public class SeedSourceGenerator {
 				this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
+	//TODO: Remove this and the corresponding test method after the ImportedCrosses#getMalePlotNo is updated
 	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
 		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
@@ -132,11 +135,35 @@ public class SeedSourceGenerator {
 				generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
 		return femaleSeedSource + "/" + maleSeedSource;
 	}
-	
+
+	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final List<String> malePlotNos, final String femalePlotNo,
+		final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
+		final List<String> generatedSeedSources = new ArrayList<>();
+		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
+		final String femaleSeedSource =
+			generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
+		for(String malePlotNo: malePlotNos) {
+			final String maleSeedSource =
+					generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
+			generatedSeedSources.add(femaleSeedSource + "/" + maleSeedSource);
+		}
+		if(malePlotNos.size() > 1) {
+			return "[" + StringUtils.join(generatedSeedSources, ", ") + "]";
+		}
+		return generatedSeedSources.get(0);
+	}
+
+	//TODO: Remove this and the corresponding test method after the ImportedCrosses#getMalePlotNo is updated
 	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName) {
 		//for single study context where male and female workbook is the same.
 		return this.generateSeedSourceForCross(workbook, malePlotNo, femalePlotNo, maleStudyName, femaleStudyName, workbook);
+	}
+
+	public String generateSeedSourceForCross(final Workbook workbook, final List<String> malePlotNos, final String femalePlotNo,
+		final String maleStudyName, final String femaleStudyName) {
+		//for single study context where male and female workbook is the same.
+		return this.generateSeedSourceForCross(workbook, malePlotNos, femalePlotNo, maleStudyName, femaleStudyName, workbook);
 	}
 
 	protected void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {
