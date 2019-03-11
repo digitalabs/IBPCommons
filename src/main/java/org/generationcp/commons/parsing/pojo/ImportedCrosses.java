@@ -159,18 +159,37 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 			}
 		}));
 	}
+	
+	private String getMaleParentsValue(final List<String> list) {
+		if (list.size() == 1) {
+			return list.get(0);
+		}
+		return MULTIPARENT_BEGIN_CHAR + StringUtils.join(list, ",") + MULTIPARENT_END_CHAR;
+	}
+	
+	public String getMaleDesignationsAsString() {
+		return this.getMaleParentsValue(this.getMaleDesignations());
+	}
 
 	public String getFemaleGid() {
 		return this.femaleParent.getGid().toString();
 	}
 	
-	public List<String> getMaleGids() {
-		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
+	public List<Integer> getMaleGids() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, Integer>() {
 
-			public String apply(ImportedGermplasmParent data) {
-				return data.getGid().toString();
+			public Integer apply(ImportedGermplasmParent data) {
+				return data.getGid();
 			}
 		}));
+	}
+	
+	public String getMaleGidsAsString() {
+		final List<String> gidsString = new ArrayList<>();
+		for (final Integer gid : getMaleGids()) {
+			gidsString.add(gid.toString());
+		}
+		return this.getMaleParentsValue(gidsString);		
 	}
 
 	public String getNotes() {
@@ -223,6 +242,11 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 			}
 		}));
 	}
+	
+	public String getMalePlotNosAsString() {
+		return this.getMaleParentsValue(this.getMalePlotNos());		
+	}
+
 	
 	public boolean isPedigreeDupe() {
 		return ImportedCrosses.PEDIGREE_DUPE_PREFIX.equals(this.duplicatePrefix);
@@ -285,6 +309,10 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 			}
 		}));
 	}
+	
+	public String getMalePedigreeAsString() {
+		return this.getMaleParentsValue(this.getMalePedigree());		
+	}
 
 	public String getFemaleCross() {
 		return this.femaleParent.getCross();
@@ -312,10 +340,15 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public List<ImportedGermplasmParent> getMaleParents() {
 		return maleParents;
 	}
-
 	
 	public void setMaleParents(List<ImportedGermplasmParent> maleParents) {
 		this.maleParents = maleParents;
+	}
+	
+	public void setMaleStudyname(final String maleStudyName) {
+		for (final ImportedGermplasmParent maleParent : maleParents) {
+			maleParent.setStudyName(maleStudyName);
+		}
 	}
 	
 	public Boolean isPolyCross() {
