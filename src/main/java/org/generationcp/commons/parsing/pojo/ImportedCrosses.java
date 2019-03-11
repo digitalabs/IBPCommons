@@ -317,4 +317,8 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	public void setMaleParents(List<ImportedGermplasmParent> maleParents) {
 		this.maleParents = maleParents;
 	}
+	
+	public Boolean isPolyCross() {
+		return this.maleParents.size() > 1;
+	}
 }
