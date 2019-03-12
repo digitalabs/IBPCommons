@@ -128,7 +128,6 @@ public class SeedSourceGenerator {
 	//TODO: Remove this and the corresponding test method after the ImportedCrosses#getMalePlotNo is updated
 	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final String malePlotNo, final String femalePlotNo,
 			final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
-		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
 		final String femaleSeedSource =
 				generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
 		final String maleSeedSource =
@@ -139,7 +138,6 @@ public class SeedSourceGenerator {
 	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final List<String> malePlotNos, final String femalePlotNo,
 		final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
 		final List<String> generatedSeedSources = new ArrayList<>();
-		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
 		final String femaleSeedSource =
 			generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
 		for(String malePlotNo: malePlotNos) {
