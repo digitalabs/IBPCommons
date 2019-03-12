@@ -12,15 +12,24 @@
 package org.generationcp.commons.parsing.pojo;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.middleware.pojos.ListDataProject;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+
 /**
  * The Class ImportedCrosses.
  */
 public class ImportedCrosses extends ImportedGermplasm implements Serializable {
+	
+	public static final String MULTIPARENT_BEGIN_CHAR = "[";
+	public static final String MULTIPARENT_END_CHAR = "[";
 
 	/**
 	 * The Constant serialVersionUID.
@@ -37,48 +46,14 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	private String notes;
 	private Integer crossingDate;
 	private String rawBreedingMethod;
-
-	/**
-	 * The female desig.
-	 */
-	private String femaleDesig;
-
-	/**
-	 * The male desig.
-	 */
-	private String maleDesig;
-
-	/**
-	 * The female gid.
-	 */
-	private String femaleGid;
-
-	/**
-	 * The male gid.
-	 */
-	private String maleGid;
-
-	private String femalePedigree;
-
-	private String malePedigree;
+	
+	private ImportedGermplasmParent femaleParent;
+	private List<ImportedGermplasmParent> maleParents = new ArrayList<>();
 
 	private String duplicate;
-
-	private String femalePlotNo;
-
-	private String malePlotNo;
-
 	private String duplicatePrefix;
 
-	private String maleStudyName;
-
-	private String femaleStudyName;
-
 	private Set<Integer> duplicateEntries;
-
-	private String femaleCross;
-
-	private String maleCross;
 
 	/**
 	 * Instantiates a new imported germplasm.
@@ -113,32 +88,31 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		super(entryId, desig, gid, cross, source, entryCode, check);
 	}
 
-	public ImportedCrosses(ListDataProject femaleListData, ListDataProject maleListData, String femaleStudyName, String maleStudyName,
+	public ImportedCrosses(ListDataProject femaleListData, List<ListDataProject> maleListData, String femaleStudyName, String maleStudyName,
 			String femalePlotNo, String malePlotNo, int entryId) {
-		this.setFemaleDesig(femaleListData.getDesignation());
-		this.setMaleDesig(maleListData.getDesignation());
-		this.setFemaleGid(femaleListData.getGermplasmId().toString());
-		this.setMaleGid(maleListData.getGermplasmId().toString());
-		this.setFemalePlotNo(femalePlotNo);
-		this.setMalePlotNo(malePlotNo);
 		this.setEntryId(entryId);
-		this.setMaleStudyName(maleStudyName);
-		this.setFemaleStudyName(femaleStudyName);
-
+		this.femaleParent = new ImportedGermplasmParent(femaleListData.getGermplasmId(), femaleListData.getDesignation(), femalePlotNo, femaleStudyName);
+	
+		for (final ListDataProject data : maleListData) {
+			final ImportedGermplasmParent maleParent = new ImportedGermplasmParent(data.getGermplasmId(), data.getDesignation(), malePlotNo, maleStudyName);
+			this.maleParents.add(maleParent);
+		}
+		
+		// FIXME : handle for multiple parents
 		// Parentage: "female designation / male designation"
-		this.setCross(femaleListData.getDesignation() + " / " + maleListData.getDesignation());
+		this.setCross(femaleListData.getDesignation() + " / " + maleListData.get(0).getDesignation());
+	}
+	
+	public ImportedCrosses(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String check,
+			Integer breedingMethodId) {
+
+		super(entryId, desig, gid, cross, source, entryCode, check, breedingMethodId);
 	}
 
 	public void setOptionalFields(String rawBreedingMethod, Integer crossingDate, String notes) {
 		this.rawBreedingMethod = rawBreedingMethod;
 		this.crossingDate = crossingDate;
 		this.notes = notes;
-	}
-
-	public ImportedCrosses(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String check,
-			Integer breedingMethodId) {
-
-		super(entryId, desig, gid, cross, source, entryCode, check, breedingMethodId);
 	}
 
 	/*
@@ -148,13 +122,11 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "ImportedCrosses [entryId=" + this.getEntryId() + ", desig=" + this.getDesig() + ", maleDesig=" + this.maleDesig
-				+ ", femaleDesig=" + this.femaleDesig + ", maleGid=" + this.maleGid + ", femaleGid=" + this.femaleGid + ", gid="
-				+ this.getGid() + ", cross=" + this.getCross() + ", source=" + this.getSource() + ", entryCode=" + this.getEntryCode()
-				+ ", check=" + this.getEntryTypeValue() + ", breedingMethodId=" + this.getBreedingMethodId() + ", gpid1=" + this.getGpid1()
-				+ ", gpid2=" + this.getGpid2() + ", gnpgs=" + this.getGnpgs() + ", names=" + this.getNames() + ", malePedigree: "
-	  			+ this.getMalePedigree() + " , femalePedigree: " + this.getFemalePedigree() + ", maleCross: , " + this.getMaleCross() +""
-				+ ", femaleCross: " + this.getFemaleCross() + "]";
+		return "ImportedCrosses [entryId=" + this.getEntryId() + ", desig=" + this.getDesig() + ", femaleParent=" + this.femaleParent
+				+ ", maleParents=" + this.maleParents + ", gid=" + this.getGid() + ", cross=" + this.getCross() + ", source="
+				+ this.getSource() + ", entryCode=" + this.getEntryCode() + ", check=" + this.getEntryTypeValue() + ", breedingMethodId="
+				+ this.getBreedingMethodId() + ", gpid1=" + this.getGpid1() + ", gpid2=" + this.getGpid2() + ", gnpgs=" + this.getGnpgs()
+				+ ", names=" + this.getNames() + "]";
 	}
 
 	@Override
@@ -170,45 +142,54 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		rec.setEntryTypeCategoricalID(this.getEntryTypeCategoricalID());
 		rec.setEntryTypeName(this.getEntryTypeName());
 		rec.setIndex(this.getIndex());
-		rec.setFemaleDesig(this.femaleDesig);
-		rec.setMaleDesig(this.femaleDesig);
-		rec.setFemaleGid(this.femaleGid);
-		rec.setMaleGid(this.femaleGid);
-		rec.setFemalePedigree(this.getFemalePedigree());
-	  	rec.setMalePedigree(this.getMalePedigree());
+		rec.setFemaleParent(this.femaleParent);
+		rec.setMaleParents(this.maleParents);
 		return rec;
 	}
 
-	public String getFemaleDesig() {
-		return this.femaleDesig;
+	public String getFemaleDesignation() {
+		return this.femaleParent.getDesignation();
 	}
+	
+	public List<String> getMaleDesignations() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
 
-	public void setFemaleDesig(String femaleDesig) {
-		this.femaleDesig = femaleDesig;
+			public String apply(ImportedGermplasmParent data) {
+				return data.getDesignation();
+			}
+		}));
 	}
-
-	public String getMaleDesig() {
-		return this.maleDesig;
+	
+	private String getMaleParentsValue(final List<String> list) {
+		if (list.size() == 1) {
+			return list.get(0);
+		}
+		return MULTIPARENT_BEGIN_CHAR + StringUtils.join(list, ",") + MULTIPARENT_END_CHAR;
 	}
-
-	public void setMaleDesig(String maleDesig) {
-		this.maleDesig = maleDesig;
+	
+	public String getMaleDesignationsAsString() {
+		return this.getMaleParentsValue(this.getMaleDesignations());
 	}
 
 	public String getFemaleGid() {
-		return this.femaleGid;
+		return this.femaleParent.getGid().toString();
 	}
+	
+	public List<Integer> getMaleGids() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, Integer>() {
 
-	public void setFemaleGid(String femaleGid) {
-		this.femaleGid = femaleGid;
+			public Integer apply(ImportedGermplasmParent data) {
+				return data.getGid();
+			}
+		}));
 	}
-
-	public String getMaleGid() {
-		return this.maleGid;
-	}
-
-	public void setMaleGid(String maleGid) {
-		this.maleGid = maleGid;
+	
+	public String getMaleGidsAsString() {
+		final List<String> gidsString = new ArrayList<>();
+		for (final Integer gid : getMaleGids()) {
+			gidsString.add(gid.toString());
+		}
+		return this.getMaleParentsValue(gidsString);		
 	}
 
 	public String getNotes() {
@@ -250,21 +231,23 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	}
 
 	public String getFemalePlotNo() {
-		return this.femalePlotNo;
+		return this.femaleParent.getPlotNo();
 	}
 
-	public void setFemalePlotNo(String femalePlotNo) {
-		this.femalePlotNo = femalePlotNo;
+	public List<String> getMalePlotNos() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
+
+			public String apply(ImportedGermplasmParent data) {
+				return data.getPlotNo();
+			}
+		}));
+	}
+	
+	public String getMalePlotNosAsString() {
+		return this.getMaleParentsValue(this.getMalePlotNos());		
 	}
 
-	public String getMalePlotNo() {
-		return this.malePlotNo;
-	}
-
-	public void setMalePlotNo(String malePlotNo) {
-		this.malePlotNo = malePlotNo;
-	}
-
+	
 	public boolean isPedigreeDupe() {
 		return ImportedCrosses.PEDIGREE_DUPE_PREFIX.equals(this.duplicatePrefix);
 	}
@@ -297,20 +280,17 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		this.duplicatePrefix = duplicatePrefix;
 	}
 
-	public String getMaleStudyName() {
-		return this.maleStudyName;
-	}
-
-	public void setMaleStudyName(String maleStudyName) {
-		this.maleStudyName = maleStudyName;
-	}
-
 	public String getFemaleStudyName() {
-		return this.femaleStudyName;
+		return this.femaleParent.getStudyName();
 	}
+	
+	public List<String> getMaleStudyNames() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
 
-	public void setFemaleStudyName(String femaleStudyName) {
-		this.femaleStudyName = femaleStudyName;
+			public String apply(ImportedGermplasmParent data) {
+				return data.getStudyName();
+			}
+		}));
 	}
 
 	public boolean isBreedingMethodInformationAvailable() {
@@ -318,36 +298,60 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	}
 
 	public String getFemalePedigree() {
-	  return femalePedigree;
+	  return this.femaleParent.getPedigree();
 	}
+	
+	public List<String> getMalePedigree() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
 
-	public void setFemalePedigree(final String femalePedigree) {
-	  this.femalePedigree = femalePedigree;
+			public String apply(ImportedGermplasmParent data) {
+				return data.getPedigree();
+			}
+		}));
 	}
-
-	public String getMalePedigree() {
-	  return malePedigree;
-	}
-
-	public void setMalePedigree(final String malePedigree) {
-	  this.malePedigree = malePedigree;
+	
+	public String getMalePedigreeAsString() {
+		return this.getMaleParentsValue(this.getMalePedigree());		
 	}
 
 	public String getFemaleCross() {
-		return femaleCross;
+		return this.femaleParent.getCross();
+	}
+	
+	public List<String> getMaleCross() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
+
+			public String apply(ImportedGermplasmParent data) {
+				return data.getCross();
+			}
+		}));
 	}
 
-	public ImportedCrosses setFemaleCross(final String femaleCross) {
-		this.femaleCross = femaleCross;
-		return this;
+	public ImportedGermplasmParent getFemaleParent() {
+		return femaleParent;
 	}
 
-	public String getMaleCross() {
-		return maleCross;
+	
+	public void setFemaleParent(ImportedGermplasmParent femaleParent) {
+		this.femaleParent = femaleParent;
 	}
 
-	public ImportedCrosses setMaleCross(final String maleCross) {
-		this.maleCross = maleCross;
-		return this;
+	
+	public List<ImportedGermplasmParent> getMaleParents() {
+		return maleParents;
+	}
+	
+	public void setMaleParents(List<ImportedGermplasmParent> maleParents) {
+		this.maleParents = maleParents;
+	}
+	
+	public void setMaleStudyname(final String maleStudyName) {
+		for (final ImportedGermplasmParent maleParent : maleParents) {
+			maleParent.setStudyName(maleStudyName);
+		}
+	}
+	
+	public Boolean isPolyCross() {
+		return this.maleParents.size() > 1;
 	}
 }
