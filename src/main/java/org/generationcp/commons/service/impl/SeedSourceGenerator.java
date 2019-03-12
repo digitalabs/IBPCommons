@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 public class SeedSourceGenerator {
 
 	private static final String INSTANCE_NUMBER = "1";
+	private static final String SEEDSOURCE_SEPARATOR = "/";
 
 	@Resource
 	private GermplasmNamingProperties germplasmNamingProperties;
@@ -132,7 +133,7 @@ public class SeedSourceGenerator {
 				generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
 		final String maleSeedSource =
 				generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
-		return femaleSeedSource + "/" + maleSeedSource;
+		return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + maleSeedSource;
 	}
 
 	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final List<String> malePlotNos, final String femalePlotNo,
@@ -143,12 +144,12 @@ public class SeedSourceGenerator {
 		for(String malePlotNo: malePlotNos) {
 			final String maleSeedSource =
 					generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
-			generatedSeedSources.add(femaleSeedSource + "/" + maleSeedSource);
+			generatedSeedSources.add(maleSeedSource);
 		}
 		if(malePlotNos.size() > 1) {
-			return "[" + StringUtils.join(generatedSeedSources, ", ") + "]";
+			return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + "[" + StringUtils.join(generatedSeedSources, ", ") + "]";
 		}
-		return generatedSeedSources.get(0);
+		return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + generatedSeedSources.get(0);
 	}
 
 	//TODO: Remove this and the corresponding test method after the ImportedCrosses#getMalePlotNo is updated

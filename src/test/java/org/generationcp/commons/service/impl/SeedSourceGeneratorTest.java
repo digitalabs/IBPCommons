@@ -189,9 +189,9 @@ public class SeedSourceGeneratorTest {
 			this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNos, "2", "StudyName", "StudyName");
 		List<String> expectedResultsString = new ArrayList<>();
 		for(String malePlotNo: malePlotNos) {
-			expectedResultsString.add("INDDry season-StudyName-2/INDDry season-StudyName-" + malePlotNo);
+			expectedResultsString.add("INDDry season-StudyName-" + malePlotNo);
 		}
-		String expectedString = "[" + StringUtils.join(expectedResultsString, ", ") + "]";
+		String expectedString = "INDDry season-StudyName-2/[" + StringUtils.join(expectedResultsString, ", ") + "]";
 		Assert.assertEquals(expectedString, generatedSeedSources);
 
 		setCurrentCrop("rice");
@@ -199,9 +199,9 @@ public class SeedSourceGeneratorTest {
 			this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNos, "2", "StudyName", "StudyName");
 		expectedResultsString = new ArrayList<>();
 		for(String malePlotNo: malePlotNos) {
-			expectedResultsString.add("StudyName:IND:Dry season:2:/StudyName:IND:Dry season:"+malePlotNo+":");
+			expectedResultsString.add("StudyName:IND:Dry season:"+malePlotNo+":");
 		}
-		expectedString = "[" + StringUtils.join(expectedResultsString, ", ") + "]";
+		expectedString = "StudyName:IND:Dry season:2:/[" + StringUtils.join(expectedResultsString, ", ") + "]";
 		Assert.assertEquals(expectedString, generatedSeedSources);
 
 		//For scenario where there's only one male plot number
@@ -275,9 +275,9 @@ public class SeedSourceGeneratorTest {
 			this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, malePlotNos, "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
 		List<String> expectedResultsString = new ArrayList<>();
 		for(String malePlotNo: malePlotNos) {
-			expectedResultsString.add("INDDry season-femaleStudyName-2/CIMMYTWet season-maleStudyName-" + malePlotNo);
+			expectedResultsString.add("CIMMYTWet season-maleStudyName-"+malePlotNo);
 		}
-		String expectedString = "[" + StringUtils.join(expectedResultsString, ", ") + "]";
+		String expectedString = "INDDry season-femaleStudyName-2/[" + StringUtils.join(expectedResultsString, ", ") + "]";
 		Assert.assertEquals(expectedString, generatedSeedSources);
 
 		setCurrentCrop("rice");
@@ -285,9 +285,9 @@ public class SeedSourceGeneratorTest {
 			this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, malePlotNos, "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
 		expectedResultsString = new ArrayList<>();
 		for(String malePlotNo: malePlotNos) {
-			expectedResultsString.add("femaleStudyName:IND:Dry season:2:/maleStudyName:CIMMYT:Wet season:"+malePlotNo+":");
+			expectedResultsString.add("maleStudyName:CIMMYT:Wet season:"+malePlotNo+":");
 		}
-		expectedString = "[" + StringUtils.join(expectedResultsString, ", ") + "]";
+		expectedString = "femaleStudyName:IND:Dry season:2:/[" + StringUtils.join(expectedResultsString, ", ") + "]";
 		Assert.assertEquals(expectedString, generatedSeedSources);
 
 		//For scenario where there's only one male plot number
