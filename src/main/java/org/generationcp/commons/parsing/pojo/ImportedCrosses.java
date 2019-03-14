@@ -29,7 +29,7 @@ import com.google.common.collect.Lists;
 public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 	
 	public static final String MULTIPARENT_BEGIN_CHAR = "[";
-	public static final String MULTIPARENT_END_CHAR = "[";
+	public static final String MULTIPARENT_END_CHAR = "]";
 
 	/**
 	 * The Constant serialVersionUID.
