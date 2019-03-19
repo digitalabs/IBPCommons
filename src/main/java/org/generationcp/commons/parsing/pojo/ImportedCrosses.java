@@ -13,6 +13,7 @@ package org.generationcp.commons.parsing.pojo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -88,19 +89,23 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		super(entryId, desig, gid, cross, source, entryCode, check);
 	}
 
-	public ImportedCrosses(ListDataProject femaleListData, List<ListDataProject> maleListData, String femaleStudyName, String maleStudyName,
-			String femalePlotNo, String malePlotNo, int entryId) {
+	public ImportedCrosses(final ListDataProject femaleListData, final List<ListDataProject> maleListData, final String femaleStudyName,
+			final String maleStudyName, final Integer femalePlotNo, final List<Integer> malePlotNos, final int entryId) {
 		this.setEntryId(entryId);
-		this.femaleParent = new ImportedGermplasmParent(femaleListData.getGermplasmId(), femaleListData.getDesignation(), femalePlotNo, femaleStudyName);
-	
-		for (final ListDataProject data : maleListData) {
-			final ImportedGermplasmParent maleParent = new ImportedGermplasmParent(data.getGermplasmId(), data.getDesignation(), malePlotNo, maleStudyName);
+		this.femaleParent = new ImportedGermplasmParent(femaleListData.getGermplasmId(), femaleListData.getDesignation(), femalePlotNo,
+				femaleStudyName);
+
+		final Iterator<Integer> malePlotIterator = malePlotNos.iterator();
+		final Iterator<ListDataProject> maleListDataIterator = maleListData.iterator();
+		while (malePlotIterator.hasNext()) {
+			final Integer malePlotNo = malePlotIterator.next();
+			final ListDataProject maleListDataProject = maleListDataIterator.next();
+			final ImportedGermplasmParent maleParent = new ImportedGermplasmParent(maleListDataProject.getGermplasmId(),
+					maleListDataProject.getDesignation(), malePlotNo, maleStudyName);
 			this.maleParents.add(maleParent);
 		}
-		
-		// FIXME : handle for multiple parents
-		// Parentage: "female designation / male designation"
-		this.setCross(femaleListData.getDesignation() + " / " + maleListData.get(0).getDesignation());
+
+		this.setCross(femaleListData.getDesignation() + " / " + this.getMaleParentsValue(this.getMaleDesignations()));
 	}
 	
 	public ImportedCrosses(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String check,
