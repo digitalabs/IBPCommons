@@ -7,7 +7,7 @@ public class ImportedGermplasmParent extends GermplasmParent {
 
 	private static final long serialVersionUID = 1L;
 
-	private String plotNo;
+	private Integer plotNo;
 
 	private String studyName;
 
@@ -17,17 +17,17 @@ public class ImportedGermplasmParent extends GermplasmParent {
 		super(gid, designation, pedigree);
 	}
 
-	public ImportedGermplasmParent(final Integer gid, final String designation, final String plotNo, final String studyName) {
+	public ImportedGermplasmParent(final Integer gid, final String designation, final Integer plotNo, final String studyName) {
 		super(gid, designation, null);
 		this.plotNo = plotNo;
 		this.studyName = studyName;
 	}
 
-	public String getPlotNo() {
+	public Integer getPlotNo() {
 		return this.plotNo;
 	}
 
-	public void setPlotNo(final String plotNo) {
+	public void setPlotNo(final Integer plotNo) {
 		this.plotNo = plotNo;
 	}
 

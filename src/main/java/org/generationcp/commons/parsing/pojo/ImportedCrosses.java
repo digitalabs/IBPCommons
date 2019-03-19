@@ -230,21 +230,30 @@ public class ImportedCrosses extends ImportedGermplasm implements Serializable {
 		this.duplicate = duplicate;
 	}
 
-	public String getFemalePlotNo() {
+	public Integer getFemalePlotNo() {
 		return this.femaleParent.getPlotNo();
 	}
 
-	public List<String> getMalePlotNos() {
-		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
+	public List<Integer> getMalePlotNos() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, Integer>() {
 
-			public String apply(ImportedGermplasmParent data) {
+			public Integer apply(ImportedGermplasmParent data) {
 				return data.getPlotNo();
 			}
 		}));
 	}
 	
-	public String getMalePlotNosAsString() {
-		return this.getMaleParentsValue(this.getMalePlotNos());		
+	public List<String> getMalePlotNumbersAsStringList() {
+		return Lists.newArrayList(Iterables.transform(this.maleParents, new Function<ImportedGermplasmParent, String>() {
+
+			public String apply(ImportedGermplasmParent data) {
+				return data.getPlotNo().toString();
+			}
+		}));
+	}
+	
+	public String getConcatendatedMalePlotNosAsString() {
+		return this.getMaleParentsValue(this.getMalePlotNumbersAsStringList());		
 	}
 
 	
