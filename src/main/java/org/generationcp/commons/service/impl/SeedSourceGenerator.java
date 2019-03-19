@@ -23,6 +23,8 @@ import javax.annotation.Resource;
 
 public class SeedSourceGenerator {
 
+	private static final String MULTIPARENT_BEGIN_CHAR = "[";
+	private static final String MULTIPARENT_END_CHAR = "]";
 	private static final String INSTANCE_NUMBER = "1";
 	private static final String SEEDSOURCE_SEPARATOR = "/";
 
@@ -126,16 +128,6 @@ public class SeedSourceGenerator {
 				this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
-	//TODO: Remove this and the corresponding test method after the ImportedCrosses#getMalePlotNo is updated
-	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final String malePlotNo, final String femalePlotNo,
-			final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
-		final String femaleSeedSource =
-				generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
-		final String maleSeedSource =
-				generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
-		return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + maleSeedSource;
-	}
-
 	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final List<String> malePlotNos, final String femalePlotNo,
 		final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
 		final List<String> generatedSeedSources = new ArrayList<>();
@@ -147,16 +139,10 @@ public class SeedSourceGenerator {
 			generatedSeedSources.add(maleSeedSource);
 		}
 		if(malePlotNos.size() > 1) {
-			return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + "[" + StringUtils.join(generatedSeedSources, ", ") + "]";
+			return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + SeedSourceGenerator.MULTIPARENT_BEGIN_CHAR
+					+ StringUtils.join(generatedSeedSources, ", ") + SeedSourceGenerator.MULTIPARENT_END_CHAR;
 		}
 		return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + generatedSeedSources.get(0);
-	}
-
-	//TODO: Remove this and the corresponding test method after the ImportedCrosses#getMalePlotNo is updated
-	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
-			final String maleStudyName, final String femaleStudyName) {
-		//for single study context where male and female workbook is the same.
-		return this.generateSeedSourceForCross(workbook, malePlotNo, femalePlotNo, maleStudyName, femaleStudyName, workbook);
 	}
 
 	public String generateSeedSourceForCross(final Workbook workbook, final List<String> malePlotNos, final String femalePlotNo,

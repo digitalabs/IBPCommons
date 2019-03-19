@@ -147,30 +147,6 @@ public class SeedSourceGeneratorTest {
 	}
 
 	@Test
-	public void testGenerateSeedSourceForCrosses() {
-		final Workbook workbook = new Workbook();
-		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyName("StudyName");
-		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
-		studyDetails.setId(1);
-		workbook.setStudyDetails(studyDetails);
-
-		final MeasurementVariable locationMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.LOCATION_ABBR.getId(), "IND");
-		final MeasurementVariable seasonMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.SEASON_VAR.getId(), Season.DRY.getDefinition());
-		workbook.setConditions(Lists.newArrayList(locationMV, seasonMV));
-
-		setCurrentCrop("maize");
-		String crossSeedSource =
-				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "StudyName", "StudyName");
-		Assert.assertEquals("INDDry season-StudyName-2/INDDry season-StudyName-1", crossSeedSource);
-		
-		setCurrentCrop("rice");
-		crossSeedSource =
-				this.seedSourceGenerator.generateSeedSourceForCross(workbook, "1", "2", "StudyName", "StudyName");
-		Assert.assertEquals("StudyName:IND:Dry season:2:/StudyName:IND:Dry season:1:", crossSeedSource);
-	}
-
-	@Test
 	public void testGenerateSeedSourceForCross() {
 		final Workbook workbook = new Workbook();
 		final StudyDetails studyDetails = new StudyDetails();
@@ -208,41 +184,6 @@ public class SeedSourceGeneratorTest {
 		generatedSeedSources =
 			this.seedSourceGenerator.generateSeedSourceForCross(workbook, Arrays.asList("1"), "2", "StudyName", "StudyName");
 		Assert.assertEquals("StudyName:IND:Dry season:2:/StudyName:IND:Dry season:1:", generatedSeedSources);
-	}
-
-	@Test
-	public void testGenerateSeedSourceForCrossesWhereMaleAndFemaleStudyAreDifferent() {
-		final Workbook femaleStudyWorkbook = new Workbook();
-		final StudyDetails studyDetails = new StudyDetails();
-		studyDetails.setStudyName("femaleStudyName");
-		studyDetails.setStudyType(StudyTypeDto.getNurseryDto());
-		studyDetails.setId(1);
-		femaleStudyWorkbook.setStudyDetails(studyDetails);
-
-		final MeasurementVariable locationMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.LOCATION_ABBR.getId(), "IND");
-		final MeasurementVariable seasonMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.SEASON_VAR.getId(), Season.DRY.getDefinition());
-		femaleStudyWorkbook.setConditions(Lists.newArrayList(locationMV, seasonMV));
-
-		final Workbook maleStudyWorkbook = new Workbook();
-		final StudyDetails maleStudyDetails = new StudyDetails();
-		maleStudyDetails.setStudyName("maleStudyName");
-		maleStudyDetails.setStudyType(StudyTypeDto.getNurseryDto());
-		maleStudyDetails.setId(1);
-		maleStudyWorkbook.setStudyDetails(maleStudyDetails);
-
-		final MeasurementVariable malelocationMV = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.LOCATION_ABBR.getId(), "CIMMYT");
-		final MeasurementVariable maleSeasonMv = MeasurementVariableTestDataInitializer.createMeasurementVariable(TermId.SEASON_VAR.getId(), Season.WET.getDefinition());
-		maleStudyWorkbook.setConditions(Lists.newArrayList(malelocationMV, maleSeasonMv));
-
-		setCurrentCrop("maize");
-		String crossSeedSource =
-				this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, "1", "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
-		Assert.assertEquals("INDDry season-femaleStudyName-2/CIMMYTWet season-maleStudyName-1", crossSeedSource);
-		
-		setCurrentCrop("rice");
-		crossSeedSource =
-				this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, "1", "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
-		Assert.assertEquals("femaleStudyName:IND:Dry season:2:/maleStudyName:CIMMYT:Wet season:1:", crossSeedSource);
 	}
 
 	@Test
