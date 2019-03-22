@@ -1,9 +1,11 @@
 package org.generationcp.commons.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyCodeGenerationService;
 import org.generationcp.commons.service.KeyComponent;
@@ -21,7 +23,10 @@ import javax.annotation.Resource;
 
 public class SeedSourceGenerator {
 
+	private static final String MULTIPARENT_BEGIN_CHAR = "[";
+	private static final String MULTIPARENT_END_CHAR = "]";
 	private static final String INSTANCE_NUMBER = "1";
+	private static final String SEEDSOURCE_SEPARATOR = "/";
 
 	@Resource
 	private GermplasmNamingProperties germplasmNamingProperties;
@@ -123,20 +128,27 @@ public class SeedSourceGenerator {
 				this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
-	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final String malePlotNo, final String femalePlotNo,
-			final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
-		// Cross scenario is currently only for Nurseries, hard coding instance number to 1 is fine until that is not the case.
+	public String generateSeedSourceForCross(final Workbook femaleStudyWorkbook, final List<String> malePlotNos, final String femalePlotNo,
+		final String maleStudyName, final String femaleStudyName, final Workbook maleStudyWorkbook) {
+		final List<String> generatedSeedSources = new ArrayList<>();
 		final String femaleSeedSource =
-				generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
-		final String maleSeedSource =
-				generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
-		return femaleSeedSource + "/" + maleSeedSource;
+			generateSeedSource(femaleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, femalePlotNo, femaleStudyName, null);
+		for(String malePlotNo: malePlotNos) {
+			final String maleSeedSource =
+					generateSeedSource(maleStudyWorkbook, SeedSourceGenerator.INSTANCE_NUMBER, null, malePlotNo, maleStudyName, null);
+			generatedSeedSources.add(maleSeedSource);
+		}
+		if(malePlotNos.size() > 1) {
+			return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + SeedSourceGenerator.MULTIPARENT_BEGIN_CHAR
+					+ StringUtils.join(generatedSeedSources, ", ") + SeedSourceGenerator.MULTIPARENT_END_CHAR;
+		}
+		return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + generatedSeedSources.get(0);
 	}
-	
-	public String generateSeedSourceForCross(final Workbook workbook, final String malePlotNo, final String femalePlotNo,
-			final String maleStudyName, final String femaleStudyName) {
+
+	public String generateSeedSourceForCross(final Workbook workbook, final List<String> malePlotNos, final String femalePlotNo,
+		final String maleStudyName, final String femaleStudyName) {
 		//for single study context where male and female workbook is the same.
-		return this.generateSeedSourceForCross(workbook, malePlotNo, femalePlotNo, maleStudyName, femaleStudyName, workbook);
+		return this.generateSeedSourceForCross(workbook, malePlotNos, femalePlotNo, maleStudyName, femaleStudyName, workbook);
 	}
 
 	protected void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {

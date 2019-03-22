@@ -5,12 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Methods;
 import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.pojos.Progenitor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,18 +23,18 @@ public class CrossingUtilTest {
 	private final Integer methodId = 99;
 	private final Integer defaultTypeId = 5;
 	private GermplasmDataManager germplasmDataManager;
-	private List<Pair<Germplasm, Name>> germplasmPairs;
+	private List<Triple<Germplasm, Name, List<Progenitor>>> germplasmTriples;
 	private Name name;
 
 	@Before
 	public void setUp() {
 		this.germplasmDataManager = Mockito.mock(GermplasmDataManager.class);
-		this.germplasmPairs = new ArrayList<>();
+		this.germplasmTriples = new ArrayList<>();
 		this.name = new Name();
 		this.name.setTypeId(this.defaultTypeId);
 		final Germplasm germplasm = new Germplasm();
 		germplasm.setMethodId(this.methodId);
-		this.germplasmPairs.add(new ImmutablePair<>(germplasm, this.name));
+		this.germplasmTriples.add(new ImmutableTriple<Germplasm, Name, List<Progenitor>>(germplasm, this.name, new ArrayList<Progenitor>()));
 	}
 
 	/**
@@ -207,7 +209,7 @@ public class CrossingUtilTest {
 		final Method method = new Method();
 		method.setSnametype(88);
 		Mockito.doReturn(method).when(this.germplasmDataManager).getMethodByID(this.methodId);
-		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.germplasmPairs, this.defaultTypeId);
+		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.germplasmTriples, this.defaultTypeId);
 		Assert.assertEquals("Sname type should be the same as the method snametype", method.getSnametype(), this.name.getTypeId());
 	}
 
@@ -216,7 +218,7 @@ public class CrossingUtilTest {
 		final Method method = new Method();
 		method.setSnametype(null);
 		Mockito.doReturn(method).when(this.germplasmDataManager).getMethodByID(this.methodId);
-		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.germplasmPairs, this.defaultTypeId);
+		CrossingUtil.applyMethodNameType(this.germplasmDataManager, this.germplasmTriples, this.defaultTypeId);
 		Assert.assertEquals("Should use the default name type", this.defaultTypeId, this.name.getTypeId());
 	}
 }
