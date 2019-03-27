@@ -298,10 +298,21 @@
 				<directory>src/main/webapp</directory>
 			</resource>
 			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>**</include>
 				</includes>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
 			</resource>
 		</resources>
 
