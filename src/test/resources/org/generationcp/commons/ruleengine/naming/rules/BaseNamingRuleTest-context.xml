@@ -12,7 +12,7 @@
 			http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
 
 	<!-- Declare property file locations  -->
-	<context:property-placeholder location="classpath:test.properties, classpath:naming.properties" />
+	<context:property-placeholder location="classpath:test.properties, classpath:crossing.properties" />
 
 
    	<bean class="org.generationcp.commons.ruleengine.naming.expression.ComponentPostProcessor">

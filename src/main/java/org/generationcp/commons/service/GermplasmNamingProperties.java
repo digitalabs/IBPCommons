@@ -2,7 +2,7 @@
 package org.generationcp.commons.service;
 
 /**
- * This bean is typically populated in Spring application context using values in naming.properties file.
+ * This bean is typically populated in Spring application context using values in crossing.properties file.
  */
 public class GermplasmNamingProperties {
 
