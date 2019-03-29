@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;

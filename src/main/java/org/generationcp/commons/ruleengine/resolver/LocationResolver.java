@@ -1,10 +1,9 @@
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.resolver;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
-import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;

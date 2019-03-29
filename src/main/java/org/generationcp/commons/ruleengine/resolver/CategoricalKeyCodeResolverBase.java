@@ -1,8 +1,7 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.resolver;
 
 import org.apache.commons.lang3.StringUtils;
-import org.generationcp.commons.service.KeyComponentValueResolver;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;

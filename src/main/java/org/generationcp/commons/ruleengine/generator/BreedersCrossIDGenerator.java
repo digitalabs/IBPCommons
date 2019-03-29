@@ -1,9 +1,11 @@
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
-import org.generationcp.commons.service.KeyCodeGenerationService;
-import org.generationcp.commons.service.KeyComponent;
-import org.generationcp.commons.service.KeyComponentValueResolver;
+import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
+import org.generationcp.commons.ruleengine.resolver.HabitatDesignationResolver;
+import org.generationcp.commons.ruleengine.resolver.LocationResolver;
+import org.generationcp.commons.ruleengine.resolver.ProjectPrefixResolver;
+import org.generationcp.commons.ruleengine.resolver.SeasonResolver;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;

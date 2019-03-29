@@ -1,6 +1,7 @@
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import junit.framework.Assert;
+import org.generationcp.commons.ruleengine.generator.SeedSourceTemplateProvider;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.junit.Test;

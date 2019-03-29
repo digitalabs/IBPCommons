@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.resolver;
 
 import java.util.List;
 
@@ -13,18 +13,18 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ProjectPrefixResolver extends CategoricalKeyCodeResolverBase {
+public class HabitatDesignationResolver extends CategoricalKeyCodeResolverBase {
 
-	private static final Logger LOG = LoggerFactory.getLogger(ProjectPrefixResolver.class);
+	private static final Logger LOG = LoggerFactory.getLogger(HabitatDesignationResolver.class);
 
-	public ProjectPrefixResolver(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
+	public HabitatDesignationResolver(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
 			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyTypeDto studyType) {
 		super(ontologyVariableDataManager, contextUtil, conditions, trailInstanceObservation, studyType);
 	}
 
 	@Override
 	protected TermId getKeyCodeId() {
-		return TermId.PROJECT_PREFIX;
+		return TermId.HABITAT_DESIGNATION;
 	}
 
 	@Override
@@ -34,8 +34,8 @@ public class ProjectPrefixResolver extends CategoricalKeyCodeResolverBase {
 
 	@Override
 	protected String getDefaultValue() {
-		ProjectPrefixResolver.LOG.debug("No Project_Prefix(3001) variable was found or it is present but no value is set."
-				+ "Resolving Program value to be an empty string.");
+		HabitatDesignationResolver.LOG.debug("No Habitat_Designation(3002) variable was found or it is present but no value is set."
+				+ "Resolving Habitat value to be an empty string.");
 		return "";
 	}
 

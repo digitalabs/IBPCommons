@@ -51,7 +51,7 @@
         <property name="breedersCrossIDStudy" value="${breeders.cross.id.study}" />
 	</bean>
 
-    <bean id="breedersCrossIDGenerator" class="org.generationcp.commons.service.impl.BreedersCrossIDGenerator">
+    <bean id="breedersCrossIDGenerator" class="org.generationcp.commons.ruleengine.generator.BreedersCrossIDGenerator">
 	</bean>
 
 	<bean id="workbenchHibernateSessionProvider"

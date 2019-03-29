@@ -1,4 +1,7 @@
-package org.generationcp.commons.service;
+package org.generationcp.commons.ruleengine.generator;
+
+import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
+import org.generationcp.commons.service.KeyTemplateProvider;
 
 import java.util.Map;
 

@@ -1,4 +1,4 @@
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
@@ -23,9 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 

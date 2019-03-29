@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.service.KeyTemplateProvider;

@@ -1,4 +1,4 @@
-package org.generationcp.commons.service;
+package org.generationcp.commons.ruleengine.resolver;
 
 /**
  * Interface to be implemented by classes that act as value resolvers for various placeholders in key code templates.

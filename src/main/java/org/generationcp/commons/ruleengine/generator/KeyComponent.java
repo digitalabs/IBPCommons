@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service;
+package org.generationcp.commons.ruleengine.generator;
 
 /**
  * Entities or events that are used as placeholders in key code templates.

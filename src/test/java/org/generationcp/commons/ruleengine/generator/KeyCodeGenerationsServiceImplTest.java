@@ -1,12 +1,10 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.generationcp.commons.service.KeyCodeGenerationService;
-import org.generationcp.commons.service.KeyComponent;
-import org.generationcp.commons.service.KeyComponentValueResolver;
+import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
 import org.generationcp.commons.service.KeyTemplateProvider;
 import org.junit.Test;
 

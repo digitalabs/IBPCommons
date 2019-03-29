@@ -1,4 +1,4 @@
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import junit.framework.Assert;
 import org.generationcp.commons.service.GermplasmNamingProperties;

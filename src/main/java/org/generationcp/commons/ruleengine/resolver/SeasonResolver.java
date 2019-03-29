@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.resolver;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

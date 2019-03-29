@@ -3,7 +3,7 @@ package org.generationcp.commons.ruleengine.naming.expression;
 import java.util.List;
 
 import org.generationcp.commons.pojo.AdvancingSource;
-import org.generationcp.commons.service.impl.BreedersCrossIDGenerator;
+import org.generationcp.commons.ruleengine.generator.BreedersCrossIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

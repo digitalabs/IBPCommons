@@ -1,4 +1,4 @@
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.resolver;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

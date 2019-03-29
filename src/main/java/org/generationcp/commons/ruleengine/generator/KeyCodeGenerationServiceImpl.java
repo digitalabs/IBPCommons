@@ -1,5 +1,5 @@
 
-package org.generationcp.commons.service.impl;
+package org.generationcp.commons.ruleengine.generator;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -7,9 +7,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.generationcp.commons.service.KeyCodeGenerationService;
-import org.generationcp.commons.service.KeyComponent;
-import org.generationcp.commons.service.KeyComponentValueResolver;
+import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
 import org.generationcp.commons.service.KeyTemplateProvider;
 
 import com.google.common.base.Strings;
