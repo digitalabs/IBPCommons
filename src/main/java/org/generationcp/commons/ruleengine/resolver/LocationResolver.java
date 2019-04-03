@@ -4,11 +4,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.domain.study.StudyTypeDto;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +20,15 @@ import java.util.Map;
 public class LocationResolver implements KeyComponentValueResolver {
 
 	protected List<MeasurementVariable> conditions;
-	protected MeasurementRow trailInstanceObservation;
-	protected StudyTypeDto studyType;
+	protected ObservationUnitRow observationUnitRow;
 	protected Map<String, String> locationIdNameMap;
 
 	private static final Logger LOG = LoggerFactory.getLogger(LocationResolver.class);
 
-	public LocationResolver(final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation,
-			final StudyTypeDto studyType, final Map<String, String> locationIdNameMap) {
-		this.studyType = studyType;
-		this.trailInstanceObservation = trailInstanceObservation;
+	public LocationResolver(final List<MeasurementVariable> conditions, final ObservationUnitRow observationUnitRow,
+		final Map<String, String> locationIdNameMap) {
+
+		this.observationUnitRow = observationUnitRow;
 		this.conditions = conditions;
 		this.locationIdNameMap = locationIdNameMap;
 	}
@@ -61,13 +59,13 @@ public class LocationResolver implements KeyComponentValueResolver {
 			}
 		}
 
-		if (this.trailInstanceObservation != null) {
-			final ImmutableMap<Integer, MeasurementData> dataListMap =
-					Maps.uniqueIndex(this.trailInstanceObservation.getDataList(), new Function<MeasurementData, Integer>() {
+		if (this.observationUnitRow != null) {
+			final ImmutableMap<Integer, ObservationUnitData> dataListMap =
+					Maps.uniqueIndex(this.observationUnitRow.getVariables().values(), new Function<ObservationUnitData, Integer>() {
 
 						@Override
-						public Integer apply(final MeasurementData measurementData) {
-							return measurementData.getMeasurementVariable().getTermId();
+						public Integer apply(final ObservationUnitData observationUnitData) {
+							return observationUnitData.getVariableId();
 						}
 					});
 
@@ -86,9 +84,9 @@ public class LocationResolver implements KeyComponentValueResolver {
 		}
 
 		if (StringUtils.isBlank(location)) {
-			LocationResolver.LOG
-					.debug("No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in " + this.studyType
-							.getLabel() + ". Or it is present but no value is set. " + "Resolving location value to be an empty string.");
+			LocationResolver.LOG.debug(
+					"No LOCATION_ABBR(8189), LOCATION_NAME(8180) or TRIAL_INSTANCE(8170) variable was found in the study. "
+						+ "Or it is present but no value is set. Resolving location value to be an empty string.");
 			return "";
 		}
 

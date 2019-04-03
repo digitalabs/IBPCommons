@@ -28,6 +28,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import static org.generationcp.commons.ruleengine.resolver.SeasonResolverTest.getMeasurementVariableByTermId;
+import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
+
 public class ProjectPrefixResolverTest {
 
 	@Mock
@@ -72,12 +75,12 @@ public class ProjectPrefixResolverTest {
 
 		workbook.setConditions(Lists.newArrayList(measurementVariable));
 
-		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		final MeasurementRow trialInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final ProjectPrefixResolver
-				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
-				trailInstanceObservation, studyType);
+		final ProjectPrefixResolver projectPrefixResolver =
+			new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				fromMeasurementRow(trialInstanceObservation), getMeasurementVariableByTermId(trialInstanceObservation));
 		final String program = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in Nursery settings.",
 				PROJECT_CATEGORY_VALUE, program);
@@ -110,9 +113,9 @@ public class ProjectPrefixResolverTest {
 
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final ProjectPrefixResolver
-				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
-				trialInstanceObservation, studyType);
+		final ProjectPrefixResolver projectPrefixResolver =
+			new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				fromMeasurementRow(trialInstanceObservation), getMeasurementVariableByTermId(trialInstanceObservation));
 		final String season = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in environment level settings.",
 				PROJECT_CATEGORY_VALUE, season);
@@ -142,9 +145,9 @@ public class ProjectPrefixResolverTest {
 
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final ProjectPrefixResolver
-				projectPrefixResolver = new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
-				trialInstanceObservation, studyType);
+		final ProjectPrefixResolver projectPrefixResolver =
+			new ProjectPrefixResolver(this.ontologyVariableDataManager, this.contextUtil, workbook.getConditions(),
+				fromMeasurementRow(trialInstanceObservation), getMeasurementVariableByTermId(trialInstanceObservation));
 		final String season = projectPrefixResolver.resolve();
 		Assert.assertEquals("Program should be resolved to the value of Project_Prefix variable value in environment level settings.",
 				PROJECT_CATEGORY_VALUE, season);

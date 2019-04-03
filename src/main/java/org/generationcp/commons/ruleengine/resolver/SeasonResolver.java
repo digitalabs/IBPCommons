@@ -3,15 +3,15 @@ package org.generationcp.commons.ruleengine.resolver;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.ValueReference;
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.TermId;
-import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +25,10 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 	private static final Logger LOG = LoggerFactory.getLogger(SeasonResolver.class);
 
 	public SeasonResolver(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
-			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyTypeDto studyType) {
-		super(ontologyVariableDataManager, contextUtil, conditions, trailInstanceObservation, studyType);
+		final List<MeasurementVariable> conditions, final ObservationUnitRow observationUnitRow,
+		final Map<Integer, MeasurementVariable> environmentVariablesByTermId) {
+
+		super(ontologyVariableDataManager, contextUtil, conditions, observationUnitRow, environmentVariablesByTermId);
 	}
 
 	@Override
@@ -51,8 +53,9 @@ public class SeasonResolver extends CategoricalKeyCodeResolverBase {
 	}
 
 	@Override
-	protected String getValueFromTrialInstanceMeasurementData(final MeasurementData measurementData) {
-		return this.getValue(measurementData.getValue(), measurementData.getMeasurementVariable().getPossibleValues());
+	protected String getValueFromObservationUnitData(final ObservationUnitData observationUnitData) {
+		return this.getValue(observationUnitData.getValue(),
+			this.environmentVariablesByTermId.get(observationUnitData.getVariableId()).getPossibleValues());
 	}
 
 	protected Optional<ValueReference> findValueReferenceByDescription(final String description,

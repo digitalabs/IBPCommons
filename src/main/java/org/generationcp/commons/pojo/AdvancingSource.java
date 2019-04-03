@@ -42,6 +42,7 @@ public class AdvancingSource {
 	private boolean isBulk;
 	private String studyName;
 	private Integer studyId;
+	private Integer environmentDatasetId;
 	private String season;
 	private String locationAbbreviation;
 	private String rootName;
@@ -199,6 +200,14 @@ public class AdvancingSource {
 
 	public void setStudyId(final Integer studyId) {
 		this.studyId = studyId;
+	}
+
+	public Integer getEnvironmentDatasetId() {
+		return this.environmentDatasetId;
+	}
+
+	public void setEnvironmentDatasetId(final Integer environmentDatasetId) {
+		this.environmentDatasetId = environmentDatasetId;
 	}
 
 	/**

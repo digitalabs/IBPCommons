@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
+
 public class LocationResolverTest {
 
 	final Map<String, String> locationIdNameMap = new HashMap<>();
@@ -44,7 +46,7 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, null, studyType, locationIdNameMap).resolve();
+		final String location = new LocationResolver(conditions, null, locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in Nursery settings.", "MEX",
 				location);
 	}
@@ -65,7 +67,7 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, null, studyType, locationIdNameMap).resolve();
+		final String location = new LocationResolver(conditions, null, locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is present but has no value.", "",
 				location);
 	}
@@ -81,7 +83,7 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, null, studyType, locationIdNameMap).resolve();
+		final String location = new LocationResolver(conditions, null, locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be defaulted to an empty string when LOCATION_ABBR variable is not present.", "", location);
 	}
 
@@ -112,7 +114,7 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, null, studyType, locationIdNameMap).resolve();
+		final String location = new LocationResolver(conditions, null, locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in nursery settings.",
 				locationAbbr,
 				location);
@@ -136,7 +138,7 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, null, studyType, locationIdNameMap).resolve();
+		final String location = new LocationResolver(conditions, null, locationIdNameMap).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to TRIAL_INSTANCE when LOCATION_ABBR and LOCATION_NAME variables are not present in nursery settings.",
 				trialInstance, location);
@@ -164,7 +166,7 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, null, studyType, locationIdNameMap).resolve();
+		final String location = new LocationResolver(conditions, null, locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in nursery settings.",
 				nurseryLocation,
 				location);
@@ -199,7 +201,8 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, instance1Measurements, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(instance1Measurements), locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in environment level settings.",
 				locationAbbr,
 				location);
@@ -234,7 +237,8 @@ public class LocationResolverTest {
 		final MeasurementRow trailInstanceObservation = workbook.getTrialObservationByTrialInstanceNo(TermId.TRIAL_INSTANCE_FACTOR.getId());
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, trailInstanceObservation, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(trailInstanceObservation), locationIdNameMap).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to an empty string when LOCATION_ABBR variable is present in environment level settings, but has no value.",
 				"",
@@ -277,7 +281,8 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, instance1Measurements, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(instance1Measurements), locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in environment level settings.",
 				locationAbbr,
 				location);
@@ -304,7 +309,8 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, instance1Measurements, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(instance1Measurements), locationIdNameMap).resolve();
 		Assert.assertEquals(
 				"Location should be defaulted to TRIAL_INSTANCE when LOCATION_ABBR and LOCATION_NAME variables are not present in environment level settings.",
 				trialInstance, location);
@@ -337,7 +343,8 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, instance1Measurements, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(instance1Measurements), locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in environment level settings.",
 				"INTERNATIONAL FOOD POLICY RESEARCH INSTITUTE, WASHINGTON - (IFPRI)",
 				location);
@@ -371,7 +378,8 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, instance1Measurements, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(instance1Measurements), locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_NAME variable value in Study settings.",
 				studyLocation,
 				location);
@@ -412,7 +420,8 @@ public class LocationResolverTest {
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 		final StudyTypeDto studyType = workbook.getStudyDetails().getStudyType();
 
-		final String location = new LocationResolver(conditions, instance1Measurements, studyType, locationIdNameMap).resolve();
+		final String location =
+			new LocationResolver(conditions, fromMeasurementRow(instance1Measurements), locationIdNameMap).resolve();
 		Assert.assertEquals("Location should be resolved to the value of LOCATION_ABBR variable value in Study settings.",
 				locationAbbr,
 				location);

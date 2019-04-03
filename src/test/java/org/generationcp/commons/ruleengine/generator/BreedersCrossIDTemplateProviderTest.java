@@ -2,7 +2,6 @@ package org.generationcp.commons.ruleengine.generator;
 
 import junit.framework.Assert;
 import org.generationcp.commons.service.GermplasmNamingProperties;
-import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.junit.Test;
 
 public class BreedersCrossIDTemplateProviderTest {
@@ -17,10 +16,10 @@ public class BreedersCrossIDTemplateProviderTest {
 
 		// Study
 		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
-				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto()).getKeyTemplate());
+				new BreedersCrossIDTemplateProvider(germplasmNamingProperties).getKeyTemplate());
 
 		// Study
 		Assert.assertEquals(germplasmNamingProperties.getBreedersCrossIDStudy(),
-				new BreedersCrossIDTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto()).getKeyTemplate());
+				new BreedersCrossIDTemplateProvider(germplasmNamingProperties).getKeyTemplate());
 	}
 }

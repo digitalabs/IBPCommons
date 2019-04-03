@@ -15,12 +15,10 @@ public class SeedSourceTemplateProvider implements KeyTemplateProvider {
 	public static final String WHEAT = "wheat";
 	public static final String MAIZE = "maize";
 	private GermplasmNamingProperties germplasmNamingProperties;
-	private final StudyTypeDto studyType;
 	private final String crop;
 
-	public SeedSourceTemplateProvider(final GermplasmNamingProperties germplasmNamingProperties, final StudyTypeDto studyType, final String crop) {
+	public SeedSourceTemplateProvider(final GermplasmNamingProperties germplasmNamingProperties, final String crop) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
-		this.studyType = studyType;
 		this.crop = crop;
 	}
 

@@ -22,22 +22,22 @@ public class SeedSourceTemplateProviderTest {
 
 		// Studies
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "rice").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, "rice").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "maize").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, "maize").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getNurseryDto(), "wheat").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, "wheat").getKeyTemplate());
 
 		// Studies
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesDefault(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "rice").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, "rice").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesMaize(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "maize").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, "maize").getKeyTemplate());
 
 		Assert.assertEquals(germplasmNamingProperties.getGermplasmOriginStudiesWheat(),
-				new SeedSourceTemplateProvider(germplasmNamingProperties, StudyTypeDto.getTrialDto(), "wheat").getKeyTemplate());
+				new SeedSourceTemplateProvider(germplasmNamingProperties, "wheat").getKeyTemplate());
 	}
 }

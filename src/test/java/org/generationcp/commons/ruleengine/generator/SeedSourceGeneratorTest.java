@@ -22,6 +22,9 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.service.api.dataset.DatasetService;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +41,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.anyInt;
+
 /**
  * This is more of an integration test (not a pure unit test) of all key code generation pieces for the seed source use case.
  */
@@ -53,7 +58,9 @@ public class SeedSourceGeneratorTest {
 	@Mock
 	private StudyDataManager studyDataManager;
 
-	
+	@Mock
+	private DatasetService datasetService;
+
 	@InjectMocks
 	private SeedSourceGenerator seedSourceGenerator;
 
@@ -93,23 +100,28 @@ public class SeedSourceGeneratorTest {
 		final StudyDetails studyDetails = new StudyDetails();
 		studyDetails.setStudyName("TestStudy");
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
-		studyDetails.setId(1);
+		final int studyId = 1;
+		final int environmentDatasetId = 12;
+		studyDetails.setId(studyId);
 		workbook.setStudyDetails(studyDetails);
 
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
 		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
+		instance1LocationAbbrMV.setName(TermId.LOCATION_ABBR.name());
 		final MeasurementData instance1LocationAbbrMD = new MeasurementData();
 		instance1LocationAbbrMD.setValue("IND");
 		instance1LocationAbbrMD.setMeasurementVariable(instance1LocationAbbrMV);
 
 		final MeasurementVariable instance1SeasonMV = new MeasurementVariable();
 		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
+		instance1SeasonMV.setName(TermId.SEASON_VAR.name());
 		final MeasurementData instance1SeasonMD = new MeasurementData();
 		instance1SeasonMD.setValue(Season.DRY.getDefinition());
 		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
 
 		final MeasurementVariable instance1InstanceNumberMV = new MeasurementVariable();
 		instance1InstanceNumberMV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		instance1InstanceNumberMV.setName(TermId.TRIAL_INSTANCE_FACTOR.name());
 		final MeasurementData instance1InstanceNumberMD = new MeasurementData();
 		instance1InstanceNumberMD.setValue("1");
 		instance1InstanceNumberMD.setMeasurementVariable(instance1InstanceNumberMV);
@@ -119,31 +131,47 @@ public class SeedSourceGeneratorTest {
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
+		Mockito.doReturn(instance1Measurements.getMeasurementVariables()).when(this.datasetService)
+			.getObservationSetVariables(anyInt(), ArgumentMatchers.<Integer>anyList());
+
 		setCurrentCrop("rice");
-		String seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
+		String seedSource = this.seedSourceGenerator
+			.generateSeedSource(studyId, environmentDatasetId,
+				ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+				studyDetails.getStudyName(), null);
 		Assert.assertEquals("TestStudy:IND:Dry season:3:", seedSource);
 
 		// with Plant Number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), "4");
+		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
+			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+			studyDetails.getStudyName(), "4");
 		Assert.assertEquals("TestStudy:IND:Dry season:3:4", seedSource);
 
 		setCurrentCrop("wheat");
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
+		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
+			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+			studyDetails.getStudyName(), null);
 		Assert.assertEquals("IND\\Dry season\\TestStudy\\3", seedSource);
 
 		setCurrentCrop("maize");
 		// with selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", "2", "3", studyDetails.getStudyName(), null);
+		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
+			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+			studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry season-TestStudy-3-2", seedSource);
 		// without selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(workbook, "1", null, "3", studyDetails.getStudyName(), null);
+		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
+			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, null, "3",
+			studyDetails.getStudyName(), null);
 		Assert.assertEquals("INDDry season-TestStudy-3", seedSource);
 	}
 	
 	@Test
 	public void testGenerateSeedSourceForUnknownPlot() {
-		Assert.assertEquals(Name.UNKNOWN, this.seedSourceGenerator.generateSeedSource(new Workbook(), RandomStringUtils.randomNumeric(2),
-				RandomStringUtils.randomNumeric(2), "0", RandomStringUtils.randomAlphabetic(20), RandomStringUtils.randomNumeric(2)));
+		final int studyId = 1;
+		final int environmentDatasetId = 12;
+		Assert.assertEquals(Name.UNKNOWN, this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId, new ObservationUnitRow(),
+			null, RandomStringUtils.randomNumeric(2), "0", RandomStringUtils.randomAlphabetic(20), RandomStringUtils.randomNumeric(2)));
 	}
 
 	@Test

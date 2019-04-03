@@ -7,6 +7,8 @@ import org.generationcp.commons.ruleengine.generator.BreedersCrossIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
+
 @Component
 public class BreedersCrossIDExpression extends BaseExpression {
 
@@ -28,8 +30,8 @@ public class BreedersCrossIDExpression extends BaseExpression {
 		 */
 		for (final StringBuilder container : values) {
 			final String newValue = this.breedersCrossIDGenerator
-					.generateBreedersCrossID(source.getStudyId(), source.getStudyType(), source.getConditions(),
-							source.getTrailInstanceObservation());
+				.generateBreedersCrossID(source.getStudyId(), source.getEnvironmentDatasetId(), source.getConditions(),
+					fromMeasurementRow(source.getTrailInstanceObservation()));
 			this.replaceExpressionWithValue(container, newValue);
 		}
 	}

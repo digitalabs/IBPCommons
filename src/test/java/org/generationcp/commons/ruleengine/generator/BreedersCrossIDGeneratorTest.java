@@ -2,6 +2,7 @@ package org.generationcp.commons.ruleengine.generator;
 
 import com.google.common.collect.Lists;
 import junit.framework.Assert;
+import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.etl.MeasurementData;
@@ -19,13 +20,19 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.service.api.dataset.DatasetService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
+
+import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
+import static org.mockito.ArgumentMatchers.anyInt;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BreedersCrossIDGeneratorTest {
@@ -38,6 +45,9 @@ public class BreedersCrossIDGeneratorTest {
 
 	@Mock
 	private StudyDataManager studyDataManager;
+
+	@Mock
+	private DatasetService datasetService;
 
 	private static final Integer PROJECT_PREFIX_CATEGORY_ID = 3001;
 	private static final String PROJECT_PREFIX_CATEGORY_VALUE = "Project_Prefix";
@@ -95,32 +105,40 @@ public class BreedersCrossIDGeneratorTest {
 		studyDetails.setId(1);
 		workbook.setStudyDetails(studyDetails);
 
+		final AdvancingSource source = new AdvancingSource();
+		source.setEnvironmentDatasetId(12);
+
 		final MeasurementVariable instance1LocationAbbrMV = new MeasurementVariable();
 		instance1LocationAbbrMV.setTermId(TermId.LOCATION_ABBR.getId());
+		instance1LocationAbbrMV.setName(TermId.LOCATION_ABBR.name());
 		final MeasurementData instance1LocationAbbrMD = new MeasurementData();
 		instance1LocationAbbrMD.setValue("IND");
 		instance1LocationAbbrMD.setMeasurementVariable(instance1LocationAbbrMV);
 
 		final MeasurementVariable instance1ProjectPrefix = new MeasurementVariable();
 		instance1ProjectPrefix.setTermId(TermId.PROJECT_PREFIX.getId());
+		instance1ProjectPrefix.setName(TermId.PROJECT_PREFIX.name());
 		final MeasurementData instance1ProjectPrefixMD = new MeasurementData();
 		instance1ProjectPrefixMD.setValue(PROJECT_PREFIX_CATEGORY_VALUE);
 		instance1ProjectPrefixMD.setMeasurementVariable(instance1ProjectPrefix);
 
 		final MeasurementVariable instance1HabitatDesignationMV = new MeasurementVariable();
 		instance1HabitatDesignationMV.setTermId(TermId.HABITAT_DESIGNATION.getId());
+		instance1HabitatDesignationMV.setName(TermId.HABITAT_DESIGNATION.name());
 		final MeasurementData instance1HabitatDesignationMD = new MeasurementData();
 		instance1HabitatDesignationMD.setValue(HABITAT_DESIGNATION_CATEGORY_VALUE);
 		instance1HabitatDesignationMD.setMeasurementVariable(instance1HabitatDesignationMV);
 
 		final MeasurementVariable instance1SeasonMV = new MeasurementVariable();
 		instance1SeasonMV.setTermId(TermId.SEASON_VAR.getId());
+		instance1SeasonMV.setName(TermId.SEASON_VAR.name());
 		final MeasurementData instance1SeasonMD = new MeasurementData();
 		instance1SeasonMD.setValue(SEASON_CATEGORY_VALUE);
 		instance1SeasonMD.setMeasurementVariable(instance1SeasonMV);
 
 		final MeasurementVariable instance1InstanceNumberMV = new MeasurementVariable();
 		instance1InstanceNumberMV.setTermId(TermId.TRIAL_INSTANCE_FACTOR.getId());
+		instance1InstanceNumberMV.setName(TermId.TRIAL_INSTANCE_FACTOR.name());
 		final MeasurementData instance1InstanceNumberMD = new MeasurementData();
 		instance1InstanceNumberMD.setValue("1");
 		instance1InstanceNumberMD.setMeasurementVariable(instance1InstanceNumberMV);
@@ -144,8 +162,12 @@ public class BreedersCrossIDGeneratorTest {
 
 		final List<MeasurementVariable> conditions = workbook.getConditions();
 
-		final String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getId(), workbook.getStudyDetails().getStudyType(),
-				conditions, instance1Measurements);
+		Mockito.doReturn(instance1Measurements.getMeasurementVariables())
+			.when(this.datasetService).getObservationSetVariables(anyInt(), ArgumentMatchers.<Integer>anyList());
+
+		final String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getId(),
+			source.getEnvironmentDatasetId(), conditions, fromMeasurementRow(instance1Measurements));
+
 		Assert.assertEquals(expectedBreedersCrossId, actualBreedersCrossId);
 	}
 }

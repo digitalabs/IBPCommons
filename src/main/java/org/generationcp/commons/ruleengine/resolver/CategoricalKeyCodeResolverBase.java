@@ -3,16 +3,16 @@ package org.generationcp.commons.ruleengine.resolver;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.oms.TermSummary;
 import org.generationcp.middleware.domain.ontology.Variable;
-import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValueResolver {
 
@@ -20,15 +20,17 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 	protected ContextUtil contextUtil;
 
 	protected List<MeasurementVariable> conditions;
-	protected MeasurementRow trailInstanceObservation;
-	protected StudyTypeDto studyType;
+	protected ObservationUnitRow observationUnitRow;
+	protected Map<Integer, MeasurementVariable> environmentVariablesByTermId;
 
 	public CategoricalKeyCodeResolverBase(final OntologyVariableDataManager ontologyVariableDataManager, final ContextUtil contextUtil,
-			final List<MeasurementVariable> conditions, final MeasurementRow trailInstanceObservation, final StudyTypeDto studyType) {
+		final List<MeasurementVariable> conditions, final ObservationUnitRow observationUnitRow,
+		final Map<Integer, MeasurementVariable> environmentVariablesByTermId) {
+
 		this.ontologyVariableDataManager = ontologyVariableDataManager;
 		this.contextUtil = contextUtil;
-		this.studyType = studyType;
-		this.trailInstanceObservation = trailInstanceObservation;
+		this.observationUnitRow = observationUnitRow;
+		this.environmentVariablesByTermId = environmentVariablesByTermId;
 		this.conditions = conditions;
 	}
 
@@ -38,7 +40,7 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 
 	protected abstract String getDefaultValue();
 
-	protected abstract String getValueFromTrialInstanceMeasurementData(MeasurementData measurementData);
+	protected abstract String getValueFromObservationUnitData(ObservationUnitData observationUnitData);
 
 	protected abstract String getValueFromTrialConditions(MeasurementVariable trialCondition);
 
@@ -69,10 +71,10 @@ public abstract class CategoricalKeyCodeResolverBase implements KeyComponentValu
 			}
 		}
 
-		if (this.trailInstanceObservation != null) {
-			for (final MeasurementData trialInstanceMeasurement : this.trailInstanceObservation.getDataList()) {
-				if (trialInstanceMeasurement.getMeasurementVariable().getTermId() == this.getKeyCodeId().getId()) {
-					resolvedValue = this.getValueFromTrialInstanceMeasurementData(trialInstanceMeasurement);
+		if (this.observationUnitRow != null) {
+			for (final ObservationUnitData observationUnitData : this.observationUnitRow.getVariables().values()) {
+				if (observationUnitData.getVariableId() == this.getKeyCodeId().getId()) {
+					resolvedValue = this.getValueFromObservationUnitData(observationUnitData);
 					break;
 				}
 			}
