@@ -53,15 +53,10 @@ import org.generationcp.middleware.operation.transformer.etl.StandardVariableTra
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
 import org.generationcp.middleware.pojos.oms.CVTerm;
+import org.generationcp.middleware.pojos.workbench.CropType;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.google.common.collect.BiMap;
@@ -239,7 +234,7 @@ public class BreedingViewImportServiceImplTest {
 						Matchers.anyString());
 
 		Mockito.verify(this.studyDataManager)
-				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
+				.addOrUpdateExperiment(ArgumentMatchers.<CropType>any(), Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
 
 	}
 
@@ -277,7 +272,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.studyDataManager, Mockito.times(0))
 				.addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager)
-				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
+				.addOrUpdateExperiment(ArgumentMatchers.<CropType>any(), Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
 
 	}
 
@@ -315,7 +310,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.verify(this.studyDataManager, Mockito.times(1))
 				.addDataSetVariableType(Matchers.anyInt(), Matchers.any(DMSVariableType.class));
 		Mockito.verify(this.studyDataManager)
-				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
+				.addOrUpdateExperiment(ArgumentMatchers.<CropType>any(), Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
 
 	}
 
@@ -651,7 +646,7 @@ public class BreedingViewImportServiceImplTest {
 						Matchers.anyString());
 
 		Mockito.verify(this.studyDataManager)
-				.addOrUpdateExperiment(Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
+				.addOrUpdateExperiment(ArgumentMatchers.<CropType>any(), Matchers.anyInt(), Matchers.any(ExperimentType.class), Matchers.anyListOf(ExperimentValues.class));
 
 	}
 

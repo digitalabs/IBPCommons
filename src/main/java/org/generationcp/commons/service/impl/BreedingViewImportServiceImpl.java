@@ -1,40 +1,14 @@
 package org.generationcp.commons.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
+import com.rits.cloning.Cloner;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.OutlierCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.constant.CommonMessage;
 import org.generationcp.commons.exceptions.BreedingViewImportException;
 import org.generationcp.commons.service.BreedingViewImportService;
-import org.generationcp.middleware.domain.dms.DMSVariableType;
-import org.generationcp.middleware.domain.dms.DataSet;
-import org.generationcp.middleware.domain.dms.DataSetType;
-import org.generationcp.middleware.domain.dms.DatasetReference;
-import org.generationcp.middleware.domain.dms.DatasetValues;
-import org.generationcp.middleware.domain.dms.ExperimentType;
-import org.generationcp.middleware.domain.dms.ExperimentValues;
-import org.generationcp.middleware.domain.dms.PhenotypicType;
-import org.generationcp.middleware.domain.dms.StandardVariable;
-import org.generationcp.middleware.domain.dms.Stocks;
-import org.generationcp.middleware.domain.dms.TrialEnvironment;
-import org.generationcp.middleware.domain.dms.TrialEnvironments;
-import org.generationcp.middleware.domain.dms.Variable;
-import org.generationcp.middleware.domain.dms.VariableList;
-import org.generationcp.middleware.domain.dms.VariableTypeList;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.domain.dms.*;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -58,7 +32,11 @@ import org.generationcp.middleware.util.DatasetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
-import com.rits.cloning.Cloner;
+import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class BreedingViewImportServiceImpl implements BreedingViewImportService {
 
@@ -96,6 +74,11 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 	@Autowired
 	private ResourceBundleMessageSource messageSource;
+
+	@Resource
+	private ContextUtil contextUtil;
+
+
 
 	private Map<String, String> localNameToAliasMap = new HashMap<>();
 
@@ -231,7 +214,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		}
 
 		// Save the experiments for mean dataset
-		this.studyDataManager.addOrUpdateExperiment(meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
+		this.studyDataManager.addOrUpdateExperiment(this.contextUtil.getProjectInContext().getCropType(), meansDataSet.getId(), ExperimentType.AVERAGE, experimentValuesList);
 	}
 
 	/**
@@ -283,7 +266,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param study                     - project record of analyzed study
 	 * @param csvHeader                 - array of column headers from means file from BV
 	 * @param plotDataSet               - plot dataset of analyzed study
-	 * @param lsMean                    - cvterm of means method
 	 * @param hasDuplicateColumnsInFile - flag whether duplicate columns were found in means file from
 	 *                                  BV
 	 * @return means dataset created and saved
@@ -337,7 +319,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param meansVariableTypeList
 	 * @param programUUID
 	 * @param lsMean
-	 * @param errorEstimate
+	 * @param hasDuplicateColumnsInFile
 	 */
 	void createMeansVariablesFromImportFileAndAddToList(final String[] csvHeader, final VariableTypeList plotVariates,
 			final VariableTypeList meansVariableTypeList, final String programUUID, final CVTerm lsMean,
@@ -1049,7 +1031,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * retrieve the existing plot dataset variables and create a map of
 	 * sanitized names to the variable names
 	 *
-	 * @param studyId     - id of analyzed study
 	 * @param plotDataset - plot dataset of analyzed study
 	 * @return Map of sanitized names to local variable names
 	 */
