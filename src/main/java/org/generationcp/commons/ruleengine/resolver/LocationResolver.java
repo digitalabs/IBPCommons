@@ -51,6 +51,7 @@ public class LocationResolver implements KeyComponentValueResolver {
 		}
 
 		if (conditionsMap != null) {
+			// FIXME See IBP-2575
 			if (conditionsMap.containsKey(TermId.LOCATION_ABBR.getId())) {
 				location = conditionsMap.get(TermId.LOCATION_ABBR.getId()).getValue();
 			} else if (conditionsMap.containsKey(TermId.TRIAL_LOCATION.getId())) {
