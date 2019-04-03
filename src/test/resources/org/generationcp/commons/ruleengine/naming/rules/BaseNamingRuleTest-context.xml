@@ -111,4 +111,9 @@
 		<aop:scoped-proxy />
 	</bean>
 
+	<bean id="datasetService" factory-bean="managerFactory"
+		  factory-method="getDatasetMiddlewareService" scope="request">
+		<aop:scoped-proxy proxy-target-class="false" />
+	</bean>
+
 </beans>
