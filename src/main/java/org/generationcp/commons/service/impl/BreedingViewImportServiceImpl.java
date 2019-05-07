@@ -25,6 +25,7 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
 import org.generationcp.middleware.operation.builder.StandardVariableBuilder;
 import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
+import org.generationcp.middleware.pojos.dms.DatasetType;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
 import org.generationcp.middleware.pojos.oms.CVTerm;
@@ -305,7 +306,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		// Save and return the newly-created means dataset
 		final DatasetReference datasetReference =
-				this.studyDataManager.addDataSet(study.getProjectId(), meansVariableTypeList, datasetValues, programUUID);
+				this.studyDataManager.addDataSet(study.getProjectId(), meansVariableTypeList, datasetValues, programUUID, DatasetType.MEANS_DATA);
 
 		return this.studyDataManager.getDataSet(datasetReference.getId());
 
@@ -398,7 +399,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @return means dataset
 	 */
 	private DataSet getMeansDataSet(final int studyId) {
-		final List<DataSet> ds = this.studyDataManager.getDataSetsByType(studyId, DataSetType.MEANS_DATA);
+		final List<DataSet> ds = this.studyDataManager.getDataSetsByType(studyId, DatasetType.MEANS_DATA);
 		if (ds != null && !ds.isEmpty()) {
 			// return the 1st one as we're sure that we can only have one means
 			// dataset per study
