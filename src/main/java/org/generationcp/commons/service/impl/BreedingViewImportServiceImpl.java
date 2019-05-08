@@ -291,10 +291,6 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				this.createMeansVariable(TermId.DATASET_TITLE.getId(), "DATASET_TITLE", "Dataset title (local)", "My Dataset Description",
 						2, programUUID, PhenotypicType.DATASET), meansVariableList, meansVariableTypeList);
 
-		this.addMeansVariableToLists(this.createMeansVariable(TermId.DATASET_TYPE.getId(), "DATASET_TYPE", "Dataset type (local)",
-				String.valueOf(DataSetType.MEANS_DATA.getId()), 3, programUUID, PhenotypicType.DATASET), meansVariableList,
-				meansVariableTypeList);
-
 		// Add plot dataset variables of type trial environment and germplasm to
 		// means dataset (but not yet save it to the database)
 		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
