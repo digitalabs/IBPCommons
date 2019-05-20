@@ -1,17 +1,8 @@
 package org.generationcp.commons.service.impl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.rits.cloning.Cloner;
 import org.generationcp.commons.breedingview.parsing.MeansCSV;
 import org.generationcp.commons.breedingview.parsing.SummaryStatsCSV;
 import org.generationcp.commons.data.initializer.SummaryStatsTestDataInitializer;
@@ -58,12 +49,27 @@ import org.generationcp.middleware.pojos.workbench.Project;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Matchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.rits.cloning.Cloner;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BreedingViewImportServiceImplTest {
 
@@ -222,7 +228,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.when(this.studyDataManager
 			.addDataSet(ArgumentMatchers.anyInt(), ArgumentMatchers.<VariableTypeList>any(), ArgumentMatchers.<DatasetValues>any(),
-				ArgumentMatchers.anyString(), Mockito.anyInt())).thenReturn(new DatasetReference(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
+				ArgumentMatchers.anyString(), Mockito.anyInt())).thenReturn(new DatasetReference(
+			BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
 			BreedingViewImportServiceImplTest.EMPTY_VALUE));
 
 		Mockito.when(this.studyDataManager.getDataSet(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID))
@@ -363,7 +370,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(ArgumentMatchers.<VariableFilter>any());
 		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(ArgumentMatchers.<OntologyVariableInfo>any());
-		Mockito.when(this.studyDataManager.isLocationIdVariable(BreedingViewImportServiceImplTest.STUDY_ID, "TRIAL_INSTANCE")).thenReturn(false);
+		Mockito.when(this.studyDataManager.isLocationIdVariable(BreedingViewImportServiceImplTest.STUDY_ID, "TRIAL_INSTANCE"))
+			.thenReturn(false);
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(BreedingViewImportServiceImplTest.STUDY_ID))
 			.thenReturn(HashBiMap.<String, String>create());
 
@@ -491,7 +499,8 @@ public class BreedingViewImportServiceImplTest {
 		return variate;
 	}
 
-	private DMSVariableType createVariateVariableType(final String localName, final String propertyName, final String scaleName,
+	private DMSVariableType createVariateVariableType(
+		final String localName, final String propertyName, final String scaleName,
 		final String methodName) {
 		final DMSVariableType variate = new DMSVariableType();
 		final StandardVariable variateStandardVar = new StandardVariable();
@@ -643,7 +652,8 @@ public class BreedingViewImportServiceImplTest {
 
 		Mockito.when(this.studyDataManager
 			.addDataSet(ArgumentMatchers.anyInt(), ArgumentMatchers.<VariableTypeList>any(), ArgumentMatchers.<DatasetValues>any(),
-				ArgumentMatchers.anyString(), ArgumentMatchers.anyInt())).thenReturn(new DatasetReference(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
+				ArgumentMatchers.anyString(), ArgumentMatchers.anyInt())).thenReturn(new DatasetReference(
+			BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID,
 			BreedingViewImportServiceImplTest.EMPTY_VALUE));
 
 		Mockito.when(this.studyDataManager.getDataSet(BreedingViewImportServiceImplTest.NEW_MEANS_DATASET_ID))
@@ -884,7 +894,8 @@ public class BreedingViewImportServiceImplTest {
 				variableInfo.getVariableTypes().iterator().next());
 			final String analysisVariableName = variableInfo.getName();
 			final String sourceTraitName = analysisVariableName.substring(0, analysisVariableName.lastIndexOf("_"));
-			Assert.assertFalse("Expecting analysis variables are not added for previously analyzed traits.",
+			Assert.assertFalse(
+				"Expecting analysis variables are not added for previously analyzed traits.",
 				prevAnalyzedTraitsList.contains(sourceTraitName));
 		}
 	}
@@ -1025,7 +1036,8 @@ public class BreedingViewImportServiceImplTest {
 
 		// Check the count and value of generated ExperimentValues list
 		final int numberOfEnvironments = data.keySet().size();
-		Assert.assertEquals(numberOfEnvironments * summaryHeaders.size() * SummaryStatsTestDataInitializer.TRAITS_LIST.size(),
+		Assert.assertEquals(
+			numberOfEnvironments * summaryHeaders.size() * SummaryStatsTestDataInitializer.TRAITS_LIST.size(),
 			experimentValues.size());
 		final Iterator<ExperimentValues> actualValuesIterator = experimentValues.iterator();
 		for (final String environmentName : data.keySet()) {
