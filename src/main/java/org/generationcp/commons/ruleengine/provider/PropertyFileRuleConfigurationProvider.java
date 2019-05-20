@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.ruleengine.provider;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,11 +12,11 @@ public class PropertyFileRuleConfigurationProvider implements RuleConfigurationP
 	private Map<String, String[]> ruleSequenceConfiguration;
 
 	@Override
-	public Map<String, String[]> retrieveRuleSequenceConfiguration() {
+	public Map<String, String[]> getRuleSequenceConfiguration() {
 		return this.ruleSequenceConfiguration;
 	}
 
-	public void setRuleSequenceConfiguration(Map<String, String[]> ruleSequenceConfiguration) {
+	public void setRuleSequenceConfiguration(final Map<String, String[]> ruleSequenceConfiguration) {
 		this.ruleSequenceConfiguration = ruleSequenceConfiguration;
 	}
 }
