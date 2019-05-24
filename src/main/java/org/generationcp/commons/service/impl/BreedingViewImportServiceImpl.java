@@ -320,7 +320,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		// Add plot dataset variables of type trial environment and germplasm to
 		// means dataset (but not yet save it to the database)
-		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 4);
+		this.createMeansVariablesFromPlotDatasetAndAddToList(plotDataSet, meansVariableTypeList, 3);
 
 		// Add analysis (mean) variable based from the import file to the means
 		// dataset (but not yet save it to the database)
