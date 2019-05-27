@@ -29,21 +29,32 @@ import com.google.common.cache.CacheBuilder;
 public class ContextUtil {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ContextUtil.class);
-	
-	
+
 	/**
 	 * Main goal prevent excessive querying to retrieve project information.
 	 */
-	private static final Cache<Long, Project> PROJECTS_CACHE = CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
-	
+	private static final Cache<Long, Project> PROJECTS_CACHE =
+		CacheBuilder.newBuilder().maximumSize(100).expireAfterWrite(60, TimeUnit.MINUTES).build();
+
 	/**
 	 * Main goal prevent excessive querying to retrieve user information information.
 	 */
 	private static final Cache<Integer, WorkbenchUser> USERS_CACHE = CacheBuilder.newBuilder().maximumSize(100).
-			expireAfterWrite(60, TimeUnit.MINUTES).build();
+		expireAfterWrite(60, TimeUnit.MINUTES).build();
 
-	
+	/**
+	 * Use {@link #getProject(WorkbenchDataManager, HttpServletRequest)} when an absent project is a valid scenario
+	 */
 	public static Project getProjectInContext(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
+		throws MiddlewareQueryException {
+		final Optional<Project> project = getProject(workbenchDataManager, request);
+		if (!project.isPresent()) {
+			throw new MiddlewareQueryException("Could not resolve selected project in Workbench.");
+		}
+		return project.get();
+	}
+
+	public static Optional<Project> getProject(final WorkbenchDataManager workbenchDataManager, final HttpServletRequest request)
 			throws MiddlewareQueryException {
 
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
@@ -53,7 +64,7 @@ public class ContextUtil {
 			Long selectedProjectId = contextInfo.getSelectedProjectId();
 			
 			if(selectedProjectId !=null && PROJECTS_CACHE.asMap().containsKey(selectedProjectId)) {
-				return PROJECTS_CACHE.asMap().get(selectedProjectId);
+				return Optional.of(PROJECTS_CACHE.asMap().get(selectedProjectId));
 			}
 		}
 		
@@ -71,10 +82,10 @@ public class ContextUtil {
 			ContextUtil.LOG.info("Selected project is: " + project.getProjectName() + ". Id: " + project.getProjectId() + ". Resolved "
 					+ (resolvedFromSessionContext ? "from session context." : "using single user local install fallback method."));
 			PROJECTS_CACHE.put(project.getProjectId(), project);
-			return project;
+			return Optional.of(project);
 		}
 
-		throw new MiddlewareQueryException("Could not resolve selected project in Workbench.");
+		return Optional.absent();
 	}
 
 	public static Integer getCurrentWorkbenchUserId(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
