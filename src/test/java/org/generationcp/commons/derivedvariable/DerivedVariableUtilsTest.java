@@ -9,6 +9,7 @@ import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -19,7 +20,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 
 public class DerivedVariableUtilsTest {
@@ -236,6 +239,26 @@ public class DerivedVariableUtilsTest {
 		assertEquals("", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 		assertEquals(variableName, termMissingData.toArray()[0]);
 
+	}
+
+	@Test
+	public void testAggregationRegex() {
+		final String term = "__PH_M_cm__";
+		final Pattern patter = Pattern.compile(DerivedVariableUtils.AGGREGATION_FUNCTIONS_REGEX.replace("TERM", term));
+
+		Assert.assertThat(patter.matcher("fn:avg(" + term + ")").matches(), is(true));
+		Assert.assertThat(patter.matcher("fn:avg([" + term + "])").matches(), is(true));
+		Assert.assertThat(patter.matcher("fn:avg([" + term + "), " + term + "])").matches(), is(true));
+		Assert.assertThat(patter.matcher("fn:avg([" + term + ", __TERM2__])").matches(), is(true));
+		Assert.assertThat(patter.matcher("fn:sum([" + term + ", __TERM2__])").matches(), is(true));
+		Assert.assertThat(patter.matcher("TERM2 + fn:avg([" + term + "])").matches(), is(true));
+
+		Assert.assertThat(patter.matcher("fn:avg()").matches(), is(false));
+		Assert.assertThat(patter.matcher("fn:avg(" + term + "").matches(), is(false));
+		Assert.assertThat(patter.matcher("fn:avg(__TERM2__)").matches(), is(false));
+		Assert.assertThat(patter.matcher(term + " + fn:avg(__TERM2__)").matches(), is(false));
+		// non existent function
+		Assert.assertThat(patter.matcher("fn:nonexistent(" + term + ")").matches(), is(false));
 	}
 
 	private ObservationUnitData createObservationUnitDataTestData(final Integer VARIABLE_ID, final String value, final Integer cValueId) {

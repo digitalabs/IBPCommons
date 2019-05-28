@@ -35,6 +35,13 @@ public final class DerivedVariableUtils {
 	 */
 	private static final String TERM_INTERNAL_DELIMITER = "__";
 
+	/**
+	 * Identify variables used as input for aggregation functions
+	 * Useful in validations to create mock data
+	 * Replace TERM to create a matcher
+	 */
+	public static final String AGGREGATION_FUNCTIONS_REGEX = ".*fn:(avg|sum)\\([^)]*TERM[^)]*\\).*";
+
 	private DerivedVariableUtils() {
 		// utility class
 	}
