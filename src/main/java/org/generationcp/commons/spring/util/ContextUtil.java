@@ -1,5 +1,6 @@
 package org.generationcp.commons.spring.util;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import org.generationcp.commons.context.ContextConstants;
@@ -55,6 +56,10 @@ public class ContextUtil {
 
 	public Project getProjectInContext() {
 		return org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
+	}
+
+	public Optional<Project> getProject() {
+		return org.generationcp.commons.util.ContextUtil.getProject(this.workbenchDataManager, this.request);
 	}
 
 	public int getCurrentUserLocalId() {
