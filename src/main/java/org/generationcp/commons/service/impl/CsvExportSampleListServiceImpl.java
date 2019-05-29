@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.generationcp.commons.pojo.ExportColumnHeader;
 import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.FileExportInfo;
@@ -40,30 +42,33 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 	public static final String SAMPLE_ENTRY = "SAMPLE_ENTRY";
 	public static final String DESIGNATION = "DESIGNATION";
 	public static final String PLOT_NO = "PLOT_NO";
-	public static final String PLANT_NO = "PLANT_NO";
 	public static final String SAMPLE_NAME = "SAMPLE_NAME";
 	public static final String TAKEN_BY = "TAKEN_BY";
 	public static final String SAMPLING_DATE = "SAMPLING_DATE";
 	public static final String SAMPLE_UID = "SAMPLE_UID";
-	public static final String PLANT_UID = "PLANT_UID";
+	public static final String SAMPLE_NO = "SAMPLE_NO";
 	public static final String OBS_UNIT_ID = "OBS_UNIT_ID";
 	public static final String GID = "GID";
 	public static final String PLATE_ID = "PLATE_ID";
 	public static final String WELL = "WELL";
 
 	public static final List<String> AVAILABLE_COLUMNS = Collections.unmodifiableList(Arrays
-		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, PLANT_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE, SAMPLE_UID, PLATE_ID, WELL, PLANT_UID,
+		.asList(SAMPLE_ENTRY, DESIGNATION, PLOT_NO, SAMPLE_NO, SAMPLE_NAME, TAKEN_BY, SAMPLING_DATE,
+			SAMPLE_UID, PLATE_ID, WELL,
 			OBS_UNIT_ID, GID));
 
 	@Resource
 	private ContextUtil contextUtil;
 
+	private String enumeratorVariableName = "";
+
 	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
 
 	@Override
 	public FileExportInfo export(final List<SampleDetailsDTO> sampleDetailsDTOs, final String filenameWithoutExtension,
-			final List<String> visibleColumns) throws IOException {
+			final List<String> visibleColumns, final String enumeratorVariableName) throws IOException {
 		LOG.debug("Initialize export");
+		this.enumeratorVariableName = enumeratorVariableName;
 
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeaders(visibleColumns);
 		final List<ExportRow> exportRows = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
@@ -96,13 +101,19 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		final List<ExportColumnHeader> exportColumnHeaders = new ArrayList<>();
 
 		int i = 0;
+
+		final List<String> availableColumns = new LinkedList<>(AVAILABLE_COLUMNS);
+		if (visibleColumns.contains(enumeratorVariableName)) {
+			// Add enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.) after PLOT_NO column
+			availableColumns.add(availableColumns.indexOf(PLOT_NO), enumeratorVariableName);
+		}
+
 		if (!visibleColumns.contains(SAMPLE_UID)) {
 			visibleColumns.add(SAMPLE_UID);
 		}
-		for (final String column : AVAILABLE_COLUMNS) {
+		for (final String column : availableColumns) {
 			if (visibleColumns.contains(column)) {
 				exportColumnHeaders.add(new ExportColumnHeader(i++, column, true));
-
 			}
 		}
 
@@ -134,8 +145,8 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 			case PLOT_NO:
 				columnValue = sampleDetailsDTO.getPlotNumber();
 				break;
-			case PLANT_NO:
-				columnValue = sampleDetailsDTO.getPlantNo().toString();
+			case SAMPLE_NO:
+				columnValue = String.valueOf(sampleDetailsDTO.getSampleNumber());
 				break;
 			case SAMPLE_NAME:
 				columnValue = sampleDetailsDTO.getSampleName();
@@ -148,9 +159,6 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 				break;
 			case SAMPLE_UID:
 				columnValue = sampleDetailsDTO.getSampleBusinessKey();
-				break;
-			case PLANT_UID:
-				columnValue = sampleDetailsDTO.getPlantBusinessKey();
 				break;
 			case OBS_UNIT_ID:
 				columnValue = sampleDetailsDTO.getObsUnitId();
@@ -166,6 +174,11 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 				break;
 			default:
 				break;
+		}
+
+		// get the value of enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.)
+		if (StringUtils.isNotBlank(enumeratorVariableName) && column.getName() == enumeratorVariableName) {
+			columnValue = String.valueOf(sampleDetailsDTO.getObservationUnitNumber());
 		}
 		return columnValue;
 	}
@@ -225,6 +238,10 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 
 	public void setContextUtil(final ContextUtil contextUtil) {
 		this.contextUtil = contextUtil;
+	}
+
+	protected void setEnumeratorVariableName(final String enumeratorVariableName) {
+		this.enumeratorVariableName = enumeratorVariableName;
 	}
 
 }

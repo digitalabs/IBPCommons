@@ -28,7 +28,7 @@ public class RuleFactory {
 	}
 
 	public void init() {
-		this.ruleOrder = this.configProvider.retrieveRuleSequenceConfiguration();
+		this.ruleOrder = this.configProvider.getRuleSequenceConfiguration();
 	}
 
 	public void setAvailableRules(Map<String, Rule> availableRulesMap) {

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Nullable;
 
@@ -34,8 +35,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 public class CsvExportSampleListServiceImplTest {
-	
+
 	private static final String FILENAME = "Study 33-Sample List Name";
+	public static final String CUSTOM_ENUMERATOR_VARIABLE_NAME = "CustomEnumeratorVariableName";
 
 	@Mock
 	private ContextUtil contextUtil;
@@ -43,6 +45,8 @@ public class CsvExportSampleListServiceImplTest {
 	private static final String CSV_EXT = ".csv";
 
 	private CsvExportSampleListServiceImpl csvExportSampleListService;
+
+	private Random random = new Random();
 
 
 	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
@@ -65,7 +69,7 @@ public class CsvExportSampleListServiceImplTest {
 		final List<SampleDetailsDTO> sampleDetailsDTOs = SampleListUtilTest.initSampleDetailsDTOs();
 		final List<String> visibleColumns = SampleListUtilTest.getVisibleColumns();
 		final FileExportInfo exportInfo =
-				this.csvExportSampleListService.export(sampleDetailsDTOs, CsvExportSampleListServiceImplTest.FILENAME, visibleColumns);
+				this.csvExportSampleListService.export(sampleDetailsDTOs, CsvExportSampleListServiceImplTest.FILENAME, visibleColumns, "");
 		assertThat(CsvExportSampleListServiceImplTest.FILENAME + CSV_EXT, equalTo(exportInfo.getDownloadFileName()));
 		final File outputFilePath = this.getOutputFilePath();
 		assertThat(outputFilePath.getAbsolutePath(), equalTo(exportInfo.getFilePath()));
@@ -73,6 +77,11 @@ public class CsvExportSampleListServiceImplTest {
 
 	@Test
 	public void testGetExportColumnHeaders() {
+
+		this.csvExportSampleListService.setEnumeratorVariableName(CUSTOM_ENUMERATOR_VARIABLE_NAME);
+
+		final List<String> visibleColumns = new ArrayList<>(CsvExportSampleListServiceImpl.AVAILABLE_COLUMNS);
+		visibleColumns.add(CUSTOM_ENUMERATOR_VARIABLE_NAME);
 
 		final List<ExportColumnHeader> exportColumnHeaders =
 				this.csvExportSampleListService.getExportColumnHeaders(CsvExportSampleListServiceImpl.AVAILABLE_COLUMNS);
@@ -132,9 +141,6 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.PLOT_NO:
 				Assert.assertEquals(value, sampleDetailDTO.getPlotNumber());
 				break;
-			case CsvExportSampleListServiceImpl.PLANT_NO:
-				Assert.assertEquals(value, sampleDetailDTO.getPlantNo().toString());
-				break;
 			case CsvExportSampleListServiceImpl.SAMPLE_NAME:
 				Assert.assertEquals(value, sampleDetailDTO.getSampleName());
 				break;
@@ -147,14 +153,17 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.SAMPLE_UID:
 				Assert.assertEquals(value, sampleDetailDTO.getSampleBusinessKey());
 				break;
-			case CsvExportSampleListServiceImpl.PLANT_UID:
-				Assert.assertEquals(value, sampleDetailDTO.getPlantBusinessKey());
-				break;
 			case CsvExportSampleListServiceImpl.OBS_UNIT_ID:
 				Assert.assertEquals(value, sampleDetailDTO.getObsUnitId());
 				break;
 			case CsvExportSampleListServiceImpl.GID:
 				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getGid()));
+				break;
+			case CsvExportSampleListServiceImpl.SAMPLE_NO:
+				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getSampleNumber()));
+				break;
+			case CUSTOM_ENUMERATOR_VARIABLE_NAME:
+				Assert.assertEquals(value, String.valueOf(sampleDetailDTO.getObservationUnitNumber()));
 				break;
 			default:
 				break;
@@ -171,14 +180,14 @@ public class CsvExportSampleListServiceImplTest {
 			final SampleDetailsDTO item = new SampleDetailsDTO();
 			item.setDesignation("Designation " + i);
 			item.setPlotNumber(String.valueOf(i));
-			item.setPlantNo(i);
 			item.setSampleName("Sample Name " + i);
 			item.setTakenBy("John Doe");
 			item.setSampleDate(new Date("01/01/2017"));
 			item.setSampleBusinessKey("SampleBusinessKeyId" + i);
-			item.setPlantBusinessKey("PlantBusinessKeyId" + i);
 			item.setObsUnitId(String.valueOf(i));
 			item.setGid(i);
+			item.setSampleNumber(random.nextInt(100));
+			item.setObservationUnitNumber(random.nextInt(100));
 			sampleDetailsDTOS.add(item);
 
 		}

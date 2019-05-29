@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
 	<artifactId>ibpcommons</artifactId>
-        <version>11.0</version>
+        <version>12.0</version>
 	<packaging>jar</packaging>
 	<name>Commons</name>
 
@@ -142,7 +142,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
+			<version>3.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-codec</groupId>
@@ -298,10 +298,21 @@
 				<directory>src/main/webapp</directory>
 			</resource>
 			<resource>
+				<filtering>true</filtering>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<filtering>false</filtering>
 				<directory>src/main/resources</directory>
 				<includes>
 					<include>**</include>
 				</includes>
+				<excludes>
+					<exclude>**/*.properties</exclude>
+				</excludes>
 			</resource>
 		</resources>
 
