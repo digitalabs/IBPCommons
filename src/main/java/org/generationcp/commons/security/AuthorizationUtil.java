@@ -1,17 +1,16 @@
 package org.generationcp.commons.security;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 import org.fest.util.Collections;
 import org.generationcp.middleware.pojos.workbench.Role;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 public class AuthorizationUtil {
 	
@@ -23,7 +22,7 @@ public class AuthorizationUtil {
 		}
 		final List<String> permittedRoleNames = new ArrayList<>();
 		for (final Role role : configuredRoles) {
-			permittedRoleNames.add(role.getDescription());
+			permittedRoleNames.add(role.getName());
 		}
 		AuthorizationUtil.preAuthorizeUser(permittedRoleNames);
 		
