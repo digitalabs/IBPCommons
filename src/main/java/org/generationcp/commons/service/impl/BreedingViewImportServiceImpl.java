@@ -39,11 +39,9 @@ import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataMana
 import org.generationcp.middleware.manager.ontology.daoElements.OntologyVariableInfo;
 import org.generationcp.middleware.operation.builder.StandardVariableBuilder;
 import org.generationcp.middleware.operation.transformer.etl.StandardVariableTransformer;
-import org.generationcp.middleware.pojos.dms.DatasetType;
 import org.generationcp.middleware.pojos.dms.DmsProject;
 import org.generationcp.middleware.pojos.dms.PhenotypeOutlier;
 import org.generationcp.middleware.pojos.oms.CVTerm;
-import org.generationcp.middleware.util.DatasetUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
@@ -427,13 +425,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @return means dataset
 	 */
 	private DataSet getMeansDataSet(final int studyId) {
-		final List<DataSet> ds = this.studyDataManager.getDataSetsByType(studyId, DatasetTypeEnum.MEANS_DATA.getId());
-		if (ds != null && !ds.isEmpty()) {
-			// return the 1st one as we're sure that we can only have one means
-			// dataset per study
-			return ds.get(0);
-		}
-		return null;
+		return this.studyDataManager.findOneDataSetByType(studyId, DatasetTypeEnum.MEANS_DATA.getId());
 	}
 
 	/**
@@ -811,7 +803,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @return plot dataset
 	 */
 	protected DataSet getPlotDataSet(final int studyId) {
-		return DatasetUtil.getPlotDataSet(this.studyDataManager, studyId);
+		return this.studyDataManager.findOneDataSetByType(studyId, DatasetTypeEnum.PLOT_DATA.getId());
 	}
 
 	/**
@@ -821,7 +813,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @return trial dataset
 	 */
 	protected DataSet getTrialDataSet(final int studyId) {
-		return DatasetUtil.getTrialDataSet(this.studyDataManager, studyId);
+		return this.studyDataManager.findOneDataSetByType(studyId, DatasetTypeEnum.SUMMARY_DATA.getId());
 	}
 
 	/**
@@ -835,6 +827,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param hasDuplicateColumnsInFile - flag whether summary file from BV had duplicate columns
 	 * @return means dataset
 	 */
+	// FIXME No need to return back input parameter meansDataSet
 	protected DataSet appendVariableTypesToExistingMeans(
 		final String[] csvHeader, final DataSet plotDataSet, final DataSet meansDataSet,
 		final String programUUID, final CVTerm lsMean, final boolean hasDuplicateColumnsInFile) {
