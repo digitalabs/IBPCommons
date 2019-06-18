@@ -73,9 +73,8 @@ public class GermplasmCodeGenerationServiceImplTest {
 		this.namingConfiguration = this.createNamingConfiguration();
 		this.setupCodeNameType();
 
-		Mockito.doReturn(NEXT_NUMBER).when(this.keySequenceRegisterService).getNextSequence(PREFIX, SUFFIX);
-		Mockito.doReturn(NEXT_NUMBER_WITH_SPACE).when(this.keySequenceRegisterService).getNextSequence(PREFIX + " ", " " + SUFFIX);
-		Mockito.doReturn(NEXT_NUMBER_WITHOUT_PREFIX).when(this.keySequenceRegisterService).getNextSequence(PREFIX, "");
+		Mockito.doReturn(NEXT_NUMBER_WITH_SPACE).when(this.keySequenceRegisterService).getNextSequence(PREFIX + " ");
+		Mockito.doReturn(NEXT_NUMBER_WITHOUT_PREFIX).when(this.keySequenceRegisterService).getNextSequence(PREFIX);
 	}
 
 	@Test
@@ -464,7 +463,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 			Mockito.when(this.germplasmDataManager.getGermplasmByGID(gid)).thenReturn(germplasm);
 			Mockito.when(this.germplasmGroupingService.getGroupMembers(gid)).thenReturn(Lists.newArrayList(germplasm));
 		}
-		Mockito.when(this.keySequenceRegisterService.getNextSequence(PREFIX + " ", " " + SUFFIX))
+		Mockito.when(this.keySequenceRegisterService.getNextSequence(PREFIX + " "))
 				.thenReturn(startNumber, startNumber + 1, startNumber + 2, startNumber + 3, startNumber + 4, startNumber + 5);
 
 		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
@@ -516,7 +515,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 			Mockito.when(this.germplasmDataManager.getGermplasmByGID(gid)).thenReturn(germplasm);
 			Mockito.when(this.germplasmGroupingService.getGroupMembers(gid)).thenReturn(Lists.newArrayList(germplasm));
 		}
-		Mockito.when(this.keySequenceRegisterService.getNextSequence(PREFIX + " ", " " + SUFFIX))
+		Mockito.when(this.keySequenceRegisterService.getNextSequence(PREFIX + " "))
 				.thenReturn(startNumber, startNumber + 1, startNumber + 2, startNumber + 3, startNumber + 4, startNumber + 5);
 
 		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
@@ -656,10 +655,8 @@ public class GermplasmCodeGenerationServiceImplTest {
 		final int nextNumber = this.germplasmCodeGenerationService.getNextNumberInSequence(setting);
 		Assert.assertEquals(GermplasmCodeGenerationServiceImplTest.NEXT_NUMBER_WITHOUT_PREFIX.intValue(), nextNumber);
 		final ArgumentCaptor<String> prefixCaptor = ArgumentCaptor.forClass(String.class);
-		final ArgumentCaptor<String> suffixCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture(), suffixCaptor.capture());
+		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture());
 		Assert.assertEquals(PREFIX, prefixCaptor.getValue());
-		Assert.assertEquals("", suffixCaptor.getValue());
 	}
 
 	@Test
@@ -671,23 +668,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 
 		final int nextNumber = this.germplasmCodeGenerationService.getNextNumberInSequence(setting);
 		Assert.assertEquals(1, nextNumber);
-		Mockito.verify(this.keySequenceRegisterService, Mockito.never()).getNextSequence(Matchers.anyString(), Matchers.anyString());
-	}
-
-	@Test
-	public void testGetNextNumberInSequenceWhenSuffixIsSupplied() {
-		final GermplasmNameSetting setting = new GermplasmNameSetting();
-		final String prefix = "A";
-		setting.setPrefix(prefix);
-		final String suffix = "CDE";
-		setting.setSuffix(suffix);
-
-		this.germplasmCodeGenerationService.getNextNumberInSequence(setting);
-		final ArgumentCaptor<String> prefixCaptor = ArgumentCaptor.forClass(String.class);
-		final ArgumentCaptor<String> suffixCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture(), suffixCaptor.capture());
-		Assert.assertEquals(prefix, prefixCaptor.getValue());
-		Assert.assertEquals(suffix, suffixCaptor.getValue());
+		Mockito.verify(this.keySequenceRegisterService, Mockito.never()).getNextSequence(Matchers.anyString());
 	}
 
 	@Test
@@ -696,15 +677,11 @@ public class GermplasmCodeGenerationServiceImplTest {
 		final String prefix = "A";
 		setting.setPrefix(prefix);
 		setting.setAddSpaceBetweenPrefixAndCode(true);
-		final String suffix = "CDE";
-		setting.setSuffix(suffix);
 
 		this.germplasmCodeGenerationService.getNextNumberInSequence(setting);
 		final ArgumentCaptor<String> prefixCaptor = ArgumentCaptor.forClass(String.class);
-		final ArgumentCaptor<String> suffixCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture(), suffixCaptor.capture());
+		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture());
 		Assert.assertEquals(prefix + " ", prefixCaptor.getValue());
-		Assert.assertEquals(suffix, suffixCaptor.getValue());
 	}
 
 	@Test
@@ -718,10 +695,8 @@ public class GermplasmCodeGenerationServiceImplTest {
 
 		this.germplasmCodeGenerationService.getNextNumberInSequence(setting);
 		final ArgumentCaptor<String> prefixCaptor = ArgumentCaptor.forClass(String.class);
-		final ArgumentCaptor<String> suffixCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture(), suffixCaptor.capture());
+		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture());
 		Assert.assertEquals(prefix, prefixCaptor.getValue());
-		Assert.assertEquals(" " + suffix, suffixCaptor.getValue());
 	}
 
 	@Test
@@ -736,10 +711,8 @@ public class GermplasmCodeGenerationServiceImplTest {
 
 		this.germplasmCodeGenerationService.getNextNumberInSequence(setting);
 		final ArgumentCaptor<String> prefixCaptor = ArgumentCaptor.forClass(String.class);
-		final ArgumentCaptor<String> suffixCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture(), suffixCaptor.capture());
+		Mockito.verify(this.keySequenceRegisterService).getNextSequence(prefixCaptor.capture());
 		Assert.assertEquals(prefix + " ", prefixCaptor.getValue());
-		Assert.assertEquals(" " + suffix, suffixCaptor.getValue());
 	}
 
 	@Test

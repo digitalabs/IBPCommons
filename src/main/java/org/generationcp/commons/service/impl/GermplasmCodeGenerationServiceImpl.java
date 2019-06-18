@@ -56,7 +56,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 
 		final String prefix = namingConfiguration.getPrefix();
 		final String suffix = namingConfiguration.getSuffix();
-		namingConfiguration.setSequenceCounter(this.keySequenceRegisterService.getNextSequence(prefix, suffix));
+		namingConfiguration.setSequenceCounter(this.keySequenceRegisterService.getNextSequence(prefix));
 
 		List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace("coding"));
 
@@ -150,8 +150,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		final String lastPrefixUsed = this.buildPrefixString(setting).toUpperCase();
 
 		if (!lastPrefixUsed.isEmpty()) {
-			final String suffix = this.buildSuffixString(setting);
-			return this.keySequenceRegisterService.getNextSequence(lastPrefixUsed, suffix);
+			return this.keySequenceRegisterService.getNextSequence(lastPrefixUsed);
 		}
 
 		return 1;
