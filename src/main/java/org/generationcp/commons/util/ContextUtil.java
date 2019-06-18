@@ -121,7 +121,7 @@ public class ContextUtil {
 
 		WorkbenchUser user = null;
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
-			// resolve from token if existing
+			// resolve from token if existing // TODO cache like getUserById
 			List<WorkbenchUser> matchedUsers = workbenchDataManager.getUserByName(userName, 0, 1, Operation.EQUAL);
 
 			if (matchedUsers != null && !matchedUsers.isEmpty()) {

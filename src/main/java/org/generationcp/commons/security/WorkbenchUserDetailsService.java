@@ -1,22 +1,36 @@
 
 package org.generationcp.commons.security;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringEscapeUtils;
+import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.permission.PermissionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Collection;
+import java.util.List;
+
 public class WorkbenchUserDetailsService implements UserDetailsService {
 
 	private WorkbenchDataManager workbenchDataManager;
+
+	@Autowired
+	private PermissionService permissionService;
+
+	@Autowired
+	private HttpServletRequest request;
 
 	@Override
 	@Transactional
@@ -28,9 +42,17 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 			List<WorkbenchUser> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
 			if (matchingUsers != null && !matchingUsers.isEmpty()) {
 				WorkbenchUser workbenchUser = matchingUsers.get(0);
+
+				final Project project = ContextUtil.getProjectInContext(this.workbenchDataManager, request);
+
+				final Collection<? extends GrantedAuthority> authorities =
+					SecurityUtil.getAuthorities(this.permissionService.getPermissions( //
+						workbenchUser.getUserid(), //
+						project.getCropType().getCropName(), //
+						project.getProjectId().intValue()));
+
 				// FIXME Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
-				return new org.springframework.security.core.userdetails.User(workbenchUser.getName(), workbenchUser.getPassword(),
-						SecurityUtil.getRolesAsAuthorities(workbenchUser));
+				return new User(workbenchUser.getName(), workbenchUser.getPassword(), authorities);
 			}
 			throw new UsernameNotFoundException("Invalid username/password.");
 		} catch (MiddlewareQueryException e) {

@@ -7,8 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
-import org.generationcp.middleware.pojos.workbench.UserRole;
-import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.domain.workbench.PermissionDto;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -41,14 +40,11 @@ public class SecurityUtil {
 		return Collections.emptyList();
 	}
 
-	public static Collection<? extends GrantedAuthority> getRolesAsAuthorities(WorkbenchUser workbenchUser) {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		if (workbenchUser != null) {
-			List<UserRole> userRoles = workbenchUser.getRoles();
-			if (userRoles != null && !userRoles.isEmpty()) {
-				for (UserRole role : userRoles) {
-					authorities.add(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + role.getRole().getCapitalizedRole()));
-				}
+	public static Collection<? extends GrantedAuthority> getAuthorities(final List<PermissionDto> permissionDtoList) {
+		final List<GrantedAuthority> authorities = new ArrayList<>();
+		if (permissionDtoList != null) {
+			for (final PermissionDto permissionDto : permissionDtoList) {
+				authorities.add(new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + permissionDto.getName()));
 			}
 		}
 		return authorities;

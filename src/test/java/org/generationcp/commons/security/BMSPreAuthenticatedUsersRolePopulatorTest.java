@@ -9,11 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
 import org.generationcp.commons.context.ContextConstants;
+import org.generationcp.middleware.domain.workbench.PermissionDto;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.Role;
-import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,6 +27,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	private static final String TEST_USER = "testUser";
 	private static final String AUTH_TOKEN = Base64.encodeBase64URLSafeString(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER
 			.getBytes());
+	private static final String PERMISSION_NAME = "ADMIN";
 
 	private WorkbenchDataManager workbenchDataManager;
 	private PlatformTransactionManager transactionManager;
@@ -46,6 +46,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 		this.rolesPopulator.setTransactionManager(this.transactionManager);
 	}
 
+	// FIXME
 	@Test
 	public void testBuildDetails() {
 		try {
@@ -57,8 +58,11 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 			WorkbenchUser testUserWorkbench = new WorkbenchUser();
 			testUserWorkbench.setName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER);
 			testUserWorkbench.setPassword("password");
-			UserRole testUserRole = new UserRole(testUserWorkbench, new Role(1, "ADMIN"));
-			testUserWorkbench.setRoles(Arrays.asList(testUserRole));
+			final List<PermissionDto> permissions = new ArrayList<>();
+			final PermissionDto permission = new PermissionDto();
+			permission.setName(PERMISSION_NAME);
+			permissions.add(permission);
+			testUserWorkbench.setPermissions(permissions);
 			matchingUsers.add(testUserWorkbench);
 
 			Mockito.when(
@@ -68,7 +72,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 			PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails roleDetails =
 					(PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails) this.rolesPopulator.buildDetails(this.request);
 			Assert.assertEquals(testUserWorkbench.getRoles().size(), roleDetails.getGrantedAuthorities().size());
-			Assert.assertEquals(SecurityUtil.ROLE_PREFIX + testUserRole.getRole().getCapitalizedRole(), roleDetails.getGrantedAuthorities().get(0)
+			Assert.assertEquals(SecurityUtil.ROLE_PREFIX + permission.getName(), roleDetails.getGrantedAuthorities().get(0)
 					.getAuthority());
 
 		} catch (MiddlewareQueryException e) {
