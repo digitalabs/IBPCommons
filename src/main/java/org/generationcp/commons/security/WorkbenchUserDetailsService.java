@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.security;
 
+import com.google.common.base.Optional;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -43,13 +44,20 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 			if (matchingUsers != null && !matchingUsers.isEmpty()) {
 				WorkbenchUser workbenchUser = matchingUsers.get(0);
 
-				final Project project = ContextUtil.getProjectInContext(this.workbenchDataManager, request);
+				final Optional<Project> project = ContextUtil.getProject(this.workbenchDataManager, request);
+
+				String cropName = null;
+				Integer programId = null;
+				if (project.isPresent()) {
+					cropName = project.get().getCropType().getCropName();
+					programId = project.get().getProjectId().intValue();
+				}
 
 				final Collection<? extends GrantedAuthority> authorities =
 					SecurityUtil.getAuthorities(this.permissionService.getPermissions( //
 						workbenchUser.getUserid(), //
-						project.getCropType().getCropName(), //
-						project.getProjectId().intValue()));
+						cropName, //
+						programId));
 
 				// FIXME Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
 				return new User(workbenchUser.getName(), workbenchUser.getPassword(), authorities);
