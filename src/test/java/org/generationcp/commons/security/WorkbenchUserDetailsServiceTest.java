@@ -6,31 +6,55 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+import org.generationcp.middleware.domain.workbench.PermissionDto;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.CropType;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.Role;
 import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.permission.PermissionService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+
+@RunWith(MockitoJUnitRunner.class)
 public class WorkbenchUserDetailsServiceTest {
 
 	private static final String TEST_USER = "testUser";
+	public static final String PERMISSION_ADMIN = "ADMIN";
 	private WorkbenchDataManager workbenchDataManager;
+
+	@Mock
+	private HttpServletRequest request;
+
+	@Mock
+	private PermissionService permissionService;
+
+	@InjectMocks
 	private WorkbenchUserDetailsService service;
 
 	@Before
 	public void setUpPerTest() {
 		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
-		this.service = new WorkbenchUserDetailsService();
+		final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 		this.service.setWorkbenchDataManager(this.workbenchDataManager);
 	}
 
@@ -41,12 +65,23 @@ public class WorkbenchUserDetailsServiceTest {
 			WorkbenchUser testUserWorkbench = new WorkbenchUser();
 			testUserWorkbench.setName(WorkbenchUserDetailsServiceTest.TEST_USER);
 			testUserWorkbench.setPassword("password");
-			UserRole testUserRole = new UserRole(testUserWorkbench, new Role(1, "Admin"));
+			testUserWorkbench.setUserid(1);
+			UserRole testUserRole = new UserRole(testUserWorkbench, new Role(1, PERMISSION_ADMIN));
 			testUserWorkbench.setRoles(Arrays.asList(testUserRole));
 			matchingUsers.add(testUserWorkbench);
 
 			Mockito.when(this.workbenchDataManager.getUserByName(WorkbenchUserDetailsServiceTest.TEST_USER, 0, 1, Operation.EQUAL))
 					.thenReturn(matchingUsers);
+
+			final Project project = new Project();
+			project.setProjectId(1L);
+			project.setCropType(new CropType("cropName"));
+			Mockito.when(this.workbenchDataManager.getLastOpenedProjectAnyUser()).thenReturn(project);
+
+			final PermissionDto permissionDto = new PermissionDto();
+			permissionDto.setName(PERMISSION_ADMIN);
+			final List<PermissionDto> permissions = Lists.newArrayList(permissionDto);
+			Mockito.when(this.permissionService.getPermissions(anyInt(), anyString(), anyInt())) .thenReturn(permissions);
 
 			UserDetails userDetails = this.service.loadUserByUsername(WorkbenchUserDetailsServiceTest.TEST_USER);
 			Assert.assertEquals(testUserWorkbench.getName(), userDetails.getUsername());
