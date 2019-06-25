@@ -40,11 +40,11 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 			// username must be converted from html-encode to utf-8 string to support chinese/utf-8 languages
 			username = StringEscapeUtils.unescapeHtml(username);
 
-			List<WorkbenchUser> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
+			final List<WorkbenchUser> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
 			if (matchingUsers != null && !matchingUsers.isEmpty()) {
-				WorkbenchUser workbenchUser = matchingUsers.get(0);
+				final WorkbenchUser workbenchUser = matchingUsers.get(0);
 
-				final Optional<Project> project = ContextUtil.getProject(this.workbenchDataManager, request);
+				final Optional<Project> project = ContextUtil.getProject(this.workbenchDataManager, this.request);
 
 				String cropName = null;
 				Integer programId = null;
@@ -63,12 +63,12 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 				return new User(workbenchUser.getName(), workbenchUser.getPassword(), authorities);
 			}
 			throw new UsernameNotFoundException("Invalid username/password.");
-		} catch (MiddlewareQueryException e) {
+		} catch (final MiddlewareQueryException e) {
 			throw new AuthenticationServiceException("Data access error while authenticaing user against Workbench.", e);
 		}
 	}
 
-	public void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
+	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
 		this.workbenchDataManager = workbenchDataManager;
 	}
 }
