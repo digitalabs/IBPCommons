@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.security;
 
+import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -40,14 +41,17 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(TransactionStatus status) {
 				try {
-					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.workbenchDataManager, request);
-					final Project project = ContextUtil.getProjectInContext(BMSPreAuthenticatedUsersRolePopulator.this.workbenchDataManager, request);
+					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(workbenchDataManager, request);
+					final ContextInfo requestContextInfo = ContextUtil.getContextInfoFromRequest(request);
+					final Project project = workbenchDataManager.getProjectById(requestContextInfo.getSelectedProjectId());
+
+					// FIXME Authentication IBP-2843
 
 					final Collection<? extends GrantedAuthority> authorities =
-						SecurityUtil.getAuthorities(BMSPreAuthenticatedUsersRolePopulator.this.permissionService.getPermissions( //
+						SecurityUtil.getAuthorities(permissionService.getPermissions( //
 							user.getUserid(), //
 							project.getCropType().getCropName(), //
-							project.getProjectId().intValue()));
+							requestContextInfo.getSelectedProjectId().intValue()));
 
 					return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, authorities);
 				} catch (final MiddlewareQueryException e) {

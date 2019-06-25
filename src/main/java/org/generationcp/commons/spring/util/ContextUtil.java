@@ -35,7 +35,7 @@ public class ContextUtil {
 	/**
 	 * Main goal is to prevent excessive queries to get local user names. This is a global cache that will expire every 10 minutes.
 	 */
-	private static final Cache<CropBasedContextInfo, Integer> localUserCache =
+	private static final Cache<CropBasedContextInfo, Optional<Integer>> localUserCache =
 			CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(10, TimeUnit.MINUTES).build();
 
 	public String getCurrentProgramUUID() {
@@ -66,17 +66,17 @@ public class ContextUtil {
 		final ContextInfo contextInfo = this.getContextInfoFromSession();
 		try {
 			final Project projectInContext = getProjectInContext();
-			final Integer localUserId = localUserCache
-					.get(new CropBasedContextInfo(contextInfo, projectInContext.getCropType().getCropName()), new Callable<Integer>() {
+			final Optional<Integer> localUserId = localUserCache
+					.get(new CropBasedContextInfo(contextInfo, projectInContext.getCropType().getCropName()), new Callable<Optional<Integer>>() {
 
 						@Override
-						public Integer call() {
-							return ContextUtil.this.workbenchDataManager
-									.getLocalIbdbUserId(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId());
+						public Optional<Integer> call() {
+							return Optional.fromNullable(ContextUtil.this.workbenchDataManager
+									.getLocalIbdbUserId(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId()));
 						}
 					});
-			if (localUserId != null) {
-				return localUserId.intValue();
+			if (localUserId.isPresent()) {
+				return localUserId.get();
 			}
 			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE);
 		} catch (final ExecutionException e) {
