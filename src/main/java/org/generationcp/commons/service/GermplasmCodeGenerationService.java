@@ -28,7 +28,7 @@ public interface GermplasmCodeGenerationService {
 	/**
 	 * Generates code name for the Germplasm based on predefined NamingConfiguration.
 	 *
-	 * @param gidsToProcess
+	 * @param gid
 	 * @param namingConfiguration
 	 * @param nameType
 	 * @return
@@ -53,7 +53,7 @@ public interface GermplasmCodeGenerationService {
 	/**
 	 * Generates code name for the Germplasm based on user specified name setting (GermplasmNameSetting)
 	 *
-	 * @param gids
+	 * @param gid
 	 * @param setting
 	 * @param nameType
 	 * @param userId
@@ -63,5 +63,7 @@ public interface GermplasmCodeGenerationService {
 	GermplasmGroupNamingResult applyGroupName(Integer gid, GermplasmNameSetting setting, UserDefinedField nameType, Integer userId,
 			Integer locationId);
 
-	String getNextNameInSequence(GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException;
+
+	String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException;
+
 }
