@@ -3,6 +3,7 @@ package org.generationcp.commons.service.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
+import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
 import org.generationcp.middleware.service.api.KeySequenceRegisterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,12 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 	@Autowired
 	private KeySequenceRegisterService keySequenceRegisterService;
 
+	@Autowired
+	private GermplasmDataManager germplasmDataManager;
+
 	@Override
 	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
-		Integer nextNumberInSequence = this.getNextNumberInSequence(setting);
+		Integer nextNumberInSequence = this.getNextSequence(setting.getPrefix());
 
 		final Integer optionalStartNumber = setting.getStartNumber();
 
@@ -32,16 +36,6 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 		return this.buildDesignationNameInSequence(nextNumberInSequence, setting);
 	}
 
-	int getNextNumberInSequence(final GermplasmNameSetting setting) {
-
-		final String lastPrefixUsed = this.buildPrefixString(setting).toUpperCase();
-
-		if (!lastPrefixUsed.isEmpty()) {
-			return this.keySequenceRegisterService.getNextSequence(lastPrefixUsed);
-		}
-
-		return 1;
-	}
 
 	String buildDesignationNameInSequence(final Integer number, final GermplasmNameSetting setting) {
 		final StringBuilder sb = new StringBuilder();
@@ -84,20 +78,30 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 
 	@Override
 	public String generateNextNameAndIncrementSequence(final GermplasmNameSetting setting) {
-		Integer nextNumberInSequence = this.getNextNumberInSequence(setting);
+		Integer nextNumberInSequence = this.getNextSequence(setting.getPrefix());
 		final Integer optionalStartNumber = setting.getStartNumber();
 		if (optionalStartNumber != null && nextNumberInSequence < optionalStartNumber) {
 			nextNumberInSequence = optionalStartNumber;
 		}
 		this.keySequenceRegisterService
-			.saveLastSequenceUsed(this.buildPrefixString(setting).toUpperCase(), nextNumberInSequence);
+			.saveLastSequenceUsed(setting.getPrefix().trim(), nextNumberInSequence);
 
 		return this.buildDesignationNameInSequence(nextNumberInSequence, setting);
 	}
 
 	@Override
 	public int getNextSequence(final String keyPrefix) {
-		return this.keySequenceRegisterService.getNextSequence(keyPrefix);
+		if (!StringUtils.isEmpty(keyPrefix)) {
+			final int nextSequenceNumber = this.keySequenceRegisterService.getNextSequence(keyPrefix.trim());
+			if (nextSequenceNumber > 1) {
+				return nextSequenceNumber;
+			// If the sequence doesn't exist yet in key_sequence_register table, query in NAMES table for the latest one used
+			} else {
+				return Integer.valueOf(this.germplasmDataManager.getNextSequenceNumberForCrossName(keyPrefix.trim()));
+			}
+		}
+
+		return 1;
 	}
 
 	@Override
