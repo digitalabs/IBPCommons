@@ -21,6 +21,8 @@ public class CodesSheetPassportAttributeTypesRowGeneratorTest {
 
 	private static final String TAXONOMY = "Taxonomy";
 	private static final String TAXNO = "TAXNO";
+	private static final String CROP_NAME = "maize";
+
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
@@ -41,7 +43,7 @@ public class CodesSheetPassportAttributeTypesRowGeneratorTest {
 
 	@Test
 	public void testNameTypesRowsToCodesSheet() {
-		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, CROP_NAME);
 		final HSSFRow row = this.codesSheet.getRow(1);
 		Assert.assertEquals("First cell's content should be " + RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(),
 				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getSection(), row.getCell(0).toString());

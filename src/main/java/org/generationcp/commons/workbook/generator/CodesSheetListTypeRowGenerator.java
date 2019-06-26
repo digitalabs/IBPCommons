@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.WordUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
@@ -20,7 +19,7 @@ public class CodesSheetListTypeRowGenerator extends CodesSheetRowGenerator<UserD
 	private GermplasmListManager germplasmListManager;
 
 	@Override
-	List<UserDefinedField> getSourceItem() {
+	List<UserDefinedField> getSourceItem(final String cropName) {
 		return this.germplasmListManager.getGermplasmListTypes();
 	}
 

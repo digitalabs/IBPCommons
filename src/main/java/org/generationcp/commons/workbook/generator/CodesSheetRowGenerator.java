@@ -1,24 +1,24 @@
 
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.ExcelWorkbookRow;
 
+import java.util.List;
+
 abstract class CodesSheetRowGenerator<SOURCE> {
 
 	protected ExcelCellStyleBuilder sheetStyles;
 
-	public void addRowsToCodesSheet(final HSSFSheet codesSheet, final ExcelCellStyleBuilder sheetStyles) {
+	public void addRowsToCodesSheet(final HSSFSheet codesSheet, final ExcelCellStyleBuilder sheetStyles, final String cropName) {
 		this.sheetStyles = sheetStyles;
 
 		final CellStyle labelStyle = this.getLabelStyle();
 		final CellStyle dataStyle = this.getDataStyle();
 
-		final List<SOURCE> items = this.getSourceItem();
+		final List<SOURCE> items = this.getSourceItem(cropName);
 		ExcelWorkbookRow itemRow;
 		int currentRow = codesSheet.getLastRowNum() + 1;
 
@@ -33,7 +33,7 @@ abstract class CodesSheetRowGenerator<SOURCE> {
 
 	}
 
-	abstract List<SOURCE> getSourceItem();
+	abstract List<SOURCE> getSourceItem(final String cropName);
 
 	abstract CellStyle getLabelStyle();
 

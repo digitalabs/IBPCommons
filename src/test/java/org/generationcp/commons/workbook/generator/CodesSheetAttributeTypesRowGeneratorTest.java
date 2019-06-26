@@ -21,6 +21,7 @@ public class CodesSheetAttributeTypesRowGeneratorTest {
 
 	private static final String NOTES = "NOTES";
 	private static final String NOTE = "NOTE";
+	private static final String CROP_NAME = "maize";
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
@@ -41,7 +42,7 @@ public class CodesSheetAttributeTypesRowGeneratorTest {
 
 	@Test
 	public void testNameTypesRowsToCodesSheet() {
-		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, CROP_NAME);
 		final HSSFRow row = this.codesSheet.getRow(1);
 		Assert.assertEquals("First cell's content should be " + RowColumnType.ATTRIBUTE_TYPES.getSection(),
 				RowColumnType.ATTRIBUTE_TYPES.getSection(), row.getCell(0).toString());

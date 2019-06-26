@@ -18,6 +18,8 @@ public class CodesSheetGeneratorTest {
 	private static final String FCODE = "fcode";
 	private static final String INFORMATION_TYPE = "Information Type";
 	private static final String SECTION = "Section";
+	private static final String CROP_NAME = "maize";
+
 	HSSFWorkbook wb = new HSSFWorkbook();
 	ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
 
@@ -44,7 +46,7 @@ public class CodesSheetGeneratorTest {
 
 	@Test
 	public void testGenerateCodesSheet() {
-		this.codesSheetGenerator.generateCodesSheet(this.wb);
+		this.codesSheetGenerator.generateCodesSheet(this.wb, CROP_NAME);
 		final HSSFSheet codesSheet = this.codesSheetGenerator.getCodesSheet();
 		this.assertHeadersRow(codesSheet.getRow(0));
 	}

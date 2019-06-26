@@ -1,10 +1,6 @@
 
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -13,6 +9,9 @@ import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class CodesSheetUserRowGenerator extends CodesSheetRowGenerator<WorkbenchUser> {
@@ -24,9 +23,9 @@ public class CodesSheetUserRowGenerator extends CodesSheetRowGenerator<Workbench
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Override
-	List<WorkbenchUser> getSourceItem() {
+	List<WorkbenchUser> getSourceItem(final String cropName) {
 		final Project project = this.contextUtil.getProjectInContext();
-		return this.workbenchDataManager.getUsersByProjectId(project.getProjectId());
+		return this.workbenchDataManager.getUsersByProjectId(project.getProjectId(), cropName);
 	}
 
 	@Override

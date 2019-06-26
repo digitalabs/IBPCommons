@@ -18,7 +18,7 @@ public class CodesSheetInventoryScalesRowGenerator extends CodesSheetRowGenerato
 	private OntologyService ontologyService;
 
 	@Override
-	List<Scale> getSourceItem() {
+	List<Scale> getSourceItem(final String cropName) {
 		return this.ontologyService.getAllInventoryScales();
 	}
 

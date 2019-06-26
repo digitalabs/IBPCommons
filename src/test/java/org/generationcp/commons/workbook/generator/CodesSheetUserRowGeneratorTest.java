@@ -1,8 +1,6 @@
 
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -22,11 +20,14 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class CodesSheetUserRowGeneratorTest {
 
 	private static final String TEST_PERSON = "Test Person";
 	private static final String USER_ID = "1";
+	private static final String CROP_NAME = "maize";
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
@@ -48,14 +49,14 @@ public class CodesSheetUserRowGeneratorTest {
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
 
 		this.userList = UserTestDataInitializer.createWorkbenchUserList();
-		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userList);
+		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(this.userList);
 
 		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
 	}
 
 	@Test
 	public void testAddListTypeRowsToCodesSheet() {
-		this.userRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.userRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, CROP_NAME);
 		final HSSFRow row = this.codesSheet.getRow(1);
 		Assert.assertEquals("First cell's content should be " + RowColumnType.USER.getSection(), RowColumnType.USER.getSection(),
 				row.getCell(0).toString());

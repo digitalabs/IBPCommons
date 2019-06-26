@@ -1,14 +1,6 @@
 
 package org.generationcp.commons.parsing;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -19,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
+import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.commons.workbook.generator.GermplasmAttributesWorkbookExporter;
 import org.generationcp.commons.workbook.generator.GermplasmNamesWorkbookExporter;
@@ -29,6 +22,13 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
+
+import javax.annotation.Resource;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow and the ExcelCellStyleBuilder to construct a
@@ -82,6 +82,9 @@ public class GermplasmExportedWorkbook {
 
 	@Resource
 	private GermplasmNamesWorkbookExporter namesGenerator;
+
+	@Resource
+	private ContextUtil contextUtil;
 	
 	/**
 	 * Default constructor
@@ -103,7 +106,8 @@ public class GermplasmExportedWorkbook {
 		this.generateObservationSheet();
 
 		// Generate Sheets
-		this.codesSheetGenerator.generateCodesSheet(this.wb);
+		final String cropName = this.contextUtil.getProjectInContext().getCropType().getCropName();
+		this.codesSheetGenerator.generateCodesSheet(this.wb, cropName);
 
 	}
 
@@ -587,7 +591,7 @@ public class GermplasmExportedWorkbook {
 	}
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
-		int actualRow = startingRow;
+		final int actualRow = startingRow;
 		this.attributesGenerator.setColumnsInfo(this.input.getCurrentColumnsInfo());
 		if (this.attributesGenerator.hasItems()) {
 			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));

@@ -20,6 +20,8 @@ public class CodesSheetListTypeRowGeneratorTest {
 
 	private static final String GENERIC_LIST = "Generic List";
 	private static final String LST = "LST";
+	private static final String CROP_NAME = "maize";
+
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
@@ -38,7 +40,7 @@ public class CodesSheetListTypeRowGeneratorTest {
 
 	@Test
 	public void testAddListTypeRowsToCodesSheet() {
-		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, CROP_NAME);
 		final HSSFRow row = this.codesSheet.getRow(1);
 		Assert.assertEquals("First cell's content should be " + RowColumnType.LIST_TYPE.getSection(), RowColumnType.LIST_TYPE.getSection(),
 				row.getCell(0).toString());

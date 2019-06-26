@@ -1,8 +1,6 @@
 
 package org.generationcp.commons.workbook.generator;
 
-import javax.annotation.Resource;
-
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -14,6 +12,8 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.service.api.OntologyService;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 @Component
 public class CodesSheetGenerator {
@@ -64,7 +64,7 @@ public class CodesSheetGenerator {
 
 	private ExcelCellStyleBuilder sheetStyles;
 
-	public void generateCodesSheet(final HSSFWorkbook wb) {
+	public void generateCodesSheet(final HSSFWorkbook wb, final String cropName) {
 		this.wb = wb;
 		this.codesSheet = wb.createSheet("Codes");
 		this.sheetStyles = new ExcelCellStyleBuilder(wb);
@@ -75,12 +75,12 @@ public class CodesSheetGenerator {
 		this.codesSheet.setZoom(10, 8);
 
 		this.setCodeSheetHeaders(this.codesSheet);
-		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
-		this.userRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
-		this.nameTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
-		this.inventoryScalesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
-		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
-		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
+		this.userRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
+		this.nameTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
+		this.inventoryScalesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
+		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
+		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
 		this.setCodesColumnsWidth(this.codesSheet);
 	}
 
