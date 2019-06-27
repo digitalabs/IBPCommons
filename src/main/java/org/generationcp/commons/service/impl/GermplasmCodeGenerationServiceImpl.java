@@ -54,9 +54,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
 			final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
 
-		final String prefix = namingConfiguration.getPrefix();
-		namingConfiguration.setSequenceCounter(this.germplasmNamingService.getNextSequence(prefix));
-
 		final List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace(CODING_RULE_SEQUENCE));
 
 		final CodingRuleExecutionContext codingRuleExecutionContext = new CodingRuleExecutionContext(executionOrder, namingConfiguration);
@@ -67,9 +64,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			assignCodesResultsMap.put(gid, applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
 			codingRuleExecutionContext.reset();
 		}
-
-		final int lastSequenceUsed = namingConfiguration.getSequenceCounter() - 1;
-		this.germplasmNamingService.saveLastSequenceUsed(prefix, lastSequenceUsed);
 
 		return assignCodesResultsMap;
 	}
