@@ -194,6 +194,15 @@ public class GermplasmNamingServiceImplTest {
 		}
 	}
 
+	@Test
+	public void testGetNextNumberAndIncrementSequence() {
+		final int nextNumber = this.germplasmNamingService.getNextNumberAndIncrementSequence(PREFIX);
+		Assert.assertEquals(GermplasmNamingServiceImplTest.NEXT_NUMBER.intValue(), nextNumber);
+		Mockito.verify(this.keySequenceRegisterService).getNextSequence(PREFIX);
+		Mockito.verify(this.keySequenceRegisterService).saveLastSequenceUsed(PREFIX, nextNumber);
+		Mockito.verifyZeroInteractions(this.germplasmDataManager);
+	}
+
 	private GermplasmNameSetting createGermplasmNameSetting() {
 		final GermplasmNameSetting setting = new GermplasmNameSetting();
 

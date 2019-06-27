@@ -35,7 +35,7 @@ import java.util.Set;
 @RunWith(MockitoJUnitRunner.class)
 public class GermplasmCodeGenerationServiceImplTest {
 
-	private static final int NAMING_CONFIG_STARTING_SEQUENCE = 1;
+	private static final int NAMING_CONFIG_STARTING_SEQUENCE = 11;
 	private static final String PREFIX = "ABH";
 	private static final String SUFFIX = "CDE";
 	private static final Integer NEXT_NUMBER = 3;
@@ -71,7 +71,6 @@ public class GermplasmCodeGenerationServiceImplTest {
 		this.namingConfiguration = this.createNamingConfiguration();
 		this.setupCodeNameType();
 
-		Mockito.doReturn(NEXT_NUMBER).when(this.germplasmNamingService).getNextSequence(PREFIX);
 		final String nextNameInSequence = this.getExpectedName(NEXT_NUMBER);
 		Mockito.doReturn(nextNameInSequence).when(this.germplasmNamingService).generateNextNameAndIncrementSequence(this.germplasmNameSetting);
 		Mockito.doReturn(nextNameInSequence).when(this.germplasmNamingService).getNextNameInSequence(this.germplasmNameSetting);
@@ -442,7 +441,6 @@ public class GermplasmCodeGenerationServiceImplTest {
 		namingConfiguration.setPrefix(GermplasmCodeGenerationServiceImplTest.PREFIX);
 		namingConfiguration.setSuffix(GermplasmCodeGenerationServiceImplTest.SUFFIX);
 		namingConfiguration.setCount(SequenceExpression.KEY);
-		namingConfiguration.setSequenceCounter(NAMING_CONFIG_STARTING_SEQUENCE);
 		return namingConfiguration;
 	}
 
