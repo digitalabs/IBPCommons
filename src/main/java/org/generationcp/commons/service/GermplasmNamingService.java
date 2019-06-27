@@ -11,5 +11,7 @@ public interface GermplasmNamingService {
 
 	int getNextSequence(String keyPrefix);
 
+	int getNextNumberAndIncrementSequence(String keyPrefix);
+
 	void saveLastSequenceUsed(String keyPrefix, Integer lastSequenceUsed);
 }

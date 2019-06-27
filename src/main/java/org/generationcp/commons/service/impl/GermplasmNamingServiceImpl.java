@@ -105,6 +105,13 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 	}
 
 	@Override
+	public int getNextNumberAndIncrementSequence(final String keyPrefix) {
+		final int nextSequence = this.getNextSequence(keyPrefix);
+		this.saveLastSequenceUsed(keyPrefix, nextSequence);
+		return nextSequence;
+	}
+
+	@Override
 	public void saveLastSequenceUsed(final String keyPrefix, final Integer lastSequenceUsed) {
 		this.keySequenceRegisterService.saveLastSequenceUsed(keyPrefix, lastSequenceUsed);
 	}
