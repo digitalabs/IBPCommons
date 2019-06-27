@@ -36,7 +36,6 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 		return this.buildDesignationNameInSequence(nextNumberInSequence, setting);
 	}
 
-
 	String buildDesignationNameInSequence(final Integer number, final GermplasmNameSetting setting) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(this.buildPrefixString(setting));
@@ -95,6 +94,7 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 			final int nextSequenceNumber = this.keySequenceRegisterService.getNextSequence(keyPrefix.trim());
 			if (nextSequenceNumber > 1) {
 				return nextSequenceNumber;
+
 			// If the sequence doesn't exist yet in key_sequence_register table, query in NAMES table for the latest one used
 			} else {
 				return Integer.valueOf(this.germplasmDataManager.getNextSequenceNumberForCrossName(keyPrefix.trim()));

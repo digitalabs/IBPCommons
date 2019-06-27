@@ -17,7 +17,7 @@ public class NumberExpression extends NumberSequenceExpression implements Expres
 	}
 
 	@Override
-	public void apply(List<StringBuilder> values, AdvancingSource source, final String capturedText) {
+	public void apply(final List<StringBuilder> values, final AdvancingSource source, final String capturedText) {
 		this.applyNumberSequenceForBulking(values, source);
 	}
 

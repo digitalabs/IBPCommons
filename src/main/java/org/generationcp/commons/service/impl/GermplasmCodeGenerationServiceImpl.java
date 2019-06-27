@@ -32,7 +32,7 @@ import java.util.Set;
 public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerationService {
 
 	private static final String GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP =
-			"Germplasm (gid: %s) is not part of a management group. Can not assign group name.";
+		"Germplasm (gid: %s) is not part of a management group. Can not assign group name.";
 	protected static final String CODING_RULE_SEQUENCE = "coding";
 
 	@Autowired
@@ -52,7 +52,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 
 	@Override
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
-			final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
+		final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
 
 		final List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace(CODING_RULE_SEQUENCE));
 
@@ -61,7 +61,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
 
 		for (final Integer gid : gidsToProcess) {
-			assignCodesResultsMap.put(gid, applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
+			assignCodesResultsMap.put(gid, this.applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
 			codingRuleExecutionContext.reset();
 		}
 
@@ -71,7 +71,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)
 	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final NamingConfiguration namingConfiguration,
-			final UserDefinedField nameType, final CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException {
+		final UserDefinedField nameType, final CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException {
 
 		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
 
@@ -83,7 +83,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		}
 
 		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
-		final String generatedCodeName = (String) rulesService.runRules(codingRuleExecutionContext);
+		final String generatedCodeName = (String) this.rulesService.runRules(codingRuleExecutionContext);
 
 		for (final Germplasm member : groupMembers) {
 			// TODO: Pass the userId and locationId. Hard coded to zero for now.
@@ -97,15 +97,15 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)
 	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final GermplasmNameSetting setting, final UserDefinedField nameType,
-			final Integer userId, final Integer locationId) {
+		final Integer userId, final Integer locationId) {
 
-		GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
+		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
 
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
 		if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
 			result.addMessage(
-					String.format("Germplasm (gid: %s) is not part of a management group. Can not assign group name.", germplasm.getGid()));
+				String.format("Germplasm (gid: %s) is not part of a management group. Can not assign group name.", germplasm.getGid()));
 			return result;
 		}
 
@@ -128,7 +128,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
-			final UserDefinedField nameType, final Integer userId, final Integer locationId) {
+		final UserDefinedField nameType, final Integer userId, final Integer locationId) {
 		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
 		final boolean startNumberSpecified = setting.getStartNumber() != null;
 		Integer startNumber = setting.getStartNumber();
@@ -143,8 +143,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		return assignCodesResultsMap;
 	}
 
-	protected void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType, final Integer userId,
-			final Integer locationId, final GermplasmGroupNamingResult result) {
+	private void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType, final Integer userId,
+		final Integer locationId, final GermplasmGroupNamingResult result) {
 
 		final List<Name> currentNames = germplasm.getNames();
 
@@ -180,13 +180,12 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			germplasm.getNames().add(name);
 			this.germplasmDataManager.save(germplasm);
 			result.addMessage(
-					String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
-							groupName, nameType.getFcode()));
+				String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
+					groupName, nameType.getFcode()));
 		} else {
 			result.addMessage(String.format("Germplasm (gid: %s) already has existing name %s of type %s. Supplied name %s was not added.",
-					germplasm.getGid(), existingNameOfGivenType.getNval(), nameType.getFcode(), groupName));
+				germplasm.getGid(), existingNameOfGivenType.getNval(), nameType.getFcode(), groupName));
 		}
 	}
-
 
 }

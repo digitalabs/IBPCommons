@@ -38,7 +38,7 @@ public class SequenceExpression extends NumberSequenceExpression implements Expr
 					synchronized (SequenceExpression.class) {
 						for (int i = 0; i < source.getPlantsSelected(); i++) {
 							final StringBuilder newName = new StringBuilder(value);
-							final String keyPrefix = value.substring(0, value.indexOf(getExpressionKey()));
+							final String keyPrefix = value.substring(0, value.indexOf(this.getExpressionKey()));
 							// Get last sequence number for KeyPrefix with synchronization at class level
 							final int lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(keyPrefix);
 							this.replaceExpressionWithValue(newName, String.valueOf(lastUsedSequence));

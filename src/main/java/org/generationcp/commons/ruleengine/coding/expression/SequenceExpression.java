@@ -21,12 +21,12 @@ public class SequenceExpression extends BaseCodingExpression {
 	}
 
 	@Override
-	public void apply(List<StringBuilder> values, final String capturedText, final NamingConfiguration namingConfiguration) {
+	public void apply(final List<StringBuilder> values, final String capturedText, final NamingConfiguration namingConfiguration) {
 
 		final String prefix = namingConfiguration.getPrefix();
-		for (StringBuilder container : values) {
+		for (final StringBuilder container : values) {
 			final int lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
-			replaceExpressionWithValue(container, String.valueOf(lastUsedSequence));
+			this.replaceExpressionWithValue(container, String.valueOf(lastUsedSequence));
 		}
 	}
 
