@@ -165,6 +165,37 @@ public final class DerivedVariableUtils {
 		return value;
 	}
 
+	public static Object parseValue(final Object valueToParse, final MeasurementVariable measurementVariable,
+		final Set<String> termMissingData) throws ParseException {
+
+		String value = (String) valueToParse;
+
+		if (StringUtils.isBlank(value) && termMissingData != null) {
+			termMissingData.add(measurementVariable.getLabel());
+		}
+
+		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementVariable.getDataTypeId())
+			&& !StringUtils.isBlank(value)) {
+			return DateUtil.parseDate(value);
+		}
+		if (NumberUtils.isNumber(value)) {
+			return new BigDecimal(value);
+		}
+		return value;
+
+	}
+
+	public static List<Object> parseValueList(final List<Object> valueToParseList, final MeasurementVariable measurementVariable,
+		final Set<String> termMissingData) throws ParseException {
+
+		final List<Object> parsedValues = new ArrayList<>();
+		for (final Object value : valueToParseList) {
+			parsedValues.add(parseValue(value, measurementVariable, termMissingData));
+		}
+		return parsedValues;
+
+	}
+
 	private static String getPossibleValueName(final Integer cagetoricalValueId, final MeasurementVariable measurementVariable) {
 		for (final ValueReference possibleValue : measurementVariable.getPossibleValues()) {
 			if (possibleValue.getId().equals(cagetoricalValueId)) {
