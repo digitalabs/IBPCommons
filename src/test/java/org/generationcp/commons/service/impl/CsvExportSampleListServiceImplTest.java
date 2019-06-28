@@ -138,9 +138,6 @@ public class CsvExportSampleListServiceImplTest {
 			case CsvExportSampleListServiceImpl.DESIGNATION:
 				Assert.assertEquals(value, sampleDetailDTO.getDesignation());
 				break;
-			case CsvExportSampleListServiceImpl.PLOT_NO:
-				Assert.assertEquals(value, sampleDetailDTO.getPlotNumber());
-				break;
 			case CsvExportSampleListServiceImpl.SAMPLE_NAME:
 				Assert.assertEquals(value, sampleDetailDTO.getSampleName());
 				break;
@@ -179,7 +176,7 @@ public class CsvExportSampleListServiceImplTest {
 
 			final SampleDetailsDTO item = new SampleDetailsDTO();
 			item.setDesignation("Designation " + i);
-			item.setPlotNumber(String.valueOf(i));
+			item.setObservationUnitNumber(String.valueOf(i));
 			item.setSampleName("Sample Name " + i);
 			item.setTakenBy("John Doe");
 			item.setSampleDate(new Date("01/01/2017"));

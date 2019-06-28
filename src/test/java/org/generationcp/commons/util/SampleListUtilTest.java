@@ -14,7 +14,7 @@ public abstract class SampleListUtilTest {
 		sampleDetailsDTO.setDesignation("AAB");
 		sampleDetailsDTO.setSampleName("SAMPLE1");
 		sampleDetailsDTO.setSampleDate(new Date());
-		sampleDetailsDTO.setPlotNumber("1");
+		sampleDetailsDTO.setObservationUnitNumber("1");
 		sampleDetailsDTOs.add(sampleDetailsDTO);
 
 		return sampleDetailsDTOs;
