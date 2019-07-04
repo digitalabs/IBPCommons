@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.generationcp.commons.pojo.AdvancingSource;
 
 @Component
-public class NumberExpression extends NumberSequenceExpression implements Expression {
+public class NumberExpression extends BaseExpression implements Expression {
 
 	public static final String KEY = "[NUMBER]";
 
@@ -18,11 +18,19 @@ public class NumberExpression extends NumberSequenceExpression implements Expres
 
 	@Override
 	public void apply(final List<StringBuilder> values, final AdvancingSource source, final String capturedText) {
-		this.applyNumberSequenceForBulking(values, source);
+		for (final StringBuilder container : values) {
+			if (source.getPlantsSelected() != null && source.getPlantsSelected() > 1) {
+				final Integer newValue = source.getPlantsSelected();
+				this.replaceExpressionWithValue(container, newValue != null ? newValue.toString() : "");
+			} else {
+				this.replaceExpressionWithValue(container, "");
+			}
+		}
 	}
 
 	@Override
 	public String getExpressionKey() {
 		return NumberExpression.KEY;
 	}
+
 }
