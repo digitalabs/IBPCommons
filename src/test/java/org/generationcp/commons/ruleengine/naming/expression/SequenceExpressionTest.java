@@ -42,20 +42,8 @@ public class SequenceExpressionTest extends TestExpression {
 			ArgumentMatchers.anyString());
 	}
 
-
 	@Test
-	public void testSequenceBulkingGeneration() {
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE, SUFFIX, true);
-		source.setPlantsSelected(PLANTS_SELECTED);
-		final List<StringBuilder> values = this.createInitialValues(source);
-
-		this.expression.apply(values, source, null);
-		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + PLANTS_SELECTED + SUFFIX, values.get(0).toString());
-		Mockito.verifyZeroInteractions(this.germplasmNamingService);
-	}
-
-	@Test
-	public void testBulkingNegativeNumberPlantsSelected() {
+	public void testWithNegativeNumberPlantsSelected() {
 		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE, SUFFIX, true);
 		source.setPlantsSelected(-2);
 		final List<StringBuilder> values = this.createInitialValues(source);
@@ -67,18 +55,17 @@ public class SequenceExpressionTest extends TestExpression {
 	}
 
 	@Test
-	public void testBulkingCaseSensitiveSequence() {
+	public void testCaseSensitiveSequence() {
 		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, "[sequence]", SUFFIX, true);
 		source.setPlantsSelected(PLANTS_SELECTED);
 		final List<StringBuilder> values = this.createInitialValues(source);
 
 		this.expression.apply(values, source, null);
-		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + PLANTS_SELECTED + SUFFIX, values.get(0).toString());
-		Mockito.verifyZeroInteractions(this.germplasmNamingService);
+		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
 	}
 
 	@Test
-	public void testNonBulkingNullPlantsSelected() {
+	public void testWithNullPlantsSelected() {
 		// final false refers to nonBulking
 		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, "[sequence]", SUFFIX, false);
 		source.setPlantsSelected(null);
@@ -93,23 +80,19 @@ public class SequenceExpressionTest extends TestExpression {
 	}
 
 	@Test
-	public void testNonBulkingNullPlantsSelectedEqualsOne() {
-		// final false refers to nonBulking
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE, SUFFIX, false);
-		source.setPlantsSelected(1);
-		final int currentMaxSequence = 10;
-		source.setCurrentMaxSequence(currentMaxSequence);
+	public void testBulkingWithPlantsSelected() {
+		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE, SUFFIX, true);
+		source.setPlantsSelected(PLANTS_SELECTED);
 		final List<StringBuilder> values = this.createInitialValues(source);
 
 		this.expression.apply(values, source, null);
-		assertEquals(1, values.size());
-		// Next number in sequence is queried from database, not dependent on currentMaxSequence value in AdvancingSource
-		Mockito.verify(this.germplasmNamingService).getNextNumberAndIncrementSequence(ROOT_NAME + SEPARATOR + PREFIX);
+		// Expecting only one iteration for bulking method
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
 	}
 
+
 	@Test
-	public void testNonBulkingWithPlantsSelectedGreaterThanOne() {
+	public void testNonBulkingWithPlantsSelected() {
 		// final false refers to nonBulking
 		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE, SUFFIX, false);
 		source.setPlantsSelected(PLANTS_SELECTED);
@@ -120,7 +103,7 @@ public class SequenceExpressionTest extends TestExpression {
 		this.expression.apply(values, source, null);
 		assertEquals(PLANTS_SELECTED.intValue(), values.size());
 		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED)).getNextNumberAndIncrementSequence(ROOT_NAME + SEPARATOR + PREFIX);
-		// Next number in sequence is queried from database, not dependent on currentMaxSequence value in AdvancingSource
+		// If non-bulking, name is generated for each plant selected
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + (NEXT_NUMBER_FROM_DB) + SUFFIX, values.get(0).toString());
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + (NEXT_NUMBER_FROM_DB + 1) + SUFFIX, values.get(1).toString());
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + (NEXT_NUMBER_FROM_DB + 2) + SUFFIX, values.get(2).toString());
