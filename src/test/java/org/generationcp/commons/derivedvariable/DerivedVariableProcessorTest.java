@@ -1,11 +1,12 @@
 
 package org.generationcp.commons.derivedvariable;
 
-import org.generationcp.middleware.domain.etl.MeasurementData;
-import org.generationcp.middleware.domain.etl.MeasurementRow;
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.domain.ontology.FormulaVariable;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +23,10 @@ import java.util.Set;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractInputs;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractParameters;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.extractValues;
+import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getDisplayableFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getEditableFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getStorageFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.replaceDelimiters;
-import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.getDisplayableFormat;
 import static org.generationcp.commons.derivedvariable.DerivedVariableUtils.wrapTerm;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.empty;
@@ -33,15 +34,15 @@ import static org.hamcrest.core.Is.is;
 
 public class DerivedVariableProcessorTest {
 
-	private static final String TERM_1 = "51496"; // GW_DW_g100grn - Grain weight BY GW DW - Measurement IN G/100grain
-	private static final String TERM_2 = "50889"; // GMoi_NIRS_pct - Grain moisture BY NIRS Moi - Measurement IN %
-	private static final String TERM_3 = "20358"; // PlotArea_m2 - Plot size
-	private static final String TERM_4_EMPTY_VALUE = "20439"; // MRFVInc_Cmp_pct
+	private static final Integer TERM_1 = 51496; // GW_DW_g100grn - Grain weight BY GW DW - Measurement IN G/100grain
+	private static final Integer TERM_2 = 50889; // GMoi_NIRS_pct - Grain moisture BY NIRS Moi - Measurement IN %
+	private static final Integer TERM_3 = 20358; // PlotArea_m2 - Plot size
+	private static final Integer TERM_4_EMPTY_VALUE = 20439; // MRFVInc_Cmp_pct
+	private static final Integer DATE_TERM1 = 8630;
+	private static final Integer DATE_TERM2 = 8830;
 	private static final String TERM_VALUE_1 = "1000";
 	private static final String TERM_VALUE_2 = "12.5";
 	private static final String TERM_VALUE_3 = "10";
-	private static final String DATE_TERM1 = "8630";
-	private static final String DATE_TERM2 = "8830";
 	private static final String DATE_TERM1_VALUE = "20180101";
 	private static final String DATE_TERM2_VALUE = "20180201";
 	private static final String TERM_NOT_FOUND = "TermNotFound";
@@ -59,38 +60,6 @@ public class DerivedVariableProcessorTest {
 		this.processor = new DerivedVariableProcessor();
 	}
 
-	private MeasurementRow createMeasurementRowTestData() {
-		MeasurementRow measurementRow = new MeasurementRow();
-		measurementRow.setDataList(this.createMeasurementDataListTestData());
-		return measurementRow;
-	}
-
-	private List<MeasurementData> createMeasurementDataListTestData() {
-		List<MeasurementData> measurementDataList = new ArrayList<>();
-		measurementDataList.add(this.createMeasurementDataTestData(TERM_1, TERM_VALUE_1, null));
-		measurementDataList.add(this.createMeasurementDataTestData(TERM_2, TERM_VALUE_2, null));
-		measurementDataList.add(this.createMeasurementDataTestData(TERM_3, TERM_VALUE_3, null));
-		measurementDataList.add(this.createMeasurementDataTestData(TERM_4_EMPTY_VALUE, "", ""));
-		
-		final MeasurementData dateData1 = this.createMeasurementDataTestData(DATE_TERM1, DATE_TERM1_VALUE, null);
-		dateData1.getMeasurementVariable().setDataTypeId(TermId.DATE_VARIABLE.getId());
-		measurementDataList.add(dateData1);
-		final MeasurementData dateData2 = this.createMeasurementDataTestData(DATE_TERM2, DATE_TERM2_VALUE, null);
-		dateData2.getMeasurementVariable().setDataTypeId(TermId.DATE_VARIABLE.getId());
-		measurementDataList.add(dateData2);
-		return measurementDataList;
-	}
-
-	private MeasurementData createMeasurementDataTestData(String label, String value, String cValueId) {
-		MeasurementData measurementData = new MeasurementData();
-		measurementData.setLabel(label);
-		final MeasurementVariable measurementVariable = new MeasurementVariable();
-		measurementVariable.setTermId(Integer.valueOf(label));
-		measurementData.setMeasurementVariable(measurementVariable);
-		measurementData.setValue(value);
-		measurementData.setcValueId(cValueId);
-		return measurementData;
-	}
 
 	@Test
 	public void testExtractParametersFromFormula() {
@@ -98,9 +67,12 @@ public class DerivedVariableProcessorTest {
 			this.parameters = extractParameters(FORMULA_1);
 		}
 		Assert.assertNotNull("Terms should be extracted from formula", this.parameters);
-		Assert.assertTrue(TERM_1 + " should be one of the extracted parameters", this.parameters.containsKey(wrapTerm(TERM_1)));
-		Assert.assertTrue(TERM_2 + " should be one of the extracted parameters", this.parameters.containsKey(wrapTerm(TERM_2.trim())));
-		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted parameters", this.parameters.containsKey(wrapTerm(TERM_NOT_FOUND)));
+		Assert.assertTrue(TERM_1 + " should be one of the extracted parameters",
+			this.parameters.containsKey(wrapTerm(String.valueOf(TERM_1))));
+		Assert.assertTrue(TERM_2 + " should be one of the extracted parameters",
+			this.parameters.containsKey(wrapTerm(String.valueOf(TERM_2))));
+		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted parameters",
+			this.parameters.containsKey(wrapTerm(TERM_NOT_FOUND)));
 	}
 
 	@Test
@@ -108,9 +80,9 @@ public class DerivedVariableProcessorTest {
 		final List<String> inputs = extractInputs(FORMULA_1);
 
 		Assert.assertNotNull("Terms should be extracted from formula", inputs);
-		Assert.assertTrue(TERM_1 + " should be one of the extracted parameters", inputs.contains(TERM_1));
-		Assert.assertTrue(TERM_2 + " should be one of the extracted parameters", inputs.contains(TERM_2.trim()));
-		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted parameters", inputs.contains(TERM_NOT_FOUND));
+		Assert.assertTrue(TERM_1 + " should be one of the extracted parameters", inputs.contains(String.valueOf(TERM_1)));
+		Assert.assertTrue(TERM_2 + " should be one of the extracted parameters", inputs.contains(String.valueOf(TERM_2)));
+		Assert.assertFalse(TERM_NOT_FOUND + " should not be one of the extracted parameters", inputs.contains(String.valueOf(TERM_NOT_FOUND)));
 	}
 
 	@Test
@@ -118,11 +90,13 @@ public class DerivedVariableProcessorTest {
 		if (this.parameters == null) {
 			this.parameters = extractParameters(FORMULA_1);
 		}
-		extractValues(this.parameters, this.createMeasurementRowTestData());
+
+		final Set<String> termMissingData = new HashSet<>();
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), termMissingData);
 		Assert.assertNotNull("Terms should not be null", this.parameters);
-		for (Map.Entry<String, Object> entry : this.parameters.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
+		for (final Map.Entry<String, Object> entry : this.parameters.entrySet()) {
+			final String key = entry.getKey();
+			final Object value = entry.getValue();
 			Assert.assertNotNull(key + " should have a value", value);
 		}
 	}
@@ -133,33 +107,34 @@ public class DerivedVariableProcessorTest {
 			this.parameters = extractParameters("{{" + TERM_4_EMPTY_VALUE + "}}");
 		}
 		final Set<String> termMissingData = new HashSet<>();
-
-		extractValues(this.parameters, this.createMeasurementRowTestData(), termMissingData);
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), termMissingData);
 
 		Assert.assertThat("Should have missing data", termMissingData, is(not(empty())));
-		Assert.assertThat("Should report missing data label", termMissingData.iterator().next(), is(TERM_4_EMPTY_VALUE));
+		Assert.assertThat("Should report missing data label", termMissingData.iterator().next(), is(String.valueOf(TERM_4_EMPTY_VALUE)));
 	}
 
 	@Test
 	public void testFetchParameterValuesFromMeasurement_NullMeasurementRow() throws ParseException {
-		Map<String, Object> testTerms = extractParameters(FORMULA_1);
-		extractValues(testTerms, null);
-		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
+		final Map<String, Object> testTerms = extractParameters(FORMULA_1);
+		extractValues(testTerms, null, this.createMeasurementVariablesMap(), new HashSet<String>());
+		for (final Map.Entry<String, Object> entry : testTerms.entrySet()) {
+			final String key = entry.getKey();
+			final Object value = entry.getValue();
 			Assert.assertTrue(key + " should not have a value", "".equals(value));
 		}
 	}
 
 	@Test
 	public void testFetchParameterValuesFromMeasurement_NullMeasurementDataList() throws ParseException {
-		Map<String, Object> testTerms = extractParameters(FORMULA_1);
-		MeasurementRow measurementRow = new MeasurementRow();
-		measurementRow.setDataList(null);
-		extractValues(testTerms, measurementRow);
-		for (Map.Entry<String, Object> entry : testTerms.entrySet()) {
-			String key = entry.getKey();
-			Object value = entry.getValue();
+		final Map<String, Object> testTerms = extractParameters(FORMULA_1);
+		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
+		observationUnitRow.setVariables(null);
+
+		final Set<String> termMissingData = new HashSet<>();
+		extractValues(testTerms, observationUnitRow, this.createMeasurementVariablesMap(), termMissingData);
+		for (final Map.Entry<String, Object> entry : testTerms.entrySet()) {
+			final String key = entry.getKey();
+			final Object value = entry.getValue();
 			Assert.assertTrue(key + " should not have a value", "".equals(value));
 		}
 	}
@@ -173,7 +148,7 @@ public class DerivedVariableProcessorTest {
 
 	@Test
 	public void testRemoveCurlyBracesFromFormula_NullFormula() {
-		String nullFormula = replaceDelimiters(null);
+		final String nullFormula = replaceDelimiters(null);
 		Assert.assertNull(nullFormula);
 	}
 
@@ -183,10 +158,10 @@ public class DerivedVariableProcessorTest {
 		final Map<String, FormulaVariable> variableMap = new HashMap<>();
 		final FormulaVariable variable1 = new FormulaVariable();
 		variable1.setName("GW_DW_g100grn");
-		variableMap.put(TERM_1, variable1);
+		variableMap.put(String.valueOf(TERM_1), variable1);
 		final FormulaVariable variable2 = new FormulaVariable();
 		variable2.setName("GMoi_NIRS_pct");
-		variableMap.put(TERM_2, variable2);
+		variableMap.put(String.valueOf(TERM_2), variable2);
 
 		formula = getDisplayableFormat(formula, variableMap);
 
@@ -201,10 +176,10 @@ public class DerivedVariableProcessorTest {
 		final Map<String, FormulaVariable> variableMap = new HashMap<>();
 		final FormulaVariable variable1 = new FormulaVariable();
 		variable1.setName("GW_DW_g100grn");
-		variableMap.put(TERM_1, variable1);
+		variableMap.put(String.valueOf(TERM_1), variable1);
 		final FormulaVariable variable2 = new FormulaVariable();
 		variable2.setName("GMoi_NIRS_pct");
-		variableMap.put(TERM_2, variable2);
+		variableMap.put(String.valueOf(TERM_2), variable2);
 
 		formula = getEditableFormat(formula, variableMap);
 
@@ -238,7 +213,7 @@ public class DerivedVariableProcessorTest {
 	public void testEvaluateFormula() throws ParseException {
 		this.formula = FORMULA_1;
 		this.parameters = extractParameters(FORMULA_1);
-		extractValues(this.parameters, this.createMeasurementRowTestData());
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
 		this.formula = replaceDelimiters(this.formula);
 
 		String result = this.processor.evaluateFormula(this.formula, this.parameters);
@@ -246,7 +221,7 @@ public class DerivedVariableProcessorTest {
 			+ " but got " + result, EXPECTED_FORMULA_1_RESULT, result);
 
 		this.parameters = extractParameters(FORMULA_2);
-		extractValues(this.parameters, this.createMeasurementRowTestData());
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
 		this.formula = replaceDelimiters(FORMULA_2);
 
 		result = this.processor.evaluateFormula(this.formula, this.parameters);
@@ -288,7 +263,7 @@ public class DerivedVariableProcessorTest {
 		terms.put(wrapTerm("TERM2"), 4);
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms);
+		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("1.5", result);
 	}
 
@@ -297,33 +272,33 @@ public class DerivedVariableProcessorTest {
 		final String param1 = "number of plots: ";
 		String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, this.createMeasurementRowTestData());
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
 
 		formula = replaceDelimiters(formula);
 		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("concat evaluation failed", param1 + TERM_VALUE_3, result);
 	}
-	
+
 	@Test
 	public void testDaysDiffFunction() throws ParseException {
 		String formula = "fn:daysdiff({{" + DATE_TERM1 + "}}, {{" + DATE_TERM2 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, this.createMeasurementRowTestData());
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms);
+		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("31", result);
 	}
-	
+
 	@Test
 	public void testDaysDiffFunctionNegativeDifference() throws ParseException {
 		// Having later date for first parameter should give negative value
 		String formula = "fn:daysdiff({{" + DATE_TERM2 + "}}, {{" + DATE_TERM1 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, this.createMeasurementRowTestData());
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
 
 		formula = replaceDelimiters(formula);
-		String result = this.processor.evaluateFormula(formula, terms);
+		final String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("-31", result);
 	}
 
@@ -338,7 +313,7 @@ public class DerivedVariableProcessorTest {
 		termData.add(5.5d);
 		termData.add(45d);
 		termData.add(12.2d);
-		data.put(wrapTerm(TERM_1), termData);
+		data.put(wrapTerm(String.valueOf(TERM_1)), termData);
 
 		formula = replaceDelimiters(formula);
 		this.processor.setData(data);
@@ -362,15 +337,68 @@ public class DerivedVariableProcessorTest {
 	public void testSecurityEval() {
 		this.processor.evaluateFormula("System.exit(0)", new HashMap<String, Object>());
 	}
-	
-	@Test (expected = ParseException.class)
+
+	@Test(expected = ParseException.class)
 	public void testInvalidDateFormatParsing() throws ParseException {
-		final MeasurementRow testRow = this.createMeasurementRowTestData();
-		final MeasurementData dateData = testRow.getMeasurementData(DATE_TERM2);
-		dateData.setValue("2018-03-31");
+		final ObservationUnitRow testRow = this.createObservationUnitRowTestData();
+		testRow.getVariables().get(String.valueOf(DATE_TERM2)).setValue("2018-03-31");
 		final String formula = "({{" + DATE_TERM2 + "}}/100)";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, testRow);
+		extractValues(terms, testRow, this.createMeasurementVariablesMap(), new HashSet<String>());
+	}
+
+	private ObservationUnitRow createObservationUnitRowTestData() {
+		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
+		observationUnitRow.setVariables(this.createObservationUnitDataListTestData());
+		return observationUnitRow;
+	}
+
+	private Map<Integer, MeasurementVariable> createMeasurementVariablesMap() {
+		final Map<Integer, MeasurementVariable> measurementVariablesMap = new HashMap<>();
+		measurementVariablesMap.put(TERM_1, this.createMeasurementVariable(TERM_1, "",
+			DataType.NUMERIC_VARIABLE));
+		measurementVariablesMap.put(TERM_2, this.createMeasurementVariable(TERM_2, "",
+			DataType.NUMERIC_VARIABLE));
+		measurementVariablesMap.put(TERM_3, this.createMeasurementVariable(TERM_3, "",
+			DataType.NUMERIC_VARIABLE));
+		measurementVariablesMap.put(TERM_4_EMPTY_VALUE, this.createMeasurementVariable(TERM_4_EMPTY_VALUE, "",
+			DataType.NUMERIC_VARIABLE));
+		measurementVariablesMap.put(DATE_TERM1, this.createMeasurementVariable(DATE_TERM1, "",
+			DataType.DATE_TIME_VARIABLE));
+		measurementVariablesMap.put(DATE_TERM2, this.createMeasurementVariable(DATE_TERM2, "",
+			DataType.DATE_TIME_VARIABLE));
+		return measurementVariablesMap;
+
+	}
+
+	private MeasurementVariable createMeasurementVariable(final int variableId, final String variableName, final DataType dataType) {
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableId);
+		measurementVariable.setName(variableName);
+		measurementVariable.setDataTypeId(dataType.getId());
+		measurementVariable.setLabel(String.valueOf(variableId));
+		return measurementVariable;
+	}
+
+	private Map<String, ObservationUnitData> createObservationUnitDataListTestData() {
+		final Map<String, ObservationUnitData> observationUnitDataMap = new HashMap<>();
+		observationUnitDataMap.put(String.valueOf(TERM_1), this.createObservationUnitDataTestData(TERM_1, TERM_VALUE_1, null));
+		observationUnitDataMap.put(String.valueOf(TERM_2), this.createObservationUnitDataTestData(TERM_2, TERM_VALUE_2, null));
+		observationUnitDataMap.put(String.valueOf(TERM_3), this.createObservationUnitDataTestData(TERM_3, TERM_VALUE_3, null));
+		observationUnitDataMap.put(String.valueOf(TERM_4_EMPTY_VALUE), this.createObservationUnitDataTestData(TERM_4_EMPTY_VALUE, "", ""));
+		final ObservationUnitData dateData1 = this.createObservationUnitDataTestData(DATE_TERM1, DATE_TERM1_VALUE, null);
+		observationUnitDataMap.put(String.valueOf(DATE_TERM1), dateData1);
+		final ObservationUnitData dateData2 = this.createObservationUnitDataTestData(DATE_TERM2, DATE_TERM2_VALUE, null);
+		observationUnitDataMap.put(String.valueOf(DATE_TERM2), dateData2);
+		return observationUnitDataMap;
+	}
+
+	private ObservationUnitData createObservationUnitDataTestData(final int variableId, final String value, final String cValueId) {
+		final ObservationUnitData observationUnitData = new ObservationUnitData();
+		observationUnitData.setVariableId(variableId);
+		observationUnitData.setValue(value);
+		observationUnitData.setCategoricalValueId(!StringUtils.isBlank(cValueId) ? Integer.valueOf(cValueId) : null);
+		return observationUnitData;
 	}
 
 }

@@ -64,58 +64,6 @@ public final class DerivedVariableUtils {
 	}
 
 	/**
-	 * @throws ParseException
-	 * @see DerivedVariableUtils#extractValues(Map, MeasurementRow, Set)
-	 */
-	public static void extractValues(final Map<String, Object> parameters, final MeasurementRow measurementRow) throws ParseException {
-		extractValues(parameters, measurementRow, new HashSet<String>());
-	}
-
-	/**
-	 * Extract values of parameters from the measurement
-	 *
-	 * @param termMissingData list to be filled with term labels with missing data
-	 * @throws ParseException
-	 */
-	public static void extractValues(
-		final Map<String, Object> parameters, final MeasurementRow measurementRow, final Set<String> termMissingData)
-		throws ParseException {
-
-		if (measurementRow != null && measurementRow.getDataList() != null) {
-			for (final MeasurementData measurementData : measurementRow.getDataList()) {
-				String term = String.valueOf(measurementData.getMeasurementVariable().getTermId());
-				term = StringUtils.deleteWhitespace(term);
-				term = wrapTerm(term);
-				if (parameters.containsKey(term)) {
-					parameters.put(term, getMeasurementValue(measurementData, termMissingData));
-				}
-			}
-		}
-	}
-
-	private static Object getMeasurementValue(final MeasurementData measurementData, final Set<String> termMissingData)
-		throws ParseException {
-		String value = null;
-		if (!StringUtils.isBlank(measurementData.getcValueId())) {
-			value = measurementData.getDisplayValueForCategoricalData().getName();
-		}
-		if (StringUtils.isBlank(value)) {
-			value = measurementData.getValue();
-		}
-		if (StringUtils.isBlank(value) && termMissingData != null) {
-			termMissingData.add(measurementData.getLabel());
-		}
-		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementData.getMeasurementVariable().getDataTypeId())
-			&& !StringUtils.isBlank(measurementData.getValue())) {
-			return DateUtil.parseDate(measurementData.getValue());
-		}
-		if (NumberUtils.isNumber(value)) {
-			return new BigDecimal(value);
-		}
-		return value;
-	}
-
-	/**
 	 * Extract values of parameters from the measurement (ObservationUnitRow)
 	 *
 	 * @param termMissingData list to be filled with term labels with missing data
@@ -152,17 +100,7 @@ public final class DerivedVariableUtils {
 		if (StringUtils.isBlank(value)) {
 			value = observationUnitData.getValue();
 		}
-		if (StringUtils.isBlank(value) && termMissingData != null) {
-			termMissingData.add(measurementVariable.getLabel());
-		}
-		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementVariable.getDataTypeId())
-			&& !StringUtils.isBlank(observationUnitData.getValue())) {
-			return DateUtil.parseDate(observationUnitData.getValue());
-		}
-		if (NumberUtils.isNumber(value)) {
-			return new BigDecimal(value);
-		}
-		return value;
+		return parseValue(value, measurementVariable, termMissingData);
 	}
 
 	public static Object parseValue(final Object valueToParse, final MeasurementVariable measurementVariable,
