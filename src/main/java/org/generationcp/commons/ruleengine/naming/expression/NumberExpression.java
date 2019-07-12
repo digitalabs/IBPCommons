@@ -20,7 +20,7 @@ public class NumberExpression extends BaseExpression implements Expression {
 	@Override
 	public void apply(final List<StringBuilder> values, final AdvancingSource source, final String capturedText) {
 		if (source.isForceUniqueNameGeneration()) {
-			for (StringBuilder container : values) {
+			for (final StringBuilder container : values) {
 				this.replaceExpressionWithValue(container, "(" + (source.getCurrentMaxSequence() + 1) + ")");
 
 			}
@@ -29,27 +29,27 @@ public class NumberExpression extends BaseExpression implements Expression {
 		}
 
 		if (source.isBulk()) {
-			for (StringBuilder container : values) {
+			for (final StringBuilder container : values) {
 				if (source.getPlantsSelected() != null && source.getPlantsSelected() > 1) {
-					Integer newValue = source.getPlantsSelected();
+					final Integer newValue = source.getPlantsSelected();
 					this.replaceExpressionWithValue(container, newValue != null ? newValue.toString() : "");
 				} else {
 					this.replaceExpressionWithValue(container, "");
 				}
 			}
 		} else {
-			List<StringBuilder> newNames = new ArrayList<StringBuilder>();
+			final List<StringBuilder> newNames = new ArrayList<>();
 			int startCount = 1;
 
 			if (source.getCurrentMaxSequence() > -1) {
 				startCount = source.getCurrentMaxSequence() + 1;
 			}
 
-			for (StringBuilder value : values) {
+			for (final StringBuilder value : values) {
 				if (source.getPlantsSelected() != null && source.getPlantsSelected() > 0) {
 
 					for (int i = startCount; i < startCount + source.getPlantsSelected(); i++) {
-						StringBuilder newName = new StringBuilder(value);
+						final StringBuilder newName = new StringBuilder(value);
 						this.replaceExpressionWithValue(newName, String.valueOf(i));
 						newNames.add(newName);
 					}
