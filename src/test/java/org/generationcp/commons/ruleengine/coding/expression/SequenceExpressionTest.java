@@ -1,55 +1,79 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
+import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(MockitoJUnitRunner.class)
 public class SequenceExpressionTest {
 
+	private static final Integer NEXT_NUMBER_FROM_DB = 22;
+	private static final String PREFIX = "XYZ";
+	private static final String SEQUENCE = "[SEQUENCE]";
+	private static final String SUFFIX = "T";
 	private final SequenceExpression sequenceExpression = new SequenceExpression();
+	private final NamingConfiguration namingConfiguration = new NamingConfiguration();
 
-	@Test
-	public void testApply() {
+	@Mock
+	private GermplasmNamingService germplasmNamingService;
 
-		final int startingSequenceNumber = 1;
-		final NamingConfiguration namingConfiguration = new NamingConfiguration();
-		namingConfiguration.setSequenceCounter(startingSequenceNumber);
-		final List<StringBuilder> values = new ArrayList<>();
-		values.add(new StringBuilder("[SEQUENCE]"));
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+		this.sequenceExpression.setGermplasmNamingService(this.germplasmNamingService);
 
-		assertEquals(startingSequenceNumber, namingConfiguration.getSequenceCounter());
-
-		sequenceExpression.apply(values, "", namingConfiguration);
-
-		assertEquals(String.valueOf(startingSequenceNumber), values.get(0).toString());
-		assertEquals("Sequence Counter should be incremented each time [SEQUENCE] expression is evaluated.", startingSequenceNumber + 1,
-				namingConfiguration.getSequenceCounter());
-
+		this.namingConfiguration.setPrefix(PREFIX);
+		this.namingConfiguration.setCount(SEQUENCE);
+		this.namingConfiguration.setSuffix(SUFFIX);
+		Mockito.doReturn(NEXT_NUMBER_FROM_DB, NEXT_NUMBER_FROM_DB+1, NEXT_NUMBER_FROM_DB+2).when(this.germplasmNamingService).getNextNumberAndIncrementSequence(PREFIX);
 	}
 
 	@Test
-	public void testApplyValueHasStringLiteral() {
+	public void testApplySingleValue() {
+		final Integer count = 1;
+		final List<StringBuilder> values = this.createInitialValues(this.namingConfiguration, count);
 
-		final int startingSequenceNumber = 1;
-		final NamingConfiguration namingConfiguration = new NamingConfiguration();
-		namingConfiguration.setSequenceCounter(startingSequenceNumber);
-		final List<StringBuilder> values = new ArrayList<>();
-		values.add(new StringBuilder("AAA[SEQUENCE]BBB"));
+		sequenceExpression.apply(values, "", this.namingConfiguration);
+		assertEquals(count.intValue(), values.size());
+		assertEquals(PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
+	}
 
-		assertEquals(startingSequenceNumber, namingConfiguration.getSequenceCounter());
+	@Test
+	public void testApplyMultipleValues() {
+		final Integer count = 3;
+		final List<StringBuilder> values = this.createInitialValues(this.namingConfiguration, count);
 
-		sequenceExpression.apply(values, "", namingConfiguration);
+		sequenceExpression.apply(values, "", this.namingConfiguration);
+		assertEquals(count.intValue(), values.size());
+		assertEquals(PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
+		assertEquals(PREFIX + (NEXT_NUMBER_FROM_DB+1) + SUFFIX, values.get(1).toString());
+		assertEquals(PREFIX + (NEXT_NUMBER_FROM_DB+2) + SUFFIX, values.get(2).toString());
+	}
 
-		assertEquals("AAA" + String.valueOf(startingSequenceNumber) + "BBB", values.get(0).toString());
-		assertEquals("Sequence Counter should be incremented each time [SEQUENCE] expression is evaluated.", startingSequenceNumber + 1,
-				namingConfiguration.getSequenceCounter());
+	private List<StringBuilder> createInitialValues(final NamingConfiguration config, final Integer count) {
+		final List<StringBuilder> builders = new ArrayList<>();
 
+		for (int i=0; i<count; i++) {
+			final StringBuilder builder = new StringBuilder();
+			builder.append(this.getNonNullValue(config.getPrefix()))
+				.append(this.getNonNullValue(config.getCount()))
+				.append(this.getNonNullValue(config.getSuffix()));
+			builders.add(builder);
+		}
+
+		return builders;
+	}
+
+	private String getNonNullValue(final String value) {
+		return value != null ? value : "";
 	}
 
 }

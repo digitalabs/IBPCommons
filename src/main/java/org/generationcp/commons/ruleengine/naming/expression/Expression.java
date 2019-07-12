@@ -7,7 +7,7 @@ import org.generationcp.commons.pojo.AdvancingSource;
 
 public interface Expression {
 
-	public void apply(List<StringBuilder> values, AdvancingSource source, final String capturedText);
+	void apply(List<StringBuilder> values, AdvancingSource source, final String capturedText);
 
-	public String getExpressionKey();
+	String getExpressionKey();
 }

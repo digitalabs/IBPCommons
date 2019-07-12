@@ -32,6 +32,7 @@
         </property>
     </bean>
 	<bean id="ruleService" class="org.generationcp.commons.ruleengine.impl.RulesServiceImpl" />
+	<bean id="germplasmNamingService" class="org.generationcp.commons.service.impl.GermplasmNamingServiceImpl" />
     <!--
             This component scan automatically registers all implementations of the Rule interface into the Spring context.
             In conjunction with the RulesPostProcessor above, this automatically populates the map in the RuleFactory
