@@ -1,11 +1,11 @@
 package org.generationcp.commons.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.RuleFactory;
 import org.generationcp.commons.ruleengine.coding.CodingRuleExecutionContext;
 import org.generationcp.commons.ruleengine.service.RulesService;
 import org.generationcp.commons.service.GermplasmCodeGenerationService;
+import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -15,7 +15,6 @@ import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 import org.generationcp.middleware.service.api.GermplasmGroupingService;
-import org.generationcp.middleware.service.api.KeySequenceRegisterService;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -32,8 +31,9 @@ import java.util.Set;
  */
 public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerationService {
 
-	public static final String GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP =
-			"Germplasm (gid: %s) is not part of a management group. Can not assign group name.";
+	private static final String GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP =
+		"Germplasm (gid: %s) is not part of a management group. Can not assign group name.";
+	protected static final String CODING_RULE_SEQUENCE = "coding";
 
 	@Autowired
 	private RulesService rulesService;
@@ -48,29 +48,22 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	private GermplasmGroupingService germplasmGroupingService;
 
 	@Autowired
-	private KeySequenceRegisterService keySequenceRegisterService;
+	private GermplasmNamingService germplasmNamingService;
 
 	@Override
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
-			final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
+		final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
 
-		final String prefix = namingConfiguration.getPrefix();
-		final String suffix = namingConfiguration.getSuffix();
-		namingConfiguration.setSequenceCounter(this.keySequenceRegisterService.getNextSequence(prefix));
-
-		List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace("coding"));
+		final List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace(CODING_RULE_SEQUENCE));
 
 		final CodingRuleExecutionContext codingRuleExecutionContext = new CodingRuleExecutionContext(executionOrder, namingConfiguration);
 
 		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
 
 		for (final Integer gid : gidsToProcess) {
-			assignCodesResultsMap.put(gid, applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
+			assignCodesResultsMap.put(gid, this.applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
 			codingRuleExecutionContext.reset();
 		}
-
-		final int lastSequenceUsed = namingConfiguration.getSequenceCounter() - 1;
-		this.keySequenceRegisterService.saveLastSequenceUsed(prefix, suffix, lastSequenceUsed);
 
 		return assignCodesResultsMap;
 	}
@@ -78,9 +71,9 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)
 	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final NamingConfiguration namingConfiguration,
-			final UserDefinedField nameType, final CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException {
+		final UserDefinedField nameType, final CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException {
 
-		GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
+		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
 
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
@@ -90,7 +83,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		}
 
 		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
-		final String generatedCodeName = (String) rulesService.runRules(codingRuleExecutionContext);
+		final String generatedCodeName = (String) this.rulesService.runRules(codingRuleExecutionContext);
 
 		for (final Germplasm member : groupMembers) {
 			// TODO: Pass the userId and locationId. Hard coded to zero for now.
@@ -104,20 +97,20 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY)
 	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final GermplasmNameSetting setting, final UserDefinedField nameType,
-			final Integer userId, final Integer locationId) {
+		final Integer userId, final Integer locationId) {
 
-		GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
+		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
 
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
 		if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
 			result.addMessage(
-					String.format("Germplasm (gid: %s) is not part of a management group. Can not assign group name.", germplasm.getGid()));
+				String.format("Germplasm (gid: %s) is not part of a management group. Can not assign group name.", germplasm.getGid()));
 			return result;
 		}
 
 		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
-		final String nameWithSequence = this.generateNextNameAndIncrementSequence(setting);
+		final String nameWithSequence = this.germplasmNamingService.generateNextNameAndIncrementSequence(setting);
 
 		// TODO performance tuning when processing large number of group members
 		for (final Germplasm member : groupMembers) {
@@ -128,9 +121,14 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	@Override
+	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
+		return this.germplasmNamingService.getNextNameInSequence(setting);
+	}
+
+	@Override
 	@Transactional(propagation = Propagation.MANDATORY)
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
-			final UserDefinedField nameType, final Integer userId, final Integer locationId) {
+		final UserDefinedField nameType, final Integer userId, final Integer locationId) {
 		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
 		final boolean startNumberSpecified = setting.getStartNumber() != null;
 		Integer startNumber = setting.getStartNumber();
@@ -145,47 +143,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		return assignCodesResultsMap;
 	}
 
-	int getNextNumberInSequence(final GermplasmNameSetting setting) {
-
-		final String lastPrefixUsed = this.buildPrefixString(setting).toUpperCase();
-
-		if (!lastPrefixUsed.isEmpty()) {
-			return this.keySequenceRegisterService.getNextSequence(lastPrefixUsed);
-		}
-
-		return 1;
-	}
-
-	String buildPrefixString(final GermplasmNameSetting setting) {
-		final String prefix = !StringUtils.isEmpty(setting.getPrefix()) ? setting.getPrefix().trim() : "";
-		if (setting.isAddSpaceBetweenPrefixAndCode()) {
-			return prefix + " ";
-		}
-		return prefix;
-	}
-
-	String buildSuffixString(final GermplasmNameSetting setting) {
-		final String suffix = setting.getSuffix();
-		if (suffix != null) {
-			if (setting.isAddSpaceBetweenSuffixAndCode()) {
-				return " " + suffix.trim();
-			}
-			return suffix.trim();
-		}
-		return "";
-	}
-
-	String getNumberWithLeadingZeroesAsString(final Integer number, final GermplasmNameSetting setting) {
-		final Integer numOfDigits = setting.getNumOfDigits();
-
-		if (numOfDigits == null || numOfDigits <= 0) {
-			return number.toString();
-		}
-		return String.format("%0" + numOfDigits + "d", number);
-	}
-
-	protected void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType, final Integer userId,
-			final Integer locationId, final GermplasmGroupNamingResult result) {
+	private void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType, final Integer userId,
+		final Integer locationId, final GermplasmGroupNamingResult result) {
 
 		final List<Name> currentNames = germplasm.getNames();
 
@@ -221,56 +180,12 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			germplasm.getNames().add(name);
 			this.germplasmDataManager.save(germplasm);
 			result.addMessage(
-					String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
-							groupName, nameType.getFcode()));
+				String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
+					groupName, nameType.getFcode()));
 		} else {
 			result.addMessage(String.format("Germplasm (gid: %s) already has existing name %s of type %s. Supplied name %s was not added.",
-					germplasm.getGid(), existingNameOfGivenType.getNval(), nameType.getFcode(), groupName));
+				germplasm.getGid(), existingNameOfGivenType.getNval(), nameType.getFcode(), groupName));
 		}
-	}
-
-	@Override
-	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
-		Integer nextNumberInSequence = this.getNextNumberInSequence(setting);
-
-		final Integer optionalStartNumber = setting.getStartNumber();
-
-		if (optionalStartNumber != null && optionalStartNumber > 0 && nextNumberInSequence > optionalStartNumber) {
-			final String nextName = this.buildDesignationNameInSequence(nextNumberInSequence, setting);
-			final String invalidStatingNumberErrorMessage =
-					"Starting sequence number should be higher than or equal to next name in the sequence: " + nextName + ".";
-			throw new InvalidGermplasmNameSettingException(invalidStatingNumberErrorMessage);
-		}
-
-		if (optionalStartNumber != null && nextNumberInSequence < optionalStartNumber) {
-			nextNumberInSequence = optionalStartNumber;
-		}
-
-		return this.buildDesignationNameInSequence(nextNumberInSequence, setting);
-	}
-
-	private String generateNextNameAndIncrementSequence(final GermplasmNameSetting setting) {
-		Integer nextNumberInSequence = this.getNextNumberInSequence(setting);
-		final Integer optionalStartNumber = setting.getStartNumber();
-		if (optionalStartNumber != null && nextNumberInSequence < optionalStartNumber) {
-			nextNumberInSequence = optionalStartNumber;
-		}
-		this.keySequenceRegisterService
-				.saveLastSequenceUsed(this.buildPrefixString(setting).toUpperCase(), this.buildSuffixString(setting).toUpperCase(),
-						nextNumberInSequence);
-
-		return this.buildDesignationNameInSequence(nextNumberInSequence, setting);
-	}
-
-	String buildDesignationNameInSequence(final Integer number, final GermplasmNameSetting setting) {
-		final StringBuilder sb = new StringBuilder();
-		sb.append(this.buildPrefixString(setting));
-		sb.append(this.getNumberWithLeadingZeroesAsString(number, setting));
-
-		if (!StringUtils.isEmpty(setting.getSuffix())) {
-			sb.append(this.buildSuffixString(setting));
-		}
-		return sb.toString();
 	}
 
 }

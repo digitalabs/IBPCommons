@@ -18,26 +18,27 @@ public class DoubleHaploidSourceExpression extends BaseExpression {
 	protected KeySequenceRegisterService keySequenceRegisterService;
 
 	// This setter is only used to inject this service only in test
-	public void setKeySequenceRegisterService(KeySequenceRegisterService keySequenceRegisterService) {
+	public void setKeySequenceRegisterService(final KeySequenceRegisterService keySequenceRegisterService) {
 		this.keySequenceRegisterService = keySequenceRegisterService;
 	}
 
 	/**
 	 * Method to append '@' + [lastUsedSequence] in designation column ex. @1, @2 etc.
-	 *  @param values Designation column value
-	 * @param source Advancing Source object contains information about source
+	 *
+	 * @param values       Designation column value
+	 * @param source       Advancing Source object contains information about source
 	 * @param capturedText
 	 */
 	@Override
-	public void apply(List<StringBuilder> values, AdvancingSource source, final String capturedText) {
-		for (StringBuilder value : values) {
-			int checkIndex = value.lastIndexOf("@0");
+	public void apply(final List<StringBuilder> values, final AdvancingSource source, final String capturedText) {
+		for (final StringBuilder value : values) {
+			final int checkIndex = value.lastIndexOf("@0");
 			if (checkIndex != -1) {
 				synchronized (DoubleHaploidSourceExpression.class) {
-					String keyPrefix = value.substring(0, checkIndex + 1);
+					final String keyPrefix = value.substring(0, checkIndex + 1);
 					// Get last sequence number for KeyPrefix with synchronization at class level
-					int lastUsedSequence = this.keySequenceRegisterService.incrementAndGetNextSequence(keyPrefix, null);
-					replaceExistingSuffixValue(value, checkIndex + 1);
+					final int lastUsedSequence = this.keySequenceRegisterService.incrementAndGetNextSequence(keyPrefix);
+					this.replaceExistingSuffixValue(value, checkIndex + 1);
 					this.replaceExpressionWithValue(value, String.valueOf(lastUsedSequence));
 				}
 
@@ -55,12 +56,12 @@ public class DoubleHaploidSourceExpression extends BaseExpression {
 
 	/**
 	 * Replace the existing suffix value '0' from designation with empty String
-	 * 
-	 * @param container designation value
+	 *
+	 * @param container  designation value
 	 * @param startIndex starting index of 0
 	 */
-	private void replaceExistingSuffixValue(StringBuilder container, int startIndex) {
-		int endIndex = startIndex + 1;
+	private void replaceExistingSuffixValue(final StringBuilder container, final int startIndex) {
+		final int endIndex = startIndex + 1;
 		container.replace(startIndex, endIndex, "");
 	}
 }

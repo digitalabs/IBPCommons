@@ -2,7 +2,6 @@ package org.generationcp.commons.derivedvariable;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
-import org.exolab.castor.types.Date;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.dms.ValueReference;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
@@ -14,6 +13,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DerivedVariableUtilsTest {
 
@@ -235,6 +238,122 @@ public class DerivedVariableUtilsTest {
 
 		assertEquals("", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 		assertEquals(variableName, termMissingData.toArray()[0]);
+
+	}
+
+	@Test
+	public void testParseValue_ValueIsNotNumeric() throws ParseException {
+
+		final Set<String> termMissingData = new HashSet<>();
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.CHARACTER_VARIABLE.getId());
+
+		final Object result = DerivedVariableUtils.parseValue("Text", measurementVariable, termMissingData);
+
+		assertTrue(result instanceof String);
+		assertEquals("Text", result);
+
+	}
+
+	@Test
+	public void testParseValue_ValueIsNumeric() throws ParseException {
+
+		final Set<String> termMissingData = new HashSet<>();
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+
+		final Object result = DerivedVariableUtils.parseValue("1", measurementVariable, termMissingData);
+
+		assertTrue(result instanceof BigDecimal);
+		assertEquals(new BigDecimal(1), result);
+
+	}
+
+	@Test
+	public void testParseValue_ValueIsBlank() throws ParseException {
+
+		final Set<String> termMissingData = new HashSet<>();
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+
+		final Object result = DerivedVariableUtils.parseValue("", measurementVariable, termMissingData);
+
+		assertTrue(result instanceof String);
+		assertTrue(termMissingData.contains(variableName));
+
+	}
+
+	@Test()
+	public void testParseValue_ValueIsDate() throws ParseException {
+
+		final Set<String> termMissingData = new HashSet<>();
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
+
+		final Object result = DerivedVariableUtils.parseValue("20180101", measurementVariable, termMissingData);
+		assertTrue(result instanceof Date);
+
+	}
+
+	@Test
+	public void testParseValue_ValueIsDateButInvalid() throws ParseException {
+
+		final Set<String> termMissingData = new HashSet<>();
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
+
+		try {
+			final Object result = DerivedVariableUtils.parseValue("2002-99-99", measurementVariable, termMissingData);
+			fail("parseValue should throw an error");
+		} catch (final ParseException e) {
+			// do nothing
+		}
+
+	}
+
+	@Test
+	public void testParseValueList() throws ParseException {
+
+		final Set<String> termMissingData = new HashSet<>();
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+
+		final List<Object> result = DerivedVariableUtils
+			.parseValueList(Arrays.asList((Object) "1", (Object) "2", (Object) "3"), measurementVariable, termMissingData);
+
+		assertTrue(result.contains(new BigDecimal(1)));
+		assertTrue(result.contains(new BigDecimal(2)));
+		assertTrue(result.contains(new BigDecimal(3)));
 
 	}
 
