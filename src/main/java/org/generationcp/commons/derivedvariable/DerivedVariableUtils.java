@@ -26,6 +26,8 @@ public final class DerivedVariableUtils {
 	private static final String TERM_RIGHT_DELIMITER = "\\}\\}";
 	public static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
 	public static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
+	// Just include any of the following after implementing the corresponding function: (COUNT|DISTINCT_COUNT|MAX|MIN|SUM)
+	public static final String AGGREGATE_FUNCTIONS = "(AVG)";
 
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
@@ -214,6 +216,29 @@ public final class DerivedVariableUtils {
 
 		}
 		return replaceText;
+	}
+
+	/**
+	 * @param formula - the formula
+	 * @param isVariableName - defines whether the values to be retrieved are variable names or ids
+	 * @return the list of input variables inside the aggregate functions
+	 */
+	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isVariableName) {
+		final String termIndicator = isVariableName? "\\w+":"\\d+";
+		final List<String> avgInputVariables = new ArrayList<>();
+		final String avgRegex = "(?i)" + DerivedVariableUtils.AGGREGATE_FUNCTIONS + "\\((\\{\\{(" + termIndicator+ ")}})(,[\\s]?\\{\\{(" + termIndicator+ ")}})*\\)";
+		Pattern avgPattern = Pattern.compile(avgRegex);
+		Matcher avgMatcher = avgPattern.matcher(formula);
+		while (avgMatcher.find()) {
+			final String avgString = avgMatcher.group();
+			final String avgInputRegex = "(\\{\\{" + termIndicator+ "}})";
+			final Pattern avgInputPattern = Pattern.compile(avgInputRegex);
+			final Matcher avgInputMatcher = avgInputPattern.matcher(avgString);
+			while(avgInputMatcher.find()) {
+				avgInputVariables.add(avgInputMatcher.group().replaceAll("(\\{)","").replaceAll("}",""));
+			}
+		}
+		return avgInputVariables;
 	}
 
 }
