@@ -30,8 +30,8 @@ public class DerivedVariableProcessor {
 			double sum = 0;
 			int size = 0;
 			for (final List<Double> arg : args) {
-				for (final Double val : arg) {
-					sum += val;
+				for (final Object val : arg) {
+					sum += Double.parseDouble(val.toString());
 				}
 				size += arg.size();
 			}
