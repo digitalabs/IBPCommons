@@ -8,6 +8,7 @@ import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -313,6 +314,21 @@ public class DerivedVariableUtilsTest {
 		final Object result = DerivedVariableUtils.parseValue("20180101", measurementVariable, termMissingData);
 		assertTrue(result instanceof Date);
 
+	}
+
+	@Test
+	public void testGetAggregateFunctionInputVariables() {
+		String formula = "fn:avg({{1001}}, {{1002}}, {{1003}})";
+		List<String> aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, false);
+		for(int i=0; i<3; i ++) {
+			Assert.assertEquals(String.valueOf(1001+i), aggregateInputVariables.get(i));
+		}
+
+		formula = "fn:avg({{GW_G1000}}, {{GW_G200}}, {{GW_G100}})";
+		aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, true);
+		Assert.assertEquals("GW_G1000", aggregateInputVariables.get(0));
+		Assert.assertEquals("GW_G200", aggregateInputVariables.get(1));
+		Assert.assertEquals("GW_G100", aggregateInputVariables.get(2));
 	}
 
 	@Test
