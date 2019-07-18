@@ -24,10 +24,10 @@ public final class DerivedVariableUtils {
 
 	private static final String TERM_LEFT_DELIMITER = "\\{\\{";
 	private static final String TERM_RIGHT_DELIMITER = "\\}\\}";
-	public static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
-	public static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
+	private static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
+	private static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
 	// Just include any of the following after implementing the corresponding function: (COUNT|DISTINCT_COUNT|MAX|MIN|SUM)
-	public static final String AGGREGATE_FUNCTIONS = "(AVG)";
+	private static final String AGGREGATE_FUNCTIONS = "(AVG)";
 
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl

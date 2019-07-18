@@ -332,7 +332,7 @@ public class DerivedVariableUtilsTest {
 	}
 
 	@Test
-	public void testParseValue_ValueIsDateButInvalid() throws ParseException {
+	public void testParseValue_ValueIsDateButInvalid() {
 
 		final Set<String> termMissingData = new HashSet<>();
 		final String variableName = RandomStringUtils.randomAlphanumeric(10);
@@ -344,7 +344,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
 
 		try {
-			final Object result = DerivedVariableUtils.parseValue("2002-99-99", measurementVariable, termMissingData);
+			DerivedVariableUtils.parseValue("2002-99-99", measurementVariable, termMissingData);
 			fail("parseValue should throw an error");
 		} catch (final ParseException e) {
 			// do nothing
