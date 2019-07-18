@@ -177,9 +177,8 @@ public class MySQLUtilTest {
 		final List<String> queries = queryStringCaptor.getAllValues();
 		Assert.assertEquals(4, queries.size());
 		Assert.assertEquals("DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete, queries.get(0));
-		Assert.assertEquals("DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete, queries.get(1));
-		Assert.assertEquals("DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete, queries.get(2));
-		Assert.assertEquals("DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete, queries.get(3));
+		Assert.assertEquals("DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete, queries.get(1));
+		Assert.assertEquals("DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete, queries.get(2));
 	}
 
 }
