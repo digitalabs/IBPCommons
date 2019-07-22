@@ -221,24 +221,27 @@ public final class DerivedVariableUtils {
 	/**
 	 * @param formula - the formula
 	 * @param isVariableName - defines whether the values to be retrieved are variable names or ids
+	 * @param isWrapped - defines whether the values would be wrapped or not
 	 * @return the list of input variables inside the aggregate functions
 	 */
-	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isVariableName) {
+	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isVariableName, final boolean isWrapped) {
 		final String termIndicator = isVariableName? "\\w+":"\\d+";
-		final List<String> avgInputVariables = new ArrayList<>();
-		final String avgRegex = "(?i)" + DerivedVariableUtils.AGGREGATE_FUNCTIONS + "\\((\\{\\{(" + termIndicator+ ")}})(,[\\s]?\\{\\{(" + termIndicator+ ")}})*\\)";
-		Pattern avgPattern = Pattern.compile(avgRegex);
-		Matcher avgMatcher = avgPattern.matcher(formula);
-		while (avgMatcher.find()) {
-			final String avgString = avgMatcher.group();
-			final String avgInputRegex = "(\\{\\{" + termIndicator+ "}})";
-			final Pattern avgInputPattern = Pattern.compile(avgInputRegex);
-			final Matcher avgInputMatcher = avgInputPattern.matcher(avgString);
-			while(avgInputMatcher.find()) {
-				avgInputVariables.add(avgInputMatcher.group().replaceAll("(\\{)","").replaceAll("}",""));
+		final List<String> aggregateInputVariables = new ArrayList<>();
+		final String agggregateRegex = "(?i)" + DerivedVariableUtils.AGGREGATE_FUNCTIONS + "\\((\\{\\{(" + termIndicator+ ")}})(,[\\s]?\\{\\{(" + termIndicator+ ")}})*\\)";
+		Pattern aggregatePattern = Pattern.compile(agggregateRegex);
+		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+		while (aggregateMatcher.find()) {
+			final String aggregateString = aggregateMatcher.group();
+			final String aggregateInputRegex = "(\\{\\{" + termIndicator+ "}})";
+			final Pattern aggregateInputPattern = Pattern.compile(aggregateInputRegex);
+			final Matcher aggregateInputMatcher = aggregateInputPattern.matcher(aggregateString);
+			while(aggregateInputMatcher.find()) {
+				String inputVariable = aggregateInputMatcher.group().replaceAll("(\\{)","").replaceAll("}","");
+				inputVariable = isWrapped? DerivedVariableUtils.wrapTerm(inputVariable) : inputVariable;
+				aggregateInputVariables.add(inputVariable);
 			}
 		}
-		return avgInputVariables;
+		return aggregateInputVariables;
 	}
 
 }
