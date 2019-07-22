@@ -319,16 +319,12 @@ public class DerivedVariableUtilsTest {
 	@Test
 	public void testGetAggregateFunctionInputVariables() {
 		String formula = "fn:avg({{1001}}, {{1002}}, {{1003}})";
-		List<String> aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, false, false);
+		List<String> aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, false);
+		List<String> aggregateInputVariablesWrapped = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, true);
 		for(int i=0; i<3; i ++) {
 			Assert.assertEquals(String.valueOf(1001+i), aggregateInputVariables.get(i));
+			Assert.assertEquals(DerivedVariableUtils.TERM_INTERNAL_DELIMITER + (1001+i) + DerivedVariableUtils.TERM_INTERNAL_DELIMITER, aggregateInputVariablesWrapped.get(i));
 		}
-
-		formula = "fn:avg({{GW_G1000}}, {{GW_G200}}, {{GW_G100}})";
-		aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, true, false);
-		Assert.assertEquals("GW_G1000", aggregateInputVariables.get(0));
-		Assert.assertEquals("GW_G200", aggregateInputVariables.get(1));
-		Assert.assertEquals("GW_G100", aggregateInputVariables.get(2));
 	}
 
 	@Test

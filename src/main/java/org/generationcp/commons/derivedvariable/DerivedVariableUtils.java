@@ -32,7 +32,7 @@ public final class DerivedVariableUtils {
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
 	 */
-	private static final String TERM_INTERNAL_DELIMITER = "__";
+	static final String TERM_INTERNAL_DELIMITER = "__";
 
 	private DerivedVariableUtils() {
 		// utility class
@@ -220,19 +220,17 @@ public final class DerivedVariableUtils {
 
 	/**
 	 * @param formula - the formula
-	 * @param isVariableName - defines whether the values to be retrieved are variable names or ids
 	 * @param isWrapped - defines whether the values would be wrapped or not
 	 * @return the list of input variables inside the aggregate functions
 	 */
-	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isVariableName, final boolean isWrapped) {
-		final String termIndicator = isVariableName? "\\w+":"\\d+";
+	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isWrapped) {
 		final List<String> aggregateInputVariables = new ArrayList<>();
-		final String agggregateRegex = "(?i)" + DerivedVariableUtils.AGGREGATE_FUNCTIONS + "\\((\\{\\{(" + termIndicator+ ")}})(,[\\s]?\\{\\{(" + termIndicator+ ")}})*\\)";
+		final String agggregateRegex = "(?i)" + DerivedVariableUtils.AGGREGATE_FUNCTIONS + "\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
 		Pattern aggregatePattern = Pattern.compile(agggregateRegex);
 		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
 		while (aggregateMatcher.find()) {
 			final String aggregateString = aggregateMatcher.group();
-			final String aggregateInputRegex = "(\\{\\{" + termIndicator+ "}})";
+			final String aggregateInputRegex = "(\\{\\{\\w+}})";
 			final Pattern aggregateInputPattern = Pattern.compile(aggregateInputRegex);
 			final Matcher aggregateInputMatcher = aggregateInputPattern.matcher(aggregateString);
 			while(aggregateInputMatcher.find()) {
