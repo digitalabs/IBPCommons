@@ -15,8 +15,8 @@ import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,16 +59,16 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	private final boolean doParseFactors;
 	private final boolean doParseVariates;
 
-	private final UserDataManager userDataManager;
+	private final UserService userService;
 	private Integer descriptionSheetIndex;
 
-	public CrossesListDescriptionSheetParser(final T importedList, final UserDataManager userDataManager) {
+	public CrossesListDescriptionSheetParser(final T importedList, final UserService userService) {
 		this.importedList = importedList;
 		this.doParseDetails = true;
 		this.doParseConditions = true;
 		this.doParseFactors = true;
 		this.doParseVariates = true;
-		this.userDataManager = userDataManager;
+		this.userService = userService;
 		this.descriptionSheetIndex = 0;
 	}
 
@@ -127,7 +127,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	void validateListUserName(final String listUserName) throws FileParsingException {
 		try {
 			if (StringUtils.isNotEmpty(listUserName)) {
-				final User user = this.userDataManager.getUserByFullname(listUserName);
+				final WorkbenchUser user = this.userService.getUserByFullname(listUserName);
 				if (user != null) {
 					this.importedList.setUserId(user.getUserid());
 				} else {

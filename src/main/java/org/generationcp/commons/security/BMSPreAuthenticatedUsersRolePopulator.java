@@ -10,6 +10,7 @@ import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -24,7 +25,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
 
 	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
@@ -37,7 +38,7 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(TransactionStatus status) {
 				try {
-					WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.workbenchDataManager, request);
+					WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.userService, request);
 
 					List<GrantedAuthority> role = new ArrayList<>();
 					role.addAll(SecurityUtil.getRolesAsAuthorities(user));
@@ -54,8 +55,8 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 	}
 
-	void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
+	void setUserService(UserService userService) {
+		this.userService = userService;
 	}
 
 	void setTransactionManager(PlatformTransactionManager transactionManager) {

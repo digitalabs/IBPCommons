@@ -16,6 +16,7 @@ import org.generationcp.middleware.manager.Operation;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.generationcp.middleware.util.cache.FunctionBasedGuavaCacheLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,7 +89,7 @@ public class ContextUtil {
 		return Optional.absent();
 	}
 
-	public static Integer getCurrentWorkbenchUserId(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
+	public static Integer getCurrentWorkbenchUserId(HttpServletRequest request)
 			throws MiddlewareQueryException {
 		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
 
@@ -111,10 +112,10 @@ public class ContextUtil {
 
 		throw new MiddlewareQueryException("Could not resolve current user id in Workbench.");
 	}
-	
 
-	
-	public static WorkbenchUser getCurrentWorkbenchUser(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
+
+
+	public static WorkbenchUser getCurrentWorkbenchUser(UserService userService, HttpServletRequest request)
 			throws MiddlewareQueryException {
 		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
 		String userName = SecurityUtil.decodeToken(contextInfo.getAuthToken());
@@ -122,23 +123,23 @@ public class ContextUtil {
 		WorkbenchUser user = null;
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
 			// resolve from token if existing
-			List<WorkbenchUser> matchedUsers = workbenchDataManager.getUserByName(userName, 0, 1, Operation.EQUAL);
+			List<WorkbenchUser> matchedUsers = userService.getUserByName(userName, 0, 1, Operation.EQUAL);
 
 			if (matchedUsers != null && !matchedUsers.isEmpty()) {
 				user = matchedUsers.get(0);
 			}
 
 		} else if (contextInfo.getLoggedInUserId() != null) {
-			user = getUserById(workbenchDataManager, contextInfo.getLoggedInUserId());
+			user = getUserById(userService, contextInfo.getLoggedInUserId());
 		} else {
 			// resolve from cookie or session
-			user = getUserById(workbenchDataManager, ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request));
+			user = getUserById(userService, ContextUtil.getCurrentWorkbenchUserId(request));
 		}
 
 		return user;
 	}
 
-	public static String getCurrentWorkbenchUsername(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
+	public static String getCurrentWorkbenchUsername(UserService userService, HttpServletRequest request)
 			throws MiddlewareQueryException {
 		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
 		String userName = SecurityUtil.decodeToken(contextInfo.getAuthToken());
@@ -147,11 +148,11 @@ public class ContextUtil {
 			return userName;
 
 		} else if (contextInfo.getLoggedInUserId() != null) {
-			userName = getUserById(workbenchDataManager, contextInfo.getLoggedInUserId()).getName();
+			userName = getUserById(userService, contextInfo.getLoggedInUserId()).getName();
 
 		} else {
 			// resolve from cookie or session
-			userName = getUserById(workbenchDataManager, ContextUtil.getCurrentWorkbenchUserId(workbenchDataManager, request)).getName();
+			userName = getUserById(userService, ContextUtil.getCurrentWorkbenchUserId(request)).getName();
 		}
 
 		return userName;
@@ -239,23 +240,23 @@ public class ContextUtil {
 					new ContextInfo(userId, projectId,
 							authToken));
 	}
-	
-	static WorkbenchUser getUserById(final WorkbenchDataManager workbenchDataManager, final Integer userId) {
+
+	static WorkbenchUser getUserById(final UserService userService, final Integer userId) {
 		final FunctionBasedGuavaCacheLoader<Integer, WorkbenchUser> cacheLoader =
 				new FunctionBasedGuavaCacheLoader<Integer, WorkbenchUser>(USERS_CACHE, new Function<Integer, WorkbenchUser>() {
 
 					@Override
 					public WorkbenchUser apply(Integer key) {
-						return workbenchDataManager.getUserById(key);
+						return userService.getUserById(key);
 					}
 				});
-		
+
 		final Optional<WorkbenchUser> loadedUserId = cacheLoader.get(userId);
 
 		if (loadedUserId.isPresent()) {
 			return loadedUserId.get();
 		}
-		
+
 		return null;
 	}
 

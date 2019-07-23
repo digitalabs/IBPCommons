@@ -9,6 +9,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.ProjectActivity;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.web.util.WebUtils;
 
 import javax.annotation.Resource;
@@ -31,6 +32,9 @@ public class ContextUtil {
 
 	@Resource
 	private WorkbenchDataManager workbenchDataManager;
+
+	@Resource
+	private UserService userService;
 
 	/**
 	 * Main goal is to prevent excessive queries to get local user names. This is a global cache that will expire every 10 minutes.
@@ -90,11 +94,7 @@ public class ContextUtil {
 	}
 
 	public WorkbenchUser getCurrentWorkbenchUser() {
-		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUser(this.workbenchDataManager, this.request);
-	}
-
-	public String getCurrentWorkbenchUsername() {
-		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUsername(this.workbenchDataManager, this.request);
+		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUser(this.userService, this.request);
 	}
 
 	public void logProgramActivity(final String activityTitle, final String activityDescription) {

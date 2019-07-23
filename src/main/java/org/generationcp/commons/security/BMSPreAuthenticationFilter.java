@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,13 +21,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class BMSPreAuthenticationFilter extends AbstractPreAuthenticatedProcessingFilter {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BMSPreAuthenticationFilter.class);
-	
+
 	@Resource
-	WorkbenchDataManager workbenchDataManager;
+	UserService userService;
 
 	@Autowired
 	PlatformTransactionManager transactionManager;
-	
+
 	@Override
 	protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
 		TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
@@ -35,7 +36,7 @@ public class BMSPreAuthenticationFilter extends AbstractPreAuthenticatedProcessi
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				try {
-					return ContextUtil.getCurrentWorkbenchUsername(BMSPreAuthenticationFilter.this.workbenchDataManager, request);
+					return ContextUtil.getCurrentWorkbenchUsername(BMSPreAuthenticationFilter.this.userService, request);
 				} catch (MiddlewareQueryException e) {
 					BMSPreAuthenticationFilter.LOG.error(e.getMessage(), e);
 				}
