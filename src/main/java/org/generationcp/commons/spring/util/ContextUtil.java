@@ -54,10 +54,6 @@ public class ContextUtil {
 		return (ContextInfo) WebUtils.getSessionAttribute(this.request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
 	}
 
-	public ContextInfo getContextInfoFromRequest() {
-		return org.generationcp.commons.util.ContextUtil.getContextInfoFromRequest(this.request);
-	}
-
 	public Project getProjectInContext() {
 		return org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);
 	}
@@ -66,31 +62,8 @@ public class ContextUtil {
 		return org.generationcp.commons.util.ContextUtil.getProject(this.workbenchDataManager, this.request);
 	}
 
-	public int getCurrentUserLocalId() {
-		final ContextInfo contextInfo = this.getContextInfoFromSession();
-		try {
-			final Project projectInContext = getProjectInContext();
-			final Integer localUserId = localUserCache
-					.get(new CropBasedContextInfo(contextInfo, projectInContext.getCropType().getCropName()), new Callable<Integer>() {
-
-						@Override
-						public Integer call() {
-							return ContextUtil.this.workbenchDataManager
-									.getLocalIbdbUserId(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId());
-						}
-					});
-			if (localUserId != null) {
-				return localUserId.intValue();
-			}
-			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE);
-		} catch (final ExecutionException e) {
-			throw new IllegalStateException(NO_LOCAL_USER_ID_FOUND_MESSAGE, e);
-		}
-
-	}
-
 	public int getCurrentWorkbenchUserId() {
-		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
+		return org.generationcp.commons.util.ContextUtil.getCurrentWorkbenchUserId(this.request);
 	}
 
 	public WorkbenchUser getCurrentWorkbenchUser() {
@@ -107,17 +80,4 @@ public class ContextUtil {
 
 		this.workbenchDataManager.addProjectActivity(projAct);
 	}
-
-	public Integer getCurrentIbdbUserId() {
-		return this.workbenchDataManager
-			.getCurrentIbdbUserId(Long.valueOf(this.getProjectInContext().getProjectId().toString()), this.getCurrentWorkbenchUserId());
-
-	}
-
-	public Integer getIbdbUserId(final Integer workbenchUserId) {
-		return this.workbenchDataManager
-			.getCurrentIbdbUserId(Long.valueOf(this.getProjectInContext().getProjectId().toString()), workbenchUserId);
-
-	}
-
 }
