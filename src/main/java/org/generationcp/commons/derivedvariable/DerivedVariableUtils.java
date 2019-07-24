@@ -71,7 +71,7 @@ public final class DerivedVariableUtils {
 	public static void extractValues(
 		final Map<String, Object> parameters, final ObservationUnitRow observationUnitRow,
 		final Map<Integer, MeasurementVariable> measurementVariablesMap,
-		final Set<String> termMissingData) throws ParseException {
+		final Set<String> termMissingData, final List<String> aggregateInputVariables) throws ParseException {
 
 		if (observationUnitRow != null && observationUnitRow.getVariables() != null) {
 			for (final Map.Entry<String, ObservationUnitData> entry : observationUnitRow.getVariables().entrySet()) {
@@ -79,7 +79,7 @@ public final class DerivedVariableUtils {
 				String term = String.valueOf(observationUnitData.getVariableId());
 				term = StringUtils.deleteWhitespace(term);
 				term = wrapTerm(term);
-				if (parameters.containsKey(term)) {
+				if (parameters.containsKey(term) && !aggregateInputVariables.contains(term)) {
 					parameters.put(term, getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
 				}
 			}

@@ -55,7 +55,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setPossibleValues(possibleValues);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 		assertEquals("ABC", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -87,7 +87,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setPossibleValues(possibleValues);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 		assertEquals(new BigDecimal(1), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -116,7 +116,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 		assertEquals(DateUtil.parseDate("20200101"), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -147,7 +147,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 	}
 
@@ -175,7 +175,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 		assertEquals(new BigDecimal(123), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -205,7 +205,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 		assertEquals("ABC", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -235,7 +235,7 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData);
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
 
 		assertEquals("", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 		assertEquals(variableName, termMissingData.toArray()[0]);

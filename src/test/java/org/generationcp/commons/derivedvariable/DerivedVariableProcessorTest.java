@@ -92,7 +92,7 @@ public class DerivedVariableProcessorTest {
 		}
 
 		final Set<String> termMissingData = new HashSet<>();
-		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), termMissingData);
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), termMissingData, new ArrayList<String>());
 		Assert.assertNotNull("Terms should not be null", this.parameters);
 		for (final Map.Entry<String, Object> entry : this.parameters.entrySet()) {
 			final String key = entry.getKey();
@@ -107,7 +107,7 @@ public class DerivedVariableProcessorTest {
 			this.parameters = extractParameters("{{" + TERM_4_EMPTY_VALUE + "}}");
 		}
 		final Set<String> termMissingData = new HashSet<>();
-		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), termMissingData);
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), termMissingData, new ArrayList<String>());
 
 		Assert.assertThat("Should have missing data", termMissingData, is(not(empty())));
 		Assert.assertThat("Should report missing data label", termMissingData.iterator().next(), is(String.valueOf(TERM_4_EMPTY_VALUE)));
@@ -116,7 +116,7 @@ public class DerivedVariableProcessorTest {
 	@Test
 	public void testFetchParameterValuesFromMeasurement_NullMeasurementRow() throws ParseException {
 		final Map<String, Object> testTerms = extractParameters(FORMULA_1);
-		extractValues(testTerms, null, this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(testTerms, null, this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 		for (final Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			final String key = entry.getKey();
 			final Object value = entry.getValue();
@@ -131,7 +131,7 @@ public class DerivedVariableProcessorTest {
 		observationUnitRow.setVariables(null);
 
 		final Set<String> termMissingData = new HashSet<>();
-		extractValues(testTerms, observationUnitRow, this.createMeasurementVariablesMap(), termMissingData);
+		extractValues(testTerms, observationUnitRow, this.createMeasurementVariablesMap(), termMissingData, new ArrayList<String>());
 		for (final Map.Entry<String, Object> entry : testTerms.entrySet()) {
 			final String key = entry.getKey();
 			final Object value = entry.getValue();
@@ -213,7 +213,7 @@ public class DerivedVariableProcessorTest {
 	public void testEvaluateFormula() throws ParseException {
 		this.formula = FORMULA_1;
 		this.parameters = extractParameters(FORMULA_1);
-		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 		this.formula = replaceDelimiters(this.formula);
 
 		String result = this.processor.evaluateFormula(this.formula, this.parameters);
@@ -221,7 +221,7 @@ public class DerivedVariableProcessorTest {
 			+ " but got " + result, EXPECTED_FORMULA_1_RESULT, result);
 
 		this.parameters = extractParameters(FORMULA_2);
-		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(this.parameters, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 		this.formula = replaceDelimiters(FORMULA_2);
 
 		result = this.processor.evaluateFormula(this.formula, this.parameters);
@@ -272,7 +272,7 @@ public class DerivedVariableProcessorTest {
 		final String param1 = "number of plots: ";
 		String formula = "fn:concat('" + param1 + "', {{" + TERM_3 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 
 		formula = replaceDelimiters(formula);
 		final String result = this.processor.evaluateFormula(formula, terms);
@@ -283,7 +283,7 @@ public class DerivedVariableProcessorTest {
 	public void testDaysDiffFunction() throws ParseException {
 		String formula = "fn:daysdiff({{" + DATE_TERM1 + "}}, {{" + DATE_TERM2 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 
 		formula = replaceDelimiters(formula);
 		final String result = this.processor.evaluateFormula(formula, terms);
@@ -295,7 +295,7 @@ public class DerivedVariableProcessorTest {
 		// Having later date for first parameter should give negative value
 		String formula = "fn:daysdiff({{" + DATE_TERM2 + "}}, {{" + DATE_TERM1 + "}})";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 
 		formula = replaceDelimiters(formula);
 		final String result = this.processor.evaluateFormula(formula, terms);
@@ -344,7 +344,7 @@ public class DerivedVariableProcessorTest {
 		testRow.getVariables().get(String.valueOf(DATE_TERM2)).setValue("2018-03-31");
 		final String formula = "({{" + DATE_TERM2 + "}}/100)";
 		final Map<String, Object> terms = extractParameters(formula);
-		extractValues(terms, testRow, this.createMeasurementVariablesMap(), new HashSet<String>());
+		extractValues(terms, testRow, this.createMeasurementVariablesMap(), new HashSet<String>(), new ArrayList<String>());
 	}
 
 	private ObservationUnitRow createObservationUnitRowTestData() {
