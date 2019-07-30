@@ -2,12 +2,10 @@ package org.generationcp.commons.security;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
-import org.fest.util.Collections;
 import org.generationcp.middleware.pojos.workbench.Role;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -16,18 +14,6 @@ public class AuthorizationUtil {
 	
 	protected static final String ACCESS_DENIED_MESSAGE = "Access Denied. User does not have appropriate role to access the functionality.";
 
-	public static void preAuthorize(final List<Role> configuredRoles) {
-		if (Collections.isNullOrEmpty(configuredRoles)) {
-			throw new AccessDeniedException("Access Denied. No role is configured to access this functionality.");
-		}
-		final List<String> permittedRoleNames = new ArrayList<>();
-		for (final Role role : configuredRoles) {
-			permittedRoleNames.add(role.getName());
-		}
-		AuthorizationUtil.preAuthorizeUser(permittedRoleNames);
-		
-	}
-	
 	private static void preAuthorizeUser(final List<String> roleNames){
 		final Collection<? extends GrantedAuthority> authorities = SecurityUtil.getLoggedInUserRoles();
 		final List<String> capitalizedRoles = Lists.transform(roleNames, new Function<String, String>() {
@@ -48,7 +34,7 @@ public class AuthorizationUtil {
 	}
 	
 	public static void preAuthorizeAdminAuthority() {
-		preAuthorizeUser(Arrays.asList(Role.SUPERADMIN, Role.ADMIN));
+		preAuthorizeUser(Arrays.asList(Role.SUPERADMIN));
 	}
 	
 	public static Boolean isSuperAdminUser() {
