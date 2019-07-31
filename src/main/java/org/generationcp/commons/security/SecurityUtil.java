@@ -8,11 +8,17 @@ import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.generationcp.middleware.domain.workbench.PermissionDto;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.UserRole;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SecurityUtil {
 
 	/**
@@ -21,7 +27,10 @@ public class SecurityUtil {
 	 */
 	public static final String ROLE_PREFIX = "ROLE_";
 
-	private SecurityUtil() {
+	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
+
+	public SecurityUtil() {
 	}
 
 	public static String getLoggedInUserName() {
@@ -32,7 +41,7 @@ public class SecurityUtil {
 		return null;
 	}
 
-	public static Collection<? extends GrantedAuthority> getLoggedInUserRoles() {
+	public static Collection<? extends GrantedAuthority> getLoggedInUserAuthorities() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			return authentication.getAuthorities();
@@ -48,6 +57,16 @@ public class SecurityUtil {
 			}
 		}
 		return authorities;
+	}
+
+	public List<UserRole> getLoggedInUserRoles() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			String username = authentication.getName();
+			final WorkbenchUser workbenchUser = workbenchDataManager.getUserByUsername(username);
+			return workbenchUser.getRoles();
+		}
+		return new ArrayList<>();
 	}
 
 	public static String getEncodedToken() {

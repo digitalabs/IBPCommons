@@ -7,6 +7,7 @@ import org.generationcp.commons.security.AuthorizationUtil;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.manager.api.StudyDataManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 @Configurable
@@ -17,6 +18,9 @@ public class StudyPermissionValidator {
 
 	@Resource
 	private StudyDataManager studyDataManager;
+
+	@Autowired
+	private AuthorizationUtil authorizationUtil;
 
 	public Boolean userLacksPermissionForStudy(final Integer studyId) {
 		final StudyReference study = this.studyDataManager.getStudyReference(studyId);
@@ -32,6 +36,6 @@ public class StudyPermissionValidator {
 	}
 
 	private Boolean userLacksPermissionForStudy(final Boolean isLocked, final Integer ownerId, final Integer currentUserId) {
-		return isLocked && !AuthorizationUtil.isSuperAdminUser() && !currentUserId.equals(ownerId);
+		return isLocked && !authorizationUtil.isSuperAdminUser() && !currentUserId.equals(ownerId);
 	}
 }
