@@ -32,7 +32,7 @@ public class ProcessCodeFactory {
 		for (final String key : expressionMap.keySet()) {
 			if (key != null && pattern.matches(key)) {
 				final Expression expression = expressionMap.get(key);
-				expressionMap.put(pattern, expression); // memoize
+				expressionMap.put(pattern, expression); // memorize
 				return expression;
 			}
 		}
