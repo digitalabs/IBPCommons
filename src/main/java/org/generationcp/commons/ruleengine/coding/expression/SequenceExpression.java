@@ -10,7 +10,8 @@ import java.util.List;
 @Component
 public class SequenceExpression extends BaseCodingExpression {
 
-	public static final String KEY = "[SEQUENCE]";
+	// Insert double black slash since we're replacing by regular expressions
+	public static final String KEY = "\\[SEQUENCE\\]";
 
 	@Autowired
 	protected GermplasmNamingService germplasmNamingService;
@@ -22,17 +23,23 @@ public class SequenceExpression extends BaseCodingExpression {
 
 	@Override
 	public void apply(final List<StringBuilder> values, final String capturedText, final NamingConfiguration namingConfiguration) {
-
 		final String prefix = namingConfiguration.getPrefix();
 		for (final StringBuilder container : values) {
-			final int lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
-			this.replaceExpressionWithValue(container, String.valueOf(lastUsedSequence));
+			this.generateNextNameInSequence(prefix, container, 1);
 		}
+	}
+
+	void generateNextNameInSequence(final String prefix, final StringBuilder container, final Integer numberOfDigits) {
+		final Integer lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
+		final String numberString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(lastUsedSequence, numberOfDigits);
+		this.replaceRegularExpressionKeyWithValue(container, numberString);
 	}
 
 	@Override
 	public String getExpressionKey() {
 		return SequenceExpression.KEY;
 	}
+
+
 
 }

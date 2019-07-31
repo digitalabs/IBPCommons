@@ -4,6 +4,7 @@ import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -34,6 +35,8 @@ public class SequenceExpressionTest {
 		this.namingConfiguration.setCount(SEQUENCE);
 		this.namingConfiguration.setSuffix(SUFFIX);
 		Mockito.doReturn(NEXT_NUMBER_FROM_DB, NEXT_NUMBER_FROM_DB+1, NEXT_NUMBER_FROM_DB+2).when(this.germplasmNamingService).getNextNumberAndIncrementSequence(PREFIX);
+		Mockito.doReturn(String.valueOf(NEXT_NUMBER_FROM_DB), String.valueOf(NEXT_NUMBER_FROM_DB+1), String.valueOf(NEXT_NUMBER_FROM_DB+2)).when(this.germplasmNamingService).getNumberWithLeadingZeroesAsString(
+			ArgumentMatchers.anyInt(), ArgumentMatchers.eq(1));
 	}
 
 	@Test

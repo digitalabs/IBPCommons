@@ -11,7 +11,7 @@ public class BaseCodingExpressionTest {
 	public void testReplaceProcessCodeWithValue() {
 		StringBuilder builder = new StringBuilder("ABC" + expression.getExpressionKey());
 
-		expression.replaceExpressionWithValue(builder, "D");
+		expression.replaceRegularExpressionKeyWithValue(builder, "D");
 
 		Assert.assertEquals("BaseCodinExpression unable to replace the process code with the new value", "ABCD", builder.toString());
 	}
@@ -21,7 +21,7 @@ public class BaseCodingExpressionTest {
 		StringBuilder builder = new StringBuilder("ABC" + expression.getExpressionKey());
 
 		String nullVariable = null;
-		expression.replaceExpressionWithValue(builder, nullVariable);
+		expression.replaceRegularExpressionKeyWithValue(builder, nullVariable);
 
 		Assert.assertEquals("BaseCodinExpression unable to replace the process code with the new value", "ABC", builder.toString());
 	}
