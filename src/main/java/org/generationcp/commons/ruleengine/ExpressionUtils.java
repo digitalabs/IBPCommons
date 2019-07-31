@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 
 public final class ExpressionUtils {
 
+	public static final Integer DEFAULT_LENGTH = 3;
+
 	private ExpressionUtils() {
 		// utility class
 	}
@@ -25,6 +27,24 @@ public final class ExpressionUtils {
 			container.replace(matcher.start(), matcher.end(), replaceValue);
 		}
 
+	}
+
+	public static Integer getNumberOfDigitsFromKey(final String regexPattern, final StringBuilder container) {
+		// If no digit specified, use default number of digits
+		Integer numberOfDigits = ExpressionUtils.DEFAULT_LENGTH;
+
+		final Pattern pattern = Pattern.compile(regexPattern);
+		final Matcher matcher = pattern.matcher(container.toString());
+		if (matcher.find()) {
+			final String processCode = matcher.group();
+			// Look for a digit withing the process code, if present
+			final Pattern patternDigit = Pattern.compile("[[0-9]*]");
+			final Matcher matcherDigit = patternDigit.matcher(processCode);
+			if (matcherDigit.find()) {
+				numberOfDigits = Integer.valueOf(matcherDigit.group());
+			}
+		}
+		return numberOfDigits;
 	}
 
 }

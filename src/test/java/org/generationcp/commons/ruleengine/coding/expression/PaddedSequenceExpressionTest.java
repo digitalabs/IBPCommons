@@ -1,5 +1,6 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
+import org.generationcp.commons.ruleengine.ExpressionUtils;
 import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.junit.Assert;
@@ -40,7 +41,7 @@ public class PaddedSequenceExpressionTest {
 			.getNextNumberAndIncrementSequence(PREFIX);
 		Mockito.doReturn("0" + NEXT_NUMBER_FROM_DB, "0" + (NEXT_NUMBER_FROM_DB + 1), "0" + (NEXT_NUMBER_FROM_DB + 2))
 			.when(this.germplasmNamingService).getNumberWithLeadingZeroesAsString(
-			ArgumentMatchers.anyInt(), ArgumentMatchers.eq(PaddedSequenceExpression.DEFAULT_LENGTH));
+			ArgumentMatchers.anyInt(), ArgumentMatchers.eq(ExpressionUtils.DEFAULT_LENGTH));
 	}
 
 	@Test
