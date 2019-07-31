@@ -2,6 +2,7 @@ package org.generationcp.commons.security;
 
 import org.generationcp.middleware.pojos.workbench.Role;
 import org.generationcp.middleware.pojos.workbench.UserRole;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -32,7 +33,9 @@ public class AuthorizationUtilTest {
 		final UserRole userRole = new UserRole();
 		userRole.setRole(new Role("Super admin role", Role.SUPERADMIN));
 		userRoleList.add(userRole);
-		Mockito.when(securityUtil.getLoggedInUserRoles()).thenReturn(userRoleList);
+		final WorkbenchUser workbenchUser = new WorkbenchUser();
+		workbenchUser.setRoles(userRoleList);
+		Mockito.when(securityUtil.getLoggedInUser()).thenReturn(workbenchUser);
 		Assert.assertTrue(authorizationUtil.isSuperAdminUser());
 	}
 	
@@ -42,7 +45,9 @@ public class AuthorizationUtilTest {
 		final UserRole userRole = new UserRole();
 		userRole.setRole(new Role("admin role", "ADMIN"));
 		userRoleList.add(userRole);
-		Mockito.when(securityUtil.getLoggedInUserRoles()).thenReturn(userRoleList);
+		final WorkbenchUser workbenchUser = new WorkbenchUser();
+		workbenchUser.setRoles(userRoleList);
+		Mockito.when(securityUtil.getLoggedInUser()).thenReturn(workbenchUser);
 		Assert.assertFalse(authorizationUtil.isSuperAdminUser());
 	}
 }

@@ -1,11 +1,9 @@
 package org.generationcp.commons.security;
 
-import org.generationcp.middleware.pojos.workbench.Role;
-import org.generationcp.middleware.pojos.workbench.UserRole;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 
 @Component
 public class AuthorizationUtil {
@@ -17,15 +15,11 @@ public class AuthorizationUtil {
 	}
 
 	public Boolean isSuperAdminUser() {
-		final List<UserRole> userRoles = securityUtil.getLoggedInUserRoles();
-		boolean found = false;
-		for (final UserRole userRole : userRoles) {
-			if (userRole.getRole().getName().toUpperCase().equals(Role.SUPERADMIN)) {
-				found = true;
-				break;
-			}
+		final WorkbenchUser workbenchUser = securityUtil.getLoggedInUser();
+		if (workbenchUser != null) {
+			return workbenchUser.isSuperAdmin();
 		}
-		return found;
+		return false;
 	}
 
 }

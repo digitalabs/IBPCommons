@@ -59,14 +59,14 @@ public class SecurityUtil {
 		return authorities;
 	}
 
-	public List<UserRole> getLoggedInUserRoles() {
+	public WorkbenchUser getLoggedInUser() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			String username = authentication.getName();
 			final WorkbenchUser workbenchUser = workbenchDataManager.getUserByUsername(username);
-			return workbenchUser.getRoles();
+			return workbenchUser;
 		}
-		return new ArrayList<>();
+		return null;
 	}
 
 	public static String getEncodedToken() {
