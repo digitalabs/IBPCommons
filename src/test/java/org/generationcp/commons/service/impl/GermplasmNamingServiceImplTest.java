@@ -120,18 +120,23 @@ public class GermplasmNamingServiceImplTest {
 
 	@Test
 	public void testGetNumberWithLeadingZeroesAsStringDefault() {
-		final GermplasmNameSetting setting = new GermplasmNameSetting();
-		setting.setNumOfDigits(0);
-		final String formattedString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(1, setting);
+		String formattedString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(1, 0);
+		Assert.assertEquals("1", formattedString);
+
+		formattedString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(1, null);
 		Assert.assertEquals("1", formattedString);
 	}
 
 	@Test
 	public void testGetNumberWithLeadingZeroesAsStringWithNumOfDigitsSpecified() {
-		final GermplasmNameSetting setting = new GermplasmNameSetting();
-		setting.setNumOfDigits(8);
-		final String formattedString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(1, setting);
-		Assert.assertEquals("00000001", formattedString);
+		final String formattedString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(123, 8);
+		Assert.assertEquals("00000123", formattedString);
+	}
+
+	@Test
+	public void testGetNumberWithLeadingZeroesAsStringNumberGreaterThanhNumOfDigitsSpecified() {
+		final String formattedString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(123, 2);
+		Assert.assertEquals("123", formattedString);
 	}
 
 	@Test
