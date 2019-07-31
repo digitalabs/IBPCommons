@@ -27,8 +27,8 @@ public final class DerivedVariableUtils {
 	private static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
 	private static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
 	// Just include any of the following after implementing the corresponding function: (COUNT|DISTINCT_COUNT|MAX|MIN|SUM)
-	private static final String AGGREGATE_FUNCTIONS = "(AVG)";
-
+	private static final String AGGREGATE_REGEX = "(?i)(AVG)\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
+	private static final String AGGREGATE_INPUT_REGEX = "(\\{\\{\\w+}})";
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
 	 */
@@ -225,13 +225,11 @@ public final class DerivedVariableUtils {
 	 */
 	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isWrapped) {
 		final List<String> aggregateInputVariables = new ArrayList<>();
-		final String agggregateRegex = "(?i)" + DerivedVariableUtils.AGGREGATE_FUNCTIONS + "\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
-		Pattern aggregatePattern = Pattern.compile(agggregateRegex);
+		Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
 		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
 		while (aggregateMatcher.find()) {
 			final String aggregateString = aggregateMatcher.group();
-			final String aggregateInputRegex = "(\\{\\{\\w+}})";
-			final Pattern aggregateInputPattern = Pattern.compile(aggregateInputRegex);
+			final Pattern aggregateInputPattern = Pattern.compile(AGGREGATE_INPUT_REGEX);
 			final Matcher aggregateInputMatcher = aggregateInputPattern.matcher(aggregateString);
 			while(aggregateInputMatcher.find()) {
 				String inputVariable = aggregateInputMatcher.group().replaceAll("(\\{)","").replaceAll("}","");
