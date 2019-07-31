@@ -11,7 +11,7 @@ import java.util.List;
 public class SequenceExpression extends BaseCodingExpression {
 
 	// Insert double black slash since we're replacing by regular expressions
-	public static final String KEY = "\\[SEQUENCE\\]";
+	private static final String KEY = "\\[SEQUENCE\\]";
 
 	@Autowired
 	protected GermplasmNamingService germplasmNamingService;

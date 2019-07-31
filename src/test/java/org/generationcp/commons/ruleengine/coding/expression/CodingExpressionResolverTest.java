@@ -18,6 +18,8 @@ import static org.junit.Assert.assertEquals;
 @RunWith(MockitoJUnitRunner.class)
 public class CodingExpressionResolverTest {
 
+	private static final String SEQUENCE_CODE = "[SEQUENCE]";
+
 	@Mock
 	private CodingExpressionFactory factory;
 
@@ -38,10 +40,11 @@ public class CodingExpressionResolverTest {
 
 		final SequenceExpression sequenceExpression = new SequenceExpression();
 		sequenceExpression.setGermplasmNamingService(this.germplasmNamingService);
-		Mockito.when(factory.create(SequenceExpression.KEY)).thenReturn(sequenceExpression);
+		Mockito.when(factory.create(SEQUENCE_CODE)).thenReturn(sequenceExpression);
 		Mockito.when(this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix)).thenReturn(startingSequenceNumber);
+		Mockito.when(this.germplasmNamingService.getNumberWithLeadingZeroesAsString(startingSequenceNumber, 1)).thenReturn(String.valueOf(startingSequenceNumber));
 
-		final List<String> result = codingExpressionResolver.resolve(currentInput, SequenceExpression.KEY, namingConfiguration);
+		final List<String> result = codingExpressionResolver.resolve(currentInput, SEQUENCE_CODE, namingConfiguration);
 		assertEquals(currentInput + startingSequenceNumber, result.get(0));
 	}
 
