@@ -16,10 +16,6 @@ public class ProcessCodeFactory {
 
 	}
 
-	public Expression create(final String key) {
-		return this.expressionMap.get(key.toUpperCase());
-	}
-
 	/**
 	 *
 	 * @param pattern
