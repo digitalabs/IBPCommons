@@ -1,5 +1,6 @@
 package org.generationcp.commons.util;
 
+import org.generationcp.commons.security.AuthorizationUtil;
 import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.StudyReference;
@@ -27,6 +28,9 @@ public class StudyPermissionValidatorTest {
 	
 	@Mock
 	private StudyDataManager studyDataManager;
+
+	@Mock
+	private AuthorizationUtil authorizationUtil;
 	
 	@InjectMocks
 	private StudyPermissionValidator validator;
@@ -59,10 +63,9 @@ public class StudyPermissionValidatorTest {
 	public void testUserLacksPermissionForStudyWhenStudyIsLockedButUserIsSuperAdmin() {
 		final StudyReference study = createTestStudy(true);
 		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentIbdbUserId();
-		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + Role.SUPERADMIN);
-		UsernamePasswordAuthenticationToken loggedInUser = new UsernamePasswordAuthenticationToken("", "", Lists.newArrayList(roleAuthority));
-		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
-		
+
+		Mockito.when(authorizationUtil.isSuperAdminUser()).thenReturn(Boolean.TRUE);
+
 		Assert.assertFalse(this.validator.userLacksPermissionForStudy(study));
 	}
 	
@@ -70,10 +73,8 @@ public class StudyPermissionValidatorTest {
 	public void testUserLacksPermissionForStudyWhenStudyIsLockedAndUserNotOwnerNorSuperAdmin() {
 		final StudyReference study = createTestStudy(true);
 		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentIbdbUserId();
-		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + Role.ADMIN);
-		UsernamePasswordAuthenticationToken loggedInUser = new UsernamePasswordAuthenticationToken("", "", Lists.newArrayList(roleAuthority));
-		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
-		
+
+
 		Assert.assertTrue(this.validator.userLacksPermissionForStudy(study));
 	}
 
