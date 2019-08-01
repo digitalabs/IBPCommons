@@ -9,6 +9,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class CodingExpressionFactoryTest {
 
+	private static final String KEY = "{SEQUENCE}";
+
 	CodingExpressionFactory factory = new CodingExpressionFactory();
 
 	@Before
@@ -22,8 +24,8 @@ public class CodingExpressionFactoryTest {
 	@Test
 	public void testLookup() {
 
-		Assert.assertNotNull(factory.lookup(SequenceExpression.KEY));
-		Assert.assertTrue(factory.lookup(SequenceExpression.KEY) instanceof Expression);
+		Assert.assertNotNull(factory.lookup(CodingExpressionFactoryTest.KEY));
+		Assert.assertTrue(factory.lookup(CodingExpressionFactoryTest.KEY) instanceof Expression);
 		Assert.assertNull(factory.lookup(""));
 
 	}
@@ -31,8 +33,8 @@ public class CodingExpressionFactoryTest {
 	@Test
 	public void testCreate() {
 
-		Assert.assertNotNull(factory.create(SequenceExpression.KEY));
-		Assert.assertTrue(factory.create(SequenceExpression.KEY) instanceof Expression);
+		Assert.assertNotNull(factory.create(CodingExpressionFactoryTest.KEY));
+		Assert.assertTrue(factory.create(CodingExpressionFactoryTest.KEY) instanceof Expression);
 
 	}
 

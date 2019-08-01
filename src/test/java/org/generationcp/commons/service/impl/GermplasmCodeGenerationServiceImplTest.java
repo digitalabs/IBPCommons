@@ -39,6 +39,8 @@ public class GermplasmCodeGenerationServiceImplTest {
 	private static final String PREFIX = "ABH";
 	private static final String SUFFIX = "CDE";
 	private static final Integer NEXT_NUMBER = 3;
+	private static final String KEY = "{SEQUENCE}";
+
 
 
 	@Mock
@@ -440,7 +442,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		final NamingConfiguration namingConfiguration = new NamingConfiguration();
 		namingConfiguration.setPrefix(GermplasmCodeGenerationServiceImplTest.PREFIX);
 		namingConfiguration.setSuffix(GermplasmCodeGenerationServiceImplTest.SUFFIX);
-		namingConfiguration.setCount(SequenceExpression.KEY);
+		namingConfiguration.setCount(GermplasmCodeGenerationServiceImplTest.KEY);
 		return namingConfiguration;
 	}
 
