@@ -32,12 +32,7 @@ public class CodingExpressionResolver {
 
 			@Override
 			public void evaluateCapturedExpression(String capturedText, String originalInput, int start, int end) {
-				final Expression expression;
-				if (capturedText.contains(".")) {
-					expression = CodingExpressionResolver.this.factory.lookup(capturedText);
-				} else {
-					expression = CodingExpressionResolver.this.factory.create(capturedText);
-				}
+				final Expression expression = CodingExpressionResolver.this.factory.lookup(capturedText);
 
 				// It's possible for the expression to add more elements to the builders variable.
 				if (expression != null) {

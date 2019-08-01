@@ -39,7 +39,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 	private static final String PREFIX = "ABH";
 	private static final String SUFFIX = "CDE";
 	private static final Integer NEXT_NUMBER = 3;
-	private static final String KEY = "{SEQUENCE}";
+	private static final String KEY = "[SEQUENCE]";
 
 
 

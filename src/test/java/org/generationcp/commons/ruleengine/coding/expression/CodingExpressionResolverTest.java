@@ -1,11 +1,9 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
-import gherkin.formatter.Argument;
 import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -40,7 +38,7 @@ public class CodingExpressionResolverTest {
 
 		final SequenceExpression sequenceExpression = new SequenceExpression();
 		sequenceExpression.setGermplasmNamingService(this.germplasmNamingService);
-		Mockito.when(factory.create(SEQUENCE_CODE)).thenReturn(sequenceExpression);
+		Mockito.when(factory.lookup(SEQUENCE_CODE)).thenReturn(sequenceExpression);
 		Mockito.when(this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix)).thenReturn(startingSequenceNumber);
 		Mockito.when(this.germplasmNamingService.getNumberWithLeadingZeroesAsString(startingSequenceNumber, 1)).thenReturn(String.valueOf(startingSequenceNumber));
 

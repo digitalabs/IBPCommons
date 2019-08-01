@@ -15,10 +15,6 @@ public class CodingExpressionFactory {
 
 	}
 
-	public Expression create(final String key) {
-		return this.expressionMap.get(key.toUpperCase());
-	}
-
 	/**
 	 * @param pattern
 	 * @return the first Expression that match the pattern
