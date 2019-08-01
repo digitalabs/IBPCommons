@@ -173,9 +173,9 @@ public class MySQLUtilTest {
 
 		// Verify SQL queries executed
 		final ArgumentCaptor<String> queryStringCaptor = ArgumentCaptor.forClass(String.class);
-		Mockito.verify(this.statement, Mockito.times(4)).execute(queryStringCaptor.capture());
+		Mockito.verify(this.statement, Mockito.times(3)).execute(queryStringCaptor.capture());
 		final List<String> queries = queryStringCaptor.getAllValues();
-		Assert.assertEquals(4, queries.size());
+		Assert.assertEquals(3, queries.size());
 		Assert.assertEquals("DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete, queries.get(0));
 		Assert.assertEquals("DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete, queries.get(1));
 		Assert.assertEquals("DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete, queries.get(2));
