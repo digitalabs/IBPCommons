@@ -26,18 +26,18 @@ public class DerivedVariableProcessor {
 			return sb.toString();
 		}
 
-		public Double avg(final List<Double>... args) {
+		public Double avg(final List<BigDecimal>... args) {
 			double sum = 0;
 			int size = 0;
-			for (final List<Double> arg : args) {
-				for (final Object val : arg) {
-					sum += Double.parseDouble(val.toString());
+			for (final List<BigDecimal> arg : args) {
+				for (final BigDecimal val : arg) {
+					sum += val.doubleValue();
 				}
 				size += arg.size();
 			}
 			return sum / size;
 		}
-		
+
 		public Integer daysdiff(final Date date1, final Date date2) {
 			final boolean isNegative = date2.before(date1);
 			long diffInMillies = Math.abs(date2.getTime() - date1.getTime());
