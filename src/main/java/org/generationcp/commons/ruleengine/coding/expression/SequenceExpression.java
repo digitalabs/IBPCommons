@@ -31,18 +31,11 @@ public class SequenceExpression extends BaseCodingExpression {
 		}
 	}
 
-	void generateNextNameInSequence(final String prefix, final StringBuilder container, final Integer numberOfDigits) {
-		final Integer lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
-		final String numberString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(lastUsedSequence, numberOfDigits);
-		this.replaceRegularExpressionKeyWithValue(container, numberString);
-	}
-
 	@Override
 	public String getExpressionKey() {
 		return SequenceExpression.KEY;
 	}
 
-	@Override
 	public Integer getNumberOfDigits(final StringBuilder container) {
 		return 1;
 	}

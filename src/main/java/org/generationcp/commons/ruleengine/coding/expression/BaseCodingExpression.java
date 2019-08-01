@@ -9,6 +9,4 @@ public abstract class BaseCodingExpression implements Expression {
 		ExpressionUtils.replaceRegularExpressionKeyWithValue(this.getExpressionKey(), container, value);
 	}
 
-	abstract Integer getNumberOfDigits(final StringBuilder container);
-
 }
