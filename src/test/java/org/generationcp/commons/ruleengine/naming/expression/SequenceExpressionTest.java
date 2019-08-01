@@ -40,6 +40,11 @@ public class SequenceExpressionTest extends TestExpression {
 		Mockito.doReturn(NEXT_NUMBER_FROM_DB, NEXT_NUMBER_FROM_DB + 1, NEXT_NUMBER_FROM_DB + 2, NEXT_NUMBER_FROM_DB + 3,
 			NEXT_NUMBER_FROM_DB + 4).when(this.germplasmNamingService).getNextNumberAndIncrementSequence(
 			ArgumentMatchers.anyString());
+		Mockito
+			.doReturn(String.valueOf(NEXT_NUMBER_FROM_DB), String.valueOf(NEXT_NUMBER_FROM_DB + 1), String.valueOf(NEXT_NUMBER_FROM_DB + 2),
+				String.valueOf(NEXT_NUMBER_FROM_DB + 3), String.valueOf(NEXT_NUMBER_FROM_DB + 4)).when(this.germplasmNamingService)
+			.getNumberWithLeadingZeroesAsString(
+				ArgumentMatchers.anyInt(), ArgumentMatchers.eq(1));
 	}
 
 	@Test
@@ -56,7 +61,7 @@ public class SequenceExpressionTest extends TestExpression {
 
 	@Test
 	public void testCaseSensitiveSequence() {
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, "[sequence]", SUFFIX, true);
+		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE.toLowerCase(), SUFFIX, true);
 		source.setPlantsSelected(PLANTS_SELECTED);
 		final List<StringBuilder> values = this.createInitialValues(source);
 
@@ -67,7 +72,7 @@ public class SequenceExpressionTest extends TestExpression {
 	@Test
 	public void testWithNullPlantsSelected() {
 		// final false refers to nonBulking
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, "[sequence]", SUFFIX, false);
+		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE.toLowerCase(), SUFFIX, false);
 		source.setPlantsSelected(null);
 		final int currentMaxSequence = 10;
 		source.setCurrentMaxSequence(currentMaxSequence);
