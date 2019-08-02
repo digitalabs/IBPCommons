@@ -310,9 +310,9 @@ public class DerivedVariableProcessorTest {
 
 		final HashMap<String, List<Object>> data = new HashMap<>();
 		final List<Object> termData = new ArrayList<>();
-		termData.add(5.5d);
-		termData.add(45d);
-		termData.add(12.2d);
+		termData.add(new BigDecimal(5.5));
+		termData.add(new BigDecimal(45));
+		termData.add(new BigDecimal(12.2));
 		data.put(wrapTerm(String.valueOf(TERM_1)), termData);
 
 		formula = replaceDelimiters(formula);
@@ -320,10 +320,10 @@ public class DerivedVariableProcessorTest {
 		String result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate avg function", "20.9", result);
 
-		formula = "fn:avg([{{" + TERM_1 + "}}, {{PH_M_cm}}])";
+		formula = "fn:avg({{" + TERM_1 + "}}, {{PH_M_cm}})";
 		final List<Object> term2Data = new ArrayList<>();
-		term2Data.add(14.23d);
-		term2Data.add(134.12);
+		term2Data.add(new BigDecimal(14.23));
+		term2Data.add(new BigDecimal(134.12));
 		data.put(wrapTerm("PH_M_cm"), term2Data);
 
 		formula = replaceDelimiters(formula);
