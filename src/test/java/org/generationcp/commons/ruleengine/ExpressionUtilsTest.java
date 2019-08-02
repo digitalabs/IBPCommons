@@ -53,4 +53,15 @@ public class ExpressionUtilsTest {
 		Assert.assertEquals("BaseExpression unable to replace the process code with the new value", "ABC" + value, builder.toString());
 	}
 
+	@Test
+	public void testGetNumberOfDigitsFromKey() {
+		final PaddedSequenceExpression expression = new PaddedSequenceExpression();
+		// When no digit is specified
+		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[PADSEQ]XYZ")));
+		// With digit specified
+		Assert.assertEquals(7, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[PADSEQ.7]XYZ")).intValue());
+		// Regex not matched
+		Assert.assertEquals(0, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[SEQUENCE]")).intValue());
+	}
+
 }

@@ -30,11 +30,12 @@ public final class ExpressionUtils {
 	}
 
 	public static Integer getNumberOfDigitsFromKey(final String regexPattern, final StringBuilder container) {
-		// If no digit specified, use default number of digits
-		Integer numberOfDigits = ExpressionUtils.DEFAULT_LENGTH;
+
 
 		final Pattern pattern = Pattern.compile(regexPattern);
 		final Matcher matcher = pattern.matcher(container.toString());
+		// If pattern is matched but no digit specified, use default number of digits
+		Integer numberOfDigits = ExpressionUtils.DEFAULT_LENGTH;
 		if (matcher.find()) {
 			final String processCode = matcher.group();
 			// Look for a digit withing the process code, if present
@@ -43,8 +44,9 @@ public final class ExpressionUtils {
 			if (matcherDigit.find()) {
 				numberOfDigits = Integer.valueOf(matcherDigit.group());
 			}
+			return numberOfDigits;
 		}
-		return numberOfDigits;
+		return 0;
 	}
 
 }
