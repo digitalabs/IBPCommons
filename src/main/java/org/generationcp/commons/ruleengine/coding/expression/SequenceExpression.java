@@ -26,7 +26,8 @@ public class SequenceExpression extends BaseCodingExpression {
 		final String prefix = namingConfiguration.getPrefix();
 		for (final StringBuilder container : values) {
 			final Integer lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
-			final String numberString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(lastUsedSequence, this.getNumberOfDigits(container));
+			final String numberString =
+				this.germplasmNamingService.getNumberWithLeadingZeroesAsString(lastUsedSequence, this.getNumberOfDigits(container));
 			this.replaceRegularExpressionKeyWithValue(container, numberString);
 		}
 	}

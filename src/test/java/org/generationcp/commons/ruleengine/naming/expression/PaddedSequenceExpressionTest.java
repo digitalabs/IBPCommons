@@ -31,7 +31,6 @@ public class PaddedSequenceExpressionTest extends TestExpression {
 	@Mock
 	private GermplasmNamingService germplasmNamingService;
 
-
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -82,7 +81,8 @@ public class PaddedSequenceExpressionTest extends TestExpression {
 	@Test
 	public void testWithNullPlantsSelected() {
 		// final false refers to nonBulking
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, PADSEQ.toLowerCase(), SUFFIX, false);
+		final AdvancingSource source =
+			this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, PADSEQ.toLowerCase(), SUFFIX, false);
 		source.setPlantsSelected(null);
 		final int currentMaxSequence = 10;
 		source.setCurrentMaxSequence(currentMaxSequence);
@@ -105,7 +105,6 @@ public class PaddedSequenceExpressionTest extends TestExpression {
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + "0" + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
 	}
 
-
 	@Test
 	public void testNonBulkingWithPlantsSelected() {
 		// final false refers to nonBulking
@@ -117,8 +116,10 @@ public class PaddedSequenceExpressionTest extends TestExpression {
 
 		this.expression.apply(values, source, null);
 		assertEquals(PLANTS_SELECTED.intValue(), values.size());
-		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED)).getNextNumberAndIncrementSequence(ROOT_NAME + SEPARATOR + PREFIX);
-		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED)).getNumberWithLeadingZeroesAsString(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(ExpressionUtils.DEFAULT_LENGTH));
+		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED))
+			.getNextNumberAndIncrementSequence(ROOT_NAME + SEPARATOR + PREFIX);
+		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED))
+			.getNumberWithLeadingZeroesAsString(ArgumentMatchers.anyInt(), ArgumentMatchers.eq(ExpressionUtils.DEFAULT_LENGTH));
 
 		// If non-bulking, name is generated for each plant selected
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + "0" + (NEXT_NUMBER_FROM_DB) + SUFFIX, values.get(0).toString());
@@ -148,6 +149,5 @@ public class PaddedSequenceExpressionTest extends TestExpression {
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + "000" + (NEXT_NUMBER_FROM_DB + 3) + SUFFIX, values.get(3).toString());
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + "000" + (NEXT_NUMBER_FROM_DB + 4) + SUFFIX, values.get(4).toString());
 	}
-
 
 }

@@ -23,7 +23,7 @@ public final class ExpressionUtils {
 		final Pattern pattern = Pattern.compile(expressionKey);
 		final Matcher matcher = pattern.matcher(container.toString().toUpperCase());
 		if (matcher.find()) {
-			String replaceValue = value == null ? "" : value;
+			final String replaceValue = value == null ? "" : value;
 			container.replace(matcher.start(), matcher.end(), replaceValue);
 		}
 

@@ -37,7 +37,6 @@ public class GermplasmNamingServiceImplTest {
 		Mockito.doReturn(NEXT_NUMBER).when(this.keySequenceRegisterService).getNextSequence(PREFIX);
 	}
 
-
 	@Test
 	public void testBuildDesignationNameInSequenceDefaultSetting() {
 		final GermplasmNameSetting defaultSetting = new GermplasmNameSetting();
@@ -147,7 +146,7 @@ public class GermplasmNamingServiceImplTest {
 		} catch (final InvalidGermplasmNameSettingException e) {
 			Assert.fail("Not expecting InvalidGermplasmNameSettingException to be thrown but was thrown.");
 		}
-		Assert.assertEquals(buildExpectedNextName(), nextNameInSequence);
+		Assert.assertEquals(this.buildExpectedNextName(), nextNameInSequence);
 	}
 
 	@Test

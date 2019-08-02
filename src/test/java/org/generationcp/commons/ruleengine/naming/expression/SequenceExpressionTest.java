@@ -30,7 +30,6 @@ public class SequenceExpressionTest extends TestExpression {
 	@Mock
 	private GermplasmNamingService germplasmNamingService;
 
-
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
@@ -61,7 +60,8 @@ public class SequenceExpressionTest extends TestExpression {
 
 	@Test
 	public void testCaseSensitiveSequence() {
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE.toLowerCase(), SUFFIX, true);
+		final AdvancingSource source =
+			this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE.toLowerCase(), SUFFIX, true);
 		source.setPlantsSelected(PLANTS_SELECTED);
 		final List<StringBuilder> values = this.createInitialValues(source);
 
@@ -72,7 +72,8 @@ public class SequenceExpressionTest extends TestExpression {
 	@Test
 	public void testWithNullPlantsSelected() {
 		// final false refers to nonBulking
-		final AdvancingSource source = this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE.toLowerCase(), SUFFIX, false);
+		final AdvancingSource source =
+			this.createAdvancingSourceTestData(ROOT_NAME, SEPARATOR, PREFIX, SEQUENCE.toLowerCase(), SUFFIX, false);
 		source.setPlantsSelected(null);
 		final int currentMaxSequence = 10;
 		source.setCurrentMaxSequence(currentMaxSequence);
@@ -95,7 +96,6 @@ public class SequenceExpressionTest extends TestExpression {
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
 	}
 
-
 	@Test
 	public void testNonBulkingWithPlantsSelected() {
 		// final false refers to nonBulking
@@ -107,7 +107,8 @@ public class SequenceExpressionTest extends TestExpression {
 
 		this.expression.apply(values, source, null);
 		assertEquals(PLANTS_SELECTED.intValue(), values.size());
-		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED)).getNextNumberAndIncrementSequence(ROOT_NAME + SEPARATOR + PREFIX);
+		Mockito.verify(this.germplasmNamingService, Mockito.times(PLANTS_SELECTED))
+			.getNextNumberAndIncrementSequence(ROOT_NAME + SEPARATOR + PREFIX);
 		// If non-bulking, name is generated for each plant selected
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + (NEXT_NUMBER_FROM_DB) + SUFFIX, values.get(0).toString());
 		assertEquals(ROOT_NAME + SEPARATOR + PREFIX + (NEXT_NUMBER_FROM_DB + 1) + SUFFIX, values.get(1).toString());

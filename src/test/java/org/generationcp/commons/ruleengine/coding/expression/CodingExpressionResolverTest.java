@@ -25,7 +25,7 @@ public class CodingExpressionResolverTest {
 	private GermplasmNamingService germplasmNamingService;
 
 	@InjectMocks
-	private CodingExpressionResolver codingExpressionResolver = new CodingExpressionResolver();
+	private final CodingExpressionResolver codingExpressionResolver = new CodingExpressionResolver();
 
 	@Test
 	public void testResolve() {
@@ -38,11 +38,11 @@ public class CodingExpressionResolverTest {
 
 		final SequenceExpression sequenceExpression = new SequenceExpression();
 		sequenceExpression.setGermplasmNamingService(this.germplasmNamingService);
-		Mockito.when(factory.lookup(SEQUENCE_CODE)).thenReturn(sequenceExpression);
+		Mockito.when(this.factory.lookup(SEQUENCE_CODE)).thenReturn(sequenceExpression);
 		Mockito.when(this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix)).thenReturn(startingSequenceNumber);
 		Mockito.when(this.germplasmNamingService.getNumberWithLeadingZeroesAsString(startingSequenceNumber, 1)).thenReturn(String.valueOf(startingSequenceNumber));
 
-		final List<String> result = codingExpressionResolver.resolve(currentInput, SEQUENCE_CODE, namingConfiguration);
+		final List<String> result = this.codingExpressionResolver.resolve(currentInput, SEQUENCE_CODE, namingConfiguration);
 		assertEquals(currentInput + startingSequenceNumber, result.get(0));
 	}
 

@@ -48,7 +48,8 @@ public class SequenceExpression extends BaseExpression implements Expression {
 							final String keyPrefix = upperCaseValue.substring(0, matcher.start());
 							// Get last sequence number for KeyPrefix with synchronization at class level
 							final int lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(keyPrefix);
-							final String numberString = this.germplasmNamingService.getNumberWithLeadingZeroesAsString(lastUsedSequence, this.getNumberOfDigits(value));
+							final String numberString = this.germplasmNamingService
+								.getNumberWithLeadingZeroesAsString(lastUsedSequence, this.getNumberOfDigits(value));
 							this.replaceRegularExpressionKeyWithValue(newName, numberString);
 							newNames.add(newName);
 						}
@@ -66,7 +67,7 @@ public class SequenceExpression extends BaseExpression implements Expression {
 		values.addAll(newNames);
 	}
 
-		@Override
+	@Override
 	public String getExpressionKey() {
 		return SequenceExpression.KEY;
 	}
@@ -75,7 +76,7 @@ public class SequenceExpression extends BaseExpression implements Expression {
 		return 1;
 	}
 
-	protected void replaceRegularExpressionKeyWithValue(final StringBuilder container, final String value) {
+	void replaceRegularExpressionKeyWithValue(final StringBuilder container, final String value) {
 		ExpressionUtils.replaceRegularExpressionKeyWithValue(this.getExpressionKey(), container, value);
 	}
 }

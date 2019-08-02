@@ -5,7 +5,7 @@ import org.generationcp.commons.ruleengine.ExpressionUtils;
 
 public abstract class BaseCodingExpression implements Expression {
 
-	protected void replaceRegularExpressionKeyWithValue(final StringBuilder container, final String value) {
+	void replaceRegularExpressionKeyWithValue(final StringBuilder container, final String value) {
 		ExpressionUtils.replaceRegularExpressionKeyWithValue(this.getExpressionKey(), container, value);
 	}
 

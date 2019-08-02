@@ -12,14 +12,14 @@ public class CodingExpressionFactoryTest {
 	@Before
 	public void init() {
 
-		factory.init();
-		factory.addExpression(new SequenceExpression());
+		this.factory.init();
+		this.factory.addExpression(new SequenceExpression());
 	}
 
 	@Test
 	public void testLookup() {
-		Assert.assertNotNull(factory.lookup(CodingExpressionFactoryTest.KEY));
-		Assert.assertNull(factory.lookup(""));
+		Assert.assertNotNull(this.factory.lookup(CodingExpressionFactoryTest.KEY));
+		Assert.assertNull(this.factory.lookup(""));
 
 	}
 
