@@ -33,7 +33,7 @@ public final class ExpressionUtils {
 
 
 		final Pattern pattern = Pattern.compile(regexPattern);
-		final Matcher matcher = pattern.matcher(container.toString());
+		final Matcher matcher = pattern.matcher(container.toString().toUpperCase());
 		// If pattern is matched but no digit specified, use default number of digits
 		Integer numberOfDigits = ExpressionUtils.DEFAULT_LENGTH;
 		if (matcher.find()) {

@@ -58,6 +58,8 @@ public class ExpressionUtilsTest {
 		final PaddedSequenceExpression expression = new PaddedSequenceExpression();
 		// When no digit is specified
 		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[PADSEQ]XYZ")));
+		// Check that regex matching is case-insensitive
+		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[padseq]XYZ")));
 		// With digit specified
 		Assert.assertEquals(7, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[PADSEQ.7]XYZ")).intValue());
 		// Regex not matched
