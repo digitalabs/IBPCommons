@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 public class SequenceExpression extends BaseCodingExpression {
 
 	// Insert double black slash since we're replacing by regular expressions
 	private static final String KEY = "\\[SEQUENCE\\]";
+	private static final Pattern PATTERN = Pattern.compile(SequenceExpression.KEY);
 
 	@Autowired
 	protected GermplasmNamingService germplasmNamingService;
@@ -37,7 +39,13 @@ public class SequenceExpression extends BaseCodingExpression {
 		return SequenceExpression.KEY;
 	}
 
+	@Override
+	public Pattern getPattern() {
+		return SequenceExpression.PATTERN;
+	}
+
 	public Integer getNumberOfDigits(final StringBuilder container) {
 		return 1;
 	}
+
 }

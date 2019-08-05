@@ -17,6 +17,8 @@ public class SequenceExpression extends BaseExpression implements Expression {
 
 	// Insert double black slash since we're replacing by regular expressions
 	private static final String KEY = "\\[SEQUENCE\\]";
+	private static final Pattern PATTERN = Pattern.compile(SequenceExpression.KEY);
+
 
 	@Autowired
 	protected GermplasmNamingService germplasmNamingService;
@@ -77,6 +79,10 @@ public class SequenceExpression extends BaseExpression implements Expression {
 	}
 
 	void replaceRegularExpressionKeyWithValue(final StringBuilder container, final String value) {
-		ExpressionUtils.replaceRegularExpressionKeyWithValue(this.getExpressionKey(), container, value);
+		ExpressionUtils.replaceRegularExpressionKeyWithValue(this.getPattern(), container, value);
+	}
+
+	Pattern getPattern() {
+		return SequenceExpression.PATTERN;
 	}
 }

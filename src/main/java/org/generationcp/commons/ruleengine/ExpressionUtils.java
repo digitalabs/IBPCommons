@@ -19,8 +19,7 @@ public final class ExpressionUtils {
 		container.replace(startIndex, endIndex, replaceValue);
 	}
 
-	public static void replaceRegularExpressionKeyWithValue (final String expressionKey, final StringBuilder container, final String value) {
-		final Pattern pattern = Pattern.compile(expressionKey);
+	public static void replaceRegularExpressionKeyWithValue (final Pattern pattern, final StringBuilder container, final String value) {
 		final Matcher matcher = pattern.matcher(container.toString().toUpperCase());
 		if (matcher.find()) {
 			final String replaceValue = value == null ? "" : value;
@@ -29,10 +28,7 @@ public final class ExpressionUtils {
 
 	}
 
-	public static Integer getNumberOfDigitsFromKey(final String regexPattern, final StringBuilder container) {
-
-
-		final Pattern pattern = Pattern.compile(regexPattern);
+	public static Integer getNumberOfDigitsFromKey(final Pattern pattern, final StringBuilder container) {
 		final Matcher matcher = pattern.matcher(container.toString().toUpperCase());
 		// If pattern is matched but no digit specified, use default number of digits
 		Integer numberOfDigits = ExpressionUtils.DEFAULT_LENGTH;

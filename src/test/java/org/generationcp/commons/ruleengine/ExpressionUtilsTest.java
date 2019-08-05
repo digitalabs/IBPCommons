@@ -6,6 +6,8 @@ import org.generationcp.commons.ruleengine.naming.expression.PaddedSequenceExpre
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.regex.Pattern;
+
 public class ExpressionUtilsTest {
 
 	private final Expression unitUnderTest = new FirstExpression();
@@ -37,7 +39,7 @@ public class ExpressionUtilsTest {
 		final StringBuilder builder = new StringBuilder("ABC" + "[PADSEQ.3]");
 
 		final String nullVariable = null;
-		ExpressionUtils.replaceRegularExpressionKeyWithValue(expression.getExpressionKey(), builder, nullVariable);
+		ExpressionUtils.replaceRegularExpressionKeyWithValue(Pattern.compile(expression.getExpressionKey()), builder, nullVariable);
 
 		Assert.assertEquals("BaseExpression unable to replace the process code with the new value", "ABC", builder.toString());
 	}
@@ -48,7 +50,7 @@ public class ExpressionUtilsTest {
 		final StringBuilder builder = new StringBuilder("ABC" + "[PADSEQ.3]");
 
 		final String value = "023";
-		ExpressionUtils.replaceRegularExpressionKeyWithValue(expression.getExpressionKey(), builder, value);
+		ExpressionUtils.replaceRegularExpressionKeyWithValue(Pattern.compile(expression.getExpressionKey()), builder, value);
 
 		Assert.assertEquals("BaseExpression unable to replace the process code with the new value", "ABC" + value, builder.toString());
 	}
@@ -56,14 +58,15 @@ public class ExpressionUtilsTest {
 	@Test
 	public void testGetNumberOfDigitsFromKey() {
 		final PaddedSequenceExpression expression = new PaddedSequenceExpression();
+		final Pattern pattern = Pattern.compile(expression.getExpressionKey());
 		// When no digit is specified
-		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[PADSEQ]XYZ")));
+		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(pattern,  new StringBuilder("ABC" + "[PADSEQ]XYZ")));
 		// Check that regex matching is case-insensitive
-		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[padseq]XYZ")));
+		Assert.assertEquals(ExpressionUtils.DEFAULT_LENGTH, ExpressionUtils.getNumberOfDigitsFromKey(pattern,  new StringBuilder("ABC" + "[padseq]XYZ")));
 		// With digit specified
-		Assert.assertEquals(7, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[PADSEQ.7]XYZ")).intValue());
+		Assert.assertEquals(7, ExpressionUtils.getNumberOfDigitsFromKey(pattern,  new StringBuilder("ABC" + "[PADSEQ.7]XYZ")).intValue());
 		// Regex not matched
-		Assert.assertEquals(0, ExpressionUtils.getNumberOfDigitsFromKey(expression.getExpressionKey(),  new StringBuilder("ABC" + "[SEQUENCE]")).intValue());
+		Assert.assertEquals(0, ExpressionUtils.getNumberOfDigitsFromKey(pattern,  new StringBuilder("ABC" + "[SEQUENCE]")).intValue());
 	}
 
 }
