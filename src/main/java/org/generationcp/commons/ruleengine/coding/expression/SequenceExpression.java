@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Component
 public class SequenceExpression extends BaseCodingExpression {
 
-	public static final String KEY = "[SEQUENCE]";
+	// Insert double black slash since we're replacing by regular expressions
+	private static final String KEY = "\\[SEQUENCE\\]";
+	private static final Pattern PATTERN = Pattern.compile(SequenceExpression.KEY);
 
 	@Autowired
 	protected GermplasmNamingService germplasmNamingService;
@@ -22,17 +25,27 @@ public class SequenceExpression extends BaseCodingExpression {
 
 	@Override
 	public void apply(final List<StringBuilder> values, final String capturedText, final NamingConfiguration namingConfiguration) {
-
 		final String prefix = namingConfiguration.getPrefix();
 		for (final StringBuilder container : values) {
-			final int lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
-			this.replaceExpressionWithValue(container, String.valueOf(lastUsedSequence));
+			final Integer lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(prefix);
+			final String numberString =
+				this.germplasmNamingService.getNumberWithLeadingZeroesAsString(lastUsedSequence, this.getNumberOfDigits(container));
+			this.replaceRegularExpressionKeyWithValue(container, numberString);
 		}
 	}
 
 	@Override
 	public String getExpressionKey() {
 		return SequenceExpression.KEY;
+	}
+
+	@Override
+	public Pattern getPattern() {
+		return SequenceExpression.PATTERN;
+	}
+
+	public Integer getNumberOfDigits(final StringBuilder container) {
+		return 1;
 	}
 
 }

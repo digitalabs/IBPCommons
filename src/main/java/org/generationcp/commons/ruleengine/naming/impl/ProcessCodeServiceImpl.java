@@ -23,8 +23,8 @@ public class ProcessCodeServiceImpl implements ProcessCodeService {
 	private ProcessCodeFactory factory;
 
 	@Override
-	public List<String> applyProcessCode(String currentInput, String processCode, final AdvancingSource source) {
-		List<String> newNames = new ArrayList<String>();
+	public List<String> applyProcessCode(final String currentInput, final String processCode, final AdvancingSource source) {
+		final List<String> newNames = new ArrayList<String>();
 
 		if (processCode == null) {
 			return newNames;
@@ -36,13 +36,8 @@ public class ProcessCodeServiceImpl implements ProcessCodeService {
 		ExpressionHelper.evaluateExpression(processCode, ExpressionHelper.PROCESS_CODE_PATTERN, new ExpressionHelperCallback() {
 
 			@Override
-			public void evaluateCapturedExpression(String capturedText, String originalInput, int start, int end) {
-				final Expression expression;
-				if (capturedText.contains(".")) {
-					expression = ProcessCodeServiceImpl.this.factory.lookup(capturedText);
-				} else {
-					expression = ProcessCodeServiceImpl.this.factory.create(capturedText);
-				}
+			public void evaluateCapturedExpression(final String capturedText, final String originalInput, final int start, final int end) {
+				final Expression expression = ProcessCodeServiceImpl.this.factory.lookup(capturedText);
 
 				// It's possible for the expression to add more elements to the builders variable.
 				if (expression != null) {
@@ -51,7 +46,7 @@ public class ProcessCodeServiceImpl implements ProcessCodeService {
 			}
 		});
 
-		for (StringBuilder builder : builders) {
+		for (final StringBuilder builder : builders) {
 			newNames.add(builder.toString());
 		}
 

@@ -1,15 +1,16 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
 import org.generationcp.commons.ruleengine.Expression;
+import org.generationcp.commons.ruleengine.ExpressionUtils;
+
+import java.util.regex.Pattern;
 
 public abstract class BaseCodingExpression implements Expression {
 
-	protected void replaceExpressionWithValue(StringBuilder container, String value) {
-		int startIndex = container.toString().toUpperCase().indexOf(getExpressionKey());
-		int endIndex = startIndex + getExpressionKey().length();
-
-		String replaceValue = value == null ? "" : value;
-		container.replace(startIndex, endIndex, replaceValue);
+	void replaceRegularExpressionKeyWithValue(final StringBuilder container, final String value) {
+		ExpressionUtils.replaceRegularExpressionKeyWithValue(this.getPattern(), container, value);
 	}
+
+	abstract Pattern getPattern();
 
 }

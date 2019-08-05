@@ -19,25 +19,20 @@ public class CodingExpressionResolver {
 	private CodingExpressionFactory factory;
 
 	public List<String> resolve(final String currentInput, final String processCode, final NamingConfiguration namingConfiguration) {
-		List<String> newNames = new ArrayList<String>();
+		final List<String> newNames = new ArrayList<>();
 
 		if (processCode == null) {
 			return newNames;
 		}
 
-		final List<StringBuilder> builders = new ArrayList<StringBuilder>();
+		final List<StringBuilder> builders = new ArrayList<>();
 		builders.add(new StringBuilder(currentInput + processCode));
 
 		ExpressionHelper.evaluateExpression(processCode, ExpressionHelper.PROCESS_CODE_PATTERN, new ExpressionHelperCallback() {
 
 			@Override
-			public void evaluateCapturedExpression(String capturedText, String originalInput, int start, int end) {
-				final Expression expression;
-				if (capturedText.contains(".")) {
-					expression = CodingExpressionResolver.this.factory.lookup(capturedText);
-				} else {
-					expression = CodingExpressionResolver.this.factory.create(capturedText);
-				}
+			public void evaluateCapturedExpression(final String capturedText, final String originalInput, final int start, final int end) {
+				final Expression expression = CodingExpressionResolver.this.factory.lookup(capturedText);
 
 				// It's possible for the expression to add more elements to the builders variable.
 				if (expression != null) {
@@ -46,7 +41,7 @@ public class CodingExpressionResolver {
 			}
 		});
 
-		for (StringBuilder builder : builders) {
+		for (final StringBuilder builder : builders) {
 			newNames.add(builder.toString());
 		}
 

@@ -1,28 +1,29 @@
 package org.generationcp.commons.ruleengine.coding.expression;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class BaseCodingExpressionTest {
+	private static final String SEQUENCE_CODE = "[SEQUENCE]";
 
-	private SequenceExpression expression = new SequenceExpression();
+	private final SequenceExpression expression = new SequenceExpression();
 
 	@Test
 	public void testReplaceProcessCodeWithValue() {
-		StringBuilder builder = new StringBuilder("ABC" + expression.getExpressionKey());
+		final StringBuilder builder = new StringBuilder("ABC" + SEQUENCE_CODE);
 
-		expression.replaceExpressionWithValue(builder, "D");
+		this.expression.replaceRegularExpressionKeyWithValue(builder, "D");
 
-		Assert.assertEquals("BaseCodinExpression unable to replace the process code with the new value", "ABCD", builder.toString());
+		Assert.assertEquals("BaseCodingExpression unable to replace the process code with the new value", "ABCD", builder.toString());
 	}
 
 	@Test
 	public void testReplaceProcessCodeWithNullVariable() {
-		StringBuilder builder = new StringBuilder("ABC" + expression.getExpressionKey());
+		final StringBuilder builder = new StringBuilder("ABC" + SEQUENCE_CODE);
 
-		String nullVariable = null;
-		expression.replaceExpressionWithValue(builder, nullVariable);
+		final String nullVariable = null;
+		this.expression.replaceRegularExpressionKeyWithValue(builder, nullVariable);
 
-		Assert.assertEquals("BaseCodinExpression unable to replace the process code with the new value", "ABC", builder.toString());
+		Assert.assertEquals("BaseCodingExpression unable to replace the process code with the new value", "ABC", builder.toString());
 	}
 }

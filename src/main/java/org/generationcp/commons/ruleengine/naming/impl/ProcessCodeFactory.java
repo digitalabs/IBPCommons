@@ -16,23 +16,18 @@ public class ProcessCodeFactory {
 
 	}
 
-	public Expression create(final String key) {
-		return this.expressionMap.get(key.toUpperCase());
-	}
-
 	/**
-	 *
 	 * @param pattern
 	 * @return the first Expression that match the pattern
 	 */
 	public Expression lookup(final String pattern) {
-		if (expressionMap.containsKey(pattern)) {
-			return expressionMap.get(pattern);
+		if (this.expressionMap.containsKey(pattern)) {
+			return this.expressionMap.get(pattern);
 		}
-		for (final String key : expressionMap.keySet()) {
+		for (final String key : this.expressionMap.keySet()) {
 			if (key != null && pattern.matches(key)) {
-				final Expression expression = expressionMap.get(key);
-				expressionMap.put(pattern, expression); // memoize
+				final Expression expression = this.expressionMap.get(key);
+				this.expressionMap.put(pattern, expression); // memorize
 				return expression;
 			}
 		}
@@ -40,6 +35,6 @@ public class ProcessCodeFactory {
 	}
 
 	public void addExpression(final Expression expression) {
-		expressionMap.put(expression.getExpressionKey(), expression);
+		this.expressionMap.put(expression.getExpressionKey(), expression);
 	}
 }
