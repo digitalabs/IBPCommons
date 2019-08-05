@@ -303,7 +303,7 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
-	public void testAggregations() {
+	public void testAggregationsAverage() {
 		String formula = "fn:avg({{" + TERM_1 + "}})";
 
 		final Map<String, Object> terms = new HashMap<>();
@@ -331,6 +331,37 @@ public class DerivedVariableProcessorTest {
 		this.processor.setData(data);
 		result = this.processor.evaluateFormula(formula, terms);
 		Assert.assertEquals("Should evaluate avg function", "42.21", result);
+	}
+
+	@Test
+	public void testAggregationsSum() {
+		String formula = "fn:sum({{" + TERM_1 + "}})";
+
+		final Map<String, Object> terms = new HashMap<>();
+
+		final HashMap<String, List<Object>> data = new HashMap<>();
+		final List<Object> termData = new ArrayList<>();
+		termData.add(new BigDecimal(5.5));
+		termData.add(new BigDecimal(45));
+		termData.add(new BigDecimal(12.2));
+		data.put(wrapTerm(String.valueOf(TERM_1)), termData);
+
+		formula = replaceDelimiters(formula);
+		this.processor.setData(data);
+		String result = this.processor.evaluateFormula(formula, terms);
+		Assert.assertEquals("Should evaluate avg function", "62.7", result);
+
+		formula = "fn:sum({{" + TERM_1 + "}}, {{PH_M_cm}})";
+		final List<Object> term2Data = new ArrayList<>();
+		term2Data.add(new BigDecimal(14.23));
+		term2Data.add(new BigDecimal(134.12));
+		data.put(wrapTerm("PH_M_cm"), term2Data);
+
+		formula = replaceDelimiters(formula);
+		this.processor = new DerivedVariableProcessor();
+		this.processor.setData(data);
+		result = this.processor.evaluateFormula(formula, terms);
+		Assert.assertEquals("Should evaluate avg function", "211.05", result);
 	}
 
 	@Test(expected = Exception.class)
