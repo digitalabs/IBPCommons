@@ -126,7 +126,6 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setName(variableName);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-
 		DerivedVariableUtils
 			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
@@ -214,10 +213,11 @@ public class DerivedVariableUtilsTest {
 
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "123", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
-		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
 		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setName(variableName);
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
@@ -227,6 +227,42 @@ public class DerivedVariableUtilsTest {
 			Collections.singletonList(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))), new ArrayList<String>());
 
 		assertNull(parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
+
+	}
+
+	@Test
+	public void testExtractValuesFromObservationUnitRowVariableIsInEnvironmentLevel() throws ParseException {
+
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final Map<String, Object> parameters = new HashMap<>();
+		final Set<String> termMissingData = new HashSet<>();
+		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
+
+		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
+		final Map<String, ObservationUnitData> observationUnitDataMap = new HashMap<>();
+
+		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "123", null));
+		observationUnitRow.setEnvironmentVariables(observationUnitDataMap);
+		observationUnitRow.setVariables(new HashMap<String, ObservationUnitData>());
+
+		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setName(variableName);
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+		measurementVariableMap.put(variableTermid, measurementVariable);
+
+		// Put the input variable in environmentInputVariables list so that its data will be read
+		// from observationUnitRow.getEnvironmentVariables.
+		final List<String> environmentInputVariables = Arrays.asList(String.valueOf(variableTermid));
+
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), environmentInputVariables);
+
+		assertEquals(new BigDecimal(123), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
 	}
 

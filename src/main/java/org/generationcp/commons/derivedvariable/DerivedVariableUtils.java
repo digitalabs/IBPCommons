@@ -124,7 +124,7 @@ public final class DerivedVariableUtils {
 	public static Object parseValue(final Object valueToParse, final MeasurementVariable measurementVariable,
 		final Set<String> termMissingData) throws ParseException {
 
-		String value = (String) valueToParse;
+		final String value = (String) valueToParse;
 
 		if (StringUtils.isBlank(value) && termMissingData != null) {
 			termMissingData.add(measurementVariable.getLabel());
@@ -211,7 +211,7 @@ public final class DerivedVariableUtils {
 		String replaceText = formulaDefinition;
 		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
 		while (matcher.find()) {
-			String parameter = matcher.group(0);
+			final String parameter = matcher.group(0);
 			final String termId = matcher.group(1);
 			if (formulaVariableMap.containsKey(termId)) {
 				// Replace the termid inside delimiters
@@ -230,7 +230,6 @@ public final class DerivedVariableUtils {
 		String replaceText = formulaDefinition;
 		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
 		while (matcher.find()) {
-			String parameter = matcher.group(0);
 			final String name = matcher.group(1);
 			if (formulaVariableMap.containsKey(name)) {
 				// Replace the name inside delimiters
@@ -248,8 +247,8 @@ public final class DerivedVariableUtils {
 	 */
 	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isWrapped) {
 		final List<String> aggregateInputVariables = new ArrayList<>();
-		Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
-		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+		final Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
+		final Matcher aggregateMatcher = aggregatePattern.matcher(formula);
 		while (aggregateMatcher.find()) {
 			final String aggregateString = aggregateMatcher.group();
 			final Pattern aggregateInputPattern = Pattern.compile(AGGREGATE_INPUT_REGEX);
