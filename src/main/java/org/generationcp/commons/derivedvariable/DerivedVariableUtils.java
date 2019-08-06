@@ -80,23 +80,28 @@ public final class DerivedVariableUtils {
 		final List<String> environmentInputVariables) throws ParseException {
 
 		final Set<String> termMissingData = new HashSet<>();
-		for (final Map.Entry<String, Object> parameterItem : parameters.entrySet()) {
-			final String termId = removeDelimiter(parameterItem.getKey());
-			final String termName = measurementVariablesMap.get(Integer.valueOf(termId)).getName();
-			final ObservationUnitData observationUnitData;
 
-			// If a variable is present in both environment and observation levels, read the input variable data according
-			// to where the user specified to. environmentInputVariables contains the ids of input variables that should be
-			// read from environment level.
-			if (environmentInputVariables.contains(termId)) {
-				observationUnitData = observationUnitRow.getEnvironmentVariables().get(termName);
-			} else {
-				observationUnitData = observationUnitRow.getVariables().get(termName);
-			}
-			if (!aggregateInputVariables.contains(parameterItem.getKey())) {
-				parameterItem.setValue(getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
+		if (observationUnitRow != null && observationUnitRow.getVariables() != null
+			&& observationUnitRow.getEnvironmentVariables() != null) {
+			for (final Map.Entry<String, Object> parameterItem : parameters.entrySet()) {
+				final String termId = removeDelimiter(parameterItem.getKey());
+				final String termName = measurementVariablesMap.get(Integer.valueOf(termId)).getName();
+				final ObservationUnitData observationUnitData;
+
+				// If a variable is present in both environment and observation levels, read the input variable data according
+				// to where the user specified to. environmentInputVariables contains the ids of input variables that should be
+				// read from environment level.
+				if (environmentInputVariables.contains(termId)) {
+					observationUnitData = observationUnitRow.getEnvironmentVariables().get(termName);
+				} else {
+					observationUnitData = observationUnitRow.getVariables().get(termName);
+				}
+				if (!aggregateInputVariables.contains(parameterItem.getKey())) {
+					parameterItem.setValue(getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
+				}
 			}
 		}
+
 		return termMissingData;
 	}
 
