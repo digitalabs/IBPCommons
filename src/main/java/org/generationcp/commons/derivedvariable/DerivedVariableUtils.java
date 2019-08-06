@@ -232,13 +232,13 @@ public final class DerivedVariableUtils {
 		return extractAggregateInputVariables(isWrapped, aggregateMatcher);
 	}
 
-	public static Map<String, List<String>> getAggregateFunctionInputVariablesMap(final String formula, final boolean isWrapped) {
+	public static Map<String, List<String>> getAggregateFunctionInputVariablesMap(final String formula) {
 		final Map<String, List<String>> aggregateFunctionInputVariablesMap = new HashMap<>();
 		for(final String aggregateFunction: AGGREGATE_FUNCTIONS) {
 			final String aggregateRegex = "(" + aggregateFunction + ")" + AGGREGATE_ALL_INPUT_REGEX;
 			Pattern aggregatePattern = Pattern.compile(aggregateRegex);
 			Matcher aggregateMatcher = aggregatePattern.matcher(formula);
-			final List<String> aggregateInputVariables = extractAggregateInputVariables(isWrapped, aggregateMatcher);
+			final List<String> aggregateInputVariables = extractAggregateInputVariables(true, aggregateMatcher);
 			aggregateFunctionInputVariablesMap.put(aggregateFunction, aggregateInputVariables);
 		}
 		return aggregateFunctionInputVariablesMap;
