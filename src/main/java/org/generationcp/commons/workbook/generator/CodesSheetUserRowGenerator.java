@@ -23,8 +23,9 @@ public class CodesSheetUserRowGenerator extends CodesSheetRowGenerator<Workbench
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Override
-	List<WorkbenchUser> getSourceItem(final String cropName) {
+	List<WorkbenchUser> getSourceItem() {
 		final Project project = this.contextUtil.getProjectInContext();
+		final String cropName = this.contextUtil.getProjectInContext().getCropType().getCropName();
 		return this.workbenchDataManager.getUsersByProjectId(project.getProjectId(), cropName);
 	}
 

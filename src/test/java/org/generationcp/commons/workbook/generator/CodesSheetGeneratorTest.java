@@ -46,7 +46,7 @@ public class CodesSheetGeneratorTest {
 
 	@Test
 	public void testGenerateCodesSheet() {
-		this.codesSheetGenerator.generateCodesSheet(this.wb, CROP_NAME);
+		this.codesSheetGenerator.generateCodesSheet(this.wb);
 		final HSSFSheet codesSheet = this.codesSheetGenerator.getCodesSheet();
 		this.assertHeadersRow(codesSheet.getRow(0));
 	}

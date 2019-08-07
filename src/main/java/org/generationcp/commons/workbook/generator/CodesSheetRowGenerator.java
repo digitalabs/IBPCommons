@@ -12,13 +12,13 @@ abstract class CodesSheetRowGenerator<SOURCE> {
 
 	protected ExcelCellStyleBuilder sheetStyles;
 
-	public void addRowsToCodesSheet(final HSSFSheet codesSheet, final ExcelCellStyleBuilder sheetStyles, final String cropName) {
+	public void addRowsToCodesSheet(final HSSFSheet codesSheet, final ExcelCellStyleBuilder sheetStyles) {
 		this.sheetStyles = sheetStyles;
 
 		final CellStyle labelStyle = this.getLabelStyle();
 		final CellStyle dataStyle = this.getDataStyle();
 
-		final List<SOURCE> items = this.getSourceItem(cropName);
+		final List<SOURCE> items = this.getSourceItem();
 		ExcelWorkbookRow itemRow;
 		int currentRow = codesSheet.getLastRowNum() + 1;
 
@@ -33,7 +33,7 @@ abstract class CodesSheetRowGenerator<SOURCE> {
 
 	}
 
-	abstract List<SOURCE> getSourceItem(final String cropName);
+	abstract List<SOURCE> getSourceItem();
 
 	abstract CellStyle getLabelStyle();
 

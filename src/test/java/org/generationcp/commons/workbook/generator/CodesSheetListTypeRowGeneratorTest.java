@@ -40,7 +40,7 @@ public class CodesSheetListTypeRowGeneratorTest {
 
 	@Test
 	public void testAddListTypeRowsToCodesSheet() {
-		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, CROP_NAME);
+		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
 		final HSSFRow row = this.codesSheet.getRow(1);
 		Assert.assertEquals("First cell's content should be " + RowColumnType.LIST_TYPE.getSection(), RowColumnType.LIST_TYPE.getSection(),
 				row.getCell(0).toString());

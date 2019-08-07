@@ -41,7 +41,7 @@ public class CodesSheetInventoryScalesRowGeneratorTest {
 
 	@Test
 	public void testNameTypesRowsToCodesSheet() {
-		this.inventoryScalesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, CROP_NAME);
+		this.inventoryScalesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
 		final HSSFRow row = this.codesSheet.getRow(1);
 		Assert.assertEquals("First cell's content should be " + RowColumnType.SCALES_FOR_INVENTORY_UNITS.getSection(),
 				RowColumnType.SCALES_FOR_INVENTORY_UNITS.getSection(), row.getCell(0).toString());

@@ -106,8 +106,7 @@ public class GermplasmExportedWorkbook {
 		this.generateObservationSheet();
 
 		// Generate Sheets
-		final String cropName = this.contextUtil.getProjectInContext().getCropType().getCropName();
-		this.codesSheetGenerator.generateCodesSheet(this.wb, cropName);
+		this.codesSheetGenerator.generateCodesSheet(this.wb);
 
 	}
 

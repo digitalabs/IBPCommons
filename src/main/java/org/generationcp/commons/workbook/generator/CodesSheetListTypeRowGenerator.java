@@ -19,7 +19,7 @@ public class CodesSheetListTypeRowGenerator extends CodesSheetRowGenerator<UserD
 	private GermplasmListManager germplasmListManager;
 
 	@Override
-	List<UserDefinedField> getSourceItem(final String cropName) {
+	List<UserDefinedField> getSourceItem() {
 		return this.germplasmListManager.getGermplasmListTypes();
 	}
 

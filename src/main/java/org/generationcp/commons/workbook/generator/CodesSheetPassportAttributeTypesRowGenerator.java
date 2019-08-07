@@ -18,7 +18,7 @@ public class CodesSheetPassportAttributeTypesRowGenerator extends CodesSheetRowG
 	private GermplasmDataManager germplasmDataManager;
 
 	@Override
-	List<UserDefinedField> getSourceItem(final String cropName) {
+	List<UserDefinedField> getSourceItem() {
 		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtable(),
 				RowColumnType.PASSPORT_ATTRIBUTE_TYPES.getFtype());
 	}

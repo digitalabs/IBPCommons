@@ -18,7 +18,7 @@ public class CodesSheetAttributeTypesRowGenerator extends CodesSheetRowGenerator
 	private GermplasmDataManager germplasmDataManager;
 
 	@Override
-	List<UserDefinedField> getSourceItem(final String cropName) {
+	List<UserDefinedField> getSourceItem() {
 		return this.germplasmDataManager.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.ATTRIBUTE_TYPES.getFtable(),
 				RowColumnType.ATTRIBUTE_TYPES.getFtype());
 	}

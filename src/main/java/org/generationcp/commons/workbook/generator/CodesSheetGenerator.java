@@ -64,7 +64,7 @@ public class CodesSheetGenerator {
 
 	private ExcelCellStyleBuilder sheetStyles;
 
-	public void generateCodesSheet(final HSSFWorkbook wb, final String cropName) {
+	public void generateCodesSheet(final HSSFWorkbook wb) {
 		this.wb = wb;
 		this.codesSheet = wb.createSheet("Codes");
 		this.sheetStyles = new ExcelCellStyleBuilder(wb);
@@ -75,12 +75,12 @@ public class CodesSheetGenerator {
 		this.codesSheet.setZoom(10, 8);
 
 		this.setCodeSheetHeaders(this.codesSheet);
-		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
-		this.userRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
-		this.nameTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
-		this.inventoryScalesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
-		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
-		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles, cropName);
+		this.listTypeRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.userRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.nameTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.inventoryScalesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.attributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
+		this.passportAttributeTypesRowGenerator.addRowsToCodesSheet(this.codesSheet, this.sheetStyles);
 		this.setCodesColumnsWidth(this.codesSheet);
 	}
 
