@@ -1,8 +1,6 @@
 package org.generationcp.commons.spring.util;
 
 import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
@@ -15,17 +13,11 @@ import org.springframework.web.util.WebUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This is the spring bean managed version of some of the methods used in the org.generationcp.commons.util.ContextUtil class
  */
 public class ContextUtil {
-
-	private static final String NO_LOCAL_USER_ID_FOUND_MESSAGE = "Unable to retrive local id for logged in user id '%s' and project '%s'."
-			+ " Please contact administrator for further information.";
 
 	@Resource
 	private HttpServletRequest request;
@@ -35,12 +27,6 @@ public class ContextUtil {
 
 	@Resource
 	private UserService userService;
-
-	/**
-	 * Main goal is to prevent excessive queries to get local user names. This is a global cache that will expire every 10 minutes.
-	 */
-	private static final Cache<CropBasedContextInfo, Integer> localUserCache =
-			CacheBuilder.newBuilder().maximumSize(500).expireAfterWrite(10, TimeUnit.MINUTES).build();
 
 	public String getCurrentProgramUUID() {
 		final Project program = org.generationcp.commons.util.ContextUtil.getProjectInContext(this.workbenchDataManager, this.request);

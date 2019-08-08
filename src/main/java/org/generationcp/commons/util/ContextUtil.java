@@ -1,12 +1,10 @@
 
 package org.generationcp.commons.util;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-
+import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.commons.context.ContextInfo;
@@ -22,10 +20,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.util.WebUtils;
 
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ContextUtil {
 
@@ -46,8 +44,7 @@ public class ContextUtil {
 	/**
 	 * Use {@link #getProject(WorkbenchDataManager, HttpServletRequest)} when an absent project is a valid scenario
 	 */
-	public static Project getProjectInContext(WorkbenchDataManager workbenchDataManager, HttpServletRequest request)
-		throws MiddlewareQueryException {
+	public static Project getProjectInContext(final WorkbenchDataManager workbenchDataManager, final HttpServletRequest request) {
 		final Optional<Project> project = getProject(workbenchDataManager, request);
 		if (!project.isPresent()) {
 			throw new MiddlewareQueryException("Could not resolve selected project in Workbench.");
@@ -55,14 +52,13 @@ public class ContextUtil {
 		return project.get();
 	}
 
-	public static Optional<Project> getProject(final WorkbenchDataManager workbenchDataManager, final HttpServletRequest request)
-			throws MiddlewareQueryException {
+	public static Optional<Project> getProject(final WorkbenchDataManager workbenchDataManager, final HttpServletRequest request) {
 
-		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		final ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
 		
 		
 		if(contextInfo != null) {
-			Long selectedProjectId = contextInfo.getSelectedProjectId();
+			final Long selectedProjectId = contextInfo.getSelectedProjectId();
 			
 			if(selectedProjectId !=null && PROJECTS_CACHE.asMap().containsKey(selectedProjectId)) {
 				return Optional.of(PROJECTS_CACHE.asMap().get(selectedProjectId));
@@ -89,13 +85,12 @@ public class ContextUtil {
 		return Optional.absent();
 	}
 
-	public static Integer getCurrentWorkbenchUserId(HttpServletRequest request)
-			throws MiddlewareQueryException {
-		ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+	public static Integer getCurrentWorkbenchUserId(final HttpServletRequest request) {
+		final ContextInfo contextInfo = (ContextInfo) WebUtils.getSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
 
 		Integer currentWorkbenchUserId = null;
 		boolean resolvedFromSessionContext = false;
-		Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
+		final Cookie userIdCookie = WebUtils.getCookie(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
 
 		if (contextInfo != null) {
 			resolvedFromSessionContext = true;
@@ -115,15 +110,14 @@ public class ContextUtil {
 
 
 
-	public static WorkbenchUser getCurrentWorkbenchUser(UserService userService, HttpServletRequest request)
-			throws MiddlewareQueryException {
-		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
-		String userName = SecurityUtil.decodeToken(contextInfo.getAuthToken());
+	public static WorkbenchUser getCurrentWorkbenchUser(final UserService userService, final HttpServletRequest request) {
+		final ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
+		final String userName = SecurityUtil.decodeToken(contextInfo.getAuthToken());
 
 		WorkbenchUser user = null;
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
 			// resolve from token if existing
-			List<WorkbenchUser> matchedUsers = userService.getUserByName(userName, 0, 1, Operation.EQUAL);
+			final List<WorkbenchUser> matchedUsers = userService.getUserByName(userName, 0, 1, Operation.EQUAL);
 
 			if (matchedUsers != null && !matchedUsers.isEmpty()) {
 				user = matchedUsers.get(0);
@@ -139,9 +133,8 @@ public class ContextUtil {
 		return user;
 	}
 
-	public static String getCurrentWorkbenchUsername(UserService userService, HttpServletRequest request)
-			throws MiddlewareQueryException {
-		ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
+	public static String getCurrentWorkbenchUsername(final UserService userService, final HttpServletRequest request) {
+		final ContextInfo contextInfo = ContextUtil.getContextInfoFromRequest(request);
 		String userName = SecurityUtil.decodeToken(contextInfo.getAuthToken());
 
 		if (!StringUtil.isEmptyOrWhitespaceOnly(userName)) {
@@ -158,48 +151,42 @@ public class ContextUtil {
 		return userName;
 	}
 
-	public static Long getParamAsLong(HttpServletRequest request, String paramName) {
+	public static Long getParamAsLong(final HttpServletRequest request, final String paramName) {
 
 		Long id = null;
 		if (!StringUtils.isBlank(request.getParameter(paramName))) {
 			try {
 				id = new Long(request.getParameter(paramName));
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 				id = null;
 			}
 		}
 		return id;
 	}
 
-	public static Integer getParamAsInt(HttpServletRequest request, String paramName) {
+	public static Integer getParamAsInt(final HttpServletRequest request, final String paramName) {
 
 		Integer id = null;
 		if (!StringUtils.isBlank(request.getParameter(paramName))) {
 			try {
 				id = new Integer(request.getParameter(paramName));
-			} catch (NumberFormatException e) {
+			} catch (final NumberFormatException e) {
 				id = null;
 			}
 		}
 		return id;
 	}
 
-	public static String getContextParameterString(ContextInfo contextInfo) {
+	public static String getContextParameterString(final ContextInfo contextInfo) {
 		if (contextInfo != null) {
 			return ContextUtil.getContextParameterString(contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId());
 		}
 		return "";
 	}
 
-	public static String getContextParameterString(HttpServletRequest request) {
-		Integer loggedInUserId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
-		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-		return ContextUtil.getContextParameterString(loggedInUserId, selectedProjectId);
-	}
+	public static String getContextParameterString(final Integer loggedInUserId, final Long selectedProjectId) {
 
-	public static String getContextParameterString(Integer loggedInUserId, Long selectedProjectId) {
-
-		StringBuffer contextParameters = new StringBuffer();
+		final StringBuffer contextParameters = new StringBuffer();
 
 		if (loggedInUserId != null) {
 			contextParameters.append(ContextUtil.addQueryParameter(ContextConstants.PARAM_LOGGED_IN_USER_ID, loggedInUserId.toString()));
@@ -213,11 +200,11 @@ public class ContextUtil {
 		return contextParameters.toString();
 	}
 
-	public static String addQueryParameter(String parameterName, String parameterValue) {
+	public static String addQueryParameter(final String parameterName, final String parameterValue) {
 		return "&" + parameterName + "=" + parameterValue;
 	}
 
-	public static boolean isStaticResourceRequest(String requestUri) {
+	public static boolean isStaticResourceRequest(final String requestUri) {
 		if (requestUri.contains("/static/") || requestUri.endsWith(".js") || requestUri.endsWith(".css") || requestUri.endsWith(".png")
 				|| requestUri.endsWith(".gif") || requestUri.endsWith(".jpg") || requestUri.endsWith(".woff")) {
 			return true;
@@ -225,16 +212,16 @@ public class ContextUtil {
 		return false;
 	}
 
-	public static ContextInfo getContextInfoFromRequest(HttpServletRequest request) {
-		Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
-		Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
-		String authToken = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
+	public static ContextInfo getContextInfoFromRequest(final HttpServletRequest request) {
+		final Long selectedProjectId = ContextUtil.getParamAsLong(request, ContextConstants.PARAM_SELECTED_PROJECT_ID);
+		final Integer userId = ContextUtil.getParamAsInt(request, ContextConstants.PARAM_LOGGED_IN_USER_ID);
+		final String authToken = request.getParameter(ContextConstants.PARAM_AUTH_TOKEN);
 
 		return new ContextInfo(userId, selectedProjectId, null != authToken ? authToken : "");
 
 	}
 
-	public static void setContextInfo(HttpServletRequest request, Integer userId, Long projectId, String authToken) {
+	public static void setContextInfo(final HttpServletRequest request, final Integer userId, final Long projectId, final String authToken) {
 
 			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
 					new ContextInfo(userId, projectId,
@@ -243,10 +230,10 @@ public class ContextUtil {
 
 	static WorkbenchUser getUserById(final UserService userService, final Integer userId) {
 		final FunctionBasedGuavaCacheLoader<Integer, WorkbenchUser> cacheLoader =
-				new FunctionBasedGuavaCacheLoader<Integer, WorkbenchUser>(USERS_CACHE, new Function<Integer, WorkbenchUser>() {
+				new FunctionBasedGuavaCacheLoader<>(USERS_CACHE, new Function<Integer, WorkbenchUser>() {
 
 					@Override
-					public WorkbenchUser apply(Integer key) {
+					public WorkbenchUser apply(final Integer key) {
 						return userService.getUserById(key);
 					}
 				});
