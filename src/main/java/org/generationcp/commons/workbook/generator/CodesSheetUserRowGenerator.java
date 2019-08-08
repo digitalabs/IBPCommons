@@ -4,10 +4,10 @@ package org.generationcp.commons.workbook.generator;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,13 +20,12 @@ public class CodesSheetUserRowGenerator extends CodesSheetRowGenerator<Workbench
 	private ContextUtil contextUtil;
 
 	@Resource
-	private WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 
 	@Override
 	List<WorkbenchUser> getSourceItem() {
 		final Project project = this.contextUtil.getProjectInContext();
-		final String cropName = this.contextUtil.getProjectInContext().getCropType().getCropName();
-		return this.workbenchDataManager.getUsersByProjectId(project.getProjectId(), cropName);
+		return this.userService.getUsersByProjectId(project.getProjectId());
 	}
 
 	@Override
@@ -56,7 +55,7 @@ public class CodesSheetUserRowGenerator extends CodesSheetRowGenerator<Workbench
 
 	@Override
 	String getFname(final WorkbenchUser user) {
-		final Person person = this.workbenchDataManager.getPersonById(user.getPersonid());
+		final Person person = this.userService.getPersonById(user.getPerson().getId());
 		return person.getDisplayName();
 	}
 }

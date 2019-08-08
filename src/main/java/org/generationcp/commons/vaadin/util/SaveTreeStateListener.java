@@ -53,7 +53,7 @@ public class SaveTreeStateListener implements Window.CloseListener {
         if(itemIds.isEmpty()) {
         	itemIds.add(DEFAULT_STATE_SAVED_FOR_GERMPLASM_LIST);
         }
-        this.userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentUserLocalId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
+        this.userStateManager.saveOrUpdateUserProgramTreeState(contextUtil.getCurrentWorkbenchUserId(), contextUtil.getCurrentProgramUUID(), treeType, itemIds);
     }
 
     public List<String> getExpandedIds() {

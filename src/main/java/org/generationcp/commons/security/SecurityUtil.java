@@ -9,8 +9,8 @@ import java.util.List;
 import org.apache.commons.codec.binary.Base64;
 import org.generationcp.middleware.domain.workbench.PermissionDto;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,7 +28,7 @@ public class SecurityUtil {
 	public static final String ROLE_PREFIX = "ROLE_";
 
 	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 
 	public SecurityUtil() {
 	}
@@ -63,7 +63,7 @@ public class SecurityUtil {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			String username = authentication.getName();
-			final WorkbenchUser workbenchUser = workbenchDataManager.getUserByUsername(username);
+			final WorkbenchUser workbenchUser = this.userService.getUserByUsername(username);
 			return workbenchUser;
 		}
 		return null;

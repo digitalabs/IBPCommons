@@ -1,19 +1,13 @@
 
 package org.generationcp.commons.security;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.binary.Base64;
 import org.generationcp.commons.context.ContextConstants;
 import org.generationcp.middleware.domain.workbench.PermissionDto;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.Operation;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,6 +17,10 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BMSPreAuthenticatedUsersRolePopulatorTest {
 
 	private static final String TEST_USER = "testUser";
@@ -30,7 +28,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 			.getBytes());
 	private static final String PERMISSION_NAME = "ADMIN";
 
-	private WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 	private PlatformTransactionManager transactionManager;
 	private BMSPreAuthenticatedUsersRolePopulator rolesPopulator;
 
@@ -39,11 +37,11 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	@Before
 	public void setUpPerTest() {
 		this.request = Mockito.mock(HttpServletRequest.class);
-		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		this.userService = Mockito.mock(UserService.class);
 		this.transactionManager = Mockito.mock(PlatformTransactionManager.class);
 
 		this.rolesPopulator = new BMSPreAuthenticatedUsersRolePopulator();
-		this.rolesPopulator.setWorkbenchDataManager(this.workbenchDataManager);
+		this.rolesPopulator.setUserService(this.userService);
 		this.rolesPopulator.setTransactionManager(this.transactionManager);
 	}
 
@@ -68,7 +66,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 			matchingUsers.add(testUserWorkbench);
 
 			Mockito.when(
-					this.workbenchDataManager.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
+					this.userService.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
 					.thenReturn(matchingUsers);
 
 			PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails roleDetails =
@@ -86,7 +84,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	public void testLoadUserDataAccessError() throws MiddlewareQueryException {
 		Mockito.when(this.request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(
 				BMSPreAuthenticatedUsersRolePopulatorTest.AUTH_TOKEN);
-		Mockito.when(this.workbenchDataManager.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
+		Mockito.when(this.userService.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
 				.thenThrow(new MiddlewareQueryException("Boom!"));
 		this.rolesPopulator.buildDetails(this.request);
 	}

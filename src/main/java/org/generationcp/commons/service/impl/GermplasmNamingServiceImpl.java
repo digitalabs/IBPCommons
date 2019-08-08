@@ -39,7 +39,7 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 	String buildDesignationNameInSequence(final Integer number, final GermplasmNameSetting setting) {
 		final StringBuilder sb = new StringBuilder();
 		sb.append(this.buildPrefixString(setting));
-		sb.append(this.getNumberWithLeadingZeroesAsString(number, setting));
+		sb.append(this.getNumberWithLeadingZeroesAsString(number, setting.getNumOfDigits()));
 
 		if (!StringUtils.isEmpty(setting.getSuffix())) {
 			sb.append(this.buildSuffixString(setting));
@@ -66,9 +66,8 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 		return "";
 	}
 
-	String getNumberWithLeadingZeroesAsString(final Integer number, final GermplasmNameSetting setting) {
-		final Integer numOfDigits = setting.getNumOfDigits();
-
+	@Override
+	public String getNumberWithLeadingZeroesAsString(final Integer number, final Integer numOfDigits) {
 		if (numOfDigits == null || numOfDigits <= 0) {
 			return number.toString();
 		}
@@ -95,7 +94,7 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 			if (nextSequenceNumber > 1) {
 				return nextSequenceNumber;
 
-			// If the sequence doesn't exist yet in key_sequence_register table, query in NAMES table for the latest one used
+				// If the sequence doesn't exist yet in key_sequence_register table, query in NAMES table for the latest one used
 			} else {
 				return Integer.valueOf(this.germplasmDataManager.getNextSequenceNumberForCrossName(keyPrefix.trim()));
 			}

@@ -24,13 +24,15 @@ public final class DerivedVariableUtils {
 
 	private static final String TERM_LEFT_DELIMITER = "\\{\\{";
 	private static final String TERM_RIGHT_DELIMITER = "\\}\\}";
-	public static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
-	public static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
-
+	private static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
+	private static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
+	// Just include any of the following after implementing the corresponding function: (COUNT|DISTINCT_COUNT|MAX|MIN|SUM)
+	private static final String AGGREGATE_REGEX = "(?i)(AVG)\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
+	private static final String AGGREGATE_INPUT_REGEX = "(\\{\\{\\w+}})";
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
 	 */
-	private static final String TERM_INTERNAL_DELIMITER = "__";
+	static final String TERM_INTERNAL_DELIMITER = "__";
 
 	private DerivedVariableUtils() {
 		// utility class
@@ -69,7 +71,7 @@ public final class DerivedVariableUtils {
 	public static void extractValues(
 		final Map<String, Object> parameters, final ObservationUnitRow observationUnitRow,
 		final Map<Integer, MeasurementVariable> measurementVariablesMap,
-		final Set<String> termMissingData) throws ParseException {
+		final Set<String> termMissingData, final List<String> aggregateInputVariables) throws ParseException {
 
 		if (observationUnitRow != null && observationUnitRow.getVariables() != null) {
 			for (final Map.Entry<String, ObservationUnitData> entry : observationUnitRow.getVariables().entrySet()) {
@@ -77,7 +79,7 @@ public final class DerivedVariableUtils {
 				String term = String.valueOf(observationUnitData.getVariableId());
 				term = StringUtils.deleteWhitespace(term);
 				term = wrapTerm(term);
-				if (parameters.containsKey(term)) {
+				if (parameters.containsKey(term) && !aggregateInputVariables.contains(term)) {
 					parameters.put(term, getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
 				}
 			}
@@ -214,6 +216,28 @@ public final class DerivedVariableUtils {
 
 		}
 		return replaceText;
+	}
+
+	/**
+	 * @param formula - the formula
+	 * @param isWrapped - defines whether the values would be wrapped or not
+	 * @return the list of input variables inside the aggregate functions
+	 */
+	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isWrapped) {
+		final List<String> aggregateInputVariables = new ArrayList<>();
+		Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
+		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+		while (aggregateMatcher.find()) {
+			final String aggregateString = aggregateMatcher.group();
+			final Pattern aggregateInputPattern = Pattern.compile(AGGREGATE_INPUT_REGEX);
+			final Matcher aggregateInputMatcher = aggregateInputPattern.matcher(aggregateString);
+			while(aggregateInputMatcher.find()) {
+				String inputVariable = aggregateInputMatcher.group().replaceAll("(\\{)","").replaceAll("}","");
+				inputVariable = isWrapped? DerivedVariableUtils.wrapTerm(inputVariable) : inputVariable;
+				aggregateInputVariables.add(inputVariable);
+			}
+		}
+		return aggregateInputVariables;
 	}
 
 }

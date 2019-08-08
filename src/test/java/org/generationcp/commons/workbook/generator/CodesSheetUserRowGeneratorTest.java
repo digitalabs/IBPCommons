@@ -9,12 +9,14 @@ import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.PersonTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ProjectTestDataInitializer;
 import org.generationcp.middleware.data.initializer.UserTestDataInitializer;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.Person;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
@@ -33,10 +35,10 @@ public class CodesSheetUserRowGeneratorTest {
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
 
 	@Mock
-	ContextUtil contextUtil;
+	private ContextUtil contextUtil;
 
 	@Mock
-	WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 
 	@InjectMocks
 	private CodesSheetUserRowGenerator userRowGenerator;
@@ -49,9 +51,9 @@ public class CodesSheetUserRowGeneratorTest {
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
 
 		this.userList = UserTestDataInitializer.createWorkbenchUserList();
-		Mockito.when(this.workbenchDataManager.getUsersByProjectId(Matchers.anyLong(), Matchers.anyString())).thenReturn(this.userList);
+		Mockito.when(this.userService.getUsersByProjectId(ArgumentMatchers.anyLong())).thenReturn(this.userList);
 
-		Mockito.when(this.workbenchDataManager.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
+		Mockito.when(this.userService.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
 	}
 
 	@Test
@@ -71,12 +73,14 @@ public class CodesSheetUserRowGeneratorTest {
 		// Test data - Make user id not equal to person id
 		final WorkbenchUser user = this.userList.get(0);
 		final int personId = user.getUserid() + 1;
-		user.setPersonid(personId);
+		final Person person = new Person();
+		person.setId(personId);
+		user.setPerson(person);
 
 		this.userRowGenerator.getFname(user);
 
 		// Verify that person id, not user id, was the one used to get Person record
-		Mockito.verify(this.workbenchDataManager).getPersonById(personId);
+		Mockito.verify(this.userService).getPersonById(personId);
 	}
 
 	@Test

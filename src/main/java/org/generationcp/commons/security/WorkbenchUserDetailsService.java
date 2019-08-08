@@ -10,6 +10,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.permission.PermissionService;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,6 +26,9 @@ import java.util.List;
 
 public class WorkbenchUserDetailsService implements UserDetailsService {
 
+	private UserService userService;
+
+	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Autowired
@@ -40,7 +44,7 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 			// username must be converted from html-encode to utf-8 string to support chinese/utf-8 languages
 			username = StringEscapeUtils.unescapeHtml(username);
 
-			final List<WorkbenchUser> matchingUsers = this.workbenchDataManager.getUserByName(username, 0, 1, Operation.EQUAL);
+			final List<WorkbenchUser> matchingUsers = this.userService.getUserByName(username, 0, 1, Operation.EQUAL);
 			if (matchingUsers != null && !matchingUsers.isEmpty()) {
 				final WorkbenchUser workbenchUser = matchingUsers.get(0);
 
@@ -58,7 +62,6 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 						workbenchUser.getUserid(), //
 						cropName, //
 						programId));
-
 				// FIXME Populate flags for accountNonExpired, credentialsNonExpired, accountNonLocked properly, all true for now.
 				return new User(workbenchUser.getName(), workbenchUser.getPassword(), authorities);
 			}
@@ -68,7 +71,7 @@ public class WorkbenchUserDetailsService implements UserDetailsService {
 		}
 	}
 
-	public void setWorkbenchDataManager(final WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
+	public void setUserService(final UserService userService) {
+		this.userService = userService;
 	}
 }

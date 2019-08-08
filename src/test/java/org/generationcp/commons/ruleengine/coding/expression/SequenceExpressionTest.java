@@ -4,6 +4,7 @@ import org.generationcp.commons.service.GermplasmNamingService;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -33,7 +34,12 @@ public class SequenceExpressionTest {
 		this.namingConfiguration.setPrefix(PREFIX);
 		this.namingConfiguration.setCount(SEQUENCE);
 		this.namingConfiguration.setSuffix(SUFFIX);
-		Mockito.doReturn(NEXT_NUMBER_FROM_DB, NEXT_NUMBER_FROM_DB+1, NEXT_NUMBER_FROM_DB+2).when(this.germplasmNamingService).getNextNumberAndIncrementSequence(PREFIX);
+		Mockito.doReturn(NEXT_NUMBER_FROM_DB, NEXT_NUMBER_FROM_DB + 1, NEXT_NUMBER_FROM_DB + 2).when(this.germplasmNamingService)
+			.getNextNumberAndIncrementSequence(PREFIX);
+		Mockito
+			.doReturn(String.valueOf(NEXT_NUMBER_FROM_DB), String.valueOf(NEXT_NUMBER_FROM_DB + 1), String.valueOf(NEXT_NUMBER_FROM_DB + 2))
+			.when(this.germplasmNamingService).getNumberWithLeadingZeroesAsString(
+			ArgumentMatchers.anyInt(), ArgumentMatchers.eq(1));
 	}
 
 	@Test
@@ -41,7 +47,7 @@ public class SequenceExpressionTest {
 		final Integer count = 1;
 		final List<StringBuilder> values = this.createInitialValues(this.namingConfiguration, count);
 
-		sequenceExpression.apply(values, "", this.namingConfiguration);
+		this.sequenceExpression.apply(values, "", this.namingConfiguration);
 		assertEquals(count.intValue(), values.size());
 		assertEquals(PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
 	}
@@ -51,17 +57,17 @@ public class SequenceExpressionTest {
 		final Integer count = 3;
 		final List<StringBuilder> values = this.createInitialValues(this.namingConfiguration, count);
 
-		sequenceExpression.apply(values, "", this.namingConfiguration);
+		this.sequenceExpression.apply(values, "", this.namingConfiguration);
 		assertEquals(count.intValue(), values.size());
 		assertEquals(PREFIX + NEXT_NUMBER_FROM_DB + SUFFIX, values.get(0).toString());
-		assertEquals(PREFIX + (NEXT_NUMBER_FROM_DB+1) + SUFFIX, values.get(1).toString());
-		assertEquals(PREFIX + (NEXT_NUMBER_FROM_DB+2) + SUFFIX, values.get(2).toString());
+		assertEquals(PREFIX + (NEXT_NUMBER_FROM_DB + 1) + SUFFIX, values.get(1).toString());
+		assertEquals(PREFIX + (NEXT_NUMBER_FROM_DB + 2) + SUFFIX, values.get(2).toString());
 	}
 
 	private List<StringBuilder> createInitialValues(final NamingConfiguration config, final Integer count) {
 		final List<StringBuilder> builders = new ArrayList<>();
 
-		for (int i=0; i<count; i++) {
+		for (int i = 0; i < count; i++) {
 			final StringBuilder builder = new StringBuilder();
 			builder.append(this.getNonNullValue(config.getPrefix()))
 				.append(this.getNonNullValue(config.getCount()))

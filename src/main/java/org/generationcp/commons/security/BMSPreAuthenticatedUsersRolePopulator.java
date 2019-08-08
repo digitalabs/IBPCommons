@@ -8,6 +8,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.permission.PermissionService;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -25,6 +26,9 @@ import java.util.Collection;
 public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
 
 	@Autowired
+	private UserService userService;
+
+	@Autowired
 	private WorkbenchDataManager workbenchDataManager;
 
 	@Autowired
@@ -35,13 +39,14 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 	@Override
 	public GrantedAuthoritiesContainer buildDetails(final HttpServletRequest request) {
-		TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 
 		return transactionTemplate.execute(new TransactionCallback<PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails>() {
 
-			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(TransactionStatus status) {
+			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(final TransactionStatus status) {
 				try {
-					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(workbenchDataManager, request);
+					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(userService, request);
+
 					final ContextInfo requestContextInfo = ContextUtil.getContextInfoFromRequest(request);
 					final Project project = workbenchDataManager.getProjectById(requestContextInfo.getSelectedProjectId());
 
@@ -63,11 +68,11 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 	}
 
-	void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
+	void setUserService(final UserService userService) {
+		this.userService = userService;
 	}
 
-	void setTransactionManager(PlatformTransactionManager transactionManager) {
+	void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 }
