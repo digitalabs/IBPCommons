@@ -22,11 +22,11 @@ public class StudyPermissionValidator {
 		final StudyReference study = this.studyDataManager.getStudyReference(studyId);
 		return userLacksPermissionForStudy(study);
 	}
-	
+
 	public Boolean userLacksPermissionForStudy(final StudyReference study) {
 		if (study != null) {
 			return userLacksPermissionForStudy(study.getIsLocked(), study.getOwnerId(),
-					this.contextUtil.getCurrentIbdbUserId());
+					this.contextUtil.getCurrentWorkbenchUserId());
 		}
 		return false;
 	}

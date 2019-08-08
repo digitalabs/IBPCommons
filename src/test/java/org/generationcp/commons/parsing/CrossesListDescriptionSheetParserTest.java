@@ -11,8 +11,8 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.generationcp.commons.parsing.pojo.ImportedCrossesList;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
-import org.generationcp.middleware.manager.api.UserDataManager;
-import org.generationcp.middleware.pojos.User;
+import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,10 +32,10 @@ public class CrossesListDescriptionSheetParserTest {
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
 
 	@Mock
-	private UserDataManager userDataManager;
+	private UserService userService;
 
 	private CrossesListDescriptionSheetParser<ImportedCrossesList> crossesListDescriptionSheetParser =
-			new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
+			new CrossesListDescriptionSheetParser<>(this.crossesList, this.userService);
 
 	private Workbook workbookNoListDate;
 	private Workbook workbook;
@@ -43,11 +43,11 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Before
 	public void setUp() throws Exception {
-		final User userTest = new User();
+		final WorkbenchUser userTest = new WorkbenchUser();
 		userTest.setUserid(1);
-		Mockito.when(this.userDataManager.getUserByFullname(Matchers.anyString())).thenReturn(userTest);
+		Mockito.when(this.userService.getUserByFullname(Matchers.anyString())).thenReturn(userTest);
 
-		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userDataManager);
+		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userService);
 
 		this.today = new Date();
 		final URL crossesListWithoutDateURL =
@@ -99,7 +99,7 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Test
 	public void testValidateListUserNameWithError() {
-		Mockito.when(this.userDataManager.getUserByFullname(Matchers.anyString())).thenReturn(null);
+		Mockito.when(this.userService.getUserByFullname(Matchers.anyString())).thenReturn(null);
 		try {
 			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
 			Assert.fail("There should an error since the method getPersonByFullName returned null.");

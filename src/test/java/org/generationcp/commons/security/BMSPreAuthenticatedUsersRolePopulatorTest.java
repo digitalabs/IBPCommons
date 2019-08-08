@@ -15,6 +15,7 @@ import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Role;
 import org.generationcp.middleware.pojos.workbench.UserRole;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	private static final String AUTH_TOKEN = Base64.encodeBase64URLSafeString(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER
 			.getBytes());
 
-	private WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 	private PlatformTransactionManager transactionManager;
 	private BMSPreAuthenticatedUsersRolePopulator rolesPopulator;
 
@@ -38,11 +39,11 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	@Before
 	public void setUpPerTest() {
 		this.request = Mockito.mock(HttpServletRequest.class);
-		this.workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
+		this.userService = Mockito.mock(UserService.class);
 		this.transactionManager = Mockito.mock(PlatformTransactionManager.class);
 
 		this.rolesPopulator = new BMSPreAuthenticatedUsersRolePopulator();
-		this.rolesPopulator.setWorkbenchDataManager(this.workbenchDataManager);
+		this.rolesPopulator.setUserService(this.userService);
 		this.rolesPopulator.setTransactionManager(this.transactionManager);
 	}
 
@@ -62,7 +63,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 			matchingUsers.add(testUserWorkbench);
 
 			Mockito.when(
-					this.workbenchDataManager.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
+					this.userService.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
 					.thenReturn(matchingUsers);
 
 			PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails roleDetails =
@@ -80,7 +81,7 @@ public class BMSPreAuthenticatedUsersRolePopulatorTest {
 	public void testLoadUserDataAccessError() throws MiddlewareQueryException {
 		Mockito.when(this.request.getParameter(ContextConstants.PARAM_AUTH_TOKEN)).thenReturn(
 				BMSPreAuthenticatedUsersRolePopulatorTest.AUTH_TOKEN);
-		Mockito.when(this.workbenchDataManager.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
+		Mockito.when(this.userService.getUserByName(BMSPreAuthenticatedUsersRolePopulatorTest.TEST_USER, 0, 1, Operation.EQUAL))
 				.thenThrow(new MiddlewareQueryException("Boom!"));
 		this.rolesPopulator.buildDetails(this.request);
 	}

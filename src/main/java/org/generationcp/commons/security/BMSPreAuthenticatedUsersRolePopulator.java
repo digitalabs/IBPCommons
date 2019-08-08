@@ -1,15 +1,10 @@
 
 package org.generationcp.commons.security;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -21,30 +16,34 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
+
 public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
 
 	@Autowired
-	private WorkbenchDataManager workbenchDataManager;
+	private UserService userService;
 
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 
 	@Override
 	public GrantedAuthoritiesContainer buildDetails(final HttpServletRequest request) {
-		TransactionTemplate transactionTemplate = new TransactionTemplate(transactionManager);
+		final TransactionTemplate transactionTemplate = new TransactionTemplate(this.transactionManager);
 
 		return transactionTemplate.execute(new TransactionCallback<PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails>() {
 
-			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(TransactionStatus status) {
+			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(final TransactionStatus status) {
 				try {
-					WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.workbenchDataManager, request);
+					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.userService, request);
 
-					List<GrantedAuthority> role = new ArrayList<>();
+					final List<GrantedAuthority> role = new ArrayList<>();
 					role.addAll(SecurityUtil.getRolesAsAuthorities(user));
 
 					return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, role);
 
-				} catch (MiddlewareQueryException e) {
+				} catch (final MiddlewareQueryException e) {
 
 					throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
 				}
@@ -54,11 +53,11 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 	}
 
-	void setWorkbenchDataManager(WorkbenchDataManager workbenchDataManager) {
-		this.workbenchDataManager = workbenchDataManager;
+	void setUserService(final UserService userService) {
+		this.userService = userService;
 	}
 
-	void setTransactionManager(PlatformTransactionManager transactionManager) {
+	void setTransactionManager(final PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 }
