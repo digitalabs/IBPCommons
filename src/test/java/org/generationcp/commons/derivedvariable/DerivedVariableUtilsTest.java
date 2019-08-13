@@ -409,13 +409,27 @@ public class DerivedVariableUtilsTest {
 
 	@Test
 	public void testGetAggregateFunctionInputVariables() {
-		String formula = "fn:avg({{1001}}, {{1002}}, {{1003}})";
-		List<String> aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, false);
-		List<String> aggregateInputVariablesWrapped = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, true);
-		for (int i = 0; i < 3; i++) {
-			Assert.assertEquals(String.valueOf(1001 + i), aggregateInputVariables.get(i));
-			Assert.assertEquals(DerivedVariableUtils.TERM_INTERNAL_DELIMITER + (1001 + i) + DerivedVariableUtils.TERM_INTERNAL_DELIMITER,
-				aggregateInputVariablesWrapped.get(i));
+		final String formula = "fn:avg({{1001}}, {{1002}}, {{1003}})";
+		final List<String> aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, false);
+		final List<String> aggregateInputVariablesWrapped = DerivedVariableUtils.getAggregateFunctionInputVariables(formula, true);
+		for(int i=0; i<3; i ++) {
+			Assert.assertEquals(String.valueOf(1001+i), aggregateInputVariables.get(i));
+			Assert.assertEquals(DerivedVariableUtils.TERM_INTERNAL_DELIMITER + (1001+i) + DerivedVariableUtils.TERM_INTERNAL_DELIMITER, aggregateInputVariablesWrapped.get(i));
+		}
+	}
+
+	@Test
+	public void testGetAggregateFunctionInputVariablesMap() {
+		final String formula = "fn:avg({{1001}}, {{1002}}, {{1003}})+fn:sum({{1004}}, {{1005}}, {{1006}})";
+		final Map<String, List<String>> aggregateInputVariables = DerivedVariableUtils.getAggregateFunctionInputVariablesMap(formula);
+		final List<String> avgInputVariables = aggregateInputVariables.get(DerivedVariableUtils.AGGREGATE_FUNCTIONS.get(0));
+		for(int i=0; i<3; i++) {
+			Assert.assertEquals(DerivedVariableUtils.TERM_INTERNAL_DELIMITER + (1001+i) + DerivedVariableUtils.TERM_INTERNAL_DELIMITER, avgInputVariables.get(i));
+		}
+
+		final List<String> sumInputVariables = aggregateInputVariables.get(DerivedVariableUtils.AGGREGATE_FUNCTIONS.get(1));
+		for(int i=0; i<3; i++) {
+			Assert.assertEquals(DerivedVariableUtils.TERM_INTERNAL_DELIMITER + (1004+i) + DerivedVariableUtils.TERM_INTERNAL_DELIMITER, sumInputVariables.get(i));
 		}
 	}
 

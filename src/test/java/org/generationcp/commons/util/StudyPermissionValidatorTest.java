@@ -24,56 +24,56 @@ public class StudyPermissionValidatorTest {
 
 	@Mock
 	private ContextUtil contextUtil;
-	
+
 	@Mock
 	private StudyDataManager studyDataManager;
-	
+
 	@InjectMocks
 	private StudyPermissionValidator validator;
-	
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 	}
-	
+
 	@Test
 	public void testUserLacksPermissionForStudyWhenStudyDoesntExist() {
 		Mockito.doReturn(null).when(this.studyDataManager).getStudyReference(1);
 		Assert.assertFalse(this.validator.userLacksPermissionForStudy(1));
 	}
-	
+
 	@Test
 	public void testUserLacksPermissionForStudyWhenStudyNotLocked() {
 		final StudyReference study = createTestStudy(false);
 		Assert.assertFalse(this.validator.userLacksPermissionForStudy(study));
 	}
-	
+
 	@Test
 	public void testUserLacksPermissionForStudyWhenStudyIsLockedButUserIsOwner() {
 		final StudyReference study = createTestStudy(true);
-		Mockito.doReturn(USER_ID).when(this.contextUtil).getCurrentIbdbUserId();
+		Mockito.doReturn(USER_ID).when(this.contextUtil).getCurrentWorkbenchUserId();
 		Assert.assertFalse(this.validator.userLacksPermissionForStudy(study));
 	}
-	
+
 	@Test
 	public void testUserLacksPermissionForStudyWhenStudyIsLockedButUserIsSuperAdmin() {
 		final StudyReference study = createTestStudy(true);
-		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentIbdbUserId();
+		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentWorkbenchUserId();
 		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + Role.SUPERADMIN);
 		UsernamePasswordAuthenticationToken loggedInUser = new UsernamePasswordAuthenticationToken("", "", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
-		
+
 		Assert.assertFalse(this.validator.userLacksPermissionForStudy(study));
 	}
-	
+
 	@Test
 	public void testUserLacksPermissionForStudyWhenStudyIsLockedAndUserNotOwnerNorSuperAdmin() {
 		final StudyReference study = createTestStudy(true);
-		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentIbdbUserId();
+		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentWorkbenchUserId();
 		SimpleGrantedAuthority roleAuthority = new SimpleGrantedAuthority(SecurityUtil.ROLE_PREFIX + Role.ADMIN);
 		UsernamePasswordAuthenticationToken loggedInUser = new UsernamePasswordAuthenticationToken("", "", Lists.newArrayList(roleAuthority));
 		SecurityContextHolder.getContext().setAuthentication(loggedInUser);
-		
+
 		Assert.assertTrue(this.validator.userLacksPermissionForStudy(study));
 	}
 

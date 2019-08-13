@@ -11,6 +11,15 @@
 
 package org.generationcp.commons.util;
 
+import org.generationcp.commons.exceptions.SQLFileException;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
@@ -34,15 +43,6 @@ import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.generationcp.commons.exceptions.SQLFileException;
-import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.manager.api.WorkbenchDataManager;
-import org.generationcp.middleware.pojos.workbench.Project;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 /**
  * A class that provides methods for backing up and restoring MySQL databases.
@@ -378,8 +378,6 @@ public class MySQLUtil {
 		this.executeQuery(connection,
 				"DELETE FROM workbench.workbench_project_activity where project_id = " + programIdToDelete);
 		this.executeQuery(connection,
-				"DELETE FROM workbench.workbench_ibdb_user_map where project_id = " + programIdToDelete);
-		this.executeQuery(connection,
 				"DELETE FROM workbench.workbench_project_user_info where project_id = " + programIdToDelete);
 		this.executeQuery(connection,
 				"DELETE FROM workbench.workbench_project where project_id = " + programIdToDelete);
@@ -414,9 +412,9 @@ public class MySQLUtil {
 
 	protected void updateSequenceTableValues(final String databaseName) {
 		try {
-			this.executeQuery(connection, "USE " + databaseName);
-			this.executeQuery(connection, buildSequenceTableUpdateQueryString("phenotype", "phenotype_id"));
-			this.executeQuery(connection, buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
+			this.executeQuery(this.connection, "USE " + databaseName);
+			this.executeQuery(this.connection, this.buildSequenceTableUpdateQueryString("phenotype", "phenotype_id"));
+			this.executeQuery(this.connection, this.buildSequenceTableUpdateQueryString("nd_experiment", "nd_experiment_id"));
 		} catch (final SQLException e) {
 			MySQLUtil.LOG.error("Cannot update the `sequence` table", e);
 		}

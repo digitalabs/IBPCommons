@@ -10,6 +10,7 @@ import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.service.api.user.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -29,6 +30,8 @@ public class ContextUtilTest {
 	private HttpServletRequest request;
 	@Mock
 	private HttpSession session;
+	@Mock
+	private UserService userService;
 
 	@BeforeClass
 	public static void setupOnce() {
@@ -84,7 +87,7 @@ public class ContextUtilTest {
 		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(contextInfo);
 		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
 
-		Assert.assertEquals(contextInfo.getLoggedInUserId(), ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request));
+		Assert.assertEquals(contextInfo.getLoggedInUserId(), ContextUtil.getCurrentWorkbenchUserId(this.request));
 	}
 
 
@@ -93,7 +96,7 @@ public class ContextUtilTest {
 		Mockito.when(this.session.getAttribute(ContextConstants.SESSION_ATTR_CONTEXT_INFO)).thenReturn(null);
 		Mockito.when(this.request.getSession(Matchers.anyBoolean())).thenReturn(this.session);
 
-		ContextUtil.getCurrentWorkbenchUserId(this.workbenchDataManager, this.request);
+		ContextUtil.getCurrentWorkbenchUserId(this.request);
 	}
 
 	@Test
@@ -132,14 +135,7 @@ public class ContextUtilTest {
 		Mockito.when(this.workbenchDataManager.getProjectById(1L)).thenReturn(ContextUtilTest.testProject);
 
 		Assert.assertEquals(SecurityUtil.decodeToken(ContextUtilTest.SAMPLE_AUTH_TOKEN),
-				ContextUtil.getCurrentWorkbenchUsername(this.workbenchDataManager, this.request));
+				ContextUtil.getCurrentWorkbenchUsername(this.userService, this.request));
 
-	}
-
-	@Test
-	public void testGetUserById() throws Exception {
-		final int testUserId = 5;
-		ContextUtil.getUserById(workbenchDataManager, testUserId);
-		Mockito.verify(workbenchDataManager).getUserById(5);
 	}
 }
