@@ -38,6 +38,16 @@ public class DerivedVariableProcessor {
 			return sum / size;
 		}
 
+		public Double sum(final List<BigDecimal>... args) {
+			double sum = 0;
+			for (final List<BigDecimal> arg : args) {
+				for (final BigDecimal val : arg) {
+					sum += val.doubleValue();
+				}
+			}
+			return sum;
+		}
+
 		public Integer daysdiff(final Date date1, final Date date2) {
 			final boolean isNegative = date2.before(date1);
 			long diffInMillies = Math.abs(date2.getTime() - date1.getTime());

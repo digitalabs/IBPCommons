@@ -13,6 +13,7 @@ import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +27,11 @@ public final class DerivedVariableUtils {
 	private static final String TERM_RIGHT_DELIMITER = "\\}\\}";
 	private static final String TERM_INSIDE_DELIMITERS_REGEX = TERM_LEFT_DELIMITER + "(.*?)" + TERM_RIGHT_DELIMITER;
 	private static final Pattern TERM_INSIDE_DELIMITERS_PATTERN = Pattern.compile(TERM_INSIDE_DELIMITERS_REGEX);
-	// Just include any of the following after implementing the corresponding function: (COUNT|DISTINCT_COUNT|MAX|MIN|SUM)
-	private static final String AGGREGATE_REGEX = "(?i)(AVG)\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
+	// Just include any of the following after implementing the corresponding function: (COUNT|DISTINCT_COUNT|MAX|MIN)
+	private static final String AGGREGATE_REGEX = "(avg|sum)\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
+	private static final String AGGREGATE_ALL_INPUT_REGEX = "\\((\\{\\{(\\w+)}})(,[\\s]?\\{\\{(\\w+)}})*\\)";
 	private static final String AGGREGATE_INPUT_REGEX = "(\\{\\{\\w+}})";
+	public static final List<String> AGGREGATE_FUNCTIONS = Arrays.asList("avg", "sum");
 	/**
 	 * We use braces externally for clarity and replace them internally as they are map literals in jexl
 	 */
@@ -224,16 +227,33 @@ public final class DerivedVariableUtils {
 	 * @return the list of input variables inside the aggregate functions
 	 */
 	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isWrapped) {
-		final List<String> aggregateInputVariables = new ArrayList<>();
 		Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
 		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+		return extractAggregateInputVariables(isWrapped, aggregateMatcher);
+	}
+
+	public static Map<String, List<String>> getAggregateFunctionInputVariablesMap(final String formula) {
+		final Map<String, List<String>> aggregateFunctionInputVariablesMap = new HashMap<>();
+		for(final String aggregateFunction: AGGREGATE_FUNCTIONS) {
+			final String aggregateRegex = "(" + aggregateFunction + ")" + AGGREGATE_ALL_INPUT_REGEX;
+			Pattern aggregatePattern = Pattern.compile(aggregateRegex);
+			Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+			final List<String> aggregateInputVariables = extractAggregateInputVariables(true, aggregateMatcher);
+			aggregateFunctionInputVariablesMap.put(aggregateFunction, aggregateInputVariables);
+		}
+		return aggregateFunctionInputVariablesMap;
+	}
+
+	private static List<String> extractAggregateInputVariables(
+		final boolean isWrapped, final Matcher aggregateMatcher) {
+		final List<String> aggregateInputVariables = new ArrayList<>();
 		while (aggregateMatcher.find()) {
 			final String aggregateString = aggregateMatcher.group();
 			final Pattern aggregateInputPattern = Pattern.compile(AGGREGATE_INPUT_REGEX);
 			final Matcher aggregateInputMatcher = aggregateInputPattern.matcher(aggregateString);
-			while(aggregateInputMatcher.find()) {
-				String inputVariable = aggregateInputMatcher.group().replaceAll("(\\{)","").replaceAll("}","");
-				inputVariable = isWrapped? DerivedVariableUtils.wrapTerm(inputVariable) : inputVariable;
+			while (aggregateInputMatcher.find()) {
+				String inputVariable = aggregateInputMatcher.group().replaceAll("(\\{)", "").replaceAll("}", "");
+				inputVariable = isWrapped ? DerivedVariableUtils.wrapTerm(inputVariable) : inputVariable;
 				aggregateInputVariables.add(inputVariable);
 			}
 		}
