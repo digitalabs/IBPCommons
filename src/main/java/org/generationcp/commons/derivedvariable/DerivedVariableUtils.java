@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -68,25 +69,43 @@ public final class DerivedVariableUtils {
 	/**
 	 * Extract values of parameters from the measurement (ObservationUnitRow)
 	 *
-	 * @param termMissingData list to be filled with term labels with missing data
+	 * @param parameters
+	 * @param observationUnitRow
+	 * @param measurementVariablesMap
+	 * @param aggregateInputVariables
+	 * @param environmentInputVariables
+	 * @return list of term labels with missing data
 	 * @throws ParseException
 	 */
-	public static void extractValues(
+	public static Set<String> extractValues(
 		final Map<String, Object> parameters, final ObservationUnitRow observationUnitRow,
-		final Map<Integer, MeasurementVariable> measurementVariablesMap,
-		final Set<String> termMissingData, final List<String> aggregateInputVariables) throws ParseException {
+		final Map<Integer, MeasurementVariable> measurementVariablesMap, final List<String> aggregateInputVariables,
+		final List<String> environmentInputVariables) throws ParseException {
 
-		if (observationUnitRow != null && observationUnitRow.getVariables() != null) {
-			for (final Map.Entry<String, ObservationUnitData> entry : observationUnitRow.getVariables().entrySet()) {
-				final ObservationUnitData observationUnitData = entry.getValue();
-				String term = String.valueOf(observationUnitData.getVariableId());
-				term = StringUtils.deleteWhitespace(term);
-				term = wrapTerm(term);
-				if (parameters.containsKey(term) && !aggregateInputVariables.contains(term)) {
-					parameters.put(term, getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
+		final Set<String> termMissingData = new HashSet<>();
+
+		if (observationUnitRow != null && observationUnitRow.getVariables() != null
+			&& observationUnitRow.getEnvironmentVariables() != null) {
+			for (final Map.Entry<String, Object> parameterItem : parameters.entrySet()) {
+				final String termId = removeDelimiter(parameterItem.getKey());
+				final String termName = measurementVariablesMap.get(Integer.valueOf(termId)).getName();
+				final ObservationUnitData observationUnitData;
+
+				// If a variable is present in both environment and observation levels, read the input variable data according
+				// to where the user specified to. environmentInputVariables contains the ids of input variables that should be
+				// read from environment level.
+				if (environmentInputVariables.contains(termId)) {
+					observationUnitData = observationUnitRow.getEnvironmentVariables().get(termName);
+				} else {
+					observationUnitData = observationUnitRow.getVariables().get(termName);
+				}
+				if (!aggregateInputVariables.contains(parameterItem.getKey())) {
+					parameterItem.setValue(getMeasurementValue(observationUnitData, measurementVariablesMap, termMissingData));
 				}
 			}
 		}
+
+		return termMissingData;
 	}
 
 	private static Object getMeasurementValue(
@@ -108,7 +127,7 @@ public final class DerivedVariableUtils {
 	public static Object parseValue(final Object valueToParse, final MeasurementVariable measurementVariable,
 		final Set<String> termMissingData) throws ParseException {
 
-		String value = (String) valueToParse;
+		final String value = (String) valueToParse;
 
 		if (StringUtils.isBlank(value) && termMissingData != null) {
 			termMissingData.add(measurementVariable.getLabel());
@@ -164,6 +183,10 @@ public final class DerivedVariableUtils {
 		return TERM_INTERNAL_DELIMITER + term + TERM_INTERNAL_DELIMITER;
 	}
 
+	private static String removeDelimiter(final String termWithDelimiter) {
+		return StringUtils.removeEnd(StringUtils.removeStart(termWithDelimiter, TERM_INTERNAL_DELIMITER), TERM_INTERNAL_DELIMITER);
+	}
+
 	/**
 	 * @param formulaVariableMap to retrieve variable names by term id
 	 * @return the formula definition with variable names and <strong>no</strong> delimiters
@@ -191,7 +214,7 @@ public final class DerivedVariableUtils {
 		String replaceText = formulaDefinition;
 		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
 		while (matcher.find()) {
-			String parameter = matcher.group(0);
+			final String parameter = matcher.group(0);
 			final String termId = matcher.group(1);
 			if (formulaVariableMap.containsKey(termId)) {
 				// Replace the termid inside delimiters
@@ -210,7 +233,6 @@ public final class DerivedVariableUtils {
 		String replaceText = formulaDefinition;
 		final Matcher matcher = TERM_INSIDE_DELIMITERS_PATTERN.matcher(formulaDefinition);
 		while (matcher.find()) {
-			String parameter = matcher.group(0);
 			final String name = matcher.group(1);
 			if (formulaVariableMap.containsKey(name)) {
 				// Replace the name inside delimiters
@@ -222,22 +244,22 @@ public final class DerivedVariableUtils {
 	}
 
 	/**
-	 * @param formula - the formula
+	 * @param formula   - the formula
 	 * @param isWrapped - defines whether the values would be wrapped or not
 	 * @return the list of input variables inside the aggregate functions
 	 */
 	public static List<String> getAggregateFunctionInputVariables(final String formula, final boolean isWrapped) {
-		Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
-		Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+		final Pattern aggregatePattern = Pattern.compile(AGGREGATE_REGEX);
+		final Matcher aggregateMatcher = aggregatePattern.matcher(formula);
 		return extractAggregateInputVariables(isWrapped, aggregateMatcher);
 	}
 
 	public static Map<String, List<String>> getAggregateFunctionInputVariablesMap(final String formula) {
 		final Map<String, List<String>> aggregateFunctionInputVariablesMap = new HashMap<>();
-		for(final String aggregateFunction: AGGREGATE_FUNCTIONS) {
+		for (final String aggregateFunction : AGGREGATE_FUNCTIONS) {
 			final String aggregateRegex = "(" + aggregateFunction + ")" + AGGREGATE_ALL_INPUT_REGEX;
-			Pattern aggregatePattern = Pattern.compile(aggregateRegex);
-			Matcher aggregateMatcher = aggregatePattern.matcher(formula);
+			final Pattern aggregatePattern = Pattern.compile(aggregateRegex);
+			final Matcher aggregateMatcher = aggregatePattern.matcher(formula);
 			final List<String> aggregateInputVariables = extractAggregateInputVariables(true, aggregateMatcher);
 			aggregateFunctionInputVariablesMap.put(aggregateFunction, aggregateInputVariables);
 		}

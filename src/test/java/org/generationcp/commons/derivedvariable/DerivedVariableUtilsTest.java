@@ -45,6 +45,7 @@ public class DerivedVariableUtilsTest {
 		final Map<String, ObservationUnitData> observationUnitDataMap = new HashMap<>();
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "1", categoricalValueId));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
@@ -52,12 +53,14 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.CATEGORICAL_VARIABLE.getId());
+		measurementVariable.setName(variableName);
 		final List<ValueReference> possibleValues = new ArrayList<>();
 		possibleValues.add(new ValueReference(categoricalValueId, "ABC", "Value1"));
 		measurementVariable.setPossibleValues(possibleValues);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
 		assertEquals("ABC", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -77,6 +80,7 @@ public class DerivedVariableUtilsTest {
 		final Map<String, ObservationUnitData> observationUnitDataMap = new HashMap<>();
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "1", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
@@ -84,12 +88,14 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.CATEGORICAL_VARIABLE.getId());
+		measurementVariable.setName(variableName);
 		final List<ValueReference> possibleValues = new ArrayList<>();
 		possibleValues.add(new ValueReference(RandomUtils.nextInt(), "ABC", "Value1"));
 		measurementVariable.setPossibleValues(possibleValues);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
 		assertEquals(new BigDecimal(1), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -109,6 +115,7 @@ public class DerivedVariableUtilsTest {
 		final Map<String, ObservationUnitData> observationUnitDataMap = new HashMap<>();
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "20200101", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
@@ -116,9 +123,11 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
+		measurementVariable.setName(variableName);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
 		assertEquals(DateUtil.parseDate("20200101"), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -140,6 +149,7 @@ public class DerivedVariableUtilsTest {
 		// Create invalid date observation unit data
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "20200101456", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
@@ -147,9 +157,11 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
+		measurementVariable.setName(variableName);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
 	}
 
@@ -168,6 +180,7 @@ public class DerivedVariableUtilsTest {
 
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "123", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
@@ -175,9 +188,11 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+		measurementVariable.setName(variableName);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
 		assertEquals(new BigDecimal(123), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -198,18 +213,56 @@ public class DerivedVariableUtilsTest {
 
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "123", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
-		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
 		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setName(variableName);
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, Collections.singletonList(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
+		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap,
+			Collections.singletonList(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))), new ArrayList<String>());
 
 		assertNull(parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
+
+	}
+
+	@Test
+	public void testExtractValuesFromObservationUnitRowVariableIsInEnvironmentLevel() throws ParseException {
+
+		final String variableName = RandomStringUtils.randomAlphanumeric(10);
+		final int variableTermid = RandomUtils.nextInt();
+
+		final Map<String, Object> parameters = new HashMap<>();
+		final Set<String> termMissingData = new HashSet<>();
+		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
+
+		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
+		final Map<String, ObservationUnitData> observationUnitDataMap = new HashMap<>();
+
+		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "123", null));
+		observationUnitRow.setEnvironmentVariables(observationUnitDataMap);
+		observationUnitRow.setVariables(new HashMap<String, ObservationUnitData>());
+
+		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setName(variableName);
+		measurementVariable.setTermId(variableTermid);
+		measurementVariable.setLabel(variableName);
+		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+		measurementVariableMap.put(variableTermid, measurementVariable);
+
+		// Put the input variable in environmentInputVariables list so that its data will be read
+		// from observationUnitRow.getEnvironmentVariables.
+		final List<String> environmentInputVariables = Arrays.asList(String.valueOf(variableTermid));
+
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), environmentInputVariables);
+
+		assertEquals(new BigDecimal(123), parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
 	}
 
@@ -228,16 +281,19 @@ public class DerivedVariableUtilsTest {
 
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "ABC", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
 		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setName(variableName);
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>());
 
 		assertEquals("ABC", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 
@@ -258,6 +314,7 @@ public class DerivedVariableUtilsTest {
 
 		observationUnitDataMap.put(variableName, this.createObservationUnitDataTestData(variableTermid, "", null));
 		observationUnitRow.setVariables(observationUnitDataMap);
+		observationUnitRow.setEnvironmentVariables(new HashMap<String, ObservationUnitData>());
 
 		// Create Categorical Measurement Variable with Categorical Values. One of the categorical values matches the observation unit data.
 		final Map<Integer, MeasurementVariable> measurementVariableMap = new HashMap<>();
@@ -265,9 +322,11 @@ public class DerivedVariableUtilsTest {
 		measurementVariable.setTermId(variableTermid);
 		measurementVariable.setLabel(variableName);
 		measurementVariable.setDataTypeId(DataType.NUMERIC_VARIABLE.getId());
+		measurementVariable.setName(variableName);
 		measurementVariableMap.put(variableTermid, measurementVariable);
 
-		DerivedVariableUtils.extractValues(parameters, observationUnitRow, measurementVariableMap, termMissingData, new ArrayList<String>());
+		termMissingData.addAll(DerivedVariableUtils
+			.extractValues(parameters, observationUnitRow, measurementVariableMap, new ArrayList<String>(), new ArrayList<String>()));
 
 		assertEquals("", parameters.get(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid))));
 		assertEquals(variableName, termMissingData.toArray()[0]);
