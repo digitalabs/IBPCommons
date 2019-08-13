@@ -349,7 +349,7 @@ public class DerivedVariableProcessorTest {
 		formula = replaceDelimiters(formula);
 		this.processor.setData(data);
 		String result = this.processor.evaluateFormula(formula, terms);
-		Assert.assertEquals("Should evaluate avg function", "62.7", result);
+		Assert.assertEquals("Should evaluate sum function", "62.7", result);
 
 		formula = "fn:sum({{" + TERM_1 + "}}, {{PH_M_cm}})";
 		final List<Object> term2Data = new ArrayList<>();
@@ -361,7 +361,7 @@ public class DerivedVariableProcessorTest {
 		this.processor = new DerivedVariableProcessor();
 		this.processor.setData(data);
 		result = this.processor.evaluateFormula(formula, terms);
-		Assert.assertEquals("Should evaluate avg function", "211.05", result);
+		Assert.assertEquals("Should evaluate sum function", "211.05", result);
 	}
 
 	@Test(expected = Exception.class)
