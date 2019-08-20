@@ -9,11 +9,13 @@ import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.domain.ontology.FormulaVariable;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.generationcp.middleware.util.Util;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -96,6 +98,7 @@ public final class DerivedVariableUtils {
 				// read from environment level.
 				if (environmentInputVariables.contains(termId)) {
 					observationUnitData = observationUnitRow.getEnvironmentVariables().get(termName);
+					convertEnvironmentDateVarToYYYYMMDDFormat(observationUnitData, measurementVariablesMap.get(observationUnitData.getVariableId()));
 				} else {
 					observationUnitData = observationUnitRow.getVariables().get(termName);
 				}
@@ -106,6 +109,14 @@ public final class DerivedVariableUtils {
 		}
 
 		return termMissingData;
+	}
+
+	static void convertEnvironmentDateVarToYYYYMMDDFormat(final ObservationUnitData data, final MeasurementVariable measurementVariable) throws ParseException{
+		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementVariable.getDataTypeId())) {
+			final Date date = DateUtil.parseDate(data.getValue(), Util.FRONTEND_DATE_FORMAT);
+			final String convertedDate = DateUtil.formatDateAsStringValue(date, Util.DATE_AS_NUMBER_FORMAT);
+			data.setValue(convertedDate);
+		}
 	}
 
 	private static Object getMeasurementValue(

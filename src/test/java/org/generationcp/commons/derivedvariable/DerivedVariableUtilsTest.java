@@ -5,6 +5,7 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.dms.ValueReference;
 import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.DataType;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
@@ -38,7 +39,6 @@ public class DerivedVariableUtilsTest {
 		final int categoricalValueId = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -73,7 +73,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -108,7 +107,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -140,7 +138,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -172,7 +169,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -205,7 +201,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -237,7 +232,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -273,7 +267,6 @@ public class DerivedVariableUtilsTest {
 		final int variableTermid = RandomUtils.nextInt();
 
 		final Map<String, Object> parameters = new HashMap<>();
-		final Set<String> termMissingData = new HashSet<>();
 		parameters.put(DerivedVariableUtils.wrapTerm(String.valueOf(variableTermid)), null);
 
 		final ObservationUnitRow observationUnitRow = new ObservationUnitRow();
@@ -473,6 +466,17 @@ public class DerivedVariableUtilsTest {
 		assertTrue(result.contains(new BigDecimal(2)));
 		assertTrue(result.contains(new BigDecimal(3)));
 
+	}
+
+	@Test
+	public void testConvertEnvironmentDateVarToYYYYMMDDFormat() throws ParseException {
+		final ObservationUnitData data = this.createObservationUnitDataTestData(TermId.DATE_VARIABLE.getId(), "2019-08-21", null);
+		final MeasurementVariable measurementVariable = new MeasurementVariable();
+		measurementVariable.setTermId(TermId.DATE_VARIABLE.getId());
+		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
+
+		DerivedVariableUtils.convertEnvironmentDateVarToYYYYMMDDFormat(data, measurementVariable);
+		Assert.assertEquals("20190821", data.getValue());
 	}
 
 	private ObservationUnitData createObservationUnitDataTestData(final Integer VARIABLE_ID, final String value, final Integer cValueId) {
