@@ -125,19 +125,17 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	void validateListUserName(final String listUserName) throws FileParsingException {
-		try {
-			if (StringUtils.isNotEmpty(listUserName)) {
+		if (StringUtils.isNotEmpty(listUserName)) {
+			final Long numberOfUsersWithSpecifiedName = this.userService.countUserByFullname(listUserName);
+			if(numberOfUsersWithSpecifiedName == 0) {
+				throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
+			} else if(numberOfUsersWithSpecifiedName == 1) {
 				final WorkbenchUser user = this.userService.getUserByFullname(listUserName);
-				if (user != null) {
-					this.importedList.setUserId(user.getUserid());
-				} else {
-					throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
-				}
+				this.importedList.setUserId(user.getUserid());
+			} else {
+				throw new FileParsingException(String.format(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER, listUserName));
 			}
-		} catch (final MiddlewareQueryException e) {
-			throw new FileParsingException(String.format(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER, listUserName));
 		}
-
 	}
 
 	private void parseConditions() {
@@ -248,6 +246,7 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 			this.parseDescriptionSheet();
 			return this.importedList;
 		} catch (final ParseException e) {
+			System.out.println("INVALID");
 			CrossesListDescriptionSheetParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(
 					this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, new Object[] {}, Locale.getDefault()));

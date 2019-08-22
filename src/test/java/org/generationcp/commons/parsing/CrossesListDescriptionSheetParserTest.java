@@ -13,14 +13,14 @@ import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.user.UserService;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import junit.framework.Assert;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CrossesListDescriptionSheetParserTest {
@@ -28,6 +28,7 @@ public class CrossesListDescriptionSheetParserTest {
 	private final static String CROSSES_LIST_NO_LIST_DATE = "CrossesListNoListDate.xls";
 	private final static String CROSSES_LIST = "CrossesList.xls";
 	private static final String LIST_DATE_IN_XLS_TEST_FILE = "20160722";
+	private static final String TEST_PERSON = "Test Person";
 
 	private final ImportedCrossesList crossesList = new ImportedCrossesList();
 
@@ -45,7 +46,8 @@ public class CrossesListDescriptionSheetParserTest {
 	public void setUp() throws Exception {
 		final WorkbenchUser userTest = new WorkbenchUser();
 		userTest.setUserid(1);
-		Mockito.when(this.userService.getUserByFullname(Matchers.anyString())).thenReturn(userTest);
+		Mockito.when(this.userService.countUserByFullname(ArgumentMatchers.anyString())).thenReturn(new Long(1));
+		Mockito.when(this.userService.getUserByFullname(ArgumentMatchers.anyString())).thenReturn(userTest);
 
 		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userService);
 
@@ -66,46 +68,57 @@ public class CrossesListDescriptionSheetParserTest {
 	}
 
 	@Test
-	public void testEmptyListDate() throws ParseException, FileParsingException {
+	public void testEmptyListDate() throws FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
 		Assert.assertTrue("The list date should be " + this.today,
 				this.crossesListDescriptionSheetParser.getImportedList().getDate().after(this.today));
 	}
 
 	@Test
-	public void testListType() throws ParseException, FileParsingException {
+	public void testListType() throws FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbookNoListDate, null);
-		Assert.assertTrue("The list type should be " + GermplasmListType.F1.name(),
-				this.crossesListDescriptionSheetParser.getImportedList().getType()
-						.equals(GermplasmListType.F1.name()));
+		Assert.assertEquals("The list type should be " + GermplasmListType.F1.name(),
+				this.crossesListDescriptionSheetParser.getImportedList().getType(), GermplasmListType.F1.name());
 	}
 
 	@Test
 	public void testWithListDate() throws ParseException, FileParsingException {
 		this.crossesListDescriptionSheetParser.parseWorkbook(this.workbook, null);
-		Assert.assertTrue("The list date should be " + CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE,
-				this.crossesListDescriptionSheetParser.getImportedList().getDate()
-						.equals(DateUtil.parseDate(CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE)));
+		Assert.assertEquals("The list date should be " + CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE,
+			DateUtil.parseDate(CrossesListDescriptionSheetParserTest.LIST_DATE_IN_XLS_TEST_FILE), this.crossesListDescriptionSheetParser.getImportedList().getDate());
 	}
 
 	@Test
-	public void testValidateListUserNameWithoutError() {
+	public void testValidateListUserName() {
+		Mockito.when(this.userService.countUserByFullname(TEST_PERSON)).thenReturn(new Long(1));
 		try {
-			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
+			this.crossesListDescriptionSheetParser.validateListUserName(TEST_PERSON);
 		} catch (final FileParsingException e) {
 			Assert.fail("There should be no error.");
 		}
 	}
 
 	@Test
-	public void testValidateListUserNameWithError() {
-		Mockito.when(this.userService.getUserByFullname(Matchers.anyString())).thenReturn(null);
+	public void testValidateListUserNameInvalidListUser() {
+		Mockito.when(this.userService.countUserByFullname(TEST_PERSON)).thenReturn(new Long(0));
 		try {
-			this.crossesListDescriptionSheetParser.validateListUserName("Test Person");
+			this.crossesListDescriptionSheetParser.validateListUserName(TEST_PERSON);
 			Assert.fail("There should an error since the method getPersonByFullName returned null.");
 		} catch (final FileParsingException e) {
 			Assert.assertEquals("The error message should be " + CrossesListDescriptionSheetParser.INVALID_LIST_USER,
 					CrossesListDescriptionSheetParser.INVALID_LIST_USER, e.getMessage());
+		}
+	}
+
+	@Test
+	public void testValidateListUserNameMoreThanOneUser () {
+		Mockito.when(this.userService.countUserByFullname(TEST_PERSON)).thenReturn(new Long(2));
+		try {
+			this.crossesListDescriptionSheetParser.validateListUserName(TEST_PERSON);
+			Assert.fail("There should an error since the method getPersonByFullName returned null.");
+		} catch (final FileParsingException e) {
+			Assert.assertEquals("The error message should be " + String.format(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER, TEST_PERSON),
+				String.format(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER, TEST_PERSON), e.getMessage());
 		}
 	}
 }
