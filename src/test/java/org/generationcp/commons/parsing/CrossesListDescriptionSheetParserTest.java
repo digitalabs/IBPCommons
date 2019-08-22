@@ -46,7 +46,7 @@ public class CrossesListDescriptionSheetParserTest {
 	public void setUp() throws Exception {
 		final WorkbenchUser userTest = new WorkbenchUser();
 		userTest.setUserid(1);
-		Mockito.when(this.userService.countUserByFullname(ArgumentMatchers.anyString())).thenReturn(new Long(1));
+		Mockito.when(this.userService.countUsersByFullname(ArgumentMatchers.anyString())).thenReturn(new Long(1));
 		Mockito.when(this.userService.getUserByFullname(ArgumentMatchers.anyString())).thenReturn(userTest);
 
 		this.crossesListDescriptionSheetParser = new CrossesListDescriptionSheetParser<>(this.crossesList, this.userService);
@@ -90,7 +90,7 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Test
 	public void testValidateListUserName() {
-		Mockito.when(this.userService.countUserByFullname(TEST_PERSON)).thenReturn(new Long(1));
+		Mockito.when(this.userService.countUsersByFullname(TEST_PERSON)).thenReturn(new Long(1));
 		try {
 			this.crossesListDescriptionSheetParser.validateListUserName(TEST_PERSON);
 		} catch (final FileParsingException e) {
@@ -100,7 +100,7 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Test
 	public void testValidateListUserNameInvalidListUser() {
-		Mockito.when(this.userService.countUserByFullname(TEST_PERSON)).thenReturn(new Long(0));
+		Mockito.when(this.userService.countUsersByFullname(TEST_PERSON)).thenReturn(new Long(0));
 		try {
 			this.crossesListDescriptionSheetParser.validateListUserName(TEST_PERSON);
 			Assert.fail("There should an error since the method getPersonByFullName returned null.");
@@ -112,7 +112,7 @@ public class CrossesListDescriptionSheetParserTest {
 
 	@Test
 	public void testValidateListUserNameMoreThanOneUser () {
-		Mockito.when(this.userService.countUserByFullname(TEST_PERSON)).thenReturn(new Long(2));
+		Mockito.when(this.userService.countUsersByFullname(TEST_PERSON)).thenReturn(new Long(2));
 		try {
 			this.crossesListDescriptionSheetParser.validateListUserName(TEST_PERSON);
 			Assert.fail("There should an error since the method getPersonByFullName returned null.");
