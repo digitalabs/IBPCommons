@@ -1,6 +1,8 @@
 
 package org.generationcp.commons.workbook.generator;
 
+import javax.annotation.Resource;
+
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -12,8 +14,6 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.service.api.OntologyService;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Resource;
 
 @Component
 public class CodesSheetGenerator {
