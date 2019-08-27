@@ -51,7 +51,7 @@ public class CodesSheetUserRowGeneratorTest {
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
 
 		this.userList = UserTestDataInitializer.createWorkbenchUserList();
-		Mockito.when(this.userService.getUsersByProjectId(ArgumentMatchers.anyLong(), ArgumentMatchers.anyString()))
+		Mockito.when(this.userService.getUsersByProjectId(ArgumentMatchers.anyLong()))
 			.thenReturn(this.userList);
 
 		Mockito.when(this.userService.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
