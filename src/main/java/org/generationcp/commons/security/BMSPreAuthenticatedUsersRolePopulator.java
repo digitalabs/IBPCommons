@@ -67,12 +67,4 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 		});
 
 	}
-
-	void setUserService(final UserService userService) {
-		this.userService = userService;
-	}
-
-	void setTransactionManager(final PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
 }
