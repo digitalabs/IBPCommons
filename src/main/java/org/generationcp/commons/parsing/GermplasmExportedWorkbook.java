@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.pojo.GermplasmParents;
-import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.commons.workbook.generator.GermplasmAttributesWorkbookExporter;
 import org.generationcp.commons.workbook.generator.GermplasmNamesWorkbookExporter;
@@ -82,9 +81,6 @@ public class GermplasmExportedWorkbook {
 
 	@Resource
 	private GermplasmNamesWorkbookExporter namesGenerator;
-
-	@Resource
-	private ContextUtil contextUtil;
 	
 	/**
 	 * Default constructor
