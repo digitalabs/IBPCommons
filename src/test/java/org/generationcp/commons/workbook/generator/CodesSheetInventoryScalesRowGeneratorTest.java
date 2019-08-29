@@ -20,6 +20,7 @@ public class CodesSheetInventoryScalesRowGeneratorTest {
 
 	private static final String FOR_KG_WEIGHED = "for kg - Weighed";
 	private static final String SEED_AMOUNT_KG = "SEED_AMOUNT_kg";
+	private static final String CROP_NAME = "maize";
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);

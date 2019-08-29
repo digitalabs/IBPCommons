@@ -1,14 +1,6 @@
 
 package org.generationcp.commons.parsing;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -29,6 +21,13 @@ import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.pojos.GermplasmList;
+
+import javax.annotation.Resource;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow and the ExcelCellStyleBuilder to construct a
@@ -587,7 +586,7 @@ public class GermplasmExportedWorkbook {
 	}
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
-		int actualRow = startingRow;
+		final int actualRow = startingRow;
 		this.attributesGenerator.setColumnsInfo(this.input.getCurrentColumnsInfo());
 		if (this.attributesGenerator.hasItems()) {
 			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));

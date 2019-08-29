@@ -1,9 +1,13 @@
 
 package org.generationcp.commons.security;
 
+import org.generationcp.commons.context.ContextInfo;
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
+import org.generationcp.middleware.manager.api.WorkbenchDataManager;
+import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
+import org.generationcp.middleware.service.api.permission.PermissionService;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationDetailsSource;
@@ -17,8 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDetailsSource<HttpServletRequest, GrantedAuthoritiesContainer> {
 
@@ -26,7 +29,13 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 	private UserService userService;
 
 	@Autowired
+	private WorkbenchDataManager workbenchDataManager;
+
+	@Autowired
 	private PlatformTransactionManager transactionManager;
+
+	@Autowired
+	private PermissionService permissionService;
 
 	@Override
 	public GrantedAuthoritiesContainer buildDetails(final HttpServletRequest request) {
@@ -36,28 +45,26 @@ public class BMSPreAuthenticatedUsersRolePopulator implements AuthenticationDeta
 
 			public PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails doInTransaction(final TransactionStatus status) {
 				try {
-					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(BMSPreAuthenticatedUsersRolePopulator.this.userService, request);
+					final WorkbenchUser user = ContextUtil.getCurrentWorkbenchUser(userService, request);
 
-					final List<GrantedAuthority> role = new ArrayList<>();
-					role.addAll(SecurityUtil.getRolesAsAuthorities(user));
+					final ContextInfo requestContextInfo = ContextUtil.getContextInfoFromRequest(request);
+					final Project project = workbenchDataManager.getProjectById(requestContextInfo.getSelectedProjectId());
 
-					return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, role);
+					// FIXME Authentication IBP-2843
 
+					final Collection<? extends GrantedAuthority> authorities =
+						SecurityUtil.getAuthorities(permissionService.getPermissions( //
+							user.getUserid(), //
+							project.getCropType().getCropName(), //
+							requestContextInfo.getSelectedProjectId().intValue()));
+
+					return new PreAuthenticatedGrantedAuthoritiesWebAuthenticationDetails(request, authorities);
 				} catch (final MiddlewareQueryException e) {
-
 					throw new AuthenticationServiceException("Data access error while resolving Workbench user roles.", e);
 				}
 			}
 
 		});
 
-	}
-
-	void setUserService(final UserService userService) {
-		this.userService = userService;
-	}
-
-	void setTransactionManager(final PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 }

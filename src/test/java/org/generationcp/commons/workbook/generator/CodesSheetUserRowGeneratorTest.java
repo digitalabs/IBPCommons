@@ -1,8 +1,6 @@
 
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -18,16 +16,20 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class CodesSheetUserRowGeneratorTest {
 
 	private static final String TEST_PERSON = "Test Person";
 	private static final String USER_ID = "1";
+	private static final String CROP_NAME = "maize";
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);
@@ -49,7 +51,8 @@ public class CodesSheetUserRowGeneratorTest {
 		Mockito.when(this.contextUtil.getProjectInContext()).thenReturn(ProjectTestDataInitializer.createProject());
 
 		this.userList = UserTestDataInitializer.createWorkbenchUserList();
-		Mockito.when(this.userService.getUsersByProjectId(Matchers.anyLong())).thenReturn(this.userList);
+		Mockito.when(this.userService.getUsersByProjectId(ArgumentMatchers.anyLong()))
+			.thenReturn(this.userList);
 
 		Mockito.when(this.userService.getPersonById(Matchers.anyInt())).thenReturn(PersonTestDataInitializer.createPerson());
 	}
