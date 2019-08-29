@@ -20,7 +20,6 @@ public class CodesSheetListTypeRowGeneratorTest {
 
 	private static final String GENERIC_LIST = "Generic List";
 	private static final String LST = "LST";
-	private static final String CROP_NAME = "maize";
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");

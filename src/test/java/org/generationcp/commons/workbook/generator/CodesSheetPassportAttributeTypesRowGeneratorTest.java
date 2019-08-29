@@ -21,7 +21,6 @@ public class CodesSheetPassportAttributeTypesRowGeneratorTest {
 
 	private static final String TAXONOMY = "Taxonomy";
 	private static final String TAXNO = "TAXNO";
-	private static final String CROP_NAME = "maize";
 
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
