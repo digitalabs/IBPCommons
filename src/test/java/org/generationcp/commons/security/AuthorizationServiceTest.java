@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuthorizationUtilTest {
+public class AuthorizationServiceTest {
 
 	private static final String PASSWORD = "admin2";
 	private static final String USERNAME = "admin1";
@@ -31,7 +31,7 @@ public class AuthorizationUtilTest {
 	private UserService userService;
 
 	@InjectMocks
-	private AuthorizationUtil authorizationUtil;
+	private AuthorizationService authorizationService;
 
 	@Before
 	public void setup() {
@@ -52,7 +52,7 @@ public class AuthorizationUtilTest {
 
 		Mockito.when(userService.getUserByUsername(USERNAME)).thenReturn(workbenchUser);
 
-		Assert.assertTrue(authorizationUtil.isSuperAdminUser());
+		Assert.assertTrue(authorizationService.isSuperAdminUser());
 	}
 	
 	@Test
@@ -66,6 +66,6 @@ public class AuthorizationUtilTest {
 
 		Mockito.when(userService.getUserByUsername(USERNAME)).thenReturn(workbenchUser);
 
-		Assert.assertFalse(authorizationUtil.isSuperAdminUser());
+		Assert.assertFalse(authorizationService.isSuperAdminUser());
 	}
 }

@@ -3,17 +3,15 @@ package org.generationcp.commons.security;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-
-// TODO Rename to AuthorizationService
-@Component
-public class AuthorizationUtil {
+@Service
+public class AuthorizationService {
 
 	@Autowired
 	private UserService userService;
 
-	public AuthorizationUtil() {
+	public AuthorizationService() {
 	}
 
 	public Boolean isSuperAdminUser() {
