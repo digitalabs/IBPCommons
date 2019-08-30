@@ -1,12 +1,12 @@
 
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.ExcelWorkbookRow;
+
+import java.util.List;
 
 abstract class CodesSheetRowGenerator<SOURCE> {
 
