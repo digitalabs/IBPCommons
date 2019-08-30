@@ -14,7 +14,6 @@ import org.generationcp.commons.parsing.pojo.ImportedFactor;
 import org.generationcp.commons.parsing.pojo.ImportedVariate;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.middleware.domain.gms.GermplasmListType;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.pojos.workbench.WorkbenchUser;
 import org.generationcp.middleware.service.api.user.UserService;
 import org.slf4j.Logger;
@@ -125,19 +124,17 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 	}
 
 	void validateListUserName(final String listUserName) throws FileParsingException {
-		try {
-			if (StringUtils.isNotEmpty(listUserName)) {
+		if (StringUtils.isNotEmpty(listUserName)) {
+			final Long numberOfUsersWithSpecifiedName = this.userService.countUsersByFullname(listUserName);
+			if(numberOfUsersWithSpecifiedName == 0) {
+				throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
+			} else if(numberOfUsersWithSpecifiedName == 1) {
 				final WorkbenchUser user = this.userService.getUserByFullname(listUserName);
-				if (user != null) {
-					this.importedList.setUserId(user.getUserid());
-				} else {
-					throw new FileParsingException(CrossesListDescriptionSheetParser.INVALID_LIST_USER);
-				}
+				this.importedList.setUserId(user.getUserid());
+			} else {
+				throw new FileParsingException(String.format(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER, listUserName));
 			}
-		} catch (final MiddlewareQueryException e) {
-			throw new FileParsingException(String.format(CrossesListDescriptionSheetParser.MORE_THAN_ONE_USER, listUserName));
 		}
-
 	}
 
 	private void parseConditions() {
