@@ -245,7 +245,6 @@ public class CrossesListDescriptionSheetParser<T extends ImportedDescriptionDeta
 			this.parseDescriptionSheet();
 			return this.importedList;
 		} catch (final ParseException e) {
-			System.out.println("INVALID");
 			CrossesListDescriptionSheetParser.LOG.debug(e.getMessage(), e);
 			throw new FileParsingException(
 					this.messageSource.getMessage(AbstractExcelFileParser.FILE_INVALID, new Object[] {}, Locale.getDefault()));
