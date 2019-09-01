@@ -18,7 +18,6 @@ public class CodesSheetGeneratorTest {
 	private static final String FCODE = "fcode";
 	private static final String INFORMATION_TYPE = "Information Type";
 	private static final String SECTION = "Section";
-	private static final String CROP_NAME = "maize";
 
 	HSSFWorkbook wb = new HSSFWorkbook();
 	ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);

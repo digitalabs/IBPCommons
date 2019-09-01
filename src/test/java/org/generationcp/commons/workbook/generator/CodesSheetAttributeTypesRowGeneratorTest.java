@@ -21,7 +21,6 @@ public class CodesSheetAttributeTypesRowGeneratorTest {
 
 	private static final String NOTES = "NOTES";
 	private static final String NOTE = "NOTE";
-	private static final String CROP_NAME = "maize";
 
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");

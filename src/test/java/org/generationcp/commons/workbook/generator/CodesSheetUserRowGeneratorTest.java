@@ -29,7 +29,6 @@ public class CodesSheetUserRowGeneratorTest {
 
 	private static final String TEST_PERSON = "Test Person";
 	private static final String USER_ID = "1";
-	private static final String CROP_NAME = "maize";
 	private final HSSFWorkbook wb = new HSSFWorkbook();
 	private final HSSFSheet codesSheet = this.wb.createSheet("Codes");
 	private final ExcelCellStyleBuilder sheetStyles = new ExcelCellStyleBuilder(this.wb);

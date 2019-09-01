@@ -16,10 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
-@Component
-public class SecurityUtil {
+public abstract class SecurityUtil {
 
 	/**
 	 * While role prefix is configurable and can be set to empty, having a prefix is recommended. See JavaDoc for
@@ -27,10 +25,8 @@ public class SecurityUtil {
 	 */
 	public static final String ROLE_PREFIX = "ROLE_";
 
-	@Autowired
-	private UserService userService;
-
-	public SecurityUtil() {
+	private SecurityUtil() {
+		// Utility class
 	}
 
 	public static String getLoggedInUserName() {
@@ -57,16 +53,6 @@ public class SecurityUtil {
 			}
 		}
 		return authorities;
-	}
-
-	public WorkbenchUser getLoggedInUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null) {
-			String username = authentication.getName();
-			final WorkbenchUser workbenchUser = this.userService.getUserByUsername(username);
-			return workbenchUser;
-		}
-		return null;
 	}
 
 	public static String getEncodedToken() {

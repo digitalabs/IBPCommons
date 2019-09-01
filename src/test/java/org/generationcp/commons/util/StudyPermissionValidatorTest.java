@@ -1,6 +1,6 @@
 package org.generationcp.commons.util;
 
-import org.generationcp.commons.security.AuthorizationUtil;
+import org.generationcp.commons.security.AuthorizationService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.manager.api.StudyDataManager;
@@ -23,7 +23,7 @@ public class StudyPermissionValidatorTest {
 	private StudyDataManager studyDataManager;
 
 	@Mock
-	private AuthorizationUtil authorizationUtil;
+	private AuthorizationService authorizationService;
 
 	@InjectMocks
 	private StudyPermissionValidator validator;
@@ -57,7 +57,7 @@ public class StudyPermissionValidatorTest {
 		final StudyReference study = createTestStudy(true);
 		Mockito.doReturn(USER_ID + 1).when(this.contextUtil).getCurrentWorkbenchUserId();
 
-		Mockito.when(authorizationUtil.isSuperAdminUser()).thenReturn(Boolean.TRUE);
+		Mockito.when(authorizationService.isSuperAdminUser()).thenReturn(Boolean.TRUE);
 
 		Assert.assertFalse(this.validator.userLacksPermissionForStudy(study));
 	}

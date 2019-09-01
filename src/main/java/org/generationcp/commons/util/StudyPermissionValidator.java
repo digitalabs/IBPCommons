@@ -3,7 +3,7 @@ package org.generationcp.commons.util;
 
 import javax.annotation.Resource;
 
-import org.generationcp.commons.security.AuthorizationUtil;
+import org.generationcp.commons.security.AuthorizationService;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.domain.dms.StudyReference;
 import org.generationcp.middleware.manager.api.StudyDataManager;
@@ -20,7 +20,7 @@ public class StudyPermissionValidator {
 	private StudyDataManager studyDataManager;
 
 	@Autowired
-	private AuthorizationUtil authorizationUtil;
+	private AuthorizationService authorizationService;
 
 	public Boolean userLacksPermissionForStudy(final Integer studyId) {
 		final StudyReference study = this.studyDataManager.getStudyReference(studyId);
@@ -36,6 +36,6 @@ public class StudyPermissionValidator {
 	}
 
 	private Boolean userLacksPermissionForStudy(final Boolean isLocked, final Integer ownerId, final Integer currentUserId) {
-		return isLocked && !authorizationUtil.isSuperAdminUser() && !currentUserId.equals(ownerId);
+		return isLocked && !authorizationService.isSuperAdminUser() && !currentUserId.equals(ownerId);
 	}
 }
