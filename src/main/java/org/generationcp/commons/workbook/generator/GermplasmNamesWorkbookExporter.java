@@ -1,16 +1,17 @@
 package org.generationcp.commons.workbook.generator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Component
 public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter<UserDefinedField> {
@@ -26,12 +27,16 @@ public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if(this.columnsInfo != null) {
 			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
+			final Map<String, UserDefinedField> namesTypesMap = new HashMap<>();
+			for (final UserDefinedField userDefinedField: nameTypes) {
+				namesTypesMap.put(userDefinedField.getFname().toUpperCase(), userDefinedField);
+			}
 			final Set<String> addedColumns = this.columnsInfo.getColumns();
-			for (final UserDefinedField field : nameTypes) {
-				final String nameType = field.getFname().toUpperCase();
-				if (addedColumns.contains(nameType)) {
-					addedNameTypesColumns.add(nameType);
-					nameTypesColumns.add(field);
+			for (final String columnName : addedColumns) {
+				final UserDefinedField userDefinedField = namesTypesMap.get(columnName.toUpperCase());
+				if (userDefinedField!=null) {
+					addedNameTypesColumns.add(columnName.toUpperCase());
+					nameTypesColumns.add(userDefinedField);
 				}
 			}
 		}
