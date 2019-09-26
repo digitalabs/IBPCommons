@@ -1,7 +1,12 @@
 package org.generationcp.commons.vaadin.ui;
 
-import java.util.List;
-
+import com.vaadin.data.Item;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -11,12 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import java.util.List;
 
 @Configurable
 public class LotDetailsViewComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
@@ -218,7 +218,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		newItem.getItemProperty(LotDetailsViewComponent.USER).setValue(transaction.getUser());
 
 		if (LotDetailsViewComponent.LOT_DEPOSIT.equals(transaction.getLotStatus())) {
-			this.creationDate.setValue("" + transaction.getDate());
+			this.creationDate.setValue("" + DateUtil.getDateInUIFormat(transaction.getDate()));
 		}
 
 		if (LotDetailsViewComponent.LOT_CLOSED.equals(transaction.getLotStatus()) || LotDetailsViewComponent.LOT_DISCARDED
