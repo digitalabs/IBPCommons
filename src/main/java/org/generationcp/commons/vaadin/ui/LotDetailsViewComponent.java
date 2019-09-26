@@ -6,6 +6,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.inventory.LotDetails;
@@ -218,7 +219,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		newItem.getItemProperty(LotDetailsViewComponent.LIST_NAME).setValue(transaction.getListName());
 		newItem.getItemProperty(LotDetailsViewComponent.USER).setValue(transaction.getUser());
 
-		if (this.creationDate.getValue().equals("")) {
+		if (StringUtils.isEmpty((String) this.creationDate.getValue())) {
 			this.creationDate.setValue("" + DateUtil.formatDateAsStringValue(transaction.getLotDate(), Util.DATE_AS_NUMBER_FORMAT));
 		}
 
