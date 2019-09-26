@@ -218,7 +218,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		newItem.getItemProperty(LotDetailsViewComponent.LIST_NAME).setValue(transaction.getListName());
 		newItem.getItemProperty(LotDetailsViewComponent.USER).setValue(transaction.getUser());
 
-		if (LotDetailsViewComponent.LOT_DEPOSIT.equals(transaction.getLotStatus())) {
+		if (this.creationDate.getValue().equals("")) {
 			this.creationDate.setValue("" + DateUtil.formatDateAsStringValue(transaction.getLotDate(), Util.DATE_AS_NUMBER_FORMAT));
 		}
 
