@@ -1,8 +1,8 @@
 package org.generationcp.commons.vaadin.ui;
 
 
-import java.util.Collection;
-
+import com.vaadin.data.Item;
+import com.vaadin.ui.Table;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -14,9 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.vaadin.data.Item;
 
-import com.vaadin.ui.Table;
+import java.util.Collection;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LotDetailsViewComponentTest {
@@ -96,7 +95,8 @@ public class LotDetailsViewComponentTest {
 		Item item = this.lotDetailsViewComponent.getTable().getItem(lotDetailsViewComponent.getTable().lastItemId());
 
 		Assert.assertEquals(1, lotDetailsViewComponent.getTable().size());
-		Assert.assertEquals("19122016", item.getItemProperty(LotDetailsViewComponent.DATE).getValue());
+		String dateString = (String) item.getItemProperty(LotDetailsViewComponent.DATE).getValue();
+		Assert.assertEquals("Thu Dec 31 00:00:00 ART 2009", dateString);
 		Assert.assertEquals(STATUS, item.getItemProperty(LotDetailsViewComponent.TYPE).getValue());
 		Assert.assertEquals("-50.0", item.getItemProperty(LotDetailsViewComponent.AMOUNT).getValue().toString().replace("g", ""));
 		Assert.assertEquals(LIST_NAME, item.getItemProperty(LotDetailsViewComponent.LIST_NAME).getValue());
