@@ -1,7 +1,12 @@
 package org.generationcp.commons.vaadin.ui;
 
-import java.util.List;
-
+import com.vaadin.data.Item;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.VerticalLayout;
+import org.generationcp.commons.util.DateUtil;
 import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -11,12 +16,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.vaadin.data.Item;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import java.util.List;
 
 @Configurable
 public class LotDetailsViewComponent extends VerticalLayout implements InitializingBean, InternationalizableComponent {
@@ -71,7 +71,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 	public static final String BOLD = "bold";
 	public static final String TRANSACTION_DETAIL_HEADER_TITLE = "The table below shows the transaction details for lot";
 
-	public LotDetailsViewComponent(LotDetails lot) {
+	public LotDetailsViewComponent(final LotDetails lot) {
 		this.lotDetails = lot;
 	}
 
@@ -89,7 +89,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 	public void instantiateComponents() {
 
-		this.lotIdLabel = new Label(LotDetailsViewComponent.LOT + lotDetails.getLotId());
+		this.lotIdLabel = new Label(LotDetailsViewComponent.LOT + this.lotDetails.getLotId());
 		this.lotIdLabel.setDebugId("lotId");
 		this.lotIdLabel.setHeight(25f, 0);
 		this.lotIdLabel.addStyleName("lotLabel");
@@ -99,9 +99,9 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		this.locationLabel.addStyleName(LotDetailsViewComponent.BOLD);
 
 		String lotLocation = "";
-		if (lotDetails.getLocationOfLot() != null) {
-			if (lotDetails.getLocationOfLot().getLname() != null) {
-				lotLocation = lotDetails.getLocationOfLot().getLname();
+		if (this.lotDetails.getLocationOfLot() != null) {
+			if (this.lotDetails.getLocationOfLot().getLname() != null) {
+				lotLocation = this.lotDetails.getLocationOfLot().getLname();
 			}
 		}
 
@@ -112,9 +112,9 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		this.scaleLabel.addStyleName(LotDetailsViewComponent.BOLD);
 
 		String lotScale = "";
-		if (lotDetails.getScaleOfLot() != null) {
-			if (lotDetails.getScaleOfLot().getName() != null) {
-				lotScale = lotDetails.getScaleOfLot().getName();
+		if (this.lotDetails.getScaleOfLot() != null) {
+			if (this.lotDetails.getScaleOfLot().getName() != null) {
+				lotScale = this.lotDetails.getScaleOfLot().getName();
 			}
 		}
 		this.scale = new Label(lotScale);
@@ -136,13 +136,13 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 		String lotScaleAbbr = "";
 
-		if (lotDetails.getLotScaleNameAbbr() != null) {
-			lotScaleAbbr = lotDetails.getLotScaleNameAbbr();
+		if (this.lotDetails.getLotScaleNameAbbr() != null) {
+			lotScaleAbbr = this.lotDetails.getLotScaleNameAbbr();
 		}
 
-		StringBuilder actualBalance = new StringBuilder("");
-		if (lotDetails.getActualLotBalance() != null) {
-			actualBalance.append(lotDetails.getActualLotBalance());
+		final StringBuilder actualBalance = new StringBuilder("");
+		if (this.lotDetails.getActualLotBalance() != null) {
+			actualBalance.append(this.lotDetails.getActualLotBalance());
 			actualBalance.append(lotScaleAbbr);
 		}
 
@@ -152,22 +152,22 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		this.availableBalanceLabel.setDebugId("availableBalance");
 		this.availableBalanceLabel.addStyleName(LotDetailsViewComponent.BOLD);
 
-		StringBuilder availableBalance = new StringBuilder("");
-		if (lotDetails.getAvailableLotBalance() != null) {
-			availableBalance.append(lotDetails.getAvailableLotBalance());
+		final StringBuilder availableBalance = new StringBuilder("");
+		if (this.lotDetails.getAvailableLotBalance() != null) {
+			availableBalance.append(this.lotDetails.getAvailableLotBalance());
 			availableBalance.append(lotScaleAbbr);
 		}
 		this.availableBalance = new Label(availableBalance.toString());
 
-		this.idLabel = new Label(" " + lotDetails.getLotId());
-		idLabel.addStyleName(LotDetailsViewComponent.BOLD);
+		this.idLabel = new Label(" " + this.lotDetails.getLotId());
+		this.idLabel.addStyleName(LotDetailsViewComponent.BOLD);
 		this.tableHeader = new Label(LotDetailsViewComponent.TRANSACTION_DETAIL_HEADER_TITLE);
 		this.tableHeader.setDebugId("tableHeader");
 
 		this.transactionDetailsTabel = new Table();
 		this.transactionDetailsTabel.setWidth("90%");
 		this.transactionDetailsTabel.setPageLength(0);
-		initializeLotEntriesTable(this.transactionDetailsTabel);
+		this.initializeLotEntriesTable(this.transactionDetailsTabel);
 
 	}
 
@@ -194,23 +194,24 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 	}
 
 	public void initializeValues() {
-		this.transactionReportRows = this.inventoryDataManager.getTransactionDetailsForLot(lotDetails.getLotId());
+		this.transactionReportRows = this.inventoryDataManager.getTransactionDetailsForLot(this.lotDetails.getLotId());
 
-		for (TransactionReportRow transaction : this.transactionReportRows) {
+		for (final TransactionReportRow transaction : this.transactionReportRows) {
 			this.addTransactionDetails(transaction);
 		}
 	}
 
-	public void addTransactionDetails(TransactionReportRow transaction) {
+	public void addTransactionDetails(final TransactionReportRow transaction) {
 
-		Item newItem = this.transactionDetailsTabel.addItem(transaction);
+		final Item newItem = this.transactionDetailsTabel.addItem(transaction);
 
-		newItem.getItemProperty(LotDetailsViewComponent.DATE).setValue(transaction.getDate());
+		newItem.getItemProperty(LotDetailsViewComponent.DATE)
+			.setValue(DateUtil.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
 		newItem.getItemProperty(LotDetailsViewComponent.TYPE).setValue(transaction.getLotStatus());
 		String lotScaleAbbr = "";
 
-		if (lotDetails.getLotScaleNameAbbr() != null) {
-			lotScaleAbbr = lotDetails.getLotScaleNameAbbr();
+		if (this.lotDetails.getLotScaleNameAbbr() != null) {
+			lotScaleAbbr = this.lotDetails.getLotScaleNameAbbr();
 		}
 		newItem.getItemProperty(LotDetailsViewComponent.AMOUNT).setValue(transaction.getQuantity() + lotScaleAbbr);
 		newItem.getItemProperty(LotDetailsViewComponent.SEED_SOURCE).setValue("");
@@ -218,12 +219,13 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		newItem.getItemProperty(LotDetailsViewComponent.USER).setValue(transaction.getUser());
 
 		if (LotDetailsViewComponent.LOT_DEPOSIT.equals(transaction.getLotStatus())) {
-			this.creationDate.setValue("" + transaction.getDate());
+			this.creationDate.setValue("" + DateUtil.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
 		}
 
 		if (LotDetailsViewComponent.LOT_CLOSED.equals(transaction.getLotStatus()) || LotDetailsViewComponent.LOT_DISCARDED
 				.equals(transaction.getLotStatus())) {
-			this.lotStatus.setValue(transaction.getLotStatus() + " On " + transaction.getDate());
+			this.lotStatus.setValue(transaction.getLotStatus() + " On " + DateUtil
+				.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
 		}
 
 	}
@@ -301,30 +303,30 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 	}
 
 	public Label getLotIdLabel() {
-		return lotIdLabel;
+		return this.lotIdLabel;
 	}
 
 	public Label getLocation() {
-		return location;
+		return this.location;
 	}
 
 	public Label getScale() {
-		return scale;
+		return this.scale;
 	}
 
 	public Label getActualBalance() {
-		return actualBalance;
+		return this.actualBalance;
 	}
 
 	public Label getAvailableBalance() {
-		return availableBalance;
+		return this.availableBalance;
 	}
 
 	public VerticalLayout getPanelContentLayout() {
-		return panelContentLayout;
+		return this.panelContentLayout;
 	}
 
-	public void setLotDetails(LotDetails lotDetails) {
+	public void setLotDetails(final LotDetails lotDetails) {
 		this.lotDetails = lotDetails;
 	}
 }
