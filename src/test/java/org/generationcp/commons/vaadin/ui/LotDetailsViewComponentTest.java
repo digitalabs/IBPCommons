@@ -1,8 +1,8 @@
 package org.generationcp.commons.vaadin.ui;
 
 
-import java.util.Collection;
-
+import com.vaadin.data.Item;
+import com.vaadin.ui.Table;
 import org.generationcp.middleware.data.initializer.InventoryDetailsTestDataInitializer;
 import org.generationcp.middleware.data.initializer.ListInventoryDataInitializer;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
@@ -14,9 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import com.vaadin.data.Item;
 
-import com.vaadin.ui.Table;
+import java.util.Collection;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LotDetailsViewComponentTest {
