@@ -207,8 +207,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 		final Item newItem = this.transactionDetailsTabel.addItem(transaction);
 
-		newItem.getItemProperty(LotDetailsViewComponent.DATE)
-			.setValue(DateUtil.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
+		newItem.getItemProperty(LotDetailsViewComponent.DATE).setValue(transaction.getDate());
 		newItem.getItemProperty(LotDetailsViewComponent.TYPE).setValue(transaction.getLotStatus());
 		String lotScaleAbbr = "";
 
@@ -226,8 +225,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 		if (LotDetailsViewComponent.LOT_CLOSED.equals(transaction.getLotStatus()) || LotDetailsViewComponent.LOT_DISCARDED
 				.equals(transaction.getLotStatus())) {
-			this.lotStatus.setValue(transaction.getLotStatus() + " On " + DateUtil
-				.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
+			this.lotStatus.setValue(transaction.getLotStatus() + " On " + transaction.getDate());
 		}
 
 	}
