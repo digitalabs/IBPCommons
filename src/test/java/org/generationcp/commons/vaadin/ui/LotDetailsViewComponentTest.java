@@ -65,9 +65,9 @@ public class LotDetailsViewComponentTest {
 	@Test
 	public void testLotEntriesTablesColumnsAndHeaderNames() {
 
-		Table table = this.lotDetailsViewComponent.getTable();
+		final Table table = this.lotDetailsViewComponent.getTable();
 		Assert.assertNotNull(table);
-		Collection<?> columnIds = table.getContainerPropertyIds();
+		final Collection<?> columnIds = table.getContainerPropertyIds();
 
 		Assert.assertTrue(columnIds.size() == 6);
 		Assert.assertTrue(columnIds.contains(LotDetailsViewComponent.DATE));
@@ -77,25 +77,25 @@ public class LotDetailsViewComponentTest {
 		Assert.assertTrue(columnIds.contains(LotDetailsViewComponent.LIST_NAME));
 		Assert.assertTrue(columnIds.contains(LotDetailsViewComponent.USER));
 
-		Assert.assertEquals(DATE_HEADER, table.getColumnHeader(lotDetailsViewComponent.DATE));
+		Assert.assertEquals(DATE_HEADER, table.getColumnHeader(this.lotDetailsViewComponent.DATE));
 		Assert.assertEquals(TYPE_HEADER, table.getColumnHeader(LotDetailsViewComponent.TYPE));
-		Assert.assertEquals(AMOUNT_HEADER, table.getColumnHeader(lotDetailsViewComponent.AMOUNT));
-		Assert.assertEquals(SEED_SOURCE_HEADER, table.getColumnHeader(lotDetailsViewComponent.SEED_SOURCE));
-		Assert.assertEquals(LIST_NAME_HEADER, table.getColumnHeader(lotDetailsViewComponent.LIST_NAME));
-		Assert.assertEquals(USER_HEADER, table.getColumnHeader(lotDetailsViewComponent.USER));
+		Assert.assertEquals(AMOUNT_HEADER, table.getColumnHeader(this.lotDetailsViewComponent.AMOUNT));
+		Assert.assertEquals(SEED_SOURCE_HEADER, table.getColumnHeader(this.lotDetailsViewComponent.SEED_SOURCE));
+		Assert.assertEquals(LIST_NAME_HEADER, table.getColumnHeader(this.lotDetailsViewComponent.LIST_NAME));
+		Assert.assertEquals(USER_HEADER, table.getColumnHeader(this.lotDetailsViewComponent.USER));
 
 	}
 
 	@Test
 	public void testinitializeValues() {
-
+		final InventoryDetailsTestDataInitializer inventoryDetailsTestDataInitializer = new InventoryDetailsTestDataInitializer();
 		Mockito.when(this.inventoryDataManager.getTransactionDetailsForLot(Mockito.anyInt()))
-				.thenReturn(InventoryDetailsTestDataInitializer.createTransactionReportRowTestData());
+				.thenReturn(inventoryDetailsTestDataInitializer.createTransactionReportRowTestData());
 		this.lotDetailsViewComponent.initializeValues();
-		Item item = this.lotDetailsViewComponent.getTable().getItem(lotDetailsViewComponent.getTable().lastItemId());
+		final Item item = this.lotDetailsViewComponent.getTable().getItem(this.lotDetailsViewComponent.getTable().lastItemId());
 
-		Assert.assertEquals(1, lotDetailsViewComponent.getTable().size());
-		Assert.assertEquals("19122016", item.getItemProperty(LotDetailsViewComponent.DATE).getValue());
+		Assert.assertEquals(1, this.lotDetailsViewComponent.getTable().size());
+		Assert.assertEquals("20140413", item.getItemProperty(LotDetailsViewComponent.DATE).getValue());
 		Assert.assertEquals(STATUS, item.getItemProperty(LotDetailsViewComponent.TYPE).getValue());
 		Assert.assertEquals("-50.0", item.getItemProperty(LotDetailsViewComponent.AMOUNT).getValue().toString().replace("g", ""));
 		Assert.assertEquals(LIST_NAME, item.getItemProperty(LotDetailsViewComponent.LIST_NAME).getValue());
