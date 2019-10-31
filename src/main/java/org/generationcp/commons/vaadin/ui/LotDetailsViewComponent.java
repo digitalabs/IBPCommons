@@ -12,6 +12,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.pojos.ims.TransactionType;
 import org.generationcp.middleware.pojos.report.TransactionReportRow;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -59,7 +60,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 	public static final String LOT_CLOSED = "Lot closed";
 	public static final String LOT_DISCARDED = "Discard";
-	public static final String LOT_DEPOSIT = "Deposit";
+	public static final String LOT_DEPOSIT = TransactionType.DEPOSIT.getValue();
 	public static final String LOT_ACTIVE = "Active";
 
 	public static final String LOT = "Lot ";
