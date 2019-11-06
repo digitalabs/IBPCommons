@@ -131,7 +131,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		this.lotStatusLabel.setDebugId("lotStatusLabel");
 		this.lotStatusLabel.addStyleName(LotDetailsViewComponent.BOLD);
 
-		this.lotStatus = new Label(LotDetailsViewComponent.LOT_ACTIVE);
+		this.lotStatus = new Label(this.lotDetails.getLotStatus());
 
 		this.actualBalanceLabel = new Label(LotDetailsViewComponent.ACTUAL_BALANCE);
 		this.actualBalanceLabel.setDebugId("actualBalance");
