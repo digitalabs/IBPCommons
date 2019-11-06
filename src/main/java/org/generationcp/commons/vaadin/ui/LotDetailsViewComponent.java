@@ -205,6 +205,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		}
 
 		if (LotStatus.CLOSED.name().equals(this.lotDetails.getLotStatus())) {
+			//FIXME Should always displays Closed...
 			final TransactionReportRow transaction = this.transactionReportRows.get(this.transactionReportRows.size() - 1);
 			if (transaction.getQuantity() < 0) {
 				this.lotStatus.setValue("Discard On " + DateUtil
