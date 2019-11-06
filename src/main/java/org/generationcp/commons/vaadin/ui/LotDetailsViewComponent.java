@@ -12,6 +12,7 @@ import org.generationcp.commons.vaadin.spring.InternationalizableComponent;
 import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
+import org.generationcp.middleware.pojos.ims.LotStatus;
 import org.generationcp.middleware.pojos.ims.TransactionType;
 import org.generationcp.middleware.pojos.report.TransactionReportRow;
 import org.generationcp.middleware.util.Util;
@@ -202,6 +203,17 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		for (final TransactionReportRow transaction : this.transactionReportRows) {
 			this.addTransactionDetails(transaction);
 		}
+
+		if (LotStatus.CLOSED.name().equals(this.lotDetails.getLotStatus())) {
+			final TransactionReportRow transaction = this.transactionReportRows.get(this.transactionReportRows.size() - 1);
+			if (transaction.getQuantity() < 0) {
+				this.lotStatus.setValue("Discard On " + DateUtil
+					.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
+			} else {
+				this.lotStatus.setValue("Closed On " + DateUtil
+					.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
+			}
+		}
 	}
 
 	public void addTransactionDetails(final TransactionReportRow transaction) {
@@ -224,13 +236,6 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		if (StringUtils.isEmpty((String) this.creationDate.getValue())) {
 			this.creationDate.setValue("" + DateUtil.formatDateAsStringValue(transaction.getLotDate(), Util.DATE_AS_NUMBER_FORMAT));
 		}
-
-		if (LotDetailsViewComponent.LOT_CLOSED.equals(transaction.getLotStatus()) || LotDetailsViewComponent.LOT_DISCARDED
-				.equals(transaction.getLotStatus())) {
-			this.lotStatus.setValue(transaction.getLotStatus() + " On " + DateUtil
-				.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
-		}
-
 	}
 
 	public void layoutComponents() {
