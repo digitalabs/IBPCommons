@@ -107,14 +107,8 @@ public class TreeViewUtilTest {
 			Assert.assertEquals("The parent id should be " + parentId, parentId, treeTableNode.getParentId());
 			String type = this.getType(germplasmList.getType());
 			Assert.assertEquals("The type should be " + type, type, treeTableNode.getType());
-			String owner = this.getOwnerListName(germplasmList.getUserId());
-			Assert.assertEquals("The owner should be " + owner, owner, treeTableNode.getOwner());
 			Assert.assertEquals("The number of children should be 0", "0", treeTableNode.getNumOfChildren());
 		}
-	}
-
-	private String getOwnerListName(Integer userId) {
-		return "";
 	}
 
 	private String getType(String type) {

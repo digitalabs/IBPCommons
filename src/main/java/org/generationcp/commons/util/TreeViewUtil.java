@@ -27,7 +27,6 @@ import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.pojos.GermplasmList;
-import org.generationcp.middleware.pojos.GermplasmListMetadata;
 import org.generationcp.middleware.pojos.ListMetadata;
 import org.generationcp.middleware.pojos.SampleList;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -255,15 +254,13 @@ public class TreeViewUtil {
 			final GermplasmListManager germplasmListManager, final GermplasmDataManager germplasmDataManager) {
 		final List<TreeTableNode> treeTableNodes = new ArrayList<>();
 		if (germplasmLists != null && !germplasmLists.isEmpty()) {
-
+			germplasmListManager.populateGermplasmListCreatedByName(germplasmLists);
 			final List<UserDefinedField> listTypes = germplasmDataManager
 					.getUserDefinedFieldByFieldTableNameAndType(RowColumnType.LIST_TYPE.getFtable(), RowColumnType.LIST_TYPE.getFtype());
-			final Map<Integer, GermplasmListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmLists);
-			final Map<Integer, ListMetadata> allFolderMetaData = germplasmListManager.getGermplasmFolderMetadata(germplasmLists);
+			final Map<Integer, ListMetadata> allListMetaData = germplasmListManager.getGermplasmListMetadata(germplasmLists);
 			for (final GermplasmList germplasmList : germplasmLists) {
 				final TreeTableNode node = TreeViewUtil
-						.convertGermplasmListToTreeTableNode(parentId, germplasmList, listTypes, allListMetaData.get(germplasmList.getId()),
-								allFolderMetaData.get(germplasmList.getId()));
+						.convertGermplasmListToTreeTableNode(parentId, germplasmList, listTypes, allListMetaData.get(germplasmList.getId()));
 				if (node != null) {
 					treeTableNodes.add(node);
 				}
@@ -381,7 +378,7 @@ public class TreeViewUtil {
 			return null;
 		}
 		treeNode.setDescription(germplasmList.getDescription());
-		treeNode.setOwnerId((germplasmList.getUserId()!=null)?String.valueOf(germplasmList.getUserId()):null);
+		treeNode.setOwnerId((germplasmList.getUserId() != null) ? String.valueOf(germplasmList.getUserId()) : null);
 		treeNode.setOwner(germplasmList.getCreatedBy());
 		treeNode.setType(germplasmList.getType());
 
@@ -392,32 +389,27 @@ public class TreeViewUtil {
 	 * Convert germplasm list to tree node.
 	 *
 	 * @param germplasmList           the germplasm list
-	 * @param germplasmFolderMetadata provides us with number of children in each folder
 	 * @return the tree node
 	 */
 	private static TreeTableNode convertGermplasmListToTreeTableNode(final String parentFolderId, final GermplasmList germplasmList,
-			final List<UserDefinedField> listTypes, final GermplasmListMetadata listMetaData,
-			final ListMetadata germplasmFolderMetadata) {
+			final List<UserDefinedField> listTypes, final ListMetadata listMetaData) {
 		final TreeTableNode treeTableNode = new TreeTableNode();
 
 		treeTableNode.setId(germplasmList.getId().toString());
 		treeTableNode.setName(germplasmList.getName());
 		treeTableNode.setDescription(TreeViewUtil.getDescriptionForDisplay(germplasmList));
 		treeTableNode.setType(TreeViewUtil.getTypeString(germplasmList.getType(), listTypes));
-		treeTableNode.setOwner(listMetaData != null ? listMetaData.getOwnerName() : "");
+		treeTableNode.setOwner(germplasmList.getCreatedBy());
 
 		treeTableNode.setIsFolder(germplasmList.isFolder());
-		final long noOfEntries = listMetaData != null ? listMetaData.getNumberOfEntries() : 0;
-		treeTableNode.setNoOfEntries(noOfEntries == 0 ? "" : String.valueOf(noOfEntries));
 
-		if (germplasmList.isFolder()) {
-			final String numOfChildren =
-					germplasmFolderMetadata != null ? String.valueOf(germplasmFolderMetadata.getNumberOfChildren()) : "0";
-			treeTableNode.setNumOfChildren(numOfChildren);
+		if (listMetaData != null) {
+			treeTableNode.setNoOfEntries((listMetaData.getNumberOfEntries()!=null && listMetaData.getNumberOfEntries()!=0 )?String.valueOf(listMetaData.getNumberOfEntries()):"");
+			treeTableNode.setNumOfChildren((listMetaData.getNumberOfChildren() != null) ? String.valueOf(listMetaData.getNumberOfChildren()) : "0");
 		} else {
+			treeTableNode.setNoOfEntries("");
 			treeTableNode.setNumOfChildren("0");
 		}
-
 		treeTableNode.setParentId(TreeViewUtil.getParentId(parentFolderId, germplasmList));
 		return treeTableNode;
 	}
