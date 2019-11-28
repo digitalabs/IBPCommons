@@ -1,12 +1,16 @@
 
 package org.generationcp.commons.parsing;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.fest.assertions.ComparableAssert;
 import org.generationcp.commons.exceptions.GermplasmListExporterException;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
 import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
@@ -34,6 +38,8 @@ public class GermplasmExportedWorkbookTest {
 
 	private final GermplasmListExportInputValues input = GermplasmExportTestHelper.generateGermplasmListExportInputValues();
 
+	private final GermplasmListExportInputValues inputWithParent = GermplasmExportTestHelper.generateGermplasmListExportInputValuesWithParent();
+
 	@Mock
 	private CodesSheetGenerator codesSheetGenerator;
 
@@ -52,6 +58,7 @@ public class GermplasmExportedWorkbookTest {
 		Mockito.when(this.namesGenerator.generateAddedColumnHeader(Matchers.any(HSSFRow.class), Matchers.anyInt())).thenReturn(7);
 		Mockito.when(this.namesGenerator.generateAddedColumnValue(Matchers.any(HSSFRow.class), Matchers.any(GermplasmExportSource.class), Matchers.anyInt())).thenReturn(7);
 	}
+
 	@Test
 	public void testGetNoOfVisibleColumns() {
 
@@ -352,6 +359,27 @@ public class GermplasmExportedWorkbookTest {
 			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
 
 		}
+	}
+
+	@Test
+	public void testWriteListDetailsSectionWithParentGID() {
+		this.inputWithParent.getVisibleColumnMap().put(String.valueOf(ColumnLabels.MGID.getTermId().getId()),true);
+		int originalColumn = this.inputWithParent.getVisibleColumnMap().size();
+
+		// input data
+		final HSSFWorkbook wb = GermplasmExportTestHelper.createWorkbook();
+		final GermplasmList germplasmList = this.inputWithParent.getGermplasmList();
+
+		this.germplasmExportedWorkbook.init(this.inputWithParent);
+		int columnCount = 0;
+		final HSSFSheet observationSheet = this.germplasmExportedWorkbook.getWorkbook().getSheet("Observation");
+		Iterator<Row> iter = observationSheet.iterator();
+		while(iter.hasNext()) {
+			Row row = iter.next();
+			columnCount = row.getPhysicalNumberOfCells();
+			break;
+		}
+		Assert.assertEquals(originalColumn, columnCount);
 	}
 
 }

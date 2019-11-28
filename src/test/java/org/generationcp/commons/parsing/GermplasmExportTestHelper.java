@@ -22,6 +22,7 @@ import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+import org.generationcp.middleware.pojos.germplasm.GermplasmParent;
 
 public class GermplasmExportTestHelper {
 
@@ -111,6 +112,75 @@ public class GermplasmExportTestHelper {
 		return entries;
 	}
 
+	public static GermplasmListExportInputValues generateGermplasmListExportInputValuesWithParent() {
+		final GermplasmListExportInputValues input = new GermplasmListExportInputValues();
+
+		input.setFileName(TEST_FILE_NAME);
+		input.setGermplasmList(generateGermplasmListWithParent());
+		input.setOwnerName(CURRENT_USER_NAME);
+		input.setCurrentLocalIbdbUserId(CURRENT_USER_ID);
+		input.setExporterName(CURRENT_USER_NAME);
+		input.setVisibleColumnMap(getVisibleColumnMapParent());
+		input.setColumnTermMap(getColumnTerms());
+		input.setInventoryVariableMap(getInventoryVariables());
+		input.setVariateVariableMap(getVariateVariables());
+		input.setListData(generateListEntries(NO_OF_LIST_ENTRIES));
+		input.setCurrentColumnsInfo(generateAddedColumnsInfo());
+		return input;
+	}
+
+	public static GermplasmList generateGermplasmListWithParent() {
+		final GermplasmList germplasmList = new GermplasmList();
+		germplasmList.setName("Sample List");
+		germplasmList.setUserId(USER_ID);
+		germplasmList.setDescription("Sample description");
+		germplasmList.setType("LST");
+		germplasmList.setDate(20141112L);
+		germplasmList.setNotes("Sample Notes");
+		germplasmList.setListData(generateListEntriesParent(NO_OF_LIST_ENTRIES));
+
+		return germplasmList;
+	}
+
+	public static  List<GermplasmListData> generateListEntriesParent(final int noOfENtries) {
+		final List<GermplasmListData> entries = new ArrayList<>();
+
+		for (int x = 1; x <= noOfENtries; x++) {
+			final GermplasmListData germplasmListData = new GermplasmListData();
+			germplasmListData.setId(x);
+			germplasmListData.setEntryId(x);
+			germplasmListData.setDesignation(ColumnLabels.DESIGNATION.getName() + x);
+			germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
+
+
+
+			final ListDataInventory inventoryInfo = new ListDataInventory(x, x);
+			inventoryInfo.setLotCount(1);
+			inventoryInfo.setReservedLotCount(1);
+			inventoryInfo.setActualInventoryLotCount(1);
+			inventoryInfo.setDistinctScaleCountForGermplsm(1);
+			inventoryInfo.setTotalAvailableBalance(Double.valueOf(x));
+			inventoryInfo.setScaleForGermplsm(GermplasmExportTestHelper.SCALE);
+			germplasmListData.setInventoryInfo(inventoryInfo);
+			germplasmListData.setEntryCode(ColumnLabels.ENTRY_CODE.getName() + x);
+			germplasmListData.setSeedSource(ColumnLabels.SEED_SOURCE.getName() + x);
+			germplasmListData.setGroupId(ColumnLabels.GROUPGID.getTermId().getId());
+			germplasmListData.setStockIDs(ColumnLabels.STOCKID.getName() + x);
+			germplasmListData.setGid(x);
+			germplasmListData.setFemaleParent(germplasmParent(x - 90));
+			germplasmListData.addMaleParent(germplasmParent(x-100));
+			entries.add(germplasmListData);
+		}
+
+		return entries;
+	}
+
+	public static GermplasmParent germplasmParent(int gid) {
+		GermplasmParent parent = new GermplasmParent();
+		parent.setGid(gid);
+		return parent;
+	}
+
 	public static Map<String, Boolean> getVisibleColumnMap() {
 		final Map<String, Boolean> visibleColumnMap = new LinkedHashMap<>();
 
@@ -121,6 +191,22 @@ public class GermplasmExportTestHelper {
 		visibleColumnMap.put(String.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()), true);
 		visibleColumnMap.put(String.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()), true);
 		visibleColumnMap.put(String.valueOf(ColumnLabels.GROUPGID.getTermId().getId()), true);
+
+		return visibleColumnMap;
+	}
+
+	public static Map<String, Boolean> getVisibleColumnMapParent() {
+		final Map<String, Boolean> visibleColumnMap = new LinkedHashMap<>();
+
+		visibleColumnMap.put(String.valueOf(ColumnLabels.ENTRY_ID.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.GID.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.ENTRY_CODE.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.DESIGNATION.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.PARENTAGE.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.SEED_SOURCE.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.GROUPGID.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.FGID.getTermId().getId()), true);
+		visibleColumnMap.put(String.valueOf(ColumnLabels.MGID.getTermId().getId()), true);
 
 		return visibleColumnMap;
 	}

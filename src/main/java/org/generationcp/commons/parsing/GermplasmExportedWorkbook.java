@@ -300,13 +300,15 @@ public class GermplasmExportedWorkbook {
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))
+                    && germplasmParentsMap!=null && germplasmParentsMap.containsKey(data.getGermplasmId())) {
 				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getFgid());
 				j++;
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))
+                    && germplasmParentsMap!=null && germplasmParentsMap.containsKey(data.getGermplasmId())) {
 				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getMgid());
 				j++;
 			}
