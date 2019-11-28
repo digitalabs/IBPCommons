@@ -380,6 +380,10 @@ public class TreeViewUtil {
 		if (isFolderOnly && !treeNode.getIsFolder()) {
 			return null;
 		}
+		treeNode.setDescription(germplasmList.getDescription());
+		treeNode.setOwnerId((germplasmList.getUserId()!=null)?String.valueOf(germplasmList.getUserId()):null);
+		treeNode.setOwner(germplasmList.getCreatedBy());
+		treeNode.setType(germplasmList.getType());
 
 		return treeNode;
 	}
