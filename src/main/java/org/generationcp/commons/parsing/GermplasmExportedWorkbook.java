@@ -301,15 +301,27 @@ public class GermplasmExportedWorkbook {
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))
-                    && germplasmParentsMap!=null && germplasmParentsMap.containsKey(data.getGermplasmId())) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getFgid());
+                    && germplasmParentsMap!=null) {
+				Integer value = 0;
+				if(germplasmParentsMap.containsKey(data.getGermplasmId())){
+					value = germplasmParentsMap.get(data.getGermplasmId()).getFgid();
+				}else {
+					value = data.getFemaleGid();
+				}
+				listEntry.createCell(j).setCellValue(value);
 				j++;
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))
-                    && germplasmParentsMap!=null && germplasmParentsMap.containsKey(data.getGermplasmId())) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getMgid());
+                    && germplasmParentsMap!=null) {
+				Integer value = 0;
+				if(germplasmParentsMap.containsKey(data.getGermplasmId())){
+					value = germplasmParentsMap.get(data.getGermplasmId()).getMgid();
+				}else {
+					value = data.getMaleGid();
+				}
+				listEntry.createCell(j).setCellValue(value);
 				j++;
 			}
 
