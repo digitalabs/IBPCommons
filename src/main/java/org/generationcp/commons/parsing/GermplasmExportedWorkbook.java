@@ -288,21 +288,23 @@ public class GermplasmExportedWorkbook {
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))) {
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FEMALE_PARENT))
+                    && germplasmParentsMap!=null) {
 				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getFemaleParentName());
 				j++;
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))) {
+					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MALE_PARENT))
+                    && germplasmParentsMap!=null) {
 				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getMaleParentName());
 				j++;
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))
-                    && germplasmParentsMap!=null) {
-				Integer value = 0;
+                    && visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))
+                    && (germplasmParentsMap != null)) {
+				Integer value;
 				if(germplasmParentsMap.containsKey(data.getGermplasmId())){
 					value = germplasmParentsMap.get(data.getGermplasmId()).getFgid();
 				}else {
@@ -313,9 +315,9 @@ public class GermplasmExportedWorkbook {
 			}
 
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))
-                    && germplasmParentsMap!=null) {
-				Integer value = 0;
+                    && visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))
+                    && (germplasmParentsMap != null)) {
+				Integer value;
 				if(germplasmParentsMap.containsKey(data.getGermplasmId())){
 					value = germplasmParentsMap.get(data.getGermplasmId()).getMgid();
 				}else {
@@ -600,10 +602,9 @@ public class GermplasmExportedWorkbook {
 	}
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
-		final int actualRow = startingRow;
-		this.attributesGenerator.setColumnsInfo(this.input.getCurrentColumnsInfo());
+        this.attributesGenerator.setColumnsInfo(this.input.getCurrentColumnsInfo());
 		if (this.attributesGenerator.hasItems()) {
-			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
+			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(startingRow));
 			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.VARIATE);
 			conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
 			conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
@@ -612,7 +613,7 @@ public class GermplasmExportedWorkbook {
 			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
 			conditionDetailsHeading.createCell(6, this.headingStyle, "");
 			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
-			this.attributesGenerator.addRowsToDescriptionSheet(descriptionSheet, actualRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
+			this.attributesGenerator.addRowsToDescriptionSheet(descriptionSheet, startingRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
 		}
 	}
 
