@@ -301,6 +301,7 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
+			// only if the existence of the female parent to determine if the export came from crossing manager
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
                     && visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))
                     && (germplasmParentsMap != null)) {
@@ -308,12 +309,13 @@ public class GermplasmExportedWorkbook {
 				if(germplasmParentsMap.containsKey(data.getGermplasmId())){
 					value = germplasmParentsMap.get(data.getGermplasmId()).getFgid();
 				}else {
-					value = data.getFemaleGid();
+					value = data.getFemaleGid() == null ? 0 : data.getFemaleGid();
 				}
 				listEntry.createCell(j).setCellValue(value);
 				j++;
 			}
 
+			// only if the existence of the female parent to determine if the export came from crossing manager
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
                     && visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))
                     && (germplasmParentsMap != null)) {
@@ -321,7 +323,7 @@ public class GermplasmExportedWorkbook {
 				if(germplasmParentsMap.containsKey(data.getGermplasmId())){
 					value = germplasmParentsMap.get(data.getGermplasmId()).getMgid();
 				}else {
-					value = data.getMaleGid();
+					value = data.getMaleGid() == null ? 0 : data.getMaleGid();
 				}
 				listEntry.createCell(j).setCellValue(value);
 				j++;
