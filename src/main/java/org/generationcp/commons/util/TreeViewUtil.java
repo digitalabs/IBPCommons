@@ -121,18 +121,6 @@ public class TreeViewUtil {
 	}
 
 	/**
-	 * Convert germplasm list to json.
-	 *
-	 * @param germplasmLists the germplasm lists
-	 * @return the string
-	 * @throws Exception the exception
-	 */
-	public static String convertGermplasmListToJson(final List<GermplasmList> germplasmLists, final boolean isFolderOnly) {
-		final List<TreeNode> treeNodes = TreeViewUtil.convertGermplasmListToTreeView(germplasmLists, isFolderOnly);
-		return TreeViewUtil.convertTreeViewToJson(treeNodes);
-	}
-
-	/**
 	 * Convert references to tree view.
 	 *
 	 * @param references the references
@@ -212,11 +200,11 @@ public class TreeViewUtil {
 	 * @param germplasmLists the germplasm lists
 	 * @return the list
 	 */
-	public static List<TreeNode> convertGermplasmListToTreeView(final List<GermplasmList> germplasmLists, final boolean isFolderOnly) {
+	public static List<TreeNode> convertGermplasmListToTreeView(final List<GermplasmList> germplasmLists, final boolean isFolderOnly, final List<UserDefinedField> listTypes) {
 		final List<TreeNode> treeNodes = new ArrayList<>();
 		if (germplasmLists != null && !germplasmLists.isEmpty()) {
 			for (final GermplasmList germplasmList : germplasmLists) {
-				final TreeNode node = TreeViewUtil.convertGermplasmListToTreeNode(germplasmList, isFolderOnly);
+				final TreeNode node = TreeViewUtil.convertGermplasmListToTreeNode(germplasmList, isFolderOnly, listTypes);
 				if (node != null) {
 					treeNodes.add(node);
 				}
@@ -362,7 +350,7 @@ public class TreeViewUtil {
 	 * @param germplasmList the germplasm list
 	 * @return the tree node
 	 */
-	private static TreeNode convertGermplasmListToTreeNode(final GermplasmList germplasmList, final boolean isFolderOnly) {
+	private static TreeNode convertGermplasmListToTreeNode(final GermplasmList germplasmList, final boolean isFolderOnly, final List<UserDefinedField> listTypes) {
 		final TreeNode treeNode = new TreeNode();
 
 		treeNode.setKey(germplasmList.getId().toString());
@@ -380,7 +368,7 @@ public class TreeViewUtil {
 		treeNode.setDescription(germplasmList.getDescription());
 		treeNode.setOwnerId((germplasmList.getUserId() != null) ? String.valueOf(germplasmList.getUserId()) : null);
 		treeNode.setOwner(germplasmList.getCreatedBy());
-		treeNode.setType(germplasmList.getType());
+		treeNode.setType(TreeViewUtil.getTypeString(germplasmList.getType(), listTypes));
 
 		return treeNode;
 	}
