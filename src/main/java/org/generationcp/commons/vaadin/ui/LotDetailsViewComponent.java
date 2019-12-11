@@ -13,7 +13,6 @@ import org.generationcp.middleware.domain.inventory.LotDetails;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.manager.api.OntologyDataManager;
 import org.generationcp.middleware.pojos.ims.LotStatus;
-import org.generationcp.middleware.pojos.ims.TransactionType;
 import org.generationcp.middleware.pojos.report.TransactionReportRow;
 import org.generationcp.middleware.util.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -58,11 +57,6 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 	public static final String SEED_SOURCE = "SEED SOURCE";
 	public static final String LIST_NAME = "LIST NAME";
 	public static final String USER = "USER";
-
-	public static final String LOT_CLOSED = "Lot closed";
-	public static final String LOT_DISCARDED = "Discard";
-	public static final String LOT_DEPOSIT = TransactionType.DEPOSIT.getValue();
-	public static final String LOT_ACTIVE = "Active";
 
 	public static final String LOT = "Lot ";
 	public static final String LOCATION = "Location :";
@@ -215,6 +209,10 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 					.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
 			}
 		}
+
+		if (StringUtils.isEmpty((String) this.creationDate.getValue())) {
+			this.creationDate.setValue("" + DateUtil.formatDateAsStringValue(lotDetails.getCreatedDate(), Util.DATE_AS_NUMBER_FORMAT));
+		}
 	}
 
 	public void addTransactionDetails(final TransactionReportRow transaction) {
@@ -234,9 +232,6 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		newItem.getItemProperty(LotDetailsViewComponent.LIST_NAME).setValue(transaction.getListName());
 		newItem.getItemProperty(LotDetailsViewComponent.USER).setValue(transaction.getUser());
 
-		if (StringUtils.isEmpty((String) this.creationDate.getValue())) {
-			this.creationDate.setValue("" + DateUtil.formatDateAsStringValue(transaction.getLotDate(), Util.DATE_AS_NUMBER_FORMAT));
-		}
 	}
 
 	public void layoutComponents() {
