@@ -1,17 +1,6 @@
 
 package org.generationcp.commons.util.filter;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.generationcp.commons.util.ResourceFinder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
@@ -20,8 +9,8 @@ import org.generationcp.middleware.manager.WorkbenchDataManagerImpl;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.support.servlet.MiddlewareServletContextListener;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -33,6 +22,16 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 3/20/2015 Time: 3:31 PM
  */

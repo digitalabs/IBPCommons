@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,7 +42,7 @@ public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTes
         ExecutorService threadPool = Executors.newFixedThreadPool(threads);
 
         final KeySequenceRegisterService keySequenceRegisterService =
-                new KeySequenceRegisterServiceImpl(SessionFactoryUtils.getSession(sessionFactory, false));
+                new KeySequenceRegisterServiceImpl(sessionFactory.getCurrentSession());
 
         for (int i = 1; i <= threads; i++) {
             Future<String> result = threadPool.submit(new Callable<String>() {
