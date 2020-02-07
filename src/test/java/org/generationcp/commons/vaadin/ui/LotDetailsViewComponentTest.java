@@ -69,7 +69,7 @@ public class LotDetailsViewComponentTest {
 		Assert.assertNotNull(table);
 		final Collection<?> columnIds = table.getContainerPropertyIds();
 
-		Assert.assertTrue(columnIds.size() == 6);
+		Assert.assertTrue(columnIds.size() == 7);
 		Assert.assertTrue(columnIds.contains(LotDetailsViewComponent.DATE));
 		Assert.assertTrue(columnIds.contains(LotDetailsViewComponent.TYPE));
 		Assert.assertTrue(columnIds.contains(LotDetailsViewComponent.AMOUNT));
