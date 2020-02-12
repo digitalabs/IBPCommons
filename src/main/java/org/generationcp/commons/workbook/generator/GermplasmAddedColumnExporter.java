@@ -1,7 +1,6 @@
 package org.generationcp.commons.workbook.generator;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -42,7 +41,7 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	public Integer generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex){
 		Integer columnIndex = startingColumnIndex;
 		if (this.columnsInfo != null && !this.columnsInfo.getColumns().isEmpty()) {
-			for(final String column : this.columnsInfo.getCurrentColumnSort()) {
+			for(final String column : this.columnsInfo.getAddedColumnCurrentSort()) {
 				if (this.doIncludeColumn(column)) {
 					final List<ListDataColumnValues> columnValues = this.columnsInfo.getColumnValuesMap().get(column); //columnEntry.getValue();
 					final ListDataColumnValues listDataColumnValues =

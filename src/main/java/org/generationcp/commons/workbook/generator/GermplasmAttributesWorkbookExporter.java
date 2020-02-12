@@ -2,13 +2,11 @@ package org.generationcp.commons.workbook.generator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
-import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
@@ -27,9 +25,10 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if(this.columnsInfo != null) {
 			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
-			final List<String> addedColumns = this.columnsInfo.getCurrentColumnSort();
-			for(String addedCol : addedColumns) {
-				UserDefinedField field = attributeTypes.stream().filter(userDefinedField -> userDefinedField.getFcode().toUpperCase().equalsIgnoreCase(addedCol)).findFirst().get();
+			final List<String> addedColumns = this.columnsInfo.getAddedColumnCurrentSort();
+			for(final String addedCol : addedColumns) {
+				final UserDefinedField field;
+				field = attributeTypes.stream().filter(userDefinedField -> userDefinedField.getFcode().toUpperCase().equalsIgnoreCase(addedCol)).findFirst().get();
 				if(field!=null){
 					this.addedAttributeColumns.add(field.getFcode().toUpperCase());
 					attributeTypeColumns.add(field);
