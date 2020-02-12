@@ -42,9 +42,9 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	public Integer generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex){
 		Integer columnIndex = startingColumnIndex;
 		if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-				if (doIncludeColumn(columnEntry.getKey())) {
-					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+			for(String column : columnsInfo.getCurrentColumnSort()) {
+				if (doIncludeColumn(column)) {
+					final List<ListDataColumnValues> columnValues = columnsInfo.getColumnValuesMap().get(column); //columnEntry.getValue();
 					final ListDataColumnValues listDataColumnValues =
 							(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 								

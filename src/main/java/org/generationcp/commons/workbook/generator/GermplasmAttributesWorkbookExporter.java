@@ -27,14 +27,15 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if(this.columnsInfo != null) {
 			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
-			final Set<String> addedColumns = this.columnsInfo.getColumns();
-			for (final UserDefinedField field : attributeTypes) {
-				final String attributeTypeCode = field.getFcode().toUpperCase();
-				if (addedColumns.contains(attributeTypeCode)) {
-					this.addedAttributeColumns.add(attributeTypeCode);
+			final List<String> addedColumns = this.columnsInfo.getCurrentColumnSort();
+			for(String addedCol : addedColumns) {
+				UserDefinedField field = attributeTypes.stream().filter(userDefinedField -> userDefinedField.getFcode().toUpperCase().equalsIgnoreCase(addedCol)).findFirst().get();
+				if(field!=null){
+					this.addedAttributeColumns.add(field.getFcode().toUpperCase());
 					attributeTypeColumns.add(field);
 				}
 			}
+
 		}
 		return attributeTypeColumns;
 	}
