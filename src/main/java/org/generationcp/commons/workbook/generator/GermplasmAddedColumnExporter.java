@@ -43,7 +43,7 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 		if (this.columnsInfo != null && !this.columnsInfo.getColumns().isEmpty()) {
 			for(final String column : this.columnsInfo.getAddedColumnCurrentSort()) {
 				if (this.doIncludeColumn(column)) {
-					final List<ListDataColumnValues> columnValues = this.columnsInfo.getColumnValuesMap().get(column); //columnEntry.getValue();
+					final List<ListDataColumnValues> columnValues = this.columnsInfo.getColumnValuesMap().get(column);
 					final ListDataColumnValues listDataColumnValues =
 							(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 								
