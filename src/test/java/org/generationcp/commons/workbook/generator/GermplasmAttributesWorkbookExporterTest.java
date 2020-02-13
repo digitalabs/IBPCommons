@@ -45,7 +45,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 		this.wb = new HSSFWorkbook();
 		this.styleBuilder = new ExcelCellStyleBuilder(this.wb);
 		this.attributesWorkbookExporter.setSheetStyles(this.styleBuilder);
-		this.attributesWorkbookExporter.setColumnsInfo(columnsInfo);
+		this.attributesWorkbookExporter.setColumnsInfo(this.columnsInfo);
 		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
 				GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES)));
 		Mockito.when(this.columnsInfo.getAddedColumnCurrentSort()).thenReturn(new ArrayList<>(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTE)));
