@@ -18,6 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -47,6 +49,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
 				GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES)));
 		Mockito.when(this.columnsInfo.getColumns()).thenReturn(new HashSet<>(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTE)));
+		Mockito.when(this.columnsInfo.getAddedColumnCurrentSort()).thenReturn(new ArrayList<>(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTE)));
 	}
 	@Test
 	public void testGetSourceItems() {
