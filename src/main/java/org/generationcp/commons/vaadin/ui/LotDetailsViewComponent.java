@@ -53,6 +53,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 	public static final String DATE = "DATE";
 	public static final String TYPE = "TYPE";
+	public static final String STATUS = "STATUS";
 	public static final String AMOUNT = "AMOUNT";
 	public static final String SEED_SOURCE = "SEED SOURCE";
 	public static final String LIST_NAME = "LIST NAME";
@@ -175,6 +176,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 			table.addContainerProperty(LotDetailsViewComponent.DATE, String.class, null);
 			table.addContainerProperty(LotDetailsViewComponent.TYPE, String.class, null);
+			table.addContainerProperty(LotDetailsViewComponent.STATUS, String.class, null);
 			table.addContainerProperty(LotDetailsViewComponent.AMOUNT, String.class, null);
 			table.addContainerProperty(LotDetailsViewComponent.SEED_SOURCE, String.class, null);
 			table.addContainerProperty(LotDetailsViewComponent.LIST_NAME, String.class, null);
@@ -182,6 +184,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 
 			table.setColumnHeader(LotDetailsViewComponent.DATE, LotDetailsViewComponent.DATE);
 			table.setColumnHeader(LotDetailsViewComponent.TYPE, LotDetailsViewComponent.TYPE);
+			table.addContainerProperty(LotDetailsViewComponent.STATUS, String.class, null);
 			table.setColumnHeader(LotDetailsViewComponent.AMOUNT, LotDetailsViewComponent.AMOUNT);
 			table.setColumnHeader(LotDetailsViewComponent.SEED_SOURCE, LotDetailsViewComponent.SEED_SOURCE);
 			table.setColumnHeader(LotDetailsViewComponent.LIST_NAME, LotDetailsViewComponent.LIST_NAME);
@@ -222,6 +225,7 @@ public class LotDetailsViewComponent extends VerticalLayout implements Initializ
 		newItem.getItemProperty(LotDetailsViewComponent.DATE)
 			.setValue(DateUtil.formatDateAsStringValue(transaction.getDate(), DateUtil.DATE_AS_NUMBER_FORMAT));
 		newItem.getItemProperty(LotDetailsViewComponent.TYPE).setValue(transaction.getLotStatus());
+		newItem.getItemProperty(LotDetailsViewComponent.STATUS).setValue(transaction.getTrnStatus());
 		String lotScaleAbbr = "";
 
 		if (this.lotDetails.getLotScaleNameAbbr() != null) {
