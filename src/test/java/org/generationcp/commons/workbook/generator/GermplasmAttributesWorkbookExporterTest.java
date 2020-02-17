@@ -48,7 +48,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 		this.attributesWorkbookExporter.setColumnsInfo(this.columnsInfo);
 		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
 				GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES)));
-		Mockito.when(this.columnsInfo.getAddedColumnCurrentSort()).thenReturn(new ArrayList<>(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTE)));
+		Mockito.when(this.columnsInfo.getColumns()).thenReturn(new HashSet<>(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTE)));
 	}
 	@Test
 	public void testGetSourceItems() {

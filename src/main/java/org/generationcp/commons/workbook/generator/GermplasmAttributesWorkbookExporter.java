@@ -3,6 +3,7 @@ package org.generationcp.commons.workbook.generator;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -27,7 +28,7 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if (this.columnsInfo != null) {
 			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
-			final List<String> addedColumns = this.columnsInfo.getAddedColumnCurrentSort();
+			final Set<String> addedColumns = this.columnsInfo.getColumns();
 			for (final String addedCol : addedColumns) {
 				final Optional<UserDefinedField> optional =
 					attributeTypes.stream().filter(userDefinedField -> userDefinedField.getFcode().toUpperCase().equalsIgnoreCase(addedCol))
