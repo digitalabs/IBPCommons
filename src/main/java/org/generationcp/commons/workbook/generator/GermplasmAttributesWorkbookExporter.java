@@ -1,18 +1,16 @@
 package org.generationcp.commons.workbook.generator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExporter<UserDefinedField> {
@@ -28,17 +26,14 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if (this.columnsInfo != null) {
 			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
-			final Set<String> addedColumns = this.columnsInfo.getColumns();
-			for (final String addedCol : addedColumns) {
-				final Optional<UserDefinedField> optional =
-					attributeTypes.stream().filter(userDefinedField -> userDefinedField.getFcode().toUpperCase().equalsIgnoreCase(addedCol))
-						.findFirst();
-				if (optional.isPresent()) {
-					final UserDefinedField field = optional.get();
-					if (field != null) {
-						this.addedAttributeColumns.add(field.getFcode().toUpperCase());
-						attributeTypeColumns.add(field);
-					}
+			final Map<String, UserDefinedField>
+				attributeTypesMap = attributeTypes.stream().collect(Collectors.toMap(u -> u.getFcode().toUpperCase(), u -> u));
+
+			for (final String addedCol : this.columnsInfo.getColumns()) {
+				final UserDefinedField field = attributeTypesMap.get(addedCol.toUpperCase());
+				if (field != null) {
+					this.addedAttributeColumns.add(field.getFcode().toUpperCase());
+					attributeTypeColumns.add(field);
 				}
 			}
 

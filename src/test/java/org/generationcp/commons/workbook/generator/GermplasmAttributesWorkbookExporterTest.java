@@ -19,9 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,9 +44,9 @@ public class GermplasmAttributesWorkbookExporterTest {
 		this.styleBuilder = new ExcelCellStyleBuilder(this.wb);
 		this.attributesWorkbookExporter.setSheetStyles(this.styleBuilder);
 		this.attributesWorkbookExporter.setColumnsInfo(this.columnsInfo);
-		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
+		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Collections.singletonList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
 				GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES)));
-		Mockito.when(this.columnsInfo.getColumns()).thenReturn(new HashSet<>(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTE)));
+		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTE));
 	}
 	@Test
 	public void testGetSourceItems() {
@@ -61,7 +59,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 
 	@Test
 	public void testGenerateAddedColumnHeader() {
-		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
+		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Collections.singletonList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
 				GermplasmAttributesWorkbookExporterTest.NOTES, GermplasmAttributesWorkbookExporterTest.NOTES)));
 		this.attributesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
@@ -74,7 +72,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 	@Test
 	public void testGenerateAddedColumnValue() {
 		this.attributesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
-		this.attributesWorkbookExporter.setAddedAttributeColumns(Arrays.asList(GermplasmAttributesWorkbookExporterTest.NOTES));
+		this.attributesWorkbookExporter.setAddedAttributeColumns(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTES));
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
 		final HSSFRow row = observationSheet.createRow(0);
 		final GermplasmExportSource data = GermplasmExportTestHelper.generateListEntries(1).get(0);
