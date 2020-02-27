@@ -1,7 +1,6 @@
 package org.generationcp.commons.workbook.generator;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -27,24 +26,24 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 		final CellStyle dataStyle = this.getDataStyle();
 		for (final SOURCE source : items) {
 			final ExcelWorkbookRow itemRow = new ExcelWorkbookRow(descriptionSheet.createRow(++startingRow));
-			itemRow.createCell(0, labelStyle, getName(source));
-			itemRow.createCell(1, dataStyle, getDescription(source));
-			itemRow.createCell(2, dataStyle, getProperty(source));
-			itemRow.createCell(3, dataStyle, getScale(source));
-			itemRow.createCell(4, dataStyle, getMethod(source));
-			itemRow.createCell(5, dataStyle, getDatatype(source));
-			itemRow.createCell(6, dataStyle, getValue(source));
-			itemRow.createCell(7, dataStyle, getComments(source));
+			itemRow.createCell(0, labelStyle, this.getName(source));
+			itemRow.createCell(1, dataStyle, this.getDescription(source));
+			itemRow.createCell(2, dataStyle, this.getProperty(source));
+			itemRow.createCell(3, dataStyle, this.getScale(source));
+			itemRow.createCell(4, dataStyle, this.getMethod(source));
+			itemRow.createCell(5, dataStyle, this.getDatatype(source));
+			itemRow.createCell(6, dataStyle, this.getValue(source));
+			itemRow.createCell(7, dataStyle, this.getComments(source));
 		}
 		return startingRow;
 	}
 	
 	public Integer generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex){
 		Integer columnIndex = startingColumnIndex;
-		if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
-			for (final Map.Entry<String, List<ListDataColumnValues>> columnEntry : columnsInfo.getColumnValuesMap().entrySet()) {
-				if (doIncludeColumn(columnEntry.getKey())) {
-					final List<ListDataColumnValues> columnValues = columnEntry.getValue();
+		if (this.columnsInfo != null && !this.columnsInfo.getColumns().isEmpty()) {
+			for(final String column : this.columnsInfo.getColumns()) {
+				if (this.doIncludeColumn(column)) {
+					final List<ListDataColumnValues> columnValues = this.columnsInfo.getColumnValuesMap().get(column);
 					final ListDataColumnValues listDataColumnValues =
 							(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
 								
@@ -63,11 +62,11 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 
 	public Integer generateAddedColumnHeader(final HSSFRow headerRow, final Integer startingColumnIndex){
 		Integer columnIndex = startingColumnIndex;
-		if (columnsInfo != null && !columnsInfo.getColumns().isEmpty()) {
+		if (this.columnsInfo != null && !this.columnsInfo.getColumns().isEmpty()) {
 			final List<SOURCE> items = this.getSourceItems();
 			for (final SOURCE source : items) {
 				final Cell entryTypeCell = headerRow.createCell(columnIndex);
-				entryTypeCell.setCellValue(getName(source));
+				entryTypeCell.setCellValue(this.getName(source));
 				entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 				columnIndex++;
 			}
