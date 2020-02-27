@@ -52,7 +52,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -1110,7 +1109,7 @@ public class BreedingViewImportServiceImplTest {
 		environments.add(testLocationName3);
 
 		final Map<Integer, String> result = this.bvImportService
-			.createGeolocationIdEnvironmentMap(environments, BreedingViewImportServiceImplTest.STUDY_ID,
+			.createEnvironmentIdToEnvironmentMap(environments, BreedingViewImportServiceImplTest.STUDY_ID,
 				BreedingViewImportServiceImplTest.LOCATION_NAME);
 
 		// Verify that only environments 1 and 3 are in the
@@ -1158,7 +1157,7 @@ public class BreedingViewImportServiceImplTest {
 		environments.add(testTrialInstance3);
 
 		final Map<Integer, String> result = this.bvImportService
-			.createGeolocationIdEnvironmentMap(environments, BreedingViewImportServiceImplTest.STUDY_ID,
+			.createEnvironmentIdToEnvironmentMap(environments, BreedingViewImportServiceImplTest.STUDY_ID,
 				BreedingViewImportServiceImplTest.TRIAL_INSTANCE);
 
 		// Verify that only environments 1 and 3 are in the
@@ -1276,7 +1275,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(STUDY_ID)).thenReturn(locationMap);
 
 		final Map<String, Integer> result =
-			this.bvImportService.createEnvironmentNameToNdGeolocationIdMap(LOCATION_NAME, STUDY_ID, TRIAL_DATASET_ID);
+			this.bvImportService.createEnvironmentNameToEnvironmentIdMap(LOCATION_NAME, STUDY_ID, TRIAL_DATASET_ID);
 
 		Assert.assertEquals(result.size(), testEnvironments.size());
 		Assert.assertEquals(testGeolocationId1, result.get(testLocationName1));
@@ -1309,7 +1308,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(STUDY_ID)).thenReturn(locationMap);
 
 		final Map<String, Integer> result =
-			this.bvImportService.createEnvironmentNameToNdGeolocationIdMap(TRIAL_INSTANCE, STUDY_ID, TRIAL_DATASET_ID);
+			this.bvImportService.createEnvironmentNameToEnvironmentIdMap(TRIAL_INSTANCE, STUDY_ID, TRIAL_DATASET_ID);
 
 		Assert.assertEquals(result.size(), testEnvironments.size());
 		Assert.assertEquals(testGeolocationId1, result.get(testTrialInstance1));

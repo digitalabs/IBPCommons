@@ -189,8 +189,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final String[] csvHeader = traitsAndMeans.keySet().toArray(new String[0]);
 		final String envHeader = csvHeader[0];
 		final String entryNoHeader = csvHeader[1];
-		final Map<String, Integer> envNameToNdGeolocationIdMap =
-			this.createEnvironmentNameToNdGeolocationIdMap(envHeader, studyId, trialDatasetId);
+		final Map<String, Integer> envNameToEnvIdMap =
+			this.createEnvironmentNameToEnvironmentIdMap(envHeader, studyId, trialDatasetId);
 		final Map<String, Integer> entroNyToStockIdMap = this.getEntryNoToStockIdMap(entryNoHeader, plotDatasetId);
 
 		// iterate all environments in the map of traits and means based on the
@@ -202,14 +202,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			// replaced with semicolon. So we need to replace semicolon with
 			// comma again
 			final String envName = environments.get(i).replace(";", ",");
-			final Integer ndGeolocationId = envNameToNdGeolocationIdMap.get(envName);
+			final Integer environmentId = envNameToEnvIdMap.get(envName);
 			final String entryNo = traitsAndMeans.get(entryNoHeader).get(i);
 			final Integer stockId = entroNyToStockIdMap.get(entryNo);
 
-			// create experiment for the given stock id and nd_geolocation id
+			// create experiment for the given stock id and environment id
 			final ExperimentValues experimentRow = new ExperimentValues();
 			experimentRow.setGermplasmId(stockId);
-			experimentRow.setLocationId(ndGeolocationId);
+			experimentRow.setLocationId(environmentId);
 
 			final List<Variable> list = new ArrayList<>();
 
@@ -255,17 +255,17 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	}
 
 	/**
-	 * This method returns a map of environment factor values to nd_geolocation
+	 * This method returns a map of environment factor values to environment
 	 * ids based from the trial dataset id and the environment factor name
 	 *
 	 * @param envFactor
 	 * @param trialDatasetId
-	 * @return map of environment factor names to nd_geolocation ids
+	 * @return map of environment factor names to environment ids
 	 */
-	protected Map<String, Integer> createEnvironmentNameToNdGeolocationIdMap(
+	protected Map<String, Integer> createEnvironmentNameToEnvironmentIdMap(
 		final String envFactor, final int studyId,
 		final int trialDatasetId) {
-		final Map<String, Integer> environmentNameToGeolocationIdMap = new HashMap<>();
+		final Map<String, Integer> environmentNameToEnvironmentIdIdMap = new HashMap<>();
 		final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(trialDatasetId);
 
 		final boolean isSelectedEnvironmentFactorALocation = this.studyDataManager.isLocationIdVariable(studyId, envFactor);
@@ -275,13 +275,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			if (isSelectedEnvironmentFactorALocation) {
 				final String locationId = trialEnv.getVariables().findByLocalName(envFactor).getValue();
 				final String locationName = locationNameMap.get(locationId);
-				environmentNameToGeolocationIdMap.put(locationName, trialEnv.getId());
+				environmentNameToEnvironmentIdIdMap.put(locationName, trialEnv.getId());
 			} else {
-				environmentNameToGeolocationIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(), trialEnv.getId());
+				environmentNameToEnvironmentIdIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(), trialEnv.getId());
 			}
 
 		}
-		return environmentNameToGeolocationIdMap;
+		return environmentNameToEnvironmentIdIdMap;
 	}
 
 	/**
@@ -546,10 +546,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			final VariableTypeList summaryStatsVariableTypeList =
 				this.createSummaryStatsVariableTypes(summaryStatsCSV, trialDataSet, variableTypeListVariates, programUUID);
 
-			final Map<Integer, String> geolocationIdToEnvironmentMap =
-				this.createGeolocationIdEnvironmentMap(summaryStatsCSV.getData().keySet(), studyId, summaryStatsCSV.getTrialHeader());
+			final Map<Integer, String> environmentIdToEnvironmentMap =
+				this.createEnvironmentIdToEnvironmentMap(summaryStatsCSV.getData().keySet(), studyId, summaryStatsCSV.getTrialHeader());
 			final List<ExperimentValues> summaryStatsExperimentValuesList =
-				this.createSummaryStatsExperimentValuesList(trialDataSet, geolocationIdToEnvironmentMap, summaryStatsCSV);
+				this.createSummaryStatsExperimentValuesList(trialDataSet, environmentIdToEnvironmentMap, summaryStatsCSV);
 
 			// Save project properties and experiments
 			final DmsProject project = new DmsProject();
@@ -557,7 +557,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			project.setStudyType(study.getStudyType());
 
 			this.studyDataManager.saveTrialDatasetSummary(project, summaryStatsVariableTypeList, summaryStatsExperimentValuesList,
-				new ArrayList<>(geolocationIdToEnvironmentMap.keySet()));
+				new ArrayList<>(environmentIdToEnvironmentMap.keySet()));
 
 		} catch (final Exception e) {
 			throw new BreedingViewImportException(e.getMessage(), e);
@@ -571,7 +571,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * summary file from Breeding View
 	 *
 	 * @param trialDataSet                  - environment dataset of analyzed study
-	 * @param geolocationIdToEnvironmentMap - map of Trial Environment ID (nd_geolocation ID) to
+	 * @param environmentIdToEnvironmentMap - map of Trial Environment ID to
 	 *                                      environment names
 	 * @param summaryCSV                    - summary headers and data from summary file from Breeding
 	 *                                      View
@@ -580,13 +580,13 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 */
 	List<ExperimentValues> createSummaryStatsExperimentValuesList(
 		final DataSet trialDataSet,
-		final Map<Integer, String> geolocationIdToEnvironmentMap, final SummaryStatsCSV summaryCSV) throws IOException {
+		final Map<Integer, String> environmentIdToEnvironmentMap, final SummaryStatsCSV summaryCSV) throws IOException {
 		final List<String> summaryHeaders = summaryCSV.getSummaryHeaders();
 		final Map<String, Map<String, List<String>>> summaryStatsData = summaryCSV.getData();
 		final List<ExperimentValues> summaryStatsExperimentValuesList = new ArrayList<>();
 
 		int counter = 0;
-		for (final String envFactorValue : geolocationIdToEnvironmentMap.values()) {
+		for (final String envFactorValue : environmentIdToEnvironmentMap.values()) {
 			for (final String summaryStatName : summaryHeaders) {
 				for (final Entry<String, List<String>> traitSummaryStat : summaryStatsData.get(envFactorValue).entrySet()) {
 
@@ -594,7 +594,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					variableList.setVariables(new ArrayList<Variable>());
 					final ExperimentValues experimentValues = new ExperimentValues();
 					experimentValues.setVariableList(variableList);
-					experimentValues.setLocationId(Integer.valueOf(geolocationIdToEnvironmentMap.keySet().toArray()[counter].toString()));
+					experimentValues.setLocationId(Integer.valueOf(environmentIdToEnvironmentMap.keySet().toArray()[counter].toString()));
 
 					final DMSVariableType summaryStatVariableType =
 						trialDataSet.findVariableTypeByLocalName(traitSummaryStat.getKey() + "_" + summaryStatName);
@@ -612,7 +612,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return summaryStatsExperimentValuesList;
 	}
 
-	protected Map<Integer, String> createGeolocationIdEnvironmentMap(
+	protected Map<Integer, String> createEnvironmentIdToEnvironmentMap(
 		final Set<String> environments, final int studyId,
 		final String environmentFactorName) {
 
@@ -632,14 +632,14 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			// replaced with semicolon. So we need to replace semicolon with
 			// comma again
 			final String sanitizedEnvironmentFactor = environmentName.replace(";", ",");
-			Integer geolocationId = this.getTrialEnvironmentId(trialEnvironments, environmentFactorName, sanitizedEnvironmentFactor,
+			Integer environmentId = this.getTrialEnvironmentId(trialEnvironments, environmentFactorName, sanitizedEnvironmentFactor,
 				isSelectedEnvironmentFactorALocation, locationNameToIdMap);
-			if (geolocationId == null) {
-				geolocationId = this.getTrialEnvironmentId(trialEnvironments, environmentFactorName, environmentName,
+			if (environmentId == null) {
+				environmentId = this.getTrialEnvironmentId(trialEnvironments, environmentFactorName, environmentName,
 					isSelectedEnvironmentFactorALocation, locationNameToIdMap);
 			}
 
-			envFactorTolocationIdMap.put(geolocationId, environmentName);
+			envFactorTolocationIdMap.put(environmentId, environmentName);
 		}
 
 		return envFactorTolocationIdMap;
@@ -733,7 +733,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			final OutlierCSV outlierCSV = new OutlierCSV(file, this.localNameToAliasMap);
 			final Map<String, Map<String, List<String>>> outlierData = outlierCSV.getData();
-			final Map<String, Integer> ndGeolocationIds = new HashMap<>();
+			final Map<String, Integer> environmentIds = new HashMap<>();
 
 			final Map<Integer, Integer> stdVariableIds = new HashMap<>();
 			final VariableTypeList plotVariableTypeList = plotDataset.getVariableTypes();
@@ -747,7 +747,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 			final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(plotDataset.getId());
 			for (final TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
-				ndGeolocationIds.put(trialEnv.getVariables().findByLocalName(outlierCSV.getTrialHeader()).getValue(), trialEnv.getId());
+				environmentIds.put(trialEnv.getVariables().findByLocalName(outlierCSV.getTrialHeader()).getValue(), trialEnv.getId());
 			}
 
 			// iterate all environments from the outlier data
@@ -755,7 +755,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			for (final String env : environments) {
 
 				final List<PhenotypeOutlier> outliers = new ArrayList<>();
-				final Integer ndGeolocationId = ndGeolocationIds.get(env);
+				final Integer environmentId = environmentIds.get(env);
 
 				// iterate all variables with outliers
 				for (final Entry<String, List<String>> plot : outlierData.get(env).entrySet()) {
@@ -776,7 +776,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 					// retrieve all phenotype id of variables based on the plot
 					// no
 					final List<Object[]> list = this.studyDataManager
-						.getPhenotypeIdsByLocationAndPlotNo(plotDataset.getId(), ndGeolocationId, plotNo, cvTermIds);
+						.getPhenotypeIdsByLocationAndPlotNo(plotDataset.getId(), environmentId, plotNo, cvTermIds);
 					for (final Object[] object : list) {
 						// create PhenotypeOutlier objects and add to list
 						final PhenotypeOutlier outlier = new PhenotypeOutlier();
