@@ -58,7 +58,7 @@ public class GermplasmExportTestHelper {
 
 	public static GermplasmListNewColumnsInfo generateAddedColumnsInfo() {
 		final GermplasmListNewColumnsInfo newColumnsInfo = new GermplasmListNewColumnsInfo(1);
-		final LinkedHashMap<String, List<ListDataColumnValues>> columnValuesMap = new LinkedHashMap<>();
+		final Map<String, List<ListDataColumnValues>> columnValuesMap = new LinkedHashMap<>();
 		for (final String column : ADDED_COLUMNS) {
 			final List<ListDataColumnValues> valuesList = new ArrayList<>();
 			for (int x = 1; x <= NO_OF_LIST_ENTRIES; x++) {
