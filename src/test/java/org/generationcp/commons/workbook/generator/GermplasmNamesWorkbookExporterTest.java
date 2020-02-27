@@ -18,8 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,8 +44,8 @@ public class GermplasmNamesWorkbookExporterTest {
 		this.styleBuilder = new ExcelCellStyleBuilder(this.wb);
 		this.namesWorkbookExporter.setSheetStyles(this.styleBuilder);
 		this.namesWorkbookExporter.setColumnsInfo(this.columnsInfo);
-		Mockito.when(this.germplasmListManager.getGermplasmNameTypes()).thenReturn(Arrays.asList(UserDefinedFieldTestDataInitializer.createUserDefinedField(GermplasmNamesWorkbookExporterTest.CODE1, GermplasmNamesWorkbookExporterTest.CODE1)));
-		Mockito.when(this.columnsInfo.getColumns()).thenReturn(new HashSet<>(Arrays.asList(GermplasmNamesWorkbookExporterTest.CODE1)));
+		Mockito.when(this.germplasmListManager.getGermplasmNameTypes()).thenReturn(Collections.singletonList(UserDefinedFieldTestDataInitializer.createUserDefinedField(GermplasmNamesWorkbookExporterTest.CODE1, GermplasmNamesWorkbookExporterTest.CODE1)));
+		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmNamesWorkbookExporterTest.CODE1));
 	}
 	@Test
 	public void testGetSourceItems() {
@@ -66,7 +67,7 @@ public class GermplasmNamesWorkbookExporterTest {
 	@Test
 	public void testGenerateAddedColumnValue() {
 		this.namesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
-		this.namesWorkbookExporter.setAddedNameTypesColumns(Arrays.asList(GermplasmNamesWorkbookExporterTest.CODE1));
+		this.namesWorkbookExporter.setAddedNameTypesColumns(Collections.singletonList(GermplasmNamesWorkbookExporterTest.CODE1));
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
 		final HSSFRow row = observationSheet.createRow(0);
 		final GermplasmExportSource data = GermplasmExportTestHelper.generateListEntries(1).get(0);
