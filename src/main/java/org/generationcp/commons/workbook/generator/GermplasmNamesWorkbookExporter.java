@@ -8,10 +8,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter<UserDefinedField> {
@@ -27,12 +26,8 @@ public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if(this.columnsInfo != null) {
 			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
-			final Map<String, UserDefinedField> namesTypesMap = new HashMap<>();
-			for (final UserDefinedField userDefinedField: nameTypes) {
-				namesTypesMap.put(userDefinedField.getFname().toUpperCase(), userDefinedField);
-			}
-			final Set<String> addedColumns = this.columnsInfo.getColumns();
-			for (final String columnName : addedColumns) {
+			final Map<String, UserDefinedField> namesTypesMap = nameTypes.stream().collect(Collectors.toMap(u -> u.getFname().toUpperCase(), u -> u));
+			for (final String columnName : this.columnsInfo.getColumns()) {
 				final UserDefinedField userDefinedField = namesTypesMap.get(columnName.toUpperCase());
 				if (userDefinedField!=null) {
 					addedNameTypesColumns.add(columnName.toUpperCase());

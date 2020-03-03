@@ -1,40 +1,42 @@
 package org.generationcp.commons.workbook.generator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
-import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExporter<UserDefinedField> {
 
 	@Resource
 	private GermplasmDataManager germplasmManager;
-	
+
 	private List<String> addedAttributeColumns = new ArrayList<>();
-	
+
 	@Override
 	List<UserDefinedField> getSourceItems() {
 		final List<UserDefinedField> attributeTypeColumns = new ArrayList<>();
 		//columnsInfo is null when exporting germplasm list from Study Manager
-		if(this.columnsInfo != null) {
+		if (this.columnsInfo != null) {
 			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
-			final Set<String> addedColumns = this.columnsInfo.getColumns();
-			for (final UserDefinedField field : attributeTypes) {
-				final String attributeTypeCode = field.getFcode().toUpperCase();
-				if (addedColumns.contains(attributeTypeCode)) {
-					this.addedAttributeColumns.add(attributeTypeCode);
+			final Map<String, UserDefinedField>
+				attributeTypesMap = attributeTypes.stream().collect(Collectors.toMap(u -> u.getFcode().toUpperCase(), u -> u));
+
+			for (final String addedCol : this.columnsInfo.getColumns()) {
+				final UserDefinedField field = attributeTypesMap.get(addedCol.toUpperCase());
+				if (field != null) {
+					this.addedAttributeColumns.add(field.getFcode().toUpperCase());
 					attributeTypeColumns.add(field);
 				}
 			}
+
 		}
 		return attributeTypeColumns;
 	}
@@ -97,5 +99,5 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 	public void setAddedAttributeColumns(final List<String> addedAttributeColumns) {
 		this.addedAttributeColumns = addedAttributeColumns;
 	}
-	
+
 }
