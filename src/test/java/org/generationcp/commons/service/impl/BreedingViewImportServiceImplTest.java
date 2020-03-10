@@ -19,8 +19,8 @@ import org.generationcp.middleware.domain.dms.LocationDto;
 import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.dms.Stocks;
-import org.generationcp.middleware.domain.dms.TrialEnvironment;
-import org.generationcp.middleware.domain.dms.TrialEnvironments;
+import org.generationcp.middleware.domain.dms.TrialInstance;
+import org.generationcp.middleware.domain.dms.TrialInstances;
 import org.generationcp.middleware.domain.dms.Variable;
 import org.generationcp.middleware.domain.dms.VariableList;
 import org.generationcp.middleware.domain.dms.VariableTypeList;
@@ -126,7 +126,7 @@ public class BreedingViewImportServiceImplTest {
 	private OntologyDataManager ontologyDataManager;
 
 	@Mock
-	private TrialEnvironments environments;
+	private TrialInstances instances;
 
 	@Mock
 	private SummaryStatsCSV summaryStatsCSV;
@@ -225,7 +225,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(ArgumentMatchers.<VariableFilter>any());
 		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(ArgumentMatchers.<OntologyVariableInfo>any());
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(this.environments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(this.instances);
 
 		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutput.csv").toURI());
 
@@ -259,7 +259,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(ArgumentMatchers.<VariableFilter>any());
 		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(ArgumentMatchers.<OntologyVariableInfo>any());
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(this.environments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(this.instances);
 
 		Mockito.doNothing().when(this.studyDataManager)
 			.addDataSetVariableType(ArgumentMatchers.anyInt(), ArgumentMatchers.<DMSVariableType>any());
@@ -286,7 +286,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(this.createExistingMeansDataSet()).when(this.studyDataManager)
 			.findOneDataSetByType(BreedingViewImportServiceImplTest.STUDY_ID, DatasetTypeEnum.MEANS_DATA.getId());
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(this.environments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(this.instances);
 
 		Mockito.doNothing().when(this.studyDataManager)
 			.addDataSetVariableType(ArgumentMatchers.anyInt(), ArgumentMatchers.<DMSVariableType>any());
@@ -313,7 +313,7 @@ public class BreedingViewImportServiceImplTest {
 		final List<Object[]> phenotypeIds = new ArrayList<>();
 		phenotypeIds.add(new Object[] {"76373", "9999", "1"});
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(this.createEnvironments());
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(this.createTrialInstances());
 		Mockito.when(this.studyDataManager
 			.getPhenotypeIdsByLocationAndPlotNo(ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(), ArgumentMatchers.anyInt(),
 				ArgumentMatchers.<Integer>anyList())).thenReturn(phenotypeIds);
@@ -331,7 +331,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(dataSet).when(this.studyDataManager)
 			.findOneDataSetByType(BreedingViewImportServiceImplTest.STUDY_ID, DatasetTypeEnum.SUMMARY_DATA.getId());
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(this.createEnvironments());
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(this.createTrialInstances());
 
 		final CVTermDao cvTermDao = Mockito.mock(CVTermDao.class);
 		Mockito.doReturn(cvTermDao).when(this.daoFactory).getCvTermDao();
@@ -565,25 +565,25 @@ public class BreedingViewImportServiceImplTest {
 		return factor;
 	}
 
-	private TrialEnvironments createEnvironments() {
+	private TrialInstances createTrialInstances() {
 
-		final TrialEnvironments environmentsEnvs = new TrialEnvironments();
-		environmentsEnvs.add(this.createEnvironment(1));
-		return environmentsEnvs;
+		final TrialInstances trialInstances = new TrialInstances();
+		trialInstances.add(this.createTrialInstance(1));
+		return trialInstances;
 
 	}
 
-	private TrialEnvironment createEnvironment(final int geolocationId) {
+	private TrialInstance createTrialInstance(final int geolocationId) {
 
 		final LocationDto location = new LocationDto(geolocationId, "CIMMYT");
 		final VariableList variableList = new VariableList();
 
 		this.addVariables(variableList);
 
-		final TrialEnvironment environment = new TrialEnvironment(geolocationId, variableList);
-		environment.setLocation(location);
+		final TrialInstance trialInstance = new TrialInstance(geolocationId, variableList);
+		trialInstance.setLocation(location);
 
-		return environment;
+		return trialInstance;
 
 	}
 
@@ -626,7 +626,7 @@ public class BreedingViewImportServiceImplTest {
 		Mockito.doReturn(null).when(this.ontologyVariableDataManager).getWithFilter(ArgumentMatchers.<VariableFilter>any());
 		Mockito.doNothing().when(this.ontologyVariableDataManager).addVariable(ArgumentMatchers.<OntologyVariableInfo>any());
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(this.environments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(this.instances);
 
 		final File file = new File(ClassLoader.getSystemClassLoader().getResource("BMSOutputDupeEntryNo.csv").toURI());
 
@@ -1081,13 +1081,13 @@ public class BreedingViewImportServiceImplTest {
 		final String testLocationName3 = "UP Los Banos, Philippines";
 		final String testLocationId3 = "1003";
 
-		final TrialEnvironments testEnvironments = new TrialEnvironments();
+		final TrialInstances testEnvironments = new TrialInstances();
 
-		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		final TrialInstance environment1 = this.createTrialInstance(testGeolocationId1);
 		environment1.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME).setValue(testLocationId1);
-		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		final TrialInstance environment2 = this.createTrialInstance(testGeolocationId2);
 		environment2.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME).setValue(testLocationId2);
-		final TrialEnvironment environment3 = this.createEnvironment(testGeolocationId3);
+		final TrialInstance environment3 = this.createTrialInstance(testGeolocationId3);
 		environment3.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME).setValue(testLocationId3);
 
 		testEnvironments.add(environment1);
@@ -1099,11 +1099,11 @@ public class BreedingViewImportServiceImplTest {
 		locationMap.put(testLocationId2, testLocationName2);
 		locationMap.put(testLocationId3, testLocationName3);
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(ArgumentMatchers.anyInt())).thenReturn(locationMap);
 		Mockito.when(this.studyDataManager.isLocationIdVariable(ArgumentMatchers.anyInt(), ArgumentMatchers.anyString())).thenReturn(true);
 
-		// Only add environments 1 and 3
+		// Only add instances 1 and 3
 		final Set<String> environments = new HashSet<>();
 		environments.add(testLocationName1);
 		environments.add(testLocationName3);
@@ -1112,7 +1112,7 @@ public class BreedingViewImportServiceImplTest {
 			.createEnvironmentIdToEnvironmentMap(environments, BreedingViewImportServiceImplTest.STUDY_ID,
 				BreedingViewImportServiceImplTest.LOCATION_NAME);
 
-		// Verify that only environments 1 and 3 are in the
+		// Verify that only instances 1 and 3 are in the
 		// geolocationIDEnvironmentMap
 		Assert.assertEquals(result.get(testGeolocationId1), testLocationName1);
 		Assert.assertEquals(result.get(testGeolocationId3), testLocationName3);
@@ -1132,13 +1132,13 @@ public class BreedingViewImportServiceImplTest {
 		final int testGeolocationId3 = 102;
 		final String testTrialInstance3 = "3";
 
-		final TrialEnvironments testEnvironments = new TrialEnvironments();
+		final TrialInstances testEnvironments = new TrialInstances();
 
-		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		final TrialInstance environment1 = this.createTrialInstance(testGeolocationId1);
 		environment1.getVariables().findByLocalName(BreedingViewImportServiceImplTest.TRIAL_INSTANCE).setValue(testTrialInstance1);
-		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		final TrialInstance environment2 = this.createTrialInstance(testGeolocationId2);
 		environment2.getVariables().findByLocalName(BreedingViewImportServiceImplTest.TRIAL_INSTANCE).setValue(testTrialInstance2);
-		final TrialEnvironment environment3 = this.createEnvironment(testGeolocationId3);
+		final TrialInstance environment3 = this.createTrialInstance(testGeolocationId3);
 		environment3.getVariables().findByLocalName(BreedingViewImportServiceImplTest.TRIAL_INSTANCE).setValue(testTrialInstance3);
 
 		testEnvironments.add(environment1);
@@ -1147,11 +1147,11 @@ public class BreedingViewImportServiceImplTest {
 
 		final BiMap<String, String> locationMap = HashBiMap.create();
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(ArgumentMatchers.anyInt())).thenReturn(locationMap);
 		Mockito.when(this.studyDataManager.isLocationIdVariable(ArgumentMatchers.anyInt(), ArgumentMatchers.anyString())).thenReturn(false);
 
-		// Only add environments 1 and 3
+		// Only add instances 1 and 3
 		final Set<String> environments = new HashSet<>();
 		environments.add(testTrialInstance1);
 		environments.add(testTrialInstance3);
@@ -1160,7 +1160,7 @@ public class BreedingViewImportServiceImplTest {
 			.createEnvironmentIdToEnvironmentMap(environments, BreedingViewImportServiceImplTest.STUDY_ID,
 				BreedingViewImportServiceImplTest.TRIAL_INSTANCE);
 
-		// Verify that only environments 1 and 3 are in the
+		// Verify that only instances 1 and 3 are in the
 		// geolocationIDEnvironmentMap
 		Assert.assertEquals(result.get(testGeolocationId1), testTrialInstance1);
 		Assert.assertEquals(result.get(testGeolocationId3), testTrialInstance3);
@@ -1257,12 +1257,12 @@ public class BreedingViewImportServiceImplTest {
 		final String testLocationName2 = "Africa";
 		final String testLocationId2 = "1002";
 
-		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		final TrialInstance environment1 = this.createTrialInstance(testGeolocationId1);
 		environment1.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME).setValue(testLocationId1);
-		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		final TrialInstance environment2 = this.createTrialInstance(testGeolocationId2);
 		environment2.getVariables().findByLocalName(BreedingViewImportServiceImplTest.LOCATION_NAME).setValue(testLocationId2);
 
-		final TrialEnvironments testEnvironments = new TrialEnvironments();
+		final TrialInstances testEnvironments = new TrialInstances();
 		testEnvironments.add(environment1);
 		testEnvironments.add(environment2);
 
@@ -1270,12 +1270,12 @@ public class BreedingViewImportServiceImplTest {
 		locationMap.put(testLocationId1, testLocationName1);
 		locationMap.put(testLocationId2, testLocationName2);
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
 		Mockito.when(this.studyDataManager.isLocationIdVariable(STUDY_ID, LOCATION_NAME)).thenReturn(true);
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(STUDY_ID)).thenReturn(locationMap);
 
 		final Map<String, Integer> result =
-			this.bvImportService.createEnvironmentNameToEnvironmentIdMap(LOCATION_NAME, STUDY_ID, TRIAL_DATASET_ID);
+			this.bvImportService.createInstanceNameToInstanceIdMap(LOCATION_NAME, STUDY_ID, TRIAL_DATASET_ID);
 
 		Assert.assertEquals(result.size(), testEnvironments.size());
 		Assert.assertEquals(testGeolocationId1, result.get(testLocationName1));
@@ -1292,23 +1292,23 @@ public class BreedingViewImportServiceImplTest {
 		final Integer testGeolocationId2 = 101;
 		final String testTrialInstance2 = "2";
 
-		final TrialEnvironment environment1 = this.createEnvironment(testGeolocationId1);
+		final TrialInstance environment1 = this.createTrialInstance(testGeolocationId1);
 		environment1.getVariables().findByLocalName(TRIAL_INSTANCE).setValue(testTrialInstance1);
-		final TrialEnvironment environment2 = this.createEnvironment(testGeolocationId2);
+		final TrialInstance environment2 = this.createTrialInstance(testGeolocationId2);
 		environment2.getVariables().findByLocalName(TRIAL_INSTANCE).setValue(testTrialInstance2);
 
-		final TrialEnvironments testEnvironments = new TrialEnvironments();
+		final TrialInstances testEnvironments = new TrialInstances();
 		testEnvironments.add(environment1);
 		testEnvironments.add(environment2);
 
 		final BiMap<String, String> locationMap = HashBiMap.create();
 
-		Mockito.when(this.studyDataManager.getTrialEnvironmentsInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
+		Mockito.when(this.studyDataManager.getTrialInstancesInDataset(ArgumentMatchers.anyInt())).thenReturn(testEnvironments);
 		Mockito.when(this.studyDataManager.isLocationIdVariable(STUDY_ID, TRIAL_INSTANCE)).thenReturn(false);
 		Mockito.when(this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(STUDY_ID)).thenReturn(locationMap);
 
 		final Map<String, Integer> result =
-			this.bvImportService.createEnvironmentNameToEnvironmentIdMap(TRIAL_INSTANCE, STUDY_ID, TRIAL_DATASET_ID);
+			this.bvImportService.createInstanceNameToInstanceIdMap(TRIAL_INSTANCE, STUDY_ID, TRIAL_DATASET_ID);
 
 		Assert.assertEquals(result.size(), testEnvironments.size());
 		Assert.assertEquals(testGeolocationId1, result.get(testTrialInstance1));
