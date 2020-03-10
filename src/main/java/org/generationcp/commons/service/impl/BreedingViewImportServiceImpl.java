@@ -17,8 +17,8 @@ import org.generationcp.middleware.domain.dms.ExperimentValues;
 import org.generationcp.middleware.domain.dms.PhenotypicType;
 import org.generationcp.middleware.domain.dms.StandardVariable;
 import org.generationcp.middleware.domain.dms.Stocks;
-import org.generationcp.middleware.domain.dms.TrialInstance;
-import org.generationcp.middleware.domain.dms.TrialInstances;
+import org.generationcp.middleware.domain.dms.TrialEnvironment;
+import org.generationcp.middleware.domain.dms.TrialEnvironments;
 import org.generationcp.middleware.domain.dms.Variable;
 import org.generationcp.middleware.domain.dms.VariableList;
 import org.generationcp.middleware.domain.dms.VariableTypeList;
@@ -190,7 +190,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		final String envHeader = csvHeader[0];
 		final String entryNoHeader = csvHeader[1];
 		final Map<String, Integer> envNameToEnvIdMap =
-			this.createInstanceNameToInstanceIdMap(envHeader, studyId, trialDatasetId);
+			this.createEnvironmentNameToEnvironmentIdMap(envHeader, studyId, trialDatasetId);
 		final Map<String, Integer> entroNyToStockIdMap = this.getEntryNoToStockIdMap(entryNoHeader, plotDatasetId);
 
 		// iterate all environments in the map of traits and means based on the
@@ -262,26 +262,26 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 	 * @param trialDatasetId
 	 * @return map of environment factor names to environment ids
 	 */
-	protected Map<String, Integer> createInstanceNameToInstanceIdMap(
+	protected Map<String, Integer> createEnvironmentNameToEnvironmentIdMap(
 		final String envFactor, final int studyId,
 		final int trialDatasetId) {
-		final Map<String, Integer> instanceNameToInstanceIdMap = new HashMap<>();
-		final TrialInstances trialInstances = this.studyDataManager.getTrialInstancesInDataset(trialDatasetId);
+		final Map<String, Integer> environmentNameToEnvironmentIdIdMap = new HashMap<>();
+		final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(trialDatasetId);
 
 		final boolean isSelectedEnvironmentFactorALocation = this.studyDataManager.isLocationIdVariable(studyId, envFactor);
 		final Map<String, String> locationNameMap = this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
 
-		for (final TrialInstance trialInstance : trialInstances.getTrialInstances()) {
+		for (final TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
 			if (isSelectedEnvironmentFactorALocation) {
-				final String locationId = trialInstance.getVariables().findByLocalName(envFactor).getValue();
+				final String locationId = trialEnv.getVariables().findByLocalName(envFactor).getValue();
 				final String locationName = locationNameMap.get(locationId);
-				instanceNameToInstanceIdMap.put(locationName, trialInstance.getId());
+				environmentNameToEnvironmentIdIdMap.put(locationName, trialEnv.getId());
 			} else {
-				instanceNameToInstanceIdMap.put(trialInstance.getVariables().findByLocalName(envFactor).getValue(), trialInstance.getId());
+				environmentNameToEnvironmentIdIdMap.put(trialEnv.getVariables().findByLocalName(envFactor).getValue(), trialEnv.getId());
 			}
 
 		}
-		return instanceNameToInstanceIdMap;
+		return environmentNameToEnvironmentIdIdMap;
 	}
 
 	/**
@@ -618,7 +618,7 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 
 		final int datasetId = this.getTrialDataSet(studyId).getId();
 		final Map<Integer, String> envFactorTolocationIdMap = new LinkedHashMap<>();
-		final TrialInstances trialInstances = this.studyDataManager.getTrialInstancesInDataset(datasetId);
+		final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(datasetId);
 
 		final boolean isSelectedEnvironmentFactorALocation = this.studyDataManager.isLocationIdVariable(studyId, environmentFactorName);
 		final Map<String, String> locationNameToIdMap = this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId).inverse();
@@ -632,10 +632,10 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 			// replaced with semicolon. So we need to replace semicolon with
 			// comma again
 			final String sanitizedEnvironmentFactor = environmentName.replace(";", ",");
-			Integer environmentId = this.getTrialInstanceId(trialInstances, environmentFactorName, sanitizedEnvironmentFactor,
+			Integer environmentId = this.getTrialEnvironmentId(trialEnvironments, environmentFactorName, sanitizedEnvironmentFactor,
 				isSelectedEnvironmentFactorALocation, locationNameToIdMap);
 			if (environmentId == null) {
-				environmentId = this.getTrialInstanceId(trialInstances, environmentFactorName, environmentName,
+				environmentId = this.getTrialEnvironmentId(trialEnvironments, environmentFactorName, environmentName,
 					isSelectedEnvironmentFactorALocation, locationNameToIdMap);
 			}
 
@@ -645,22 +645,22 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 		return envFactorTolocationIdMap;
 	}
 
-	protected Integer getTrialInstanceId(
-		final TrialInstances trialInstances, final String environmentFactor,
+	protected Integer getTrialEnvironmentId(
+		final TrialEnvironments trialEnvironments, final String environmentFactor,
 		final String environmentName, final boolean isSelectedEnvironmentFactorALocation,
 		final Map<String, String> locationNameToIdMap) {
 
-		TrialInstance trialInstance = null;
+		TrialEnvironment trialEnvironment = null;
 
 		if (isSelectedEnvironmentFactorALocation) {
 			final String locationId = locationNameToIdMap.get(environmentName);
-			trialInstance = trialInstances.findOnlyOneByLocalName(environmentFactor, locationId);
+			trialEnvironment = trialEnvironments.findOnlyOneByLocalName(environmentFactor, locationId);
 		} else {
-			trialInstance = trialInstances.findOnlyOneByLocalName(environmentFactor, environmentName);
+			trialEnvironment = trialEnvironments.findOnlyOneByLocalName(environmentFactor, environmentName);
 		}
 
-		if (trialInstance != null) {
-			return trialInstance.getId();
+		if (trialEnvironment != null) {
+			return trialEnvironment.getId();
 		} else {
 			return null;
 		}
@@ -745,8 +745,8 @@ public class BreedingViewImportServiceImpl implements BreedingViewImportService 
 				i++;
 			}
 
-			final TrialInstances trialInstances = this.studyDataManager.getTrialInstancesInDataset(plotDataset.getId());
-			for (final TrialInstance trialEnv : trialInstances.getTrialInstances()) {
+			final TrialEnvironments trialEnvironments = this.studyDataManager.getTrialEnvironmentsInDataset(plotDataset.getId());
+			for (final TrialEnvironment trialEnv : trialEnvironments.getTrialEnvironments()) {
 				environmentIds.put(trialEnv.getVariables().findByLocalName(outlierCSV.getTrialHeader()).getValue(), trialEnv.getId());
 			}
 
