@@ -12,6 +12,7 @@
 package org.generationcp.commons.parsing.pojo;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -246,9 +247,11 @@ public class ImportedCross extends ImportedGermplasm implements Serializable {
 		return this.femaleParent.getStudyName();
 	}
 
-	// TODO should this be just one male study name instead of list?
-	public List<String> getMaleStudyNames() {
-		return this.maleParents.stream().map(ImportedGermplasmParent::getStudyName).collect(Collectors.toList());
+	public String getMaleStudyName() {
+		if (!CollectionUtils.isEmpty(this.maleParents)) {
+			return this.maleParents.get(0).getStudyName();
+		}
+		return "";
 	}
 
 	public boolean isBreedingMethodInformationAvailable() {

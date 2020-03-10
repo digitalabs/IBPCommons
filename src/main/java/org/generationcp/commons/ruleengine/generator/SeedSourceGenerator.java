@@ -141,7 +141,7 @@ public class SeedSourceGenerator {
 		for (final Integer malePlotNo : malePlotNos) {
 			final String maleSeedSource =
 				this.generateSeedSource(environmentRow.getRight(),
-					conditions.getRight(), null, malePlotNo != null? malePlotNo.toString() : "", crossInfo.getMaleStudyNames().get(0), null, locationIdNameMap.getRight(),
+					conditions.getRight(), null, malePlotNo != null? malePlotNo.toString() : "", crossInfo.getMaleStudyName(), null, locationIdNameMap.getRight(),
 					environmentVariables.getRight());
 			generatedSeedSources.add(maleSeedSource);
 		}
