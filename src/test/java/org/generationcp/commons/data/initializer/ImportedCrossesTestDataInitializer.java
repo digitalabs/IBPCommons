@@ -3,22 +3,22 @@ package org.generationcp.commons.data.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.generationcp.commons.parsing.pojo.ImportedCrosses;
+import org.generationcp.commons.parsing.pojo.ImportedCross;
 
 public class ImportedCrossesTestDataInitializer {
-	public ImportedCrosses createImportedCrosses(final boolean hasHybridMethod){
-		ImportedCrosses importedCross = new ImportedCrosses();
+	public ImportedCross createImportedCrosses(final boolean hasHybridMethod){
+		ImportedCross importedCross = new ImportedCross();
 		final String method = hasHybridMethod ? "TCR" : "UGM";
 		importedCross.setRawBreedingMethod(method);
 		return importedCross;
 	}
 
-	public List<ImportedCrosses> createImportedCrossesList(final int count, final boolean hasHybridMethod){
-		List<ImportedCrosses> importedCrossesList = new ArrayList<ImportedCrosses>();
+	public List<ImportedCross> createImportedCrossesList(final int count, final boolean hasHybridMethod){
+		List<ImportedCross> importedCrossList = new ArrayList<ImportedCross>();
 		for(int ctr  = 0; ctr<count; ctr++){
-			importedCrossesList.add(createImportedCrosses(hasHybridMethod));
+			importedCrossList.add(createImportedCrosses(hasHybridMethod));
 		}
-		return importedCrossesList;
+		return importedCrossList;
 	}
 	
 }

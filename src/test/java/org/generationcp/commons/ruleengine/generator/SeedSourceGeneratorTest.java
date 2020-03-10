@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.generationcp.commons.parsing.pojo.ImportedCrosses;
+import org.generationcp.commons.parsing.pojo.ImportedCross;
 import org.generationcp.commons.parsing.pojo.ImportedGermplasmParent;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
@@ -261,8 +261,8 @@ public class SeedSourceGeneratorTest {
 		Assert.assertEquals("femaleStudyName:IND:Dry season:2:/maleStudyName:CIMMYT:Wet season:1:", generatedSeedSources);
 	}
 
-	private ImportedCrosses getCross(final List<String> malePlotNos, final String femalePlotNo, final String maleStudyName, final String femaleStudyName) {
-		final ImportedCrosses crossInfo = new ImportedCrosses();
+	private ImportedCross getCross(final List<String> malePlotNos, final String femalePlotNo, final String maleStudyName, final String femaleStudyName) {
+		final ImportedCross crossInfo = new ImportedCross();
 		crossInfo.setFemaleParent(
 			new ImportedGermplasmParent(null, null, StringUtils.isEmpty(femalePlotNo) ? null : Integer.valueOf(femalePlotNo),
 				femaleStudyName));

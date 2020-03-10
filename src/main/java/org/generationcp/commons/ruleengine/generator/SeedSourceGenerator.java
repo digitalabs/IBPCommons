@@ -2,7 +2,7 @@ package org.generationcp.commons.ruleengine.generator;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.generationcp.commons.parsing.pojo.ImportedCrosses;
+import org.generationcp.commons.parsing.pojo.ImportedCross;
 import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
 import org.generationcp.commons.ruleengine.resolver.LocationResolver;
 import org.generationcp.commons.ruleengine.resolver.SeasonResolver;
@@ -127,7 +127,7 @@ public class SeedSourceGenerator {
 	public String generateSeedSourceForCross(final Pair<ObservationUnitRow, ObservationUnitRow> environmentRow,
 		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> conditions,
 		final Pair<Map<String, String>, Map<String, String>> locationIdNameMap,
-		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> environmentVariables, final ImportedCrosses crossInfo) {
+		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> environmentVariables, final ImportedCross crossInfo) {
 
 		final List<String> generatedSeedSources = new ArrayList<>();
 
