@@ -14,13 +14,13 @@ public abstract class ParsingValidator {
 	private final boolean skipIfEmpty;
 	private Integer pairedColumnIndex;
 
-	public ParsingValidator(boolean skipIfEmpty) {
+	public ParsingValidator(final boolean skipIfEmpty) {
 		this.skipIfEmpty = skipIfEmpty;
 	}
 
 	public abstract boolean isParsedValueValid(String value, Map<String, Object> additionalParams);
 
-	public void setValidationErrorMessage(String message) {
+	public void setValidationErrorMessage(final String message) {
 		this.message = message;
 	}
 
