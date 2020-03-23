@@ -75,7 +75,7 @@ public abstract class WorkbookRowConverter<T> {
 		return valueList;
 	}
 
-	private void applyValidation(final String value, final String columnLabel,
+	public void applyValidation(final String value, final String columnLabel,
 			final List<ParsingValidator> parsingValidators, final Map<Integer, String> currentRowValue) throws FileParsingException {
 		for (final ParsingValidator validator : parsingValidators) {
 			final Map<String, Object> additionalParams = validator.getPairedColumnIndex() != null ?
