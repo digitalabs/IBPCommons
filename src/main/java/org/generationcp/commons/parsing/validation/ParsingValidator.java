@@ -8,16 +8,19 @@ import java.util.Map;
  */
 public abstract class ParsingValidator {
 
+	public static final String PAIRED_COLUMN_VALUE_KEY = "PAIRED_COLUMN_VALUE";
+
 	private String message;
 	private final boolean skipIfEmpty;
+	private Integer pairedColumnIndex;
 
-	public ParsingValidator(boolean skipIfEmpty) {
+	public ParsingValidator(final boolean skipIfEmpty) {
 		this.skipIfEmpty = skipIfEmpty;
 	}
 
 	public abstract boolean isParsedValueValid(String value, Map<String, Object> additionalParams);
 
-	public void setValidationErrorMessage(String message) {
+	public void setValidationErrorMessage(final String message) {
 		this.message = message;
 	}
 
@@ -27,5 +30,13 @@ public abstract class ParsingValidator {
 
 	public boolean isSkipIfEmpty() {
 		return this.skipIfEmpty;
+	}
+
+	public Integer getPairedColumnIndex() {
+		return this.pairedColumnIndex;
+	}
+
+	public void setPairedColumnIndex(final Integer pairedColumnIndex) {
+		this.pairedColumnIndex = pairedColumnIndex;
 	}
 }
