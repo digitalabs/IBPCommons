@@ -1,6 +1,8 @@
 package org.generationcp.commons.parsing.validation;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -22,7 +24,9 @@ public class InventoryAmountUpdateValidator extends ParsingValidator {
 		// Verify that the amount is not being updated from what is saved
 		if (!CollectionUtils.isEmpty(this.restrictedStockIds) && this.restrictedStockIds.containsKey(value)) {
 			final String amount = (String) additionalParams.get(ParsingValidator.PAIRED_COLUMN_VALUE_KEY);
-			return this.restrictedStockIds.get(value).equals(Double.valueOf(amount));
+			if (!StringUtils.isEmpty(amount)&& NumberUtils.isNumber(amount)) {
+				return this.restrictedStockIds.get(value).equals(Double.valueOf(amount));
+			}
 		}
 		return true;
 	}
