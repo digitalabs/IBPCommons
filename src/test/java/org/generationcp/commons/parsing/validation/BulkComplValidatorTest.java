@@ -1,32 +1,28 @@
 
 package org.generationcp.commons.parsing.validation;
 
-import java.util.Map;
-
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Collections;
+
 public class BulkComplValidatorTest {
 
-	private final BulkComplValidator validator = new BulkComplValidator(7, 6);
+	private final BulkComplValidator validator = new BulkComplValidator(6);
 
 	@Test
 	public void testIsParsedValueValid_NullValue() {
-		Assert.assertTrue(this.validator.isParsedValueValid(null, this.createAdditionalParams(null)));
+		Assert.assertTrue(this.validator.isParsedValueValid(null, Collections.emptyMap()));
 	}
 
 	@Test
 	public void testIsParsedValueValid_EmptyValue() {
-		Assert.assertTrue(this.validator.isParsedValueValid("", this.createAdditionalParams(null)));
+		Assert.assertTrue(this.validator.isParsedValueValid("", Collections.emptyMap()));
 	}
 
 	@Test
 	public void testIsParsedValueValid_InvalidValue() {
-		Assert.assertFalse(this.validator.isParsedValueValid("wrong", this.createAdditionalParams(null)));
-	}
-
-	private Map<String, Object> createAdditionalParams(String bulkWithValue) {
-		return BulkComplValidator.createAdditionalParams(bulkWithValue);
+		Assert.assertFalse(this.validator.isParsedValueValid("wrong", Collections.emptyMap()));
 	}
 
 	@Test
