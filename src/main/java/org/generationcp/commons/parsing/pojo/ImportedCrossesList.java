@@ -25,7 +25,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	private static final long serialVersionUID = 1L;
 
 	/** The imported crosses. */
-	protected List<ImportedCrosses> importedCrosses;
+	protected List<ImportedCross> importedCrosses;
 
 	protected Set<String> errorMessages = new HashSet<>();
 	protected Set<String> warningMessages = new HashSet<>();
@@ -55,7 +55,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	 *
 	 * @return the imported crosses
 	 */
-	public List<ImportedCrosses> getImportedCrosses() {
+	public List<ImportedCross> getImportedCrosses() {
 		return this.importedCrosses;
 	}
 
@@ -64,17 +64,17 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 	 *
 	 * @param importedCrosses the new imported crosses
 	 */
-	public void setImportedGermplasms(final List<ImportedCrosses> importedCrosses) {
+	public void setImportedGermplasms(final List<ImportedCross> importedCrosses) {
 		this.importedCrosses = importedCrosses;
 	}
 
 	/**
 	 * Adds the imported crosses
 	 *
-	 * @param importedCrosses the imported crosses
+	 * @param importedCross the imported crosses
 	 */
-	public void addImportedCrosses(final ImportedCrosses importedCrosses) {
-		this.importedCrosses.add(importedCrosses);
+	public void addImportedCrosses(final ImportedCross importedCross) {
+		this.importedCrosses.add(importedCross);
 	}
 
 	public Set<String> getErrorMessages() {
@@ -95,7 +95,7 @@ public class ImportedCrossesList extends ImportedDescriptionDetails {
 
 	public boolean hasPlotDuplicate() {
 		if (this.importedCrosses != null) {
-			for (ImportedCrosses crosses : this.importedCrosses) {
+			for (ImportedCross crosses : this.importedCrosses) {
 				if (crosses.isPlotDupe()) {
 					return true;
 				}
