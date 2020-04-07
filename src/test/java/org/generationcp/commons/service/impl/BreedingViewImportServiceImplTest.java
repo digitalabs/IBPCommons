@@ -1009,13 +1009,13 @@ public class BreedingViewImportServiceImplTest {
 				for (int j = 0; j < SummaryStatsTestDataInitializer.TRAITS_LIST.size(); j++) {
 					final String trait = SummaryStatsTestDataInitializer.TRAITS_LIST.get(j);
 					final String summaryVariableName = trait + "_" + summaryHeaders.get(i - 1);
-					final Integer value = Integer.valueOf(environmentName) * 10 + i;
+					final int value = Integer.valueOf(environmentName) * 10 + i;
 
 					final ExperimentValues experimentValue = actualValuesIterator.next();
 					Assert.assertEquals(environmentName, experimentValue.getLocationId().toString());
 					final Variable variable = experimentValue.getVariableList().getVariables().get(0);
 					Assert.assertEquals(summaryVariableName, variable.getVariableType().getLocalName());
-					Assert.assertEquals(value.toString() + "." + j, variable.getActualValue());
+					Assert.assertEquals(Integer.toString(value) + "." + j, variable.getActualValue());
 				}
 			}
 		}

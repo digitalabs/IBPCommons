@@ -108,13 +108,4 @@ public class CrossingUtil {
 
 	}
 
-	public static boolean isCimmytWheat(final String profile, final String crop) {
-		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
-				&& CropEnum.WHEAT.toString().equalsIgnoreCase(crop);
-	}
-
-	public static boolean isCimmytMaize(final String profile, final String crop) {
-		return profile != null && crop != null && profile.equalsIgnoreCase(PedigreeFactory.PROFILE_CIMMYT)
-				&& CropEnum.MAIZE.toString().equalsIgnoreCase(crop);
-	}
 }

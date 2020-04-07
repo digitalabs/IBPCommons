@@ -1,41 +1,32 @@
 package org.generationcp.commons.ruleengine.generator;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.generationcp.commons.parsing.pojo.ImportedCross;
+import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
+import org.generationcp.commons.ruleengine.resolver.LocationResolver;
+import org.generationcp.commons.ruleengine.resolver.SeasonResolver;
+import org.generationcp.commons.service.GermplasmNamingProperties;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.domain.etl.MeasurementVariable;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
+import org.generationcp.middleware.pojos.Name;
+import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
-import org.generationcp.commons.service.GermplasmNamingProperties;
-import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
-import org.generationcp.commons.ruleengine.resolver.LocationResolver;
-import org.generationcp.commons.ruleengine.resolver.SeasonResolver;
-import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.middleware.domain.etl.MeasurementVariable;
-import org.generationcp.middleware.domain.etl.Workbook;
-import org.generationcp.middleware.domain.ontology.VariableType;
-import org.generationcp.middleware.manager.api.StudyDataManager;
-import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
-import org.generationcp.middleware.pojos.Name;
-import org.generationcp.middleware.service.api.dataset.DatasetService;
-import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
-
-import javax.annotation.Nullable;
-import javax.annotation.Resource;
-
-import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
-
+@Component
 public class SeedSourceGenerator {
 
 	private static final String MULTIPARENT_BEGIN_CHAR = "[";
 	private static final String MULTIPARENT_END_CHAR = "]";
-	private static final String INSTANCE_NUMBER = "1";
 	private static final String SEEDSOURCE_SEPARATOR = "/";
-
-	protected static final List<Integer> ENVIRONMENT_VARIABLE_TYPES = Lists.newArrayList(VariableType.ENVIRONMENT_DETAIL.getId());
 
 	@Resource
 	private GermplasmNamingProperties germplasmNamingProperties;
@@ -46,21 +37,14 @@ public class SeedSourceGenerator {
 	@Resource
 	private ContextUtil contextUtil;
 
-	@Resource
-	private StudyDataManager studyDataManager;
-
-	@Resource
-	private DatasetService datasetService;
-
 	public SeedSourceGenerator() {
 
 	}
 
-	@SuppressWarnings("Duplicates")
-	public String generateSeedSource(final Integer studyId, final Integer environmentDatasetId, final ObservationUnitRow obsevationUnitRow,
+	public String generateSeedSource(final ObservationUnitRow observationUnitRow,
 		final List<MeasurementVariable> conditions, final String selectionNumber,
-		final String plotNumber,
-		final String studyName, final String plantNumber) {
+		final String plotNumber, final String studyName, final String plantNumber, final Map<String, String> locationIdNameMap,
+		final List<MeasurementVariable> environmentVariables) {
 
 		if ("0".equals(plotNumber)) {
 			return Name.UNKNOWN;
@@ -121,19 +105,9 @@ public class SeedSourceGenerator {
 			}
 		};
 
-		final Map<String, String> locationIdNameMap =
-			this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
-
 		final Map<Integer, MeasurementVariable> environmentVariablesByTermId =
-			Maps.uniqueIndex(this.datasetService.getObservationSetVariables(environmentDatasetId, ENVIRONMENT_VARIABLE_TYPES),
-				new Function<MeasurementVariable, Integer>() {
+			environmentVariables.stream().collect(Collectors.toMap(MeasurementVariable::getTermId, v -> v));
 
-					@Nullable
-					@Override
-					public Integer apply(@Nullable final MeasurementVariable measurementVariable) {
-						return measurementVariable.getTermId();
-					}
-				});
 
 		final Map<KeyComponent, KeyComponentValueResolver> keyComponentValueResolvers = new HashMap<>();
 		keyComponentValueResolvers.put(KeyComponent.NAME, nameResolver);
@@ -141,30 +115,34 @@ public class SeedSourceGenerator {
 		keyComponentValueResolvers.put(KeyComponent.SELECTION_NUMBER, selectionNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.PLANT_NO, plantNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.LOCATION,
-			new LocationResolver(conditions, obsevationUnitRow, locationIdNameMap));
+			new LocationResolver(conditions, observationUnitRow, locationIdNameMap));
 		keyComponentValueResolvers.put(KeyComponent.SEASON,
-			new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, obsevationUnitRow,
+			new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, observationUnitRow,
 				environmentVariablesByTermId));
 
 		return service.generateKey(new SeedSourceTemplateProvider(this.germplasmNamingProperties,
 			this.contextUtil.getProjectInContext().getCropType().getCropName()), keyComponentValueResolvers);
 	}
 
-	public String generateSeedSourceForCross(final Workbook femaleWorkbook, final List<String> malePlotNos, final String femalePlotNo,
-		final String maleStudyName, final String femaleStudyName, final Workbook maleWorkbook) {
+	public String generateSeedSourceForCross(final Pair<ObservationUnitRow, ObservationUnitRow> environmentRow,
+		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> conditions,
+		final Pair<Map<String, String>, Map<String, String>> locationIdNameMap,
+		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> environmentVariables, final ImportedCross crossInfo) {
 
 		final List<String> generatedSeedSources = new ArrayList<>();
 
+		final Integer femalePlotNo = crossInfo.getFemalePlotNo();
 		final String femaleSeedSource =
-			this.generateSeedSource(femaleWorkbook.getStudyDetails().getId(), femaleWorkbook.getTrialDatasetId(), fromMeasurementRow(
-				femaleWorkbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(SeedSourceGenerator.INSTANCE_NUMBER))),
-				femaleWorkbook.getConditions(), null, femalePlotNo, femaleStudyName, null);
+			this.generateSeedSource(environmentRow.getLeft(),
+				conditions.getLeft(), null, femalePlotNo != null? femalePlotNo.toString() : "", crossInfo.getFemaleStudyName(), null,
+				locationIdNameMap.getLeft(), environmentVariables.getLeft());
 
-		for (final String malePlotNo : malePlotNos) {
+		final List<Integer> malePlotNos = crossInfo.getMalePlotNos();
+		for (final Integer malePlotNo : malePlotNos) {
 			final String maleSeedSource =
-				this.generateSeedSource(maleWorkbook.getStudyDetails().getId(), maleWorkbook.getTrialDatasetId(), fromMeasurementRow(
-					maleWorkbook.getTrialObservationByTrialInstanceNo(Integer.valueOf(SeedSourceGenerator.INSTANCE_NUMBER))),
-					maleWorkbook.getConditions(), null, malePlotNo, maleStudyName, null);
+				this.generateSeedSource(environmentRow.getRight(),
+					conditions.getRight(), null, malePlotNo != null? malePlotNo.toString() : "", crossInfo.getMaleStudyName(), null, locationIdNameMap.getRight(),
+					environmentVariables.getRight());
 			generatedSeedSources.add(maleSeedSource);
 		}
 		if (malePlotNos.size() > 1) {
@@ -175,12 +153,6 @@ public class SeedSourceGenerator {
 		return femaleSeedSource + SeedSourceGenerator.SEEDSOURCE_SEPARATOR + generatedSeedSources.get(0);
 	}
 
-	public String generateSeedSourceForCross(final Workbook workbook, final List<String> malePlotNos, final String femalePlotNo,
-		final String maleStudyName, final String femaleStudyName) {
-
-		//for single study context where male and female workbook is the same.
-		return this.generateSeedSourceForCross(workbook, malePlotNos, femalePlotNo, maleStudyName, femaleStudyName, workbook);
-	}
 
 	protected void setGermplasmNamingProperties(final GermplasmNamingProperties germplasmNamingProperties) {
 		this.germplasmNamingProperties = germplasmNamingProperties;
