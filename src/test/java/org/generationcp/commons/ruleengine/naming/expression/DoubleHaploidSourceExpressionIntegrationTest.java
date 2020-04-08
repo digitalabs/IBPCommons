@@ -43,7 +43,7 @@ public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTes
         ExecutorService threadPool = Executors.newFixedThreadPool(threads);
 
         final KeySequenceRegisterService keySequenceRegisterService =
-                new KeySequenceRegisterServiceImpl(SessionFactoryUtils.getSession(sessionFactory, false));
+                new KeySequenceRegisterServiceImpl(this.sessionProvder);
 
         for (int i = 1; i <= threads; i++) {
             Future<String> result = threadPool.submit(new Callable<String>() {
