@@ -4,14 +4,10 @@ import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.IntegrationTestBase;
 import org.generationcp.middleware.service.api.KeySequenceRegisterService;
 import org.generationcp.middleware.service.impl.KeySequenceRegisterServiceImpl;
-import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,10 +23,6 @@ import java.util.concurrent.Future;
 public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTestBase {
 
     private static final Logger LOG = LoggerFactory.getLogger(DoubleHaploidSourceExpressionIntegrationTest.class);
-
-    @Autowired
-    @Qualifier(value = "IBDBV2_MAIZE_MERGED_SessionFactory")
-    private SessionFactory sessionFactory;
 
     @Test
     public void testDoubleHaploidApplyRuleWithMultipleThreads() throws ExecutionException, InterruptedException {
