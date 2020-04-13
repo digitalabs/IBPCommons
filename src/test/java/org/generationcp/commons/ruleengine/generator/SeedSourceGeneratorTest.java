@@ -1,8 +1,12 @@
 
 package org.generationcp.commons.ruleengine.generator;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.generationcp.commons.parsing.pojo.ImportedCross;
+import org.generationcp.commons.parsing.pojo.ImportedGermplasmParent;
 import org.generationcp.commons.service.GermplasmNamingProperties;
 import org.generationcp.commons.spring.util.ContextUtil;
 import org.generationcp.middleware.data.initializer.MeasurementVariableTestDataInitializer;
@@ -17,12 +21,10 @@ import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.domain.study.StudyTypeDto;
 import org.generationcp.middleware.manager.Season;
-import org.generationcp.middleware.manager.api.StudyDataManager;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
-import org.generationcp.middleware.service.api.dataset.DatasetService;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitUtils;
 import org.junit.Assert;
@@ -35,13 +37,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import com.google.common.collect.Lists;
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import static org.mockito.ArgumentMatchers.anyInt;
 
 /**
  * This is more of an integration test (not a pure unit test) of all key code generation pieces for the seed source use case.
@@ -54,12 +53,6 @@ public class SeedSourceGeneratorTest {
 
 	@Mock
 	private ContextUtil contextUtil;
-
-	@Mock
-	private StudyDataManager studyDataManager;
-
-	@Mock
-	private DatasetService datasetService;
 
 	@InjectMocks
 	private SeedSourceGenerator seedSourceGenerator;
@@ -101,7 +94,6 @@ public class SeedSourceGeneratorTest {
 		studyDetails.setStudyName("TestStudy");
 		studyDetails.setStudyType(StudyTypeDto.getTrialDto());
 		final int studyId = 1;
-		final int environmentDatasetId = 12;
 		studyDetails.setId(studyId);
 		workbook.setStudyDetails(studyDetails);
 
@@ -131,47 +123,37 @@ public class SeedSourceGeneratorTest {
 
 		workbook.setTrialObservations(Lists.newArrayList(instance1Measurements));
 
-		Mockito.doReturn(instance1Measurements.getMeasurementVariables()).when(this.datasetService)
-			.getObservationSetVariables(anyInt(), ArgumentMatchers.<Integer>anyList());
-
 		setCurrentCrop("rice");
 		String seedSource = this.seedSourceGenerator
-			.generateSeedSource(studyId, environmentDatasetId,
-				ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
-				studyDetails.getStudyName(), null);
+			.generateSeedSource(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+				studyDetails.getStudyName(), null, null, instance1Measurements.getMeasurementVariables());
 		Assert.assertEquals("TestStudy:IND:Dry season:3:", seedSource);
 
 		// with Plant Number
-		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
-			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
-			studyDetails.getStudyName(), "4");
+		seedSource = this.seedSourceGenerator.generateSeedSource(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+			studyDetails.getStudyName(), "4", null, instance1Measurements.getMeasurementVariables());
 		Assert.assertEquals("TestStudy:IND:Dry season:3:4", seedSource);
 
 		setCurrentCrop("wheat");
-		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
-			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
-			studyDetails.getStudyName(), null);
+		seedSource = this.seedSourceGenerator.generateSeedSource(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+			studyDetails.getStudyName(), null, null, instance1Measurements.getMeasurementVariables());
 		Assert.assertEquals("IND\\Dry season\\TestStudy\\3", seedSource);
 
 		setCurrentCrop("maize");
 		// with selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
-			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
-			studyDetails.getStudyName(), null);
+		seedSource = this.seedSourceGenerator.generateSeedSource(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, "2", "3",
+			studyDetails.getStudyName(), null, null, instance1Measurements.getMeasurementVariables());
 		Assert.assertEquals("INDDry season-TestStudy-3-2", seedSource);
 		// without selection number
-		seedSource = this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId,
-			ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, null, "3",
-			studyDetails.getStudyName(), null);
+		seedSource = this.seedSourceGenerator.generateSeedSource(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), null, null, "3",
+			studyDetails.getStudyName(), null, null, instance1Measurements.getMeasurementVariables());
 		Assert.assertEquals("INDDry season-TestStudy-3", seedSource);
 	}
 	
 	@Test
 	public void testGenerateSeedSourceForUnknownPlot() {
-		final int studyId = 1;
-		final int environmentDatasetId = 12;
-		Assert.assertEquals(Name.UNKNOWN, this.seedSourceGenerator.generateSeedSource(studyId, environmentDatasetId, new ObservationUnitRow(),
-			null, RandomStringUtils.randomNumeric(2), "0", RandomStringUtils.randomAlphabetic(20), RandomStringUtils.randomNumeric(2)));
+		Assert.assertEquals(Name.UNKNOWN, this.seedSourceGenerator.generateSeedSource(new ObservationUnitRow(),
+			null, RandomStringUtils.randomNumeric(2), "0", RandomStringUtils.randomAlphabetic(20), RandomStringUtils.randomNumeric(2), null, null));
 	}
 
 	@Test
@@ -190,9 +172,11 @@ public class SeedSourceGeneratorTest {
 		setCurrentCrop("maize");
 		final List<String> malePlotNos = Arrays.asList("1", "3", "4");
 		String generatedSeedSources =
-			this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNos, "2", "StudyName", "StudyName");
+			this.seedSourceGenerator.generateSeedSourceForCross(
+				Pair.of(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1))), Pair.of(workbook.getConditions(), workbook.getConditions()),
+				Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()), this.getCross(malePlotNos, "2", "StudyName", "StudyName"));
 		List<String> expectedResultsString = new ArrayList<>();
-		for(String malePlotNo: malePlotNos) {
+		for(final String malePlotNo: malePlotNos) {
 			expectedResultsString.add("INDDry season-StudyName-" + malePlotNo);
 		}
 		String expectedString = "INDDry season-StudyName-2/[" + StringUtils.join(expectedResultsString, ", ") + "]";
@@ -200,9 +184,12 @@ public class SeedSourceGeneratorTest {
 
 		setCurrentCrop("rice");
 		generatedSeedSources =
-			this.seedSourceGenerator.generateSeedSourceForCross(workbook, malePlotNos, "2", "StudyName", "StudyName");
+			this.seedSourceGenerator.generateSeedSourceForCross(
+				Pair.of(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1))), Pair.of(workbook.getConditions(), workbook.getConditions()),
+				Pair.of(Collections.emptyMap(), Collections.emptyMap()),
+				Pair.of(Collections.emptyList(), Collections.emptyList()), this.getCross(malePlotNos, "2", "StudyName", "StudyName"));
 		expectedResultsString = new ArrayList<>();
-		for(String malePlotNo: malePlotNos) {
+		for(final String malePlotNo: malePlotNos) {
 			expectedResultsString.add("StudyName:IND:Dry season:"+malePlotNo+":");
 		}
 		expectedString = "StudyName:IND:Dry season:2:/[" + StringUtils.join(expectedResultsString, ", ") + "]";
@@ -210,7 +197,10 @@ public class SeedSourceGeneratorTest {
 
 		//For scenario where there's only one male plot number
 		generatedSeedSources =
-			this.seedSourceGenerator.generateSeedSourceForCross(workbook, Arrays.asList("1"), "2", "StudyName", "StudyName");
+			this.seedSourceGenerator.generateSeedSourceForCross(
+				Pair.of(ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1)), ObservationUnitUtils.fromMeasurementRow(workbook.getTrialObservationByTrialInstanceNo(1))), Pair.of(workbook.getConditions(), workbook.getConditions()),
+				Pair.of(Collections.emptyMap(), Collections.emptyMap()),
+				Pair.of(Collections.emptyList(), Collections.emptyList()), this.getCross(Collections.singletonList("1"), "2", "StudyName", "StudyName"));
 		Assert.assertEquals("StudyName:IND:Dry season:2:/StudyName:IND:Dry season:1:", generatedSeedSources);
 	}
 
@@ -241,9 +231,11 @@ public class SeedSourceGeneratorTest {
 		setCurrentCrop("maize");
 		final List<String> malePlotNos = Arrays.asList("1", "3", "4");
 		String generatedSeedSources =
-			this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, malePlotNos, "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
+			this.seedSourceGenerator.generateSeedSourceForCross(
+				Pair.of(ObservationUnitUtils.fromMeasurementRow(femaleStudyWorkbook.getTrialObservationByTrialInstanceNo(1)), ObservationUnitUtils.fromMeasurementRow(maleStudyWorkbook.getTrialObservationByTrialInstanceNo(1))), Pair.of(femaleStudyWorkbook.getConditions(), maleStudyWorkbook.getConditions()),
+				Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()), this.getCross(malePlotNos, "2", "maleStudyName", "femaleStudyName"));
 		List<String> expectedResultsString = new ArrayList<>();
-		for(String malePlotNo: malePlotNos) {
+		for(final String malePlotNo: malePlotNos) {
 			expectedResultsString.add("CIMMYTWet season-maleStudyName-"+malePlotNo);
 		}
 		String expectedString = "INDDry season-femaleStudyName-2/[" + StringUtils.join(expectedResultsString, ", ") + "]";
@@ -251,9 +243,11 @@ public class SeedSourceGeneratorTest {
 
 		setCurrentCrop("rice");
 		generatedSeedSources =
-			this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, malePlotNos, "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
+			this.seedSourceGenerator.generateSeedSourceForCross(
+				Pair.of(ObservationUnitUtils.fromMeasurementRow(femaleStudyWorkbook.getTrialObservationByTrialInstanceNo(1)), ObservationUnitUtils.fromMeasurementRow(maleStudyWorkbook.getTrialObservationByTrialInstanceNo(1))), Pair.of(femaleStudyWorkbook.getConditions(), maleStudyWorkbook.getConditions()),
+				Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()), this.getCross(malePlotNos, "2", "maleStudyName", "femaleStudyName"));
 		expectedResultsString = new ArrayList<>();
-		for(String malePlotNo: malePlotNos) {
+		for(final String malePlotNo: malePlotNos) {
 			expectedResultsString.add("maleStudyName:CIMMYT:Wet season:"+malePlotNo+":");
 		}
 		expectedString = "femaleStudyName:IND:Dry season:2:/[" + StringUtils.join(expectedResultsString, ", ") + "]";
@@ -261,8 +255,26 @@ public class SeedSourceGeneratorTest {
 
 		//For scenario where there's only one male plot number
 		generatedSeedSources =
-			this.seedSourceGenerator.generateSeedSourceForCross(femaleStudyWorkbook, Arrays.asList("1"), "2", "maleStudyName", "femaleStudyName", maleStudyWorkbook);
+			this.seedSourceGenerator.generateSeedSourceForCross(
+				Pair.of(ObservationUnitUtils.fromMeasurementRow(femaleStudyWorkbook.getTrialObservationByTrialInstanceNo(1)), ObservationUnitUtils.fromMeasurementRow(maleStudyWorkbook.getTrialObservationByTrialInstanceNo(1))), Pair.of(femaleStudyWorkbook.getConditions(), maleStudyWorkbook.getConditions()),
+				Pair.of(Collections.emptyMap(), Collections.emptyMap()), Pair.of(Collections.emptyList(), Collections.emptyList()), this.getCross(Collections.singletonList("1"), "2", "maleStudyName", "femaleStudyName"));
 		Assert.assertEquals("femaleStudyName:IND:Dry season:2:/maleStudyName:CIMMYT:Wet season:1:", generatedSeedSources);
+	}
+
+	private ImportedCross getCross(final List<String> malePlotNos, final String femalePlotNo, final String maleStudyName, final String femaleStudyName) {
+		final ImportedCross crossInfo = new ImportedCross();
+		crossInfo.setFemaleParent(
+			new ImportedGermplasmParent(null, null, StringUtils.isEmpty(femalePlotNo) ? null : Integer.valueOf(femalePlotNo),
+				femaleStudyName));
+
+		final List<ImportedGermplasmParent> crossMaleParents = new ArrayList<>();
+		for (final String malePlotNo : malePlotNos) {
+			crossMaleParents.add(
+				new ImportedGermplasmParent(null, null, StringUtils.isEmpty(malePlotNo) ? null : Integer.valueOf(malePlotNo),
+					maleStudyName));
+		}
+		crossInfo.setMaleParents(crossMaleParents);
+		return crossInfo;
 	}
 
 }
