@@ -29,16 +29,16 @@ public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTes
 
         final AdvancingSource source = new AdvancingSource();
 
-        int threads = 10;
-        List<Future<String>> resultingDesignations = new ArrayList<>();
+        final int threads = 10;
+        final List<Future<String>> resultingDesignations = new ArrayList<>();
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(threads);
+        final ExecutorService threadPool = Executors.newFixedThreadPool(threads);
 
         final KeySequenceRegisterService keySequenceRegisterService =
                 new KeySequenceRegisterServiceImpl(this.sessionProvder);
 
         for (int i = 1; i <= threads; i++) {
-            Future<String> result = threadPool.submit(new Callable<String>() {
+            final Future<String> result = threadPool.submit(new Callable<String>() {
                 @Override
                 public String call() {
                     final List<StringBuilder> values = new ArrayList<>();
@@ -57,9 +57,9 @@ public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTes
         while (!threadPool.isTerminated()) {
         }
 
-        Set<String> uniqueDesignationSet = new HashSet<>();
-        for (Future<String> future : resultingDesignations) {
-            String generatedDesignation = future.get();
+        final Set<String> uniqueDesignationSet = new HashSet<>();
+        for (final Future<String> future : resultingDesignations) {
+            final String generatedDesignation = future.get();
             uniqueDesignationSet.add(generatedDesignation);
             LOG.info("Designation returned: {}.", generatedDesignation);
         }
