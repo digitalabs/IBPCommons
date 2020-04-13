@@ -96,7 +96,7 @@ public class GermplasmNamingServiceImpl implements GermplasmNamingService {
 
 				// If the sequence doesn't exist yet in key_sequence_register table, query in NAMES table for the latest one used
 			} else {
-				return Integer.valueOf(this.germplasmDataManager.getNextSequenceNumberForCrossName(keyPrefix.trim()));
+				return Integer.valueOf(this.germplasmDataManager.getNextSequenceNumberString(keyPrefix.trim()));
 			}
 		}
 
