@@ -97,7 +97,7 @@ public class GermplasmNamingServiceImplTest {
 		final int nextNumber = this.germplasmNamingService.getNextSequence(PREFIX);
 		Assert.assertEquals(GermplasmNamingServiceImplTest.NEXT_NUMBER.intValue(), nextNumber);
 		Mockito.verify(this.keySequenceRegisterService).getNextSequence(PREFIX);
-		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNextSequenceNumberForCrossName(ArgumentMatchers.anyString());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNextSequenceNumberAsString(ArgumentMatchers.anyString());
 	}
 
 	@Test
@@ -105,14 +105,14 @@ public class GermplasmNamingServiceImplTest {
 		final int nextNumber = this.germplasmNamingService.getNextSequence("");
 		Assert.assertEquals(1, nextNumber);
 		Mockito.verify(this.keySequenceRegisterService, Mockito.never()).getNextSequence(ArgumentMatchers.anyString());
-		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNextSequenceNumberForCrossName(ArgumentMatchers.anyString());
+		Mockito.verify(this.germplasmDataManager, Mockito.never()).getNextSequenceNumberAsString(ArgumentMatchers.anyString());
 	}
 
 	@Test
 	public void testGetNextSequenceFromNames() {
 		Mockito.doReturn(1).when(this.keySequenceRegisterService).getNextSequence(ArgumentMatchers.anyString());
 		final Integer nextNumberFromNames = 101;
-		Mockito.doReturn(String.valueOf(nextNumberFromNames)).when(this.germplasmDataManager).getNextSequenceNumberForCrossName(PREFIX);
+		Mockito.doReturn(String.valueOf(nextNumberFromNames)).when(this.germplasmDataManager).getNextSequenceNumberAsString(PREFIX);
 		Assert.assertEquals(nextNumberFromNames.intValue(), this.germplasmNamingService.getNextSequence(PREFIX));
 
 	}
