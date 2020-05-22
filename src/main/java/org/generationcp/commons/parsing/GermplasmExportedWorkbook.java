@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.parsing;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -169,7 +170,7 @@ public class GermplasmExportedWorkbook {
 				labelStyle, this.textStyle);
 
 		new ExcelWorkbookRow((HSSFRow) descriptionSheet.createRow(++actualRow)).writeListDetailsRow(descriptionSheet,
-				GermplasmExportedWorkbook.LIST_DATE, String.valueOf(germplasmList.getDate()),
+				GermplasmExportedWorkbook.LIST_DATE, Objects.toString(germplasmList.getDate(), StringUtils.EMPTY),
 				"Accepted formats: YYYYMMDD or YYYYMM or YYYY or blank", labelStyle, this.textStyle);
 
 		return ++actualRow;
