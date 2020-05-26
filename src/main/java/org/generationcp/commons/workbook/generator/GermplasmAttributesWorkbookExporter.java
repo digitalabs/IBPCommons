@@ -27,7 +27,7 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 		if (this.columnsInfo != null) {
 			final List<UserDefinedField> attributeTypes = this.germplasmManager.getAllAttributesTypes();
 			final Map<String, UserDefinedField>
-				attributeTypesMap = attributeTypes.stream().collect(Collectors.toMap(u -> u.getFcode().toUpperCase(), u -> u));
+				attributeTypesMap = attributeTypes.stream().collect(Collectors.toMap(u -> u.getFcode().toUpperCase(), u -> u, (u1, u2) -> u1));
 
 			for (final String addedCol : this.columnsInfo.getColumns()) {
 				final UserDefinedField field = attributeTypesMap.get(addedCol.toUpperCase());
