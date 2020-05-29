@@ -30,7 +30,7 @@ public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter
 			for (final String columnName : this.columnsInfo.getColumns()) {
 				final UserDefinedField userDefinedField = namesTypesMap.get(columnName.toUpperCase());
 				if (userDefinedField!=null) {
-					addedNameTypesColumns.add(columnName.toUpperCase());
+					this.addedNameTypesColumns.add(columnName.toUpperCase());
 					nameTypesColumns.add(userDefinedField);
 				}
 			}
