@@ -26,11 +26,11 @@ public class GermplasmNamesWorkbookExporter extends GermplasmAddedColumnExporter
 		//columnsInfo is null when exporting germplasm list from Study Manager
 		if(this.columnsInfo != null) {
 			final List<UserDefinedField> nameTypes = this.germplasmListManager.getGermplasmNameTypes();
-			final Map<String, UserDefinedField> namesTypesMap = nameTypes.stream().collect(Collectors.toMap(u -> u.getFname().toUpperCase(), u -> u));
+			final Map<String, UserDefinedField> namesTypesMap = nameTypes.stream().collect(Collectors.toMap(u -> u.getFname().toUpperCase(), u -> u, (u1, u2) -> u2));
 			for (final String columnName : this.columnsInfo.getColumns()) {
 				final UserDefinedField userDefinedField = namesTypesMap.get(columnName.toUpperCase());
 				if (userDefinedField!=null) {
-					addedNameTypesColumns.add(columnName.toUpperCase());
+					this.addedNameTypesColumns.add(columnName.toUpperCase());
 					nameTypesColumns.add(userDefinedField);
 				}
 			}

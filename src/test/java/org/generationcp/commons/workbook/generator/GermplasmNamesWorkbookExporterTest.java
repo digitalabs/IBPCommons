@@ -91,4 +91,20 @@ public class GermplasmNamesWorkbookExporterTest {
 		Assert.assertEquals(this.namesWorkbookExporter.getValue(name), nameRow.getCell(6).getStringCellValue());
 		Assert.assertEquals(this.namesWorkbookExporter.getComments(name), nameRow.getCell(7).getStringCellValue());
 	}
+
+	@Test
+	public void testGetSourceItemsDuplicate() {
+		final UserDefinedField userDefinedField1 = UserDefinedFieldTestDataInitializer.createUserDefinedField(
+			GermplasmNamesWorkbookExporterTest.CODE1, GermplasmNamesWorkbookExporterTest.CODE1);
+		final UserDefinedField userDefinedField2 = UserDefinedFieldTestDataInitializer.createUserDefinedField(
+			GermplasmNamesWorkbookExporterTest.CODE1, "-");
+		Mockito.when(this.germplasmListManager.getGermplasmNameTypes()).thenReturn(Arrays.asList(userDefinedField1, userDefinedField2));
+		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmNamesWorkbookExporterTest.CODE1));
+		final List<UserDefinedField> attributes =  this.namesWorkbookExporter.getSourceItems();
+		Assert.assertFalse(attributes.isEmpty());
+		Assert.assertEquals("Returned value is 1 ", 1, attributes.size());
+		final UserDefinedField attribute = attributes.get(0);
+		Assert.assertEquals(GermplasmNamesWorkbookExporterTest.CODE1, attribute.getFname());
+		Assert.assertEquals(GermplasmNamesWorkbookExporterTest.CODE1, attribute.getFcode());
+	}
 }
