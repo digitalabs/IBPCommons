@@ -10,7 +10,7 @@ public class ImportedGermplasmTestDataInitializer {
 	public static ImportedGermplasm createImportedGermplasm() {
 		final ImportedGermplasm importedGermplasm = new ImportedGermplasm();
 		importedGermplasm.setIndex(1);
-		importedGermplasm.setEntryId(1);
+		importedGermplasm.setEntryNumber(1);
 		importedGermplasm.setEntryCode("1");
 		importedGermplasm.setDesig("Desig");
 		importedGermplasm.setGid("1");
