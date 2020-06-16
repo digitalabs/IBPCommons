@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -95,5 +96,21 @@ public class GermplasmAttributesWorkbookExporterTest {
 		Assert.assertEquals(this.attributesWorkbookExporter.getDatatype(attribute), attributeRow.getCell(5).getStringCellValue());
 		Assert.assertEquals(this.attributesWorkbookExporter.getValue(attribute), attributeRow.getCell(6).getStringCellValue());
 		Assert.assertEquals(this.attributesWorkbookExporter.getComments(attribute), attributeRow.getCell(7).getStringCellValue());
+	}
+
+	@Test
+	public void testGetSourceItemsDuplicate() {
+		final UserDefinedField userDefinedField1 = UserDefinedFieldTestDataInitializer.createUserDefinedField(
+			GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES);
+		final UserDefinedField userDefinedField2 = UserDefinedFieldTestDataInitializer.createUserDefinedField(
+			GermplasmAttributesWorkbookExporterTest.NOTE, "-");
+		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(userDefinedField1, userDefinedField2));
+		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTE));
+		final List<UserDefinedField> attributes =  this.attributesWorkbookExporter.getSourceItems();
+		Assert.assertFalse(attributes.isEmpty());
+		Assert.assertEquals("Returned value is 1 ", 1, attributes.size());
+		final UserDefinedField attribute = attributes.get(0);
+		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTES, attribute.getFname());
+		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTE, attribute.getFcode());
 	}
 }

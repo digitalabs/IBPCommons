@@ -4,13 +4,10 @@ import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.IntegrationTestBase;
 import org.generationcp.middleware.service.api.KeySequenceRegisterService;
 import org.generationcp.middleware.service.impl.KeySequenceRegisterServiceImpl;
-import org.hibernate.SessionFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -27,25 +24,21 @@ public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTes
 
     private static final Logger LOG = LoggerFactory.getLogger(DoubleHaploidSourceExpressionIntegrationTest.class);
 
-    @Autowired
-    @Qualifier(value = "IBDBV2_MAIZE_MERGED_SessionFactory")
-    private SessionFactory sessionFactory;
-
     @Test
     public void testDoubleHaploidApplyRuleWithMultipleThreads() throws ExecutionException, InterruptedException {
 
         final AdvancingSource source = new AdvancingSource();
 
-        int threads = 10;
-        List<Future<String>> resultingDesignations = new ArrayList<>();
+        final int threads = 10;
+        final List<Future<String>> resultingDesignations = new ArrayList<>();
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(threads);
+        final ExecutorService threadPool = Executors.newFixedThreadPool(threads);
 
         final KeySequenceRegisterService keySequenceRegisterService =
-                new KeySequenceRegisterServiceImpl(sessionFactory.getCurrentSession());
+                new KeySequenceRegisterServiceImpl(this.sessionProvder);
 
         for (int i = 1; i <= threads; i++) {
-            Future<String> result = threadPool.submit(new Callable<String>() {
+            final Future<String> result = threadPool.submit(new Callable<String>() {
                 @Override
                 public String call() {
                     final List<StringBuilder> values = new ArrayList<>();
@@ -64,9 +57,9 @@ public class DoubleHaploidSourceExpressionIntegrationTest extends IntegrationTes
         while (!threadPool.isTerminated()) {
         }
 
-        Set<String> uniqueDesignationSet = new HashSet<>();
-        for (Future<String> future : resultingDesignations) {
-            String generatedDesignation = future.get();
+        final Set<String> uniqueDesignationSet = new HashSet<>();
+        for (final Future<String> future : resultingDesignations) {
+            final String generatedDesignation = future.get();
             uniqueDesignationSet.add(generatedDesignation);
             LOG.info("Designation returned: {}.", generatedDesignation);
         }
