@@ -11,10 +11,10 @@
 
 package org.generationcp.commons.parsing.pojo;
 
+import org.generationcp.middleware.pojos.Name;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.generationcp.middleware.pojos.Name;
 
 /**
  * The Class ImportedGermplasm.
@@ -26,7 +26,7 @@ public class ImportedGermplasm implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	private Integer crossListId;
+	private Integer id;
 
 	/** The entry number. */
 	private Integer entryNumber;
@@ -230,6 +230,14 @@ public class ImportedGermplasm implements Serializable {
 		this.entryNumber = entryNumber;
 	}
 
+	public void setId(final Integer id) {
+		this.id = id;
+	}
+
+	public Integer getId() {
+		return this.id;
+	}
+
 	/**
 	 * Gets the desig.
 	 *
@@ -419,7 +427,7 @@ public class ImportedGermplasm implements Serializable {
          */
 	@Override
 	public String toString() {
-		return "ImportedGermplasm [entryNumber=" + this.entryNumber + ", desig=" + this.desig + ", gid=" + this.gid + ", cross=" + this.cross
+		return "ImportedGermplasm [id=" + this.id + ", entryNumber=" + this.entryNumber + ", desig=" + this.desig + ", gid=" + this.gid + ", cross=" + this.cross
 				+ ", source=" + this.source + ", entryCode=" + this.entryCode + ", entryTypeValue=" + this.entryTypeValue + ", breedingMethodId="
 				+ this.breedingMethodId + ", gpid1=" + this.gpid1 + ", gpid2=" + this.gpid2 + ", gnpgs=" + this.gnpgs + ", names="
 				+ this.names + "]";
@@ -447,14 +455,6 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
-	}
-
-	public Integer getId() {
-		return this.crossListId;
-	}
-
-	public void setCrossListId(Integer crossListId) {
-		this.crossListId = crossListId;
 	}
 
 	public Integer getGroupId() {
