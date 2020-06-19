@@ -11,10 +11,10 @@
 
 package org.generationcp.commons.parsing.pojo;
 
+import org.generationcp.middleware.pojos.Name;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.generationcp.middleware.pojos.Name;
 
 /**
  * The Class ImportedGermplasm.
@@ -26,10 +26,10 @@ public class ImportedGermplasm implements Serializable {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	private Integer crossListId;
+	private Integer id;
 
-	/** The entry id. */
-	private Integer entryId;
+	/** The entry number. */
+	private Integer entryNumber;
 
 	/** The desig. */
 	private String desig;
@@ -102,12 +102,12 @@ public class ImportedGermplasm implements Serializable {
 	/**
 	 * Instantiates a new imported germplasm.
 	 *
-	 * @param entryId the entry id
+	 * @param entryNumber the entry number
 	 * @param desig the desig
 	 * @param entryTypeValue the check
 	 */
-	public ImportedGermplasm(Integer entryId, String desig, String entryTypeValue) {
-		this.entryId = entryId;
+	public ImportedGermplasm(final Integer entryNumber, final String desig, final String entryTypeValue) {
+		this.entryNumber = entryNumber;
 		this.desig = desig;
 		this.entryTypeValue = entryTypeValue;
 	}
@@ -115,7 +115,7 @@ public class ImportedGermplasm implements Serializable {
 	/**
 	 * Instantiates a new imported germplasm.
 	 *
-	 * @param entryId the entry id
+	 * @param entryNumber the entry number
 	 * @param desig the desig
 	 * @param gid the gid
 	 * @param cross the cross
@@ -123,8 +123,8 @@ public class ImportedGermplasm implements Serializable {
 	 * @param entryCode the entry code
 	 * @param entryTypeValue the check
 	 */
-	public ImportedGermplasm(Integer entryId, String desig, String gid, String cross, String source, String entryCode, String entryTypeValue) {
-		this.entryId = entryId;
+	public ImportedGermplasm(final Integer entryNumber, final String desig, final String gid, final String cross, final String source, final String entryCode, final String entryTypeValue) {
+		this.entryNumber = entryNumber;
 		this.desig = desig;
 		this.gid = gid;
 		this.cross = cross;
@@ -213,21 +213,29 @@ public class ImportedGermplasm implements Serializable {
 	}
 
 	/**
-	 * Gets the entry id.
+	 * Gets the entry number.
 	 *
-	 * @return the entry id
+	 * @return the entry number
 	 */
-	public Integer getEntryId() {
-		return this.entryId;
+	public Integer getEntryNumber() {
+		return this.entryNumber;
 	}
 
 	/**
-	 * Sets the entry id.
+	 * Sets the entry number.
 	 *
-	 * @param entryId the new entry id
+	 * @param entryNumber the new entry number
 	 */
-	public void setEntryId(Integer entryId) {
-		this.entryId = entryId;
+	public void setEntryNumber(final Integer entryNumber) {
+		this.entryNumber = entryNumber;
+	}
+
+	public void setId(final Integer id) {
+		this.id = id;
+	}
+
+	public Integer getId() {
+		return this.id;
 	}
 
 	/**
@@ -419,7 +427,7 @@ public class ImportedGermplasm implements Serializable {
          */
 	@Override
 	public String toString() {
-		return "ImportedGermplasm [entryId=" + this.entryId + ", desig=" + this.desig + ", gid=" + this.gid + ", cross=" + this.cross
+		return "ImportedGermplasm [id=" + this.id + ", entryNumber=" + this.entryNumber + ", desig=" + this.desig + ", gid=" + this.gid + ", cross=" + this.cross
 				+ ", source=" + this.source + ", entryCode=" + this.entryCode + ", entryTypeValue=" + this.entryTypeValue + ", breedingMethodId="
 				+ this.breedingMethodId + ", gpid1=" + this.gpid1 + ", gpid2=" + this.gpid2 + ", gnpgs=" + this.gnpgs + ", names="
 				+ this.names + "]";
@@ -427,7 +435,7 @@ public class ImportedGermplasm implements Serializable {
 
 	public ImportedGermplasm copy() {
 		ImportedGermplasm rec =
-				new ImportedGermplasm(this.entryId, this.desig, this.gid, this.cross, this.source, this.entryCode, this.entryTypeValue,
+				new ImportedGermplasm(this.entryNumber, this.desig, this.gid, this.cross, this.source, this.entryCode, this.entryTypeValue,
 						this.breedingMethodId);
 
 		rec.setGpid1(this.gpid1);
@@ -447,14 +455,6 @@ public class ImportedGermplasm implements Serializable {
 
 	public void setGroupName(String groupName) {
 		this.groupName = groupName;
-	}
-
-	public Integer getId() {
-		return this.crossListId;
-	}
-
-	public void setCrossListId(Integer crossListId) {
-		this.crossListId = crossListId;
 	}
 
 	public Integer getGroupId() {

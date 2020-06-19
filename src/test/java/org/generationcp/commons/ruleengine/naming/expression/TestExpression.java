@@ -88,10 +88,10 @@ public class TestExpression {
 		return builders;
 	}
 
-	public ImportedGermplasm createImportedGermplasm(final Integer entryId,final String designation, final String gid, final Integer gpid1, final Integer gpid2,
-		final Integer gnpgs, final Integer mid) {
+	public ImportedGermplasm createImportedGermplasm(final Integer entryNumber, final String designation, final String gid, final Integer gpid1, final Integer gpid2,
+													 final Integer gnpgs, final Integer mid) {
 		final ImportedGermplasm germplasm = new ImportedGermplasm();
-		germplasm.setEntryId(entryId);
+		germplasm.setEntryNumber(entryNumber);
 		germplasm.setDesig(designation);
 		germplasm.setGid(gid);
 		germplasm.setGpid1(gpid1);

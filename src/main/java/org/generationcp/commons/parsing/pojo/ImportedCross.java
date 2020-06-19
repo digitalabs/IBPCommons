@@ -62,27 +62,18 @@ public class ImportedCross extends ImportedGermplasm implements Serializable {
 	/**
 	 * Instantiates a new imported germplasm.
 	 *
-	 * @param entryId the entry id
+	 * @param entryNumber the entry number
 	 */
-	public ImportedCross(final Integer entryId) {
-		this.setEntryId(entryId);
+	public ImportedCross(final Integer entryNumber) {
+		this.setEntryNumber(entryNumber);
 	}
+
+
 
 	/**
 	 * Instantiates a new imported germplasm.
 	 *
-	 * @param entryId the entry id
-	 * @param desig the desig
-	 * @param check the check
-	 */
-	public ImportedCross(final Integer entryId, final String desig, final String check) {
-		super(entryId, desig, check);
-	}
-
-	/**
-	 * Instantiates a new imported germplasm.
-	 *
-	 * @param entryId the entry id
+	 * @param entryNumber the entry number
 	 * @param desig the desig
 	 * @param gid the gid
 	 * @param cross the cross
@@ -90,14 +81,14 @@ public class ImportedCross extends ImportedGermplasm implements Serializable {
 	 * @param entryCode the entry code
 	 * @param check the check
 	 */
-	public ImportedCross(final Integer entryId, final String desig, final String gid, final String cross, final String source, final String entryCode, final String check) {
-		super(entryId, desig, gid, cross, source, entryCode, check);
+	public ImportedCross(final Integer entryNumber, final String desig, final String gid, final String cross, final String source, final String entryCode, final String check) {
+		super(entryNumber, desig, gid, cross, source, entryCode, check);
 	}
 
-	public ImportedCross(final Integer entryId, final String desig, final String gid, final String cross, final String source, final String entryCode, final String check,
+	public ImportedCross(final Integer entryNumber, final String desig, final String gid, final String cross, final String source, final String entryCode, final String check,
 			final Integer breedingMethodId) {
 
-		super(entryId, desig, gid, cross, source, entryCode, check, breedingMethodId);
+		super(entryNumber, desig, gid, cross, source, entryCode, check, breedingMethodId);
 	}
 
 	public void setOptionalFields(final String rawBreedingMethod, final Integer crossingDate, final String notes) {
@@ -113,7 +104,7 @@ public class ImportedCross extends ImportedGermplasm implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "ImportedCross [entryId=" + this.getEntryId() + ", desig=" + this.getDesig() + ", femaleParent=" + this.femaleParent
+		return "ImportedCross [entryNumber=" + this.getEntryNumber() + ", desig=" + this.getDesig() + ", femaleParent=" + this.femaleParent
 				+ ", maleParents=" + this.maleParents + ", gid=" + this.getGid() + ", cross=" + this.getCross() + ", source="
 				+ this.getSource() + ", entryCode=" + this.getEntryCode() + ", check=" + this.getEntryTypeValue() + ", breedingMethodId="
 				+ this.getBreedingMethodId() + ", gpid1=" + this.getGpid1() + ", gpid2=" + this.getGpid2() + ", gnpgs=" + this.getGnpgs()
@@ -123,7 +114,7 @@ public class ImportedCross extends ImportedGermplasm implements Serializable {
 	@Override
 	public ImportedCross copy() {
 		final ImportedCross rec =
-				new ImportedCross(this.getEntryId(), this.getDesig(), this.getGid(), this.getCross(), this.getSource(),
+				new ImportedCross(this.getEntryNumber(), this.getDesig(), this.getGid(), this.getCross(), this.getSource(),
 						this.getEntryCode(), this.getEntryTypeValue(), this.getBreedingMethodId());
 
 		rec.setGpid1(this.getGpid1());
