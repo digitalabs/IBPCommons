@@ -22,12 +22,13 @@ public class WorkbenchAppPathResolver {
 		ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 		HttpServletRequest request = requestAttributes.getRequest();
 
+		String bms_scheme = System.getenv("BMS_SCHEME");
 		String paramFormat = !param.isEmpty() ? "?%s" : "";
 		String urlFormat = "%s://%s:%d/%s" + paramFormat;
 
-		String scheme = request.getScheme();
+		String scheme = bms_scheme.equals("https") ? "https" : request.getScheme();
 		String serverName = request.getServerName();
-		int port = request.getServerPort();
+		int port = bms_scheme.equals("https") ? 443 : request.getServerPort();
 
 		url = '/' == url.charAt(0) ? url.substring(1) : url;
 		param = param.startsWith("?") | param.startsWith("&") ? param.substring(1) : param;
