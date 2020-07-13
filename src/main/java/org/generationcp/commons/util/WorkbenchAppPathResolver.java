@@ -3,6 +3,7 @@ package org.generationcp.commons.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.generationcp.middleware.pojos.workbench.Tool;
 import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.generationcp.middleware.pojos.workbench.ToolType;
@@ -27,9 +28,9 @@ public class WorkbenchAppPathResolver {
 		String paramFormat = !param.isEmpty() ? "?%s" : "";
 		String urlFormat = "%s://%s:%d/%s" + paramFormat;
 
-		String scheme = (bms_scheme == null || bms_scheme.length() == 0) ? request.getScheme() : bms_scheme;
+		String scheme = StringUtils.isEmpty(bms_scheme) ? request.getScheme() : bms_scheme;
 		String serverName = request.getServerName();
-		int port = (bms_port == null || bms_port.length() == 0) ? request.getServerPort() : Integer.parseInt(bms_port);
+		int port = StringUtils.isEmpty(bms_port) ? request.getServerPort() : Integer.parseInt(bms_port);
 
 		url = '/' == url.charAt(0) ? url.substring(1) : url;
 		param = param.startsWith("?") | param.startsWith("&") ? param.substring(1) : param;
