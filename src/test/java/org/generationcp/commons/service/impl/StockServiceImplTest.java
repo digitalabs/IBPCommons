@@ -1,13 +1,6 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
 import org.generationcp.commons.exceptions.StockException;
 import org.generationcp.commons.ruleengine.RuleFactory;
 import org.generationcp.commons.ruleengine.service.RulesService;
@@ -16,7 +9,6 @@ import org.generationcp.middleware.domain.inventory.InventoryDetails;
 import org.generationcp.middleware.exceptions.MiddlewareException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
-import org.generationcp.middleware.pojos.ListDataProject;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
 import org.generationcp.middleware.service.api.InventoryService;
@@ -30,6 +22,12 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte
@@ -266,133 +264,6 @@ public class StockServiceImplTest {
 		}
 	}
 
-	@Test
-	public void testProcessBulkWithNoInstructions() {
-		List<ListDataProject> testListData = this.createTestListDataProjectForBulking();
-		Map<Integer, InventoryDetails> testDetails = this.createInventoryDetailsTestData();
-
-		this.inventoryStockService.processBulkSettings(testListData, testDetails, false, false, false);
-
-		for (InventoryDetails inventoryDetails : testDetails.values()) {
-			Assert.assertNull(inventoryDetails.getBulkWith());
-			Assert.assertNull(inventoryDetails.getBulkCompl());
-		}
-	}
-
-	@Test
-	public void testProcessBulkWithPedigreeDupe() {
-		List<ListDataProject> testListData = this.createTestListDataProjectForBulking();
-		Map<Integer, InventoryDetails> testDetails = this.createInventoryDetailsTestData();
-
-		this.inventoryStockService.processBulkSettings(testListData, testDetails, true, false, false);
-
-		for (InventoryDetails inventoryDetails : testDetails.values()) {
-			if (inventoryDetails.getEntryId().equals(9)) {
-				Assert.assertEquals(StockServiceImplTest.INVENTORY_ID_PREFIX + 10, inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			} else if (inventoryDetails.getEntryId().equals(10)) {
-				Assert.assertEquals(StockServiceImplTest.INVENTORY_ID_PREFIX + 9, inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			} else {
-				Assert.assertNull(inventoryDetails.getBulkWith());
-				Assert.assertNull(inventoryDetails.getBulkCompl());
-			}
-
-		}
-	}
-
-	@Test
-	public void testProcessBulkWithEntriesBothPlotDupeAndPlotReciprocal() {
-		List<ListDataProject> testListData = this.createTestListDataProjectForBulking();
-		Map<Integer, InventoryDetails> testDetails = this.createInventoryDetailsTestData();
-
-		this.inventoryStockService.processBulkSettings(testListData, testDetails, false, true, false);
-		for (InventoryDetails inventoryDetails : testDetails.values()) {
-			if (inventoryDetails.getEntryId().equals(1) || inventoryDetails.getEntryId().equals(2)
-					|| inventoryDetails.getEntryId().equals(4) || inventoryDetails.getEntryId().equals(20)) {
-				InventoryDetails dummy = new InventoryDetails();
-				dummy.setInventoryID(inventoryDetails.getInventoryID());
-				dummy.addBulkWith(testDetails.get(1).getInventoryID());
-				dummy.addBulkWith(testDetails.get(2).getInventoryID());
-				dummy.addBulkWith(testDetails.get(20).getInventoryID());
-				dummy.addBulkWith(testDetails.get(4).getInventoryID());
-				Assert.assertEquals(dummy.getBulkWith(), inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			}
-		}
-	}
-
-	protected List<ListDataProject> createTestListDataProjectForBulking() {
-		List<ListDataProject> dataProjectList = new ArrayList<>();
-
-		ListDataProject ldp = new ListDataProject();
-		ldp.setEntryId(1);
-		ldp.setDuplicate(ListDataProject.PLOT_DUPE + ": 2,4");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(2);
-		ldp.setDuplicate(ListDataProject.PLOT_DUPE + ": 1,3");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(3);
-		ldp.setDuplicate(ListDataProject.PLOT_DUPE + ": 2,4");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(4);
-		ldp.setDuplicate(ListDataProject.PLOT_DUPE + ": 1,3");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(5);
-		ldp.setDuplicate(ListDataProject.PLOT_RECIP + ": 6,11");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(6);
-		ldp.setDuplicate(ListDataProject.PLOT_DUPE + ": 11");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(7);
-		ldp.setDuplicate(ListDataProject.PEDIGREE_RECIP + ": 8");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(8);
-		ldp.setDuplicate(ListDataProject.PEDIGREE_RECIP + ": 7");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(9);
-		ldp.setDuplicate(ListDataProject.PEDIGREE_DUPE + ": 10");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(10);
-		ldp.setDuplicate(ListDataProject.PEDIGREE_DUPE + ": 9");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(11);
-		ldp.setDuplicate(ListDataProject.PLOT_DUPE + ": 6");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(13);
-		ldp.setDuplicate(ListDataProject.PLOT_RECIP + ": 9");
-		dataProjectList.add(ldp);
-
-		ldp = new ListDataProject();
-		ldp.setEntryId(20);
-		ldp.setDuplicate(ListDataProject.PLOT_RECIP + ": 1,2,4");
-		dataProjectList.add(ldp);
-
-		return dataProjectList;
-	}
-
 	protected Map<Integer, InventoryDetails> createInventoryDetailsTestData() {
 		Map<Integer, InventoryDetails> detailMap = new HashMap<>();
 
@@ -420,33 +291,4 @@ public class StockServiceImplTest {
 		detailMap.put(entryId, details);
 	}
 
-	@Test
-	public void testProcessBulkWithEntriesBothPedigreeDupeAndPlotRecip() {
-		List<ListDataProject> testListData = this.createTestListDataProjectForBulking();
-		Map<Integer, InventoryDetails> testDetails = this.createInventoryDetailsTestData();
-
-		this.inventoryStockService.processBulkSettings(testListData, testDetails, true, true, false);
-		for (InventoryDetails inventoryDetails : testDetails.values()) {
-			if (inventoryDetails.getEntryId().equals(1) || inventoryDetails.getEntryId().equals(2)
-					|| inventoryDetails.getEntryId().equals(4) || inventoryDetails.getEntryId().equals(20)) {
-				InventoryDetails dummy = new InventoryDetails();
-				dummy.setInventoryID(inventoryDetails.getInventoryID());
-				dummy.addBulkWith(testDetails.get(1).getInventoryID());
-				dummy.addBulkWith(testDetails.get(2).getInventoryID());
-				dummy.addBulkWith(testDetails.get(20).getInventoryID());
-				dummy.addBulkWith(testDetails.get(4).getInventoryID());
-				Assert.assertEquals(dummy.getBulkWith(), inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			} else if (inventoryDetails.getEntryId().equals(9) || inventoryDetails.getEntryId().equals(10)
-					|| inventoryDetails.getEntryId().equals(13)) {
-				InventoryDetails dummy = new InventoryDetails();
-				dummy.setInventoryID(inventoryDetails.getInventoryID());
-				dummy.addBulkWith(testDetails.get(10).getInventoryID());
-				dummy.addBulkWith(testDetails.get(13).getInventoryID());
-				dummy.addBulkWith(testDetails.get(9).getInventoryID());
-				Assert.assertEquals(dummy.getBulkWith(), inventoryDetails.getBulkWith());
-				Assert.assertEquals("Y", inventoryDetails.getBulkCompl());
-			}
-		}
-	}
 }
