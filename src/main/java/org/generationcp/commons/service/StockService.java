@@ -12,11 +12,6 @@ import org.generationcp.middleware.domain.inventory.InventoryDetails;
 
 public interface StockService {
 
-	void assignStockIDs(List<InventoryDetails> details);
-
-	void assignStockIDs(List<InventoryDetails> details, String breederIdentifier, String separator);
-
 	String calculateNextStockIDPrefix(String breederIdentifier, String separator);
 
-	void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList);
 }
