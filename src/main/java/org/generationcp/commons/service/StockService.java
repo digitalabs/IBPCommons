@@ -18,7 +18,5 @@ public interface StockService {
 
 	String calculateNextStockIDPrefix(String breederIdentifier, String separator);
 
-	void verifyIfBulkingForStockListCanProceed(Integer listId, List<InventoryDetails> inventoryDetailsList) throws StockException;
-
 	void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList);
 }

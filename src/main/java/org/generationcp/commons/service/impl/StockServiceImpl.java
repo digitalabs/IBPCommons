@@ -1,10 +1,6 @@
 
 package org.generationcp.commons.service.impl;
 
-import org.apache.commons.lang3.StringUtils;
-import org.generationcp.commons.exceptions.StockException;
-import org.generationcp.commons.parsing.validation.BulkComplValidator;
-import org.generationcp.commons.parsing.validation.CommaDelimitedValueValidator;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.RuleFactory;
 import org.generationcp.commons.ruleengine.service.RulesService;
@@ -12,7 +8,6 @@ import org.generationcp.commons.ruleengine.stockid.StockIDGenerationRuleExecutio
 import org.generationcp.commons.service.StockService;
 import org.generationcp.middleware.domain.inventory.InventoryDetails;
 import org.generationcp.middleware.exceptions.MiddlewareException;
-import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.api.InventoryDataManager;
 import org.generationcp.middleware.pojos.ims.Lot;
 import org.generationcp.middleware.pojos.ims.Transaction;
@@ -84,87 +79,6 @@ public class StockServiceImpl implements StockService {
 		}
 	}
 
-	@Override
-	public void verifyIfBulkingForStockListCanProceed(Integer listId, List<InventoryDetails> inventoryDetailsList) throws StockException {
-		this.validateBulkWithValues(listId, inventoryDetailsList);
-		this.validateBulkComplValues(inventoryDetailsList);
-	}
-
-	protected void validateBulkWithValues(Integer listId, List<InventoryDetails> inventoryDetailsList) throws StockException {
-		List<String> bulkWithValues = this.hasAtLeastOneBulkWithValue(inventoryDetailsList);
-		this.containsValidBulkWithValues(listId, bulkWithValues);
-	}
-
-	private List<String> hasAtLeastOneBulkWithValue(List<InventoryDetails> inventoryDetailsList) throws StockException {
-		List<String> bulkWithValues = this.retrieveAllBulkWithValues(inventoryDetailsList);
-		if (bulkWithValues == null || bulkWithValues.isEmpty()) {
-			throw new StockException("bulking.instruction.bulk.with.required.one.entry");
-		}
-		return bulkWithValues;
-	}
-
-	protected List<String> retrieveAllBulkWithValues(List<InventoryDetails> inventoryDetailsList) {
-		List<String> bulkWithValues = new ArrayList<>();
-		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
-			if (!StringUtils.isEmpty(inventoryDetails.getBulkWith())) {
-				bulkWithValues.add(inventoryDetails.getBulkWith());
-			}
-		}
-		return bulkWithValues;
-	}
-
-	private void containsValidBulkWithValues(Integer listId, List<String> bulkWithValues) throws StockException {
-		CommaDelimitedValueValidator bulkWithValidator = new CommaDelimitedValueValidator(this.getStockIdsOfStockList(listId));
-		for (String bulkWith : bulkWithValues) {
-			if (!bulkWithValidator.isParsedValueValid(bulkWith, null)) {
-				throw new StockException("bulking.instruction.bulk.with.invalid.stock.id");
-			}
-		}
-	}
-
-	public List<String> getStockIdsOfStockList(Integer listId) {
-		List<String> stockIDList = new ArrayList<>();
-		try {
-			stockIDList = this.inventoryDataManager.getStockIdsByListDataProjectListId(listId);
-		} catch (MiddlewareQueryException e) {
-			StockServiceImpl.LOG.error(e.getMessage(), e);
-		}
-		return stockIDList;
-	}
-
-	protected void validateBulkComplValues(List<InventoryDetails> inventoryDetailsList) throws StockException {
-		BulkComplValidator bulkComplValidator = new BulkComplValidator(true);
-		Map<String, InventoryDetails> stockIDInventoryDetailsMap = this.getStockIDInventoryDetailsMap(inventoryDetailsList);
-		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
-			if (!bulkComplValidator.isParsedValueValid(inventoryDetails.getBulkCompl(), inventoryDetails.getBulkWith())) {
-				throw new StockException("bulking.instruction.bulk.compl.invalid.value");
-			}
-			if (!StringUtils.isEmpty(inventoryDetails.getBulkCompl())) {
-				this.verifyIfAllEntriesToBeMergedAreBulkComplete(inventoryDetails, stockIDInventoryDetailsMap);
-			}
-		}
-	}
-
-	private void verifyIfAllEntriesToBeMergedAreBulkComplete(InventoryDetails inventoryDetails,
-			Map<String, InventoryDetails> stockIDInventoryDetailsMap) throws StockException {
-		String bulkWith = inventoryDetails.getBulkWith();
-		String[] stockIDsTobeMergedWith = bulkWith.split(",");
-		for (String stockID : stockIDsTobeMergedWith) {
-			InventoryDetails inventoryDetailsToBeMergedWith = stockIDInventoryDetailsMap.get(stockID.trim());
-			if (inventoryDetailsToBeMergedWith == null || !"Y".equals(inventoryDetailsToBeMergedWith.getBulkCompl())) {
-				throw new StockException("bulking.instruction.bulk.compl.invalid.value");
-			}
-		}
-
-	}
-
-	private Map<String, InventoryDetails> getStockIDInventoryDetailsMap(List<InventoryDetails> inventoryDetailsList) {
-		Map<String, InventoryDetails> stockIDInventoryDetailsMap = new HashMap<>();
-		for (InventoryDetails inventoryDetails : inventoryDetailsList) {
-			stockIDInventoryDetailsMap.put(inventoryDetails.getInventoryID(), inventoryDetails);
-		}
-		return stockIDInventoryDetailsMap;
-	}
 
 	@Override
 	public void executeBulkingInstructions(List<InventoryDetails> inventoryDetailsList) {
