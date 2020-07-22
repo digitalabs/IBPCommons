@@ -160,12 +160,14 @@ public class TreeViewUtil {
 		return treeNodes;
 	}
 
+	@Deprecated
 	public static List<TreeNode> convertStudyFolderReferencesToTreeView(final List<Reference> references, final boolean isLazy,
 			final boolean isFolderOnly) {
 		final List<TreeNode> treeNodes = new ArrayList<>();
 		if (references != null && !references.isEmpty()) {
 			for (final Reference reference : references) {
-				// isFolderOnly also comes all the way from UI. Keeping the existing logic. Not entirely sure what it is for.
+				// isFolderOnly comes all the way from UI, to display nodes that can contain children (e.g saving, drag-drop)
+				// TODO Move logic to the frontend and remove parameter
 				if (reference.isStudy() && isFolderOnly) {
 					continue;
 				}
@@ -177,6 +179,14 @@ public class TreeViewUtil {
 		}
 		return treeNodes;
 	}
+
+	/**
+	 * TODO merge with {@link #convertStudyFolderReferencesToTreeView(List, boolean, boolean)} after removing parameter isFolderOnly
+	 */
+	public static List<TreeNode> convertStudyFolderReferencesToTreeView(final List<Reference> references, final boolean isLazy) {
+		return convertStudyFolderReferencesToTreeView(references, isLazy, false);
+	}
+
 
 	/**
 	 * Convert dataset references to tree view.
