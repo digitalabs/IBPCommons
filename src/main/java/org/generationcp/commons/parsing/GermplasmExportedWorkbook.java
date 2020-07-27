@@ -16,6 +16,8 @@ import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.commons.workbook.generator.GermplasmAttributesWorkbookExporter;
 import org.generationcp.commons.workbook.generator.GermplasmNamesWorkbookExporter;
 import org.generationcp.middleware.constant.ColumnLabels;
+import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
 import org.generationcp.middleware.domain.oms.TermId;
@@ -250,6 +252,7 @@ public class GermplasmExportedWorkbook {
 		final Map<Integer, Variable> inventoryStandardVariableMap = this.input.getInventoryVariableMap();
 		final List<? extends GermplasmExportSource> listData = this.input.getListData();
 		final Map<Integer, GermplasmParents> germplasmParentsMap = this.input.getGermplasmParents();
+		final Map<String, List<ListDataColumnValues>> columnValuesMap = this.input.getCurrentColumnsInfo().getColumnValuesMap();
 
 		this.createListEntriesHeaderRow(observationSheet);
 
@@ -329,7 +332,13 @@ public class GermplasmExportedWorkbook {
 				listEntry.createCell(j).setCellValue(data.getCheckTypeDescription());
 				j++;
 			}
-			
+
+			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))
+				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))) {
+				listEntry.createCell(j).setCellValue(columnValuesMap.get(ColumnLabels.PREFERRED_NAME.getName()).get(i-1).getValue());
+				j++;
+			}
+
 			j = this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
 
 			if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
@@ -710,6 +719,14 @@ public class GermplasmExportedWorkbook {
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.ENTRY_TYPE))) {
 			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
 			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.ENTRY_TYPE, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.PREFERRED_NAME, columnTermMap));
 			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
