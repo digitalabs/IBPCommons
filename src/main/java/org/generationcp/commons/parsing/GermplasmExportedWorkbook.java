@@ -31,6 +31,9 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow and the ExcelCellStyleBuilder to construct a
@@ -252,7 +255,15 @@ public class GermplasmExportedWorkbook {
 		final Map<Integer, Variable> inventoryStandardVariableMap = this.input.getInventoryVariableMap();
 		final List<? extends GermplasmExportSource> listData = this.input.getListData();
 		final Map<Integer, GermplasmParents> germplasmParentsMap = this.input.getGermplasmParents();
-		final Map<String, List<ListDataColumnValues>> columnValuesMap = this.input.getCurrentColumnsInfo().getColumnValuesMap();
+
+		final GermplasmListNewColumnsInfo currentColumnsInfo = this.input.getCurrentColumnsInfo();
+		Map<String, Map<Integer, ListDataColumnValues>> columnValuesByListDataIdByName = null;
+		if (currentColumnsInfo != null && currentColumnsInfo.getColumnValuesMap() != null) {
+			columnValuesByListDataIdByName = currentColumnsInfo.getColumnValuesMap().entrySet().stream()
+				.collect(Collectors.toMap(entry -> entry.getKey(), entry ->
+					entry.getValue().stream().collect(Collectors.toMap(ListDataColumnValues::getListDataId, Function.identity()))
+				));
+		}
 
 		this.createListEntriesHeaderRow(observationSheet);
 
@@ -333,11 +344,7 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))) {
-				listEntry.createCell(j).setCellValue(columnValuesMap.get(ColumnLabels.PREFERRED_NAME.getName()).get(i-1).getValue());
-				j++;
-			}
+			j = this.writeObservationSheetAddedColumns(visibleColumnMap, listEntry, columnValuesByListDataIdByName, data.getListDataId(), j);
 
 			j = this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
 
@@ -356,6 +363,123 @@ public class GermplasmExportedWorkbook {
 			i += 1;
 		}
 
+	}
+
+	private int writeObservationSheetAddedColumns(final Map<String, Boolean> visibleColumnMap, final HSSFRow listEntry,
+		final Map<String, Map<Integer, ListDataColumnValues>> columnValuesByListDataIdByName,
+		final Integer listDataId, int j) {
+
+		if (columnValuesByListDataIdByName == null) {
+			return j;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_ID))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_ID))) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.PREFERRED_ID.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.PREFERRED_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_DATE))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_DATE))) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.GERMPLASM_DATE.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_LOCATION))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_LOCATION))) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.GERMPLASM_LOCATION.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NAME))) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.BREEDING_METHOD_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_ABBREVIATION))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_ABBREVIATION))) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.BREEDING_METHOD_ABBREVIATION.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NUMBER))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NUMBER))) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.BREEDING_METHOD_NUMBER.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_GROUP))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_GROUP))) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.BREEDING_METHOD_GROUP.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME))) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.CROSS_MALE_PREFERRED_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.CROSS_MALE_PREFERRED_NAME))) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.CROSS_MALE_PREFERRED_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		// columns with termid=null
+
+		if (visibleColumnMap.containsKey(ColumnLabels.GROUP_SOURCE_GID.getName())
+			&& visibleColumnMap.get(ColumnLabels.GROUP_SOURCE_GID.getName())) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.GROUP_SOURCE_GID.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())
+			&& visibleColumnMap.get(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(ColumnLabels.IMMEDIATE_SOURCE_GID.getName())
+			&& visibleColumnMap.get(ColumnLabels.IMMEDIATE_SOURCE_GID.getName())) {
+			final String value = columnValuesByListDataIdByName.get(ColumnLabels.IMMEDIATE_SOURCE_GID.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+
+		if (visibleColumnMap.containsKey(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())
+			&& visibleColumnMap.get(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())) {
+			final String value =
+				columnValuesByListDataIdByName.get(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(j).setCellValue(value);
+			j++;
+		}
+		return j;
 	}
 
 	private int writeListFactorSection(final HSSFSheet descriptionSheet, final int startingRow) {
@@ -723,10 +847,116 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_ID))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_ID))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.PREFERRED_ID, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))
 			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.PREFERRED_NAME))) {
 			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
 			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.PREFERRED_NAME, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_DATE))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_DATE))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GERMPLASM_DATE, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_LOCATION))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.GERMPLASM_LOCATION))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.GERMPLASM_LOCATION, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NAME))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.BREEDING_METHOD_NAME, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_ABBREVIATION))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_ABBREVIATION))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.BREEDING_METHOD_ABBREVIATION, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NUMBER))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_NUMBER))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.BREEDING_METHOD_NUMBER, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_GROUP))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.BREEDING_METHOD_GROUP))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.BREEDING_METHOD_GROUP, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.CROSS_MALE_PREFERRED_NAME))
+			&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.CROSS_MALE_PREFERRED_NAME))) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.CROSS_MALE_PREFERRED_NAME, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+		
+		// columns with termid=null
+
+		if (visibleColumnMap.containsKey(ColumnLabels.GROUP_SOURCE_GID.getName())
+			&& visibleColumnMap.get(ColumnLabels.GROUP_SOURCE_GID.getName())) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(ColumnLabels.GROUP_SOURCE_GID.getName());
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())
+			&& visibleColumnMap.get(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName())) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(ColumnLabels.GROUP_SOURCE_PREFERRED_NAME.getName());
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(ColumnLabels.IMMEDIATE_SOURCE_GID.getName())
+			&& visibleColumnMap.get(ColumnLabels.IMMEDIATE_SOURCE_GID.getName())) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(ColumnLabels.IMMEDIATE_SOURCE_GID.getName());
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (visibleColumnMap.containsKey(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())
+			&& visibleColumnMap.get(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName())) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(ColumnLabels.IMMEDIATE_SOURCE_PREFERRED_NAME.getName());
 			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
