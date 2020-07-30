@@ -307,18 +307,6 @@ public class GermplasmExportedWorkbook {
 				j++;
 			}
 
-			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getFgid());
-				j++;
-			}
-
-			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
-					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
-				listEntry.createCell(j).setCellValue(germplasmParentsMap.get(data.getGermplasmId()).getMgid());
-				j++;
-			}
-
 			if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))
 					&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
 				listEntry.createCell(j).setCellValue(data.getSeedSource());
@@ -406,8 +394,18 @@ public class GermplasmExportedWorkbook {
 			listEntry.createCell(colIndex++).setCellValue(value);
 		}
 
+		if (valuesMap.containsKey(ColumnLabels.FGID.getName())) {
+			final String value = valuesMap.get(ColumnLabels.FGID.getName()).get(listDataId).getValue();
+			listEntry.createCell(colIndex++).setCellValue(value);
+		}
+
 		if (valuesMap.containsKey(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
 			final String value = valuesMap.get(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName()).get(listDataId).getValue();
+			listEntry.createCell(colIndex++).setCellValue(value);
+		}
+
+		if (valuesMap.containsKey(ColumnLabels.MGID.getName())) {
+			final String value = valuesMap.get(ColumnLabels.MGID.getName()).get(listDataId).getValue();
 			listEntry.createCell(colIndex++).setCellValue(value);
 		}
 
@@ -763,22 +761,6 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
-		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.FGID))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.FGID))) {
-			final Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.FGID, columnTermMap));
-			crossCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-			columnIndex++;
-		}
-
-		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.MGID))
-				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.MGID))) {
-			final Cell crossCell = listEntriesHeader.createCell(columnIndex);
-			crossCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.MGID, columnTermMap));
-			crossCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
-			columnIndex++;
-		}
-
 		if (visibleColumnMap.containsKey(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))
 				&& visibleColumnMap.get(this.getColumnNamesTermId(ColumnLabels.SEED_SOURCE))) {
 			final Cell sourceCell = listEntriesHeader.createCell(columnIndex);
@@ -889,9 +871,23 @@ public class GermplasmExportedWorkbook {
 			columnIndex++;
 		}
 
+		if (valuesMap.containsKey(ColumnLabels.FGID.getName())) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.FGID, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
 		if (valuesMap.containsKey(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME.getName())) {
 			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
 			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.CROSS_FEMALE_PREFERRED_NAME, columnTermMap));
+			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
+			columnIndex++;
+		}
+
+		if (valuesMap.containsKey(ColumnLabels.MGID.getName())) {
+			final Cell entryTypeCell = listEntriesHeader.createCell(columnIndex);
+			entryTypeCell.setCellValue(this.getTermNameOrDefaultLabel(ColumnLabels.MGID, columnTermMap));
 			entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 			columnIndex++;
 		}
