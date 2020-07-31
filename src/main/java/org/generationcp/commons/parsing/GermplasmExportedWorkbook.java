@@ -351,7 +351,7 @@ public class GermplasmExportedWorkbook {
 		final Integer listDataId, int colIndex) {
 
 		if (valuesMap == null) {
-			return colIndex++;
+			return colIndex;
 		}
 
 		if (valuesMap.containsKey(ColumnLabels.PREFERRED_ID.getName())) {
