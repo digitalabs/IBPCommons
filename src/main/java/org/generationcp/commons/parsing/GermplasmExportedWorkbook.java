@@ -28,6 +28,7 @@ import org.generationcp.middleware.pojos.GermplasmList;
 import javax.annotation.Resource;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -255,8 +256,10 @@ public class GermplasmExportedWorkbook {
 		final Map<Integer, Variable> inventoryStandardVariableMap = this.input.getInventoryVariableMap();
 		final List<? extends GermplasmExportSource> listData = this.input.getListData();
 		final Map<Integer, GermplasmParents> germplasmParentsMap = this.input.getGermplasmParents();
-		final Map<String, Map<Integer, ListDataColumnValues>> columnValuesByListDataIdByName =
-			this.input.getCurrentColumnsInfo().getColumnValuesByListDataIdMap();
+		Map<String, Map<Integer, ListDataColumnValues>> columnValuesByListDataIdByName = Collections.emptyMap();
+		if (this.input.getCurrentColumnsInfo() != null) {
+			columnValuesByListDataIdByName = this.input.getCurrentColumnsInfo().getColumnValuesByListDataIdMap();
+		}
 
 		this.createListEntriesHeaderRow(observationSheet);
 
@@ -811,6 +814,10 @@ public class GermplasmExportedWorkbook {
 	}
 
 	private int addAddedColumnsHeader(final Map<Integer, Term> columnTermMap, final HSSFRow listEntriesHeader, int columnIndex) {
+
+		if (this.input.getCurrentColumnsInfo() == null) {
+			return columnIndex;
+		}
 
 		final Map<String, Map<Integer, ListDataColumnValues>> valuesMap =
 			this.input.getCurrentColumnsInfo().getColumnValuesByListDataIdMap();
