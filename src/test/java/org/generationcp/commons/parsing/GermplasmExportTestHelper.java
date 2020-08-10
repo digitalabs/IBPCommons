@@ -96,7 +96,6 @@ public class GermplasmExportTestHelper {
 			germplasmListData.setGroupName(ColumnLabels.PARENTAGE.getName() + x);
 			final ListDataInventory inventoryInfo = new ListDataInventory(x, x);
 			inventoryInfo.setLotCount(1);
-			inventoryInfo.setReservedLotCount(1);
 			inventoryInfo.setActualInventoryLotCount(1);
 			inventoryInfo.setDistinctScaleCountForGermplsm(1);
 			inventoryInfo.setTotalAvailableBalance(Double.valueOf(x));
