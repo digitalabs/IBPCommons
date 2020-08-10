@@ -35,7 +35,10 @@ public enum HelpModule {
 	// Program Admin
 	MANAGE_PROGRAM_SETTINGS_MANAGE_PROGRAM_SETTING("manage.program.settings.update"), 
 	BACKUP_PROGRAM_DATA("backup.program.data"), 
-	RESTORE_PROGRAM_DATA("restore.program.data");
+	RESTORE_PROGRAM_DATA("restore.program.data"),
+
+	//Manage Inventory
+	MANAGE_INVENTORY("manage.inventory");
 
 	/* This is the variable name from the property file helplinks.properties */
 	private String propertyName;
