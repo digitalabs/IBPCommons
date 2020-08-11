@@ -8,9 +8,18 @@ public enum HelpModule {
 	
 	// Breeding Activities
 	MANAGE_LIST("manage.list"), 
-	DESIGN_CROSSES("design.crosses"), 
-	MANAGE_STUDIES("manage.studies"), 
-	MAKE_LABELS("make.labels"), 
+	DESIGN_CROSSES("design.crosses"),
+
+	// ManageStudies
+	MANAGE_STUDIES("manage.studies"),
+	MANAGE_STUDIES_SETTINGS("manage.studies.settings"),
+	MANAGE_STUDIES_GERMPLASM("manage.studies.germplasm"),
+	MANAGE_STUDIES_TREATMENT_FACTORS("manage.studies.treatment.factors"),
+	MANAGE_STUDIES_ENVIRONMENT("manage.studies.environment"),
+	MANAGE_STUDIES_EXPERIMENTAL_DESIGN("manage.studies.experimental.design"),
+	MANAGE_STUDIES_SUB_OBSERVATIONS("manage.studies.sub.observations"),
+	MANAGE_STUDIES_FIELDMAP_GEOREFERENCE("manage.studies.fieldmap.georeference"),
+	MAKE_LABELS("make.labels"),
 	MAKE_FIELD_MAPS("make.field.maps"), 
 	MANAGE_LOCATIONS("manage.locations"),
 	MANAGE_BREEDING_METHODS("manage.breeding.methods"),
