@@ -16,7 +16,16 @@ import java.util.List;
 
 /**
  * This class holds the data needed for rendering a tree view using dynatree jquery.
- * TODO can be merged with {@link TreeTableNode}?
+ * TODO improvements:
+ *  - merge {@link TreeTableNode} into this one
+ *  - decouple with dynatree/frontend implementations: move to frontend
+ *   - isLazy
+ *   - icon
+ *   - addClass
+ *   - isLastChildren
+ *  - Consolidate properties with the same amount of information:
+ *   - noOfEntries, numOfChildren, children, expand
+ *   - type, includeInSearch
  */
 public class TreeNode {
 
@@ -69,6 +78,14 @@ public class TreeNode {
 		this.addClass = addClass;
 		this.icon = icon;
 		this.isLazy = true;
+		this.children = new ArrayList<TreeNode>();
+		this.programUUID = programUUID;
+	}
+
+	public TreeNode(final String key, final String title, final boolean isFolder, final String programUUID) {
+		this.key = key;
+		this.title = title;
+		this.isFolder = isFolder;
 		this.children = new ArrayList<TreeNode>();
 		this.programUUID = programUUID;
 	}

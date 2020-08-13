@@ -1,23 +1,22 @@
 
 package org.generationcp.commons.service.impl;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
-import junit.framework.Assert;
-
 import org.generationcp.commons.constant.ListTreeState;
 import org.generationcp.commons.service.UserTreeStateService;
 import org.generationcp.middleware.manager.api.GermplasmListManager;
 import org.generationcp.middleware.manager.api.UserProgramStateDataManager;
 import org.generationcp.middleware.pojos.GermplasmList;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class UserTreeStateServiceImplTest {
 
@@ -63,16 +62,6 @@ public class UserTreeStateServiceImplTest {
 	@Test
     public void testRetrieveSavedListItemsGermplasmList() {
         testRetrieveSaveListItemsPreviouslySaved(GermplasmList.LIST_TYPE);
-    }
-
-    @Test
-    public void testRetrieveSavedListItemsAdvanceList() {
-        testRetrieveSaveListItemsPreviouslySaved(GermplasmList.ADVANCED_LIST_TYPE);
-    }
-
-    @Test
-    public void testRetrieveSavedListItemsCrossList() {
-        testRetrieveSaveListItemsPreviouslySaved(GermplasmList.CROSS_LIST_TYPE);
     }
 
 	void testRetrieveSaveListItemsPreviouslySaved(final String listType) {
