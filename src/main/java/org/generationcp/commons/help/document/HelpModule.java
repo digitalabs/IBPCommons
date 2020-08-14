@@ -28,7 +28,8 @@ public enum HelpModule {
 	IMPORT_GERMPLASM("import.germplasm"), 
 	MANAGE_GENOTYPING_DATA("manage.genotyping.data"), 
 	BROWSE_STUDIES("browse.studies"), 
-	MANAGE_ONTOLOGIES("manage.ontologies"), 
+	MANAGE_ONTOLOGIES("manage.ontologies"),
+	MANAGE_ONTOLOGIES_FORMULAS("manage.ontologies.formulas"),
 	DATA_IMPORT_TOOL("data.import.tool"),
 	
 	// Breeder Queries
