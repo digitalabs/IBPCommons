@@ -98,7 +98,6 @@ public final class DerivedVariableUtils {
 				// read from environment level.
 				if (environmentInputVariables.contains(termId)) {
 					observationUnitData = observationUnitRow.getEnvironmentVariables().get(termName);
-					convertEnvironmentDateVarToYYYYMMDDFormat(observationUnitData, measurementVariablesMap.get(observationUnitData.getVariableId()));
 				} else {
 					observationUnitData = observationUnitRow.getVariables().get(termName);
 				}
@@ -109,14 +108,6 @@ public final class DerivedVariableUtils {
 		}
 
 		return termMissingData;
-	}
-
-	static void convertEnvironmentDateVarToYYYYMMDDFormat(final ObservationUnitData data, final MeasurementVariable measurementVariable) throws ParseException{
-		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementVariable.getDataTypeId())) {
-			final Date date = DateUtil.parseDate(data.getValue(), Util.FRONTEND_DATE_FORMAT);
-			final String convertedDate = DateUtil.formatDateAsStringValue(date, Util.DATE_AS_NUMBER_FORMAT);
-			data.setValue(convertedDate);
-		}
 	}
 
 	private static Object getMeasurementValue(
@@ -146,6 +137,11 @@ public final class DerivedVariableUtils {
 
 		if (DataType.DATE_TIME_VARIABLE.getId().equals(measurementVariable.getDataTypeId())
 			&& !StringUtils.isBlank(value)) {
+			final Date dateISOFormat = Util.tryParseDate(value, Util.FRONTEND_DATE_FORMAT);
+			if (null != dateISOFormat) {
+				return dateISOFormat;
+			}
+			// we try one more format and else -> ParseException
 			return DateUtil.parseDate(value);
 		}
 		if (NumberUtils.isNumber(value)) {
