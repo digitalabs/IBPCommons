@@ -468,17 +468,6 @@ public class DerivedVariableUtilsTest {
 
 	}
 
-	@Test
-	public void testConvertEnvironmentDateVarToYYYYMMDDFormat() throws ParseException {
-		final ObservationUnitData data = this.createObservationUnitDataTestData(TermId.DATE_VARIABLE.getId(), "2019-08-21", null);
-		final MeasurementVariable measurementVariable = new MeasurementVariable();
-		measurementVariable.setTermId(TermId.DATE_VARIABLE.getId());
-		measurementVariable.setDataTypeId(DataType.DATE_TIME_VARIABLE.getId());
-
-		DerivedVariableUtils.convertEnvironmentDateVarToYYYYMMDDFormat(data, measurementVariable);
-		Assert.assertEquals("20190821", data.getValue());
-	}
-
 	private ObservationUnitData createObservationUnitDataTestData(final Integer VARIABLE_ID, final String value, final Integer cValueId) {
 		final ObservationUnitData observationUnitData = new ObservationUnitData();
 		observationUnitData.setVariableId(VARIABLE_ID);

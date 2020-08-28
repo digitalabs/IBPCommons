@@ -38,13 +38,15 @@ public class DerivedVariableProcessorTest {
 	private static final Integer TERM_2 = 50889; // GMoi_NIRS_pct - Grain moisture BY NIRS Moi - Measurement IN %
 	private static final Integer TERM_3 = 20358; // PlotArea_m2 - Plot size
 	private static final Integer TERM_4_EMPTY_VALUE = 20439; // MRFVInc_Cmp_pct
-	private static final Integer DATE_TERM1 = 8630;
-	private static final Integer DATE_TERM2 = 8830;
+	private static final Integer DATE_TERM1 = 8630; // GermiTest_date
+	private static final Integer DATE_TERM2 = 8830; // MecWeedCtrl_date
+	private static final Integer DATE_TERM3 = 8383; // SEEDING_DATE
 	private static final String TERM_VALUE_1 = "1000";
 	private static final String TERM_VALUE_2 = "12.5";
 	private static final String TERM_VALUE_3 = "10";
 	private static final String DATE_TERM1_VALUE = "20180101";
 	private static final String DATE_TERM2_VALUE = "20180201";
+	private static final String DATE_TERM3_VALUE = "2018-02-02";
 	private static final String TERM_NOT_FOUND = "TermNotFound";
 	private static final String FORMULA_1 = "({{" + TERM_1 + "}}/100)*((100-{{" + TERM_2 + "}})/(100-12.5))*(10/{{" + TERM_3 + "}})";
 	private static final String EXPECTED_FORMULA_1_RESULT = "10";
@@ -291,6 +293,17 @@ public class DerivedVariableProcessorTest {
 	}
 
 	@Test
+	public void testDaysDiffFunction_ISOFormat() throws ParseException {
+		String formula = "fn:daysdiff({{" + DATE_TERM1 + "}}, {{" + DATE_TERM3 + "}})";
+		final Map<String, Object> terms = extractParameters(formula);
+		extractValues(terms, this.createObservationUnitRowTestData(), this.createMeasurementVariablesMap(), new ArrayList<String>(), new ArrayList<String>());
+
+		formula = replaceDelimiters(formula);
+		final String result = this.processor.evaluateFormula(formula, terms);
+		Assert.assertEquals("32", result);
+	}
+
+	@Test
 	public void testDaysDiffFunctionNegativeDifference() throws ParseException {
 		// Having later date for first parameter should give negative value
 		String formula = "fn:daysdiff({{" + DATE_TERM2 + "}}, {{" + DATE_TERM1 + "}})";
@@ -372,7 +385,7 @@ public class DerivedVariableProcessorTest {
 	@Test(expected = ParseException.class)
 	public void testInvalidDateFormatParsing() throws ParseException {
 		final ObservationUnitRow testRow = this.createObservationUnitRowTestData();
-		testRow.getVariables().get("DATE_TERM2").setValue("2018-03-31");
+		testRow.getVariables().get("DATE_TERM2").setValue("03/31/2018");
 		final String formula = "({{" + DATE_TERM2 + "}}/100)";
 		final Map<String, Object> terms = extractParameters(formula);
 		extractValues(terms, testRow, this.createMeasurementVariablesMap(), new ArrayList<String>(), new ArrayList<String>());
@@ -399,6 +412,8 @@ public class DerivedVariableProcessorTest {
 			DataType.DATE_TIME_VARIABLE));
 		measurementVariablesMap.put(DATE_TERM2, this.createMeasurementVariable(DATE_TERM2, "DATE_TERM2",
 			DataType.DATE_TIME_VARIABLE));
+		measurementVariablesMap.put(DATE_TERM3, this.createMeasurementVariable(DATE_TERM3, "DATE_TERM3",
+			DataType.DATE_TIME_VARIABLE));
 		return measurementVariablesMap;
 
 	}
@@ -422,6 +437,8 @@ public class DerivedVariableProcessorTest {
 		observationUnitDataMap.put("DATE_TERM1", dateData1);
 		final ObservationUnitData dateData2 = this.createObservationUnitDataTestData(DATE_TERM2, DATE_TERM2_VALUE, null);
 		observationUnitDataMap.put("DATE_TERM2", dateData2);
+		final ObservationUnitData dateData3 = this.createObservationUnitDataTestData(DATE_TERM3, DATE_TERM3_VALUE, null);
+		observationUnitDataMap.put("DATE_TERM3", dateData3);
 		return observationUnitDataMap;
 	}
 
