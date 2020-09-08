@@ -1210,3 +1210,6 @@ body{box-sizing:border-box}
 .v-window-gcp-help-window .v-window-closebox:hover{background:transparent;background-image:none;color:#f0f0f0}
 .v-window-gcp-help-window .v-window-closebox:active{background:transparent;background-image:none;color:#f0f0f0}
 .v-window-gcp-help-window .v-window-closebox:before{content:"\e014"}
+
+/* Names Table */
+.germplasm-names-table .v-scrollable{overflow: hidden}
