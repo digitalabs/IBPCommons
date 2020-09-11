@@ -48,10 +48,25 @@ public class SequenceExpression extends BaseExpression implements Expression {
 						final Matcher matcher = pattern.matcher(upperCaseValue);
 						if (matcher.find()) {
 							final String keyPrefix = upperCaseValue.substring(0, matcher.start());
-							// Get last sequence number for KeyPrefix with synchronization at class level
-							final int lastUsedSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(keyPrefix);
+
+							int nextNumberInSequence;
+							// In preview names mode, do not increment the prefix in sequence registry
+							if (source.getDesignationIsPreviewOnly()) {
+								if (source.getKeySequenceMap().containsKey(keyPrefix)) {
+									nextNumberInSequence = source.getKeySequenceMap().get(keyPrefix) + 1;
+								} else {
+									nextNumberInSequence = this.germplasmNamingService.getNextSequence(keyPrefix);
+								}
+								source.getKeySequenceMap().put(keyPrefix, nextNumberInSequence);
+
+							// Look up last sequence number from database for KeyPrefix with synchronization at class level
+							} else {
+								nextNumberInSequence = this.germplasmNamingService.getNextNumberAndIncrementSequence(keyPrefix);
+							}
+
 							final String numberString = this.germplasmNamingService
-								.getNumberWithLeadingZeroesAsString(lastUsedSequence, this.getNumberOfDigits(value));
+								.getNumberWithLeadingZeroesAsString(nextNumberInSequence, this.getNumberOfDigits(value));
+
 							this.replaceRegularExpressionKeyWithValue(newName, numberString);
 							newNames.add(newName);
 						}
