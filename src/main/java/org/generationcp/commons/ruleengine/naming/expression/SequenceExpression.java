@@ -1,6 +1,7 @@
 
 package org.generationcp.commons.ruleengine.naming.expression;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.ruleengine.ExpressionUtils;
 import org.generationcp.commons.service.GermplasmNamingService;
@@ -50,8 +51,8 @@ public class SequenceExpression extends BaseExpression implements Expression {
 							final String keyPrefix = upperCaseValue.substring(0, matcher.start());
 
 							int nextNumberInSequence;
-							// In preview names mode, do not increment the prefix in sequence registry
-							if (source.getDesignationIsPreviewOnly()) {
+							// In preview mode, do not increment the prefix in sequence registry
+							if (BooleanUtils.isTrue(source.getDesignationIsPreviewOnly())) {
 								if (source.getKeySequenceMap().containsKey(keyPrefix)) {
 									nextNumberInSequence = source.getKeySequenceMap().get(keyPrefix) + 1;
 								} else {
