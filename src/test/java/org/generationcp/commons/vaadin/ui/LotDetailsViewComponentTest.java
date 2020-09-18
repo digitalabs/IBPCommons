@@ -87,7 +87,7 @@ public class LotDetailsViewComponentTest {
 	}
 
 	@Test
-	public void testinitializeValues() {
+	public void testInitializeValues() {
 		final InventoryDetailsTestDataInitializer inventoryDetailsTestDataInitializer = new InventoryDetailsTestDataInitializer();
 		Mockito.when(this.inventoryDataManager.getTransactionDetailsForLot(Mockito.anyInt()))
 				.thenReturn(inventoryDetailsTestDataInitializer.createTransactionReportRowTestData());
