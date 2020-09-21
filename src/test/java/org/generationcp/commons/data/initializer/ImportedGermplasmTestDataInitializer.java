@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
+import org.generationcp.middleware.domain.gms.SystemDefinedEntryType;
 
 public class ImportedGermplasmTestDataInitializer {
 
@@ -19,6 +20,7 @@ public class ImportedGermplasmTestDataInitializer {
 		importedGermplasm.setStockIDs("STOCKID");
 		importedGermplasm.setEntryCode("1");
 		importedGermplasm.setCross("CROSS");
+		importedGermplasm.setEntryTypeCategoricalID(SystemDefinedEntryType.CHECK_ENTRY.getEntryTypeCategoricalId());
 		return importedGermplasm;
 	}
 
