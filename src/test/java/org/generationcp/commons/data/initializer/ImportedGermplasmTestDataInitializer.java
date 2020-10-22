@@ -17,7 +17,6 @@ public class ImportedGermplasmTestDataInitializer {
 		importedGermplasm.setGid("1");
 		importedGermplasm.setGroupId(1);
 		importedGermplasm.setSource("SOURCE");
-		importedGermplasm.setStockIDs("STOCKID");
 		importedGermplasm.setEntryCode("1");
 		importedGermplasm.setCross("CROSS");
 		importedGermplasm.setEntryTypeCategoricalID(SystemDefinedEntryType.CHECK_ENTRY.getEntryTypeCategoricalId());

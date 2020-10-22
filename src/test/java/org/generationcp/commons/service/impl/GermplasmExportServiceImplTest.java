@@ -191,7 +191,6 @@ public class GermplasmExportServiceImplTest {
 		exportColumnHeaders.add(new ExportColumnHeader(TermId.BULK_COMPL.getId(), TermId.BULK_COMPL.toString(), true));
 		exportColumnHeaders.add(new ExportColumnHeader(TermId.LOCATION_ABBR.getId(), TermId.LOCATION_ABBR.toString(), true));
 		exportColumnHeaders.add(new ExportColumnHeader(TermId.SEED_AMOUNT_G.getId(), TermId.SEED_AMOUNT_G.toString(), true));
-		exportColumnHeaders.add(new ExportColumnHeader(TermId.STOCKID.getId(), TermId.STOCKID.toString(), true));
 		exportColumnHeaders.add(new ExportColumnHeader(TermId.COMMENT_INVENTORY.getId(), TermId.COMMENT_INVENTORY.toString(), true));
 		return exportColumnHeaders;
 	}

@@ -116,10 +116,6 @@ public class GermplasmExportedWorkbookTest {
 			columnIndex++;
 		}
 
-		Assert.assertEquals("Expecting correct header for " + TermId.STOCKID.toString(), TermId.STOCKID.toString(),
-				row.getCell(columnIndex).getStringCellValue());
-		columnIndex++;
-
 		Assert.assertEquals("Expecting correct header for " + TermId.SEED_AMOUNT_G.toString(), TermId.SEED_AMOUNT_G.toString(),
 				row.getCell(columnIndex).getStringCellValue());
 		columnIndex++;
@@ -168,10 +164,6 @@ public class GermplasmExportedWorkbookTest {
 						listData.getGroupId().doubleValue(), row.getCell(columnIndex).getNumericCellValue());
 				columnIndex++;
 			}
-
-			Assert.assertEquals("Expecting correct value for " + TermId.STOCKID.toString() + " at Row " + (rowIndex + 1),
-					listData.getStockIDs(), row.getCell(columnIndex).getStringCellValue());
-			columnIndex++;
 
 			Assert.assertEquals("Expecting correct value for " + TermId.SEED_AMOUNT_G.toString() + " at Row " + (rowIndex + 1),
 					listData.getSeedAmount(), row.getCell(columnIndex).getStringCellValue());
