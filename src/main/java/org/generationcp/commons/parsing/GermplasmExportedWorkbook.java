@@ -16,7 +16,6 @@ import org.generationcp.commons.workbook.generator.CodesSheetGenerator;
 import org.generationcp.commons.workbook.generator.GermplasmAttributesWorkbookExporter;
 import org.generationcp.commons.workbook.generator.GermplasmNamesWorkbookExporter;
 import org.generationcp.middleware.constant.ColumnLabels;
-import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.oms.CvId;
 import org.generationcp.middleware.domain.oms.Term;
@@ -32,9 +31,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * Germplasm workbook which gets exported as a file. This file uses the ExcelWorkbookRow and the ExcelCellStyleBuilder to construct a
@@ -71,6 +67,7 @@ public class GermplasmExportedWorkbook {
 	// Codes
 	public static final String USER = "USER";
 	public static final String BREEDING_METHOD = "BREEDING METHOD";
+	private static final int MOCK_STOCK_ID = 8269;
 
 	private ExcelCellStyleBuilder sheetStyles;
 	private CellStyle textStyle;
@@ -332,7 +329,7 @@ public class GermplasmExportedWorkbook {
 
 			j = this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
 
-			if (inventoryStandardVariableMap.containsKey(-1)) {
+			if (inventoryStandardVariableMap.containsKey(GermplasmExportedWorkbook.MOCK_STOCK_ID)) {
 				listEntry.createCell(j).setCellValue(data.getStockIDs());
 				j++;
 			}
@@ -661,7 +658,7 @@ public class GermplasmExportedWorkbook {
 				final ExcelWorkbookRow row = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
 				row.writeStandardVariableToRow(labelStyleInventory, this.textStyle, stdVar);
 
-				if (stdVar.getName() == ColumnLabels.STOCKID.getName()) {
+				if (stdVar.getId() == GermplasmExportedWorkbook.MOCK_STOCK_ID) {
 					row.createCell(7, this.textStyle, "Existing StockID value if known (or leave blank)");
 				} else if (stdVar.getId() == TermId.SEED_AMOUNT_G.getId()) {
 					row.createCell(7, this.textStyle, "Weight of seed lot in grams - optional; see Codes sheet for more options");
@@ -792,9 +789,9 @@ public class GermplasmExportedWorkbook {
 
 		columnIndex = this.namesGenerator.generateAddedColumnHeader(listEntriesHeader, columnIndex);
 
-		if (inventoryStandardVariableMap.containsKey(-1)) {
+		if (inventoryStandardVariableMap.containsKey(GermplasmExportedWorkbook.MOCK_STOCK_ID)) {
 			final Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
-			stockIDCell.setCellValue(this.input.getInventoryVariableMap().get(-1).getName().toUpperCase());
+			stockIDCell.setCellValue(this.input.getInventoryVariableMap().get(GermplasmExportedWorkbook.MOCK_STOCK_ID).getName().toUpperCase());
 			stockIDCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
 			observationSheet.setDefaultColumnStyle(columnIndex,
 					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.NUMBER_DATA_FORMAT_STYLE));
