@@ -134,8 +134,6 @@ public class GermplasmExportedWorkbook {
 
 		nextRow = this.writeListFactorSection(descriptionSheet, nextRow + 2);
 
-		nextRow = this.writeListInventorySection(descriptionSheet, nextRow + 2);
-
 		this.writeListVariateSection(descriptionSheet, nextRow + 2);
 
 		this.fillSheetWithCellStyle(descriptionSheet);
@@ -635,42 +633,6 @@ public class GermplasmExportedWorkbook {
 		}
 
 		return this.namesGenerator.addRowsToDescriptionSheet(descriptionSheet, actualRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
-	}
-
-	private int writeListInventorySection(final HSSFSheet descriptionSheet, final int startingRow) {
-		final CellStyle labelStyleInventory = this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.LABEL_STYLE_INVENTORY);
-
-		int actualRow = startingRow;
-
-		if (!this.input.getInventoryVariableMap().isEmpty()) {
-
-			final ExcelWorkbookRow conditionDetailsHeading = new ExcelWorkbookRow(descriptionSheet.createRow(actualRow));
-			conditionDetailsHeading.createCell(0, this.headingStyle, GermplasmExportedWorkbook.INVENTORY);
-			conditionDetailsHeading.createCell(1, this.headingStyle, GermplasmExportedWorkbook.DESCRIPTION);
-			conditionDetailsHeading.createCell(2, this.headingStyle, GermplasmExportedWorkbook.PROPERTY);
-			conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
-			conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
-			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
-			conditionDetailsHeading.createCell(6, this.headingStyle, "");
-			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
-
-			for (final Variable stdVar : this.input.getInventoryVariableMap().values()) {
-				final ExcelWorkbookRow row = new ExcelWorkbookRow(descriptionSheet.createRow(++actualRow));
-				row.writeStandardVariableToRow(labelStyleInventory, this.textStyle, stdVar);
-
-				if (stdVar.getId() == GermplasmExportedWorkbook.MOCK_STOCK_ID) {
-					row.createCell(7, this.textStyle, "Existing StockID value if known (or leave blank)");
-				} else if (stdVar.getId() == TermId.SEED_AMOUNT_G.getId()) {
-					row.createCell(7, this.textStyle, "Weight of seed lot in grams - optional; see Codes sheet for more options");
-				} else {
-					row.createCell(7, this.textStyle, "");
-				}
-
-			}
-
-		}
-
-		return actualRow;
 	}
 
 	private void writeListVariateSection(final HSSFSheet descriptionSheet, final int startingRow) {
