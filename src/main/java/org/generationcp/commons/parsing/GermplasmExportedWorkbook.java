@@ -68,10 +68,6 @@ public class GermplasmExportedWorkbook {
 	public static final String USER = "USER";
 	public static final String BREEDING_METHOD = "BREEDING METHOD";
 
-	//	TODO: This variable was created to continue exporting the stockId after removing him FROM cvterm.
-	// 	IBP-4058 Remove StockID variable from the ontology
-	private static final int MOCK_STOCK_ID = -8269;
-
 	private ExcelCellStyleBuilder sheetStyles;
 	private CellStyle textStyle;
 	private CellStyle headingStyle;
@@ -330,7 +326,7 @@ public class GermplasmExportedWorkbook {
 
 			j = this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
 
-			if (inventoryStandardVariableMap.containsKey(GermplasmExportedWorkbook.MOCK_STOCK_ID)) {
+			if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 				listEntry.createCell(j).setCellValue(data.getStockIDs());
 				j++;
 			}
@@ -754,7 +750,7 @@ public class GermplasmExportedWorkbook {
 
 		columnIndex = this.namesGenerator.generateAddedColumnHeader(listEntriesHeader, columnIndex);
 
-		if (inventoryStandardVariableMap.containsKey(GermplasmExportedWorkbook.MOCK_STOCK_ID)) {
+		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
 			final Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
 			stockIDCell.setCellValue(ColumnLabels.STOCKID.getName().toUpperCase());
 			stockIDCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
