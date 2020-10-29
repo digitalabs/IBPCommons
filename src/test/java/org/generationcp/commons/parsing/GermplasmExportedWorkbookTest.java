@@ -116,12 +116,8 @@ public class GermplasmExportedWorkbookTest {
 			columnIndex++;
 		}
 
-		Assert.assertEquals("Expecting correct header for " + TermId.STOCKID.toString(), TermId.STOCKID.toString(),
-				row.getCell(columnIndex).getStringCellValue());
-		columnIndex++;
-
-		Assert.assertEquals("Expecting correct header for " + TermId.SEED_AMOUNT_G.toString(), TermId.SEED_AMOUNT_G.toString(),
-				row.getCell(columnIndex).getStringCellValue());
+		Assert.assertEquals("Expecting correct header for STOCKID", "STOCKID",
+			row.getCell(columnIndex).getStringCellValue());
 		columnIndex++;
 		// Assert Row Values
 		int rowIndex = 1;
@@ -169,12 +165,8 @@ public class GermplasmExportedWorkbookTest {
 				columnIndex++;
 			}
 
-			Assert.assertEquals("Expecting correct value for " + TermId.STOCKID.toString() + " at Row " + (rowIndex + 1),
-					listData.getStockIDs(), row.getCell(columnIndex).getStringCellValue());
-			columnIndex++;
-
 			Assert.assertEquals("Expecting correct value for " + TermId.SEED_AMOUNT_G.toString() + " at Row " + (rowIndex + 1),
-					listData.getSeedAmount(), row.getCell(columnIndex).getStringCellValue());
+					listData.getStockIDs(), row.getCell(columnIndex).getStringCellValue());
 			rowIndex++;
 		}
 	}
@@ -332,26 +324,6 @@ public class GermplasmExportedWorkbookTest {
 		}
 
 		rowIndex = rowIndex + 2;
-
-		// Verify Inventory section
-		for (final Variable stdVariable : inventoryVariables.values()) {
-
-			row = descriptionSheet.getRow(++rowIndex);
-			Assert.assertEquals("Expecting " + row.getCell(0).getStringCellValue(), row.getCell(0).getStringCellValue(),
-					stdVariable.getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(1).getStringCellValue(), row.getCell(1).getStringCellValue(),
-					stdVariable.getDefinition());
-			Assert.assertEquals("Expecting " + row.getCell(2).getStringCellValue(), row.getCell(2).getStringCellValue(),
-					stdVariable.getProperty().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(3).getStringCellValue(), row.getCell(3).getStringCellValue(),
-					stdVariable.getScale().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(4).getStringCellValue(), row.getCell(4).getStringCellValue(),
-					stdVariable.getMethod().getName().toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(5).getStringCellValue(), row.getCell(5).getStringCellValue(),
-					stdVariable.getScale().getDataType().getName().substring(0, 1).toUpperCase());
-			Assert.assertEquals("Expecting " + row.getCell(6).getStringCellValue(), row.getCell(6).getStringCellValue(), "");
-
-		}
 	}
 
 }
