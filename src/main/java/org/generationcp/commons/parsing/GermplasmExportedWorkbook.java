@@ -326,12 +326,10 @@ public class GermplasmExportedWorkbook {
 
 			j = this.namesGenerator.generateAddedColumnValue(listEntry, data, j);
 
-			if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
+		if (!inventoryStandardVariableMap.isEmpty()) {
 				listEntry.createCell(j).setCellValue(data.getStockIDs());
 				j++;
-			}
 
-			if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
 				listEntry.createCell(j).setCellValue(data.getSeedAmount());
 				j++;
 			}
@@ -750,16 +748,14 @@ public class GermplasmExportedWorkbook {
 
 		columnIndex = this.namesGenerator.generateAddedColumnHeader(listEntriesHeader, columnIndex);
 
-		if (inventoryStandardVariableMap.containsKey(TermId.STOCKID.getId())) {
+		if (!inventoryStandardVariableMap.isEmpty()) {
 			final Cell stockIDCell = listEntriesHeader.createCell(columnIndex);
 			stockIDCell.setCellValue(ColumnLabels.STOCKID.getName().toUpperCase());
 			stockIDCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
 			observationSheet.setDefaultColumnStyle(columnIndex,
 					this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.NUMBER_DATA_FORMAT_STYLE));
 			columnIndex++;
-		}
 
-		if (inventoryStandardVariableMap.containsKey(TermId.SEED_AMOUNT_G.getId())) {
 			final Cell seedAmountCell = listEntriesHeader.createCell(columnIndex);
 			seedAmountCell.setCellValue(this.input.getInventoryVariableMap().get(TermId.SEED_AMOUNT_G.getId()).getName().toUpperCase());
 			seedAmountCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_INVENTORY));
