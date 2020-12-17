@@ -19,6 +19,7 @@ public enum HelpModule {
 	MANAGE_STUDIES_EXPERIMENTAL_DESIGN("manage.studies.experimental.design"),
 	MANAGE_STUDIES_SUB_OBSERVATIONS("manage.studies.sub.observations"),
 	MANAGE_STUDIES_FIELDMAP_GEOREFERENCE("manage.studies.fieldmap.georeference"),
+	MANAGE_STUDIES_CREATE_PLANTING_LABELS("manage.studies.create.planting.labels"),
 	MAKE_LABELS("make.labels"),
 	MAKE_FIELD_MAPS("make.field.maps"), 
 	MANAGE_LOCATIONS("manage.locations"),
