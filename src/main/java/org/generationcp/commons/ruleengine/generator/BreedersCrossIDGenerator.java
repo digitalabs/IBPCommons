@@ -47,7 +47,7 @@ public class BreedersCrossIDGenerator {
 	private StudyDataManager studyDataManager;
 
 	@Resource
-	private StudyInstanceService studyInstanceService;
+	private StudyInstanceService studyInstanceMiddlewareService;
 
 	@SuppressWarnings("Duplicates")
 	public String generateBreedersCrossID(final int studyId, final Integer environmentDatasetId,
@@ -55,7 +55,8 @@ public class BreedersCrossIDGenerator {
 
 		final KeyCodeGenerationService service = new KeyCodeGenerationServiceImpl();
 		final Map<String, String> locationIdNameMap = this.studyDataManager.createInstanceLocationIdToNameMapFromStudy(studyId);
-		final Map<Integer, StudyInstance> studyInstanceMap = this.studyInstanceService.getStudyInstances(studyId).stream().collect(
+		final Map<Integer, StudyInstance> studyInstanceMap =
+			this.studyInstanceMiddlewareService.getStudyInstances(studyId).stream().collect(
 			Collectors.toMap(StudyInstance::getInstanceNumber, i -> i));
 
 		final Map<Integer, MeasurementVariable> environmentVariablesByTermId =

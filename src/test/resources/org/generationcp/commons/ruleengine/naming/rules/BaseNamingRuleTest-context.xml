@@ -124,7 +124,7 @@
 	</bean>
 
 
-	<bean id="studyInstanceService" factory-bean="managerFactory" factory-method="getStudyInstanceService"
+	<bean id="studyInstanceService" factory-bean="managerFactory" factory-method="studyInstanceMiddlewareService"
 		  scope="request">
 		<aop:scoped-proxy/>
 	</bean>
