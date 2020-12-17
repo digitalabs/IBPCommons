@@ -1,7 +1,6 @@
 package org.generationcp.commons.ruleengine.resolver;
 
 import org.apache.commons.lang3.StringUtils;
-import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.domain.oms.TermId;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitData;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
@@ -10,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
  */
 public class LocationAbbreviationResolver implements KeyComponentValueResolver {
 
-	protected List<MeasurementVariable> conditions;
 	protected ObservationUnitRow observationUnitRow;
 	protected Map<Integer, StudyInstance> studyInstanceMap;
 
