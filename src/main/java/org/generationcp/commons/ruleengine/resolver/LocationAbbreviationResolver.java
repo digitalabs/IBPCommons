@@ -33,23 +33,23 @@ public class LocationAbbreviationResolver implements KeyComponentValueResolver {
 	public String resolve() {
 		String location = "";
 
-		if (!CollectionUtils.isEmpty(studyInstanceMap)) {
+		if (!CollectionUtils.isEmpty(this.studyInstanceMap)) {
 			if (this.observationUnitRow != null) {
 
 				final Optional<ObservationUnitData> instanceNoUnitData =
-					Optional.of(observationUnitRow.getVariables().entrySet().stream().collect(Collectors
+					Optional.ofNullable(this.observationUnitRow.getVariables().entrySet().stream().collect(Collectors
 						.toMap(k -> k.getValue().getVariableId(),
-							k -> k.getValue())).get(TermId.TRIAL_INSTANCE_FACTOR.getId()));
+							Map.Entry::getValue)).get(TermId.TRIAL_INSTANCE_FACTOR.getId()));
 
 				if (instanceNoUnitData.isPresent()) {
 					final String instanceNo = instanceNoUnitData.get().getValue();
-					if (instanceNo != null && studyInstanceMap.containsKey(Integer.valueOf(instanceNo))) {
-						location = studyInstanceMap.get(Integer.valueOf(instanceNo)).getLocationAbbreviation();
+					if (instanceNo != null && this.studyInstanceMap.containsKey(Integer.valueOf(instanceNo))) {
+						location = this.studyInstanceMap.get(Integer.valueOf(instanceNo)).getLocationAbbreviation();
 					}
 
 				}
 			} else {
-				final StudyInstance firstInstance = studyInstanceMap.get(1);
+				final StudyInstance firstInstance = this.studyInstanceMap.get(1);
 				if (firstInstance != null) {
 					location = firstInstance.getLocationAbbreviation();
 				}
