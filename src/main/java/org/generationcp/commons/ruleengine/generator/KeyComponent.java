@@ -15,6 +15,7 @@ public enum KeyComponent {
 	PROJECT_PREFIX,
 	HABITAT_DESIGNATION,
 	CROSS_TYPE,
-	PLANT_NO;
+	PLANT_NO,
+	LABBR;
 
 }
