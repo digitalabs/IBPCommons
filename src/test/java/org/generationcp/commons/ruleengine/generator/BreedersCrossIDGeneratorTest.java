@@ -21,6 +21,8 @@ import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.workbench.CropType;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.generationcp.middleware.service.api.dataset.DatasetService;
+import org.generationcp.middleware.service.api.study.StudyInstanceService;
+import org.generationcp.middleware.service.impl.study.StudyInstance;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +31,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.generationcp.middleware.service.api.dataset.ObservationUnitUtils.fromMeasurementRow;
@@ -47,6 +51,9 @@ public class BreedersCrossIDGeneratorTest {
 	private StudyDataManager studyDataManager;
 
 	@Mock
+	private StudyInstanceService studyInstanceService;
+
+	@Mock
 	private DatasetService datasetService;
 
 	private static final Integer PROJECT_PREFIX_CATEGORY_ID = 3001;
@@ -60,6 +67,8 @@ public class BreedersCrossIDGeneratorTest {
 
 	@InjectMocks
 	private BreedersCrossIDGenerator breedersCrossIDGenerator;
+
+	private List<StudyInstance> studyInstances;
 
 	@Before
 	public void setUp() {
@@ -92,6 +101,12 @@ public class BreedersCrossIDGeneratorTest {
 		final TermSummary seasonCategory = new TermSummary(SEASON_CATEGORY_ID, SEASON_CATEGORY_VALUE, SEASON_CATEGORY_VALUE);
 		seasonScale.addCategory(seasonCategory);
 		seasonVariable.setScale(seasonScale);
+
+		final StudyInstance studyInstance = new StudyInstance();
+		studyInstance.setInstanceNumber(1);
+		studyInstance.setLocationAbbreviation("ABBR");
+		studyInstances = new ArrayList<>();
+		studyInstances.add(studyInstance);
 
 	}
 
@@ -164,6 +179,8 @@ public class BreedersCrossIDGeneratorTest {
 
 		Mockito.doReturn(instance1Measurements.getMeasurementVariables())
 			.when(this.datasetService).getObservationSetVariables(anyInt(), ArgumentMatchers.<Integer>anyList());
+
+		Mockito.doReturn(studyInstances).when(this.studyInstanceService).getStudyInstances(1);
 
 		final String actualBreedersCrossId = this.breedersCrossIDGenerator.generateBreedersCrossID(workbook.getStudyDetails().getId(),
 			source.getEnvironmentDatasetId(), conditions, fromMeasurementRow(instance1Measurements));
