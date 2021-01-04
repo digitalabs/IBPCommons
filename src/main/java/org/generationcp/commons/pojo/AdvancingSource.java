@@ -12,7 +12,9 @@
 package org.generationcp.commons.pojo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
@@ -73,6 +75,8 @@ public class AdvancingSource {
 	private StudyTypeDto studyType;
 
 	private List<SampleDTO> samples = new ArrayList<>();
+	private Boolean designationIsPreviewOnly;
+	private Map<String, Integer> keySequenceMap = new HashMap<>();
 
 	public AdvancingSource(final ImportedGermplasm germplasm, final List<Name> names, final Integer plantsSelected, final Method breedingMethod, final boolean isCheck,
 			final String studyName, final String plotNumber) {
@@ -455,5 +459,21 @@ public class AdvancingSource {
 
 	public void setSamples(final List<SampleDTO> samples) {
 		this.samples = samples;
+	}
+
+	public Boolean getDesignationIsPreviewOnly() {
+		return designationIsPreviewOnly;
+	}
+
+	public void setDesignationIsPreviewOnly(Boolean designationIsPreviewOnly) {
+		this.designationIsPreviewOnly = designationIsPreviewOnly;
+	}
+
+	public Map<String, Integer> getKeySequenceMap() {
+		return keySequenceMap;
+	}
+
+	public void setKeySequenceMap(Map<String, Integer> keySequenceMap) {
+		this.keySequenceMap = keySequenceMap;
 	}
 }

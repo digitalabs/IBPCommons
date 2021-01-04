@@ -1,15 +1,8 @@
 package org.generationcp.commons.parsing;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.commons.pojo.GermplasmListExportInputValues;
+import org.generationcp.middleware.constant.ColumnLabels;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.domain.inventory.ListDataInventory;
@@ -22,6 +15,12 @@ import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.pojos.GermplasmList;
 import org.generationcp.middleware.pojos.GermplasmListData;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GermplasmExportTestHelper {
 
@@ -151,10 +150,6 @@ public class GermplasmExportTestHelper {
 		termMap.put(TermId.GROUPGID.getId(),
 				createVariable(TermId.GROUPGID.getId(), "GROUPGID", "Group GID", "GroupGID", "Code",
 						"Selected", DataType.CHARACTER_VARIABLE));
-		termMap.put(TermId.STOCKID.getId(),
-				createVariable(TermId.STOCKID.getId(), "STOCKID", "StockID of Germplasm", "StockID", "Code",
-						"Selected", DataType.CHARACTER_VARIABLE));
-
 		return termMap;
 	}
 
@@ -184,10 +179,6 @@ public class GermplasmExportTestHelper {
 	public static Map<Integer, Variable> getInventoryVariables() {
 
 		final Map<Integer, Variable> standardVariableMap = new LinkedHashMap<>();
-
-		standardVariableMap.put(TermId.STOCKID.getId(),
-				createVariable(TermId.STOCKID.getId(), TermId.STOCKID.toString(), "ID of an inventory deposit", "Germplasm stock id", "DBCV", "Assigned",
-						DataType.CHARACTER_VARIABLE));
 		standardVariableMap.put(TermId.SEED_AMOUNT_G.getId(),
 				createVariable(TermId.SEED_AMOUNT_G.getId(), TermId.SEED_AMOUNT_G.toString(), "Seed inventory amount deposited or withdrawn (g)",
 						"Inventory amount", "g", "Weighed", DataType.CHARACTER_VARIABLE));

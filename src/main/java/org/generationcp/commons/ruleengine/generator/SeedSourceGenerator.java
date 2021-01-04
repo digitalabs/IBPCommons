@@ -4,6 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.generationcp.commons.parsing.pojo.ImportedCross;
 import org.generationcp.commons.ruleengine.resolver.KeyComponentValueResolver;
+import org.generationcp.commons.ruleengine.resolver.LocationAbbreviationResolver;
 import org.generationcp.commons.ruleengine.resolver.LocationResolver;
 import org.generationcp.commons.ruleengine.resolver.SeasonResolver;
 import org.generationcp.commons.service.GermplasmNamingProperties;
@@ -12,6 +13,7 @@ import org.generationcp.middleware.domain.etl.MeasurementVariable;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.service.api.dataset.ObservationUnitRow;
+import org.generationcp.middleware.service.impl.study.StudyInstance;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -44,6 +46,7 @@ public class SeedSourceGenerator {
 	public String generateSeedSource(final ObservationUnitRow observationUnitRow,
 		final List<MeasurementVariable> conditions, final String selectionNumber,
 		final String plotNumber, final String studyName, final String plantNumber, final Map<String, String> locationIdNameMap,
+		final Map<Integer, StudyInstance> studyInstanceMap,
 		final List<MeasurementVariable> environmentVariables) {
 
 		if ("0".equals(plotNumber)) {
@@ -116,6 +119,8 @@ public class SeedSourceGenerator {
 		keyComponentValueResolvers.put(KeyComponent.PLANT_NO, plantNumberResolver);
 		keyComponentValueResolvers.put(KeyComponent.LOCATION,
 			new LocationResolver(conditions, observationUnitRow, locationIdNameMap));
+		keyComponentValueResolvers.put(KeyComponent.LABBR,
+			new LocationAbbreviationResolver(observationUnitRow, studyInstanceMap));
 		keyComponentValueResolvers.put(KeyComponent.SEASON,
 			new SeasonResolver(this.ontologyVariableDataManager, this.contextUtil, conditions, observationUnitRow,
 				environmentVariablesByTermId));
@@ -127,6 +132,7 @@ public class SeedSourceGenerator {
 	public String generateSeedSourceForCross(final Pair<ObservationUnitRow, ObservationUnitRow> environmentRow,
 		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> conditions,
 		final Pair<Map<String, String>, Map<String, String>> locationIdNameMap,
+		final Pair<Map<Integer, StudyInstance>, Map<Integer, StudyInstance>> studyInstanceMap,
 		final Pair<List<MeasurementVariable>, List<MeasurementVariable>> environmentVariables, final ImportedCross crossInfo) {
 
 		final List<String> generatedSeedSources = new ArrayList<>();
@@ -135,13 +141,14 @@ public class SeedSourceGenerator {
 		final String femaleSeedSource =
 			this.generateSeedSource(environmentRow.getLeft(),
 				conditions.getLeft(), null, femalePlotNo != null? femalePlotNo.toString() : "", crossInfo.getFemaleStudyName(), null,
-				locationIdNameMap.getLeft(), environmentVariables.getLeft());
+				locationIdNameMap.getLeft(), studyInstanceMap.getLeft(), environmentVariables.getLeft());
 
 		final List<Integer> malePlotNos = crossInfo.getMalePlotNos();
 		for (final Integer malePlotNo : malePlotNos) {
 			final String maleSeedSource =
 				this.generateSeedSource(environmentRow.getRight(),
-					conditions.getRight(), null, malePlotNo != null? malePlotNo.toString() : "", crossInfo.getMaleStudyName(), null, locationIdNameMap.getRight(),
+					conditions.getRight(), null, malePlotNo != null ? malePlotNo.toString() : "", crossInfo.getMaleStudyName(), null,
+					locationIdNameMap.getRight(), studyInstanceMap.getRight(),
 					environmentVariables.getRight());
 			generatedSeedSources.add(maleSeedSource);
 		}
