@@ -1,17 +1,6 @@
 
 package org.generationcp.commons.util.filter;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-
 import org.generationcp.commons.util.ResourceFinder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
 import org.generationcp.middleware.manager.DatabaseConnectionParameters;
@@ -33,6 +22,16 @@ import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte Date: 3/20/2015 Time: 3:31 PM
  */
@@ -139,7 +138,6 @@ public class DatabaseConnectionFilterTest {
 		WorkbenchDataManager workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
 		Project project = Mockito.mock(Project.class);
 		Mockito.when(project.getProjectId()).thenReturn((long) 1);
-		Mockito.when(project.getDatabaseName()).thenReturn(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME);
 		Mockito.doReturn(workbenchDataManager).when(this.dut).constructWorkbenchDataManager();
 		Mockito.doReturn(project).when(this.dut).getCurrentProject(workbenchDataManager, this.servletRequest);
 		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);
