@@ -9,6 +9,7 @@ public enum HelpModule {
 	// Breeding Activities
 	MANAGE_LIST("manage.list"), 
 	DESIGN_CROSSES("design.crosses"),
+	MANAGE_GERMPLASM("manage.germplasm"),
 
 	// ManageStudies
 	MANAGE_STUDIES("manage.studies"),
