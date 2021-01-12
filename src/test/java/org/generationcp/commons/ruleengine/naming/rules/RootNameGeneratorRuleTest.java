@@ -4,7 +4,7 @@ package org.generationcp.commons.ruleengine.naming.rules;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.middleware.pojos.Method;

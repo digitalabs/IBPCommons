@@ -1,7 +1,7 @@
 package org.generationcp.commons.ruleengine.resolver;
 
 import com.google.common.collect.Lists;
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -11,7 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class BackCrossSuffixRuleTest {
 

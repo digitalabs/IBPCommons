@@ -2,7 +2,7 @@
 package org.generationcp.commons.ruleengine.resolver;
 
 import com.google.common.collect.Lists;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.generationcp.commons.ruleengine.resolver.LocationResolver;
 import org.generationcp.middleware.domain.etl.MeasurementData;
 import org.generationcp.middleware.domain.etl.MeasurementRow;
