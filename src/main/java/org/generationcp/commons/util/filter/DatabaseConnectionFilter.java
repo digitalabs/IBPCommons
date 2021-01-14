@@ -1,22 +1,6 @@
 
 package org.generationcp.commons.util.filter;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.commons.util.ResourceFinder;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -33,6 +17,21 @@ import org.generationcp.middleware.support.servlet.MiddlewareServletContextListe
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Created by IntelliJ IDEA. User: Daniel Villafuerte
@@ -144,7 +143,6 @@ public class DatabaseConnectionFilter implements Filter {
 			// since we want to a Session Per Request
 			factory = new ManagerFactory();
 			factory.setSessionProvider(sessionProvider);
-			factory.setDatabaseName(project.getDatabaseName());
 
 			servletRequest.setAttribute(DatabaseConnectionFilter.ATTR_MANAGER_FACTORY, factory);
 

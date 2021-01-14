@@ -138,7 +138,6 @@ public class DatabaseConnectionFilterTest {
 		WorkbenchDataManager workbenchDataManager = Mockito.mock(WorkbenchDataManager.class);
 		Project project = Mockito.mock(Project.class);
 		Mockito.when(project.getProjectId()).thenReturn((long) 1);
-		Mockito.when(project.getDatabaseName()).thenReturn(DatabaseConnectionFilterTest.DUMMY_PROJECT_DATABASE_NAME);
 		Mockito.doReturn(workbenchDataManager).when(this.dut).constructWorkbenchDataManager();
 		Mockito.doReturn(project).when(this.dut).getCurrentProject(workbenchDataManager, this.servletRequest);
 		SessionFactory sessionFactory = Mockito.mock(SessionFactory.class);

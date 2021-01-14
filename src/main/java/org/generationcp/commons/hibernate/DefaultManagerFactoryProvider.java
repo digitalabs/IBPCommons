@@ -11,13 +11,6 @@
 
 package org.generationcp.commons.hibernate;
 
-import java.io.FileNotFoundException;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.hibernate.HibernateSessionPerRequestProvider;
 import org.generationcp.middleware.hibernate.HibernateSessionProvider;
@@ -26,6 +19,12 @@ import org.generationcp.middleware.manager.DatabaseConnectionParameters;
 import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultManagerFactoryProvider extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
 
@@ -76,7 +75,6 @@ public class DefaultManagerFactoryProvider extends ManagerFactoryBase implements
 
 		ManagerFactory factory = new ManagerFactory();
 		factory.setSessionProvider(sessionProvider);
-		factory.setDatabaseName(databaseName);
 		return factory;
 	}
 

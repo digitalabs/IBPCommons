@@ -15,7 +15,7 @@ import org.generationcp.commons.exceptions.BreedingViewInvalidFormatException;
 import org.junit.Before;
 import org.junit.Test;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class SummaryStatsCSVTest {
 

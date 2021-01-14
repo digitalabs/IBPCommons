@@ -1,7 +1,7 @@
 
 package org.generationcp.commons.ruleengine.stockid;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.generationcp.commons.ruleengine.RuleException;
 import org.junit.Before;
 import org.junit.Test;

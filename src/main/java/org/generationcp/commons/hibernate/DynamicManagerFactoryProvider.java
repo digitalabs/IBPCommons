@@ -11,12 +11,6 @@
 
 package org.generationcp.commons.hibernate;
 
-import java.io.FileNotFoundException;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.generationcp.commons.util.ContextUtil;
 import org.generationcp.middleware.exceptions.ConfigException;
 import org.generationcp.middleware.exceptions.MiddlewareQueryException;
@@ -27,6 +21,10 @@ import org.generationcp.middleware.manager.ManagerFactory;
 import org.generationcp.middleware.manager.api.WorkbenchDataManager;
 import org.generationcp.middleware.pojos.workbench.Project;
 import org.hibernate.SessionFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.FileNotFoundException;
 
 public class DynamicManagerFactoryProvider extends ManagerFactoryBase implements ManagerFactoryProvider, HttpRequestAware {
 
@@ -86,7 +84,6 @@ public class DynamicManagerFactoryProvider extends ManagerFactoryBase implements
 		// since we want to a Session Per Request
 		ManagerFactory factory = new ManagerFactory();
 		factory.setSessionProvider(this.sessionProvider);
-		factory.setDatabaseName(databaseName);
 
 		return factory;
 	}
@@ -113,11 +110,4 @@ public class DynamicManagerFactoryProvider extends ManagerFactoryBase implements
 		}
 	}
 
-	protected synchronized void closeAllSessionFactories() {
-		for (Entry<Long, SessionFactory> entry : this.sessionFactoryCache.entrySet()) {
-			entry.getValue().close();
-			this.sessionFactoryCache.remove(entry);
-		}
-
-	}
 }
