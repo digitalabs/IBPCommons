@@ -31,7 +31,7 @@ public class ZipUtil {
 		final byte[] buffer = new byte[1024];
 
 		final File temporaryFolder = Files.createTempDir();
-		final String sanitizedFileName = FileUtils.sanitizeFileName(fileName + ZIP_EXTENSION);
+		final String sanitizedFileName = FileUtils.sanitizeFileName(ExportFileName.getInstance().generateFileName(fileName, ZIP_EXTENSION));
 		final String zipPath = temporaryFolder.getAbsolutePath() + "/" + sanitizedFileName;
 		final FileOutputStream fos = new FileOutputStream(zipPath);
 
@@ -65,8 +65,9 @@ public class ZipUtil {
 		throws IOException {
 		final byte[] buffer = new byte[1024];
 
+		final String fileName = ExportFileName.getInstance().generateFileName(fileNameWithoutExtension, ZIP_EXTENSION, false);
 		final String fileNameUnderWorkspaceDirectory = this.installationDirectoryUtil
-			.getTempFileInOutputDirectoryForProjectAndTool(fileNameWithoutExtension, ZIP_EXTENSION, project, tool);
+			.getTempFileInOutputDirectoryForProjectAndTool(fileName, ZIP_EXTENSION, project, tool);
 		final FileOutputStream fos = new FileOutputStream(fileNameUnderWorkspaceDirectory);
 		try (final ZipOutputStream zos = new ZipOutputStream(fos)) {
 
@@ -106,7 +107,7 @@ public class ZipUtil {
 
 					final String filePath = destination + File.separator + entry.getName();
 
-					extractFile(zip, filePath);
+					this.extractFile(zip, filePath);
 
 					entry = zip.getNextEntry();
 				}
