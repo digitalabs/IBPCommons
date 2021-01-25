@@ -21,6 +21,7 @@ import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.FileExportInfo;
 import org.generationcp.commons.service.CsvExportSampleListService;
 import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.commons.util.ExportFileName;
 import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.util.InstallationDirectoryUtil;
 import org.generationcp.middleware.domain.sample.SampleDetailsDTO;
@@ -73,7 +74,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeaders(visibleColumns);
 		final List<ExportRow> exportRows = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
 
-		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(filenameWithoutExtension);
+		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(ExportFileName.getInstance().generateFileName(filenameWithoutExtension, FILE_EXTENSION, false));
 		final String filenamePath = this.installationDirectoryUtil
 				.getTempFileInOutputDirectoryForProjectAndTool(cleanFilenameWithoutExtension, FILE_EXTENSION,
 						this.contextUtil.getProjectInContext(), ToolName.FIELDBOOK_WEB);
@@ -184,7 +185,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		if (null != sampleDate) {
 			final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 			return sdf.format(sampleDate);
-		} 
+		}
 		return "-";
 	}
 
