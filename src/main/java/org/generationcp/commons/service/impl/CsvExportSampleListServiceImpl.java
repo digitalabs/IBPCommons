@@ -85,8 +85,8 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		return new FileExportInfo(filenamePath, cleanFilenameWithoutExtension + FILE_EXTENSION);
 	}
 
-	protected List<ExportRow> getExportColumnValues(List<ExportColumnHeader> columnHeaders,
-			List<SampleDetailsDTO> sampleDetailsDTOs) {
+	protected List<ExportRow> getExportColumnValues(final List<ExportColumnHeader> columnHeaders,
+			final List<SampleDetailsDTO> sampleDetailsDTOs) {
 		final List<ExportRow> exportRows = new ArrayList<>();
 		int i = 1;
 		for (final SampleDetailsDTO sampleDetailsDTO : sampleDetailsDTOs) {
@@ -104,9 +104,9 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		int i = 0;
 
 		final List<String> availableColumns = new LinkedList<>(AVAILABLE_COLUMNS);
-		if (visibleColumns.contains(enumeratorVariableName)) {
+		if (visibleColumns.contains(this.enumeratorVariableName)) {
 			// Add enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.) after PLOT_NO column
-			availableColumns.add(availableColumns.indexOf(PLOT_NO), enumeratorVariableName);
+			availableColumns.add(availableColumns.indexOf(PLOT_NO), this.enumeratorVariableName);
 		}
 
 		if (!visibleColumns.contains(SAMPLE_UID)) {
@@ -153,7 +153,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 				columnValue = sampleDetailsDTO.getTakenBy();
 				break;
 			case SAMPLING_DATE:
-				columnValue = setSampleDateValue(column.getId(), sampleDetailsDTO.getSampleDate());
+				columnValue = this.setSampleDateValue(column.getId(), sampleDetailsDTO.getSampleDate());
 				break;
 			case SAMPLE_UID:
 				columnValue = sampleDetailsDTO.getSampleBusinessKey();
@@ -175,7 +175,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		}
 
 		// get the value of enumerator column (DATE_NO, PLANT_NO, custom enumerator variable, etc.)
-		if (StringUtils.isNotBlank(enumeratorVariableName) && column.getName() == enumeratorVariableName) {
+		if (StringUtils.isNotBlank(this.enumeratorVariableName) && column.getName() == this.enumeratorVariableName) {
 			columnValue = String.valueOf(sampleDetailsDTO.getObservationUnitNumber());
 		}
 		return columnValue;
@@ -217,7 +217,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		final List<String> values = new ArrayList<>();
 		for (final ExportColumnHeader exportColumnHeader : exportColumnHeaders) {
 			if (exportColumnHeader.isDisplay()) {
-				String colName = row.getValueForColumn(exportColumnHeader.getId());
+				final String colName = row.getValueForColumn(exportColumnHeader.getId());
 				values.add(colName);
 			}
 		}
