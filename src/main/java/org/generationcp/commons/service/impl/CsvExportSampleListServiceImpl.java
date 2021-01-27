@@ -74,7 +74,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeaders(visibleColumns);
 		final List<ExportRow> exportRows = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
 
-		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(ExportFileName.getInstance().generateFileName(filenameWithoutExtension, FILE_EXTENSION, false));
+		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(filenameWithoutExtension);
 		final String filenamePath = this.installationDirectoryUtil
 				.getTempFileInOutputDirectoryForProjectAndTool(cleanFilenameWithoutExtension, FILE_EXTENSION,
 						this.contextUtil.getProjectInContext(), ToolName.FIELDBOOK_WEB);
@@ -82,7 +82,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 
 		LOG.debug("Finished export");
 
-		return new FileExportInfo(filenamePath, cleanFilenameWithoutExtension + FILE_EXTENSION);
+		return new FileExportInfo(filenamePath, ExportFileName.getInstance().generateFileName(cleanFilenameWithoutExtension, FILE_EXTENSION));
 	}
 
 	protected List<ExportRow> getExportColumnValues(final List<ExportColumnHeader> columnHeaders,
