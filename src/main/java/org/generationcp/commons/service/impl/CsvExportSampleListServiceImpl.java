@@ -21,7 +21,7 @@ import org.generationcp.commons.pojo.ExportRow;
 import org.generationcp.commons.pojo.FileExportInfo;
 import org.generationcp.commons.service.CsvExportSampleListService;
 import org.generationcp.commons.spring.util.ContextUtil;
-import org.generationcp.commons.util.ExportFileName;
+import org.generationcp.commons.util.FileNameGenerator;
 import org.generationcp.commons.util.FileUtils;
 import org.generationcp.commons.util.InstallationDirectoryUtil;
 import org.generationcp.middleware.domain.sample.SampleDetailsDTO;
@@ -82,7 +82,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 
 		LOG.debug("Finished export");
 
-		return new FileExportInfo(filenamePath, ExportFileName.getInstance().generateFileName(cleanFilenameWithoutExtension, FILE_EXTENSION));
+		return new FileExportInfo(filenamePath, FileNameGenerator.generateFileName(cleanFilenameWithoutExtension, FILE_EXTENSION));
 	}
 
 	protected List<ExportRow> getExportColumnValues(final List<ExportColumnHeader> columnHeaders,

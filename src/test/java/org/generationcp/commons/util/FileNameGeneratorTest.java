@@ -1,7 +1,6 @@
 package org.generationcp.commons.util;
 
 import com.google.common.collect.Lists;
-import freemarker.template.SimpleDate;
 import org.apache.commons.lang.RandomStringUtils;
 import org.generationcp.commons.security.SecurityUtil;
 import org.generationcp.middleware.pojos.workbench.PermissionsEnum;
@@ -15,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ExpotFileNameTest {
+public class FileNameGeneratorTest {
 
 	private static final String PASSWORD = "admin2";
 	private static final String USERNAME = "admin1";
@@ -34,7 +33,7 @@ public class ExpotFileNameTest {
 	public void testFileNameWithExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
-		final String generateFileName = ExportFileName.getInstance().generateFileName("Original.xls");
+		final String generateFileName = FileNameGenerator.generateFileName("Original.xls");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
@@ -45,7 +44,7 @@ public class ExpotFileNameTest {
 	public void testFileNameWoExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
-		final String generateFileName = ExportFileName.getInstance().generateFileName("Original", "xls", false);
+		final String generateFileName = FileNameGenerator.generateFileName("Original", "xls", false);
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertFalse(underscores[underscores.length - 1].contains(".xls"));
@@ -56,7 +55,7 @@ public class ExpotFileNameTest {
 	public void testFileNameAppendExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
-		final String generateFileName = ExportFileName.getInstance().generateFileName("Original", "xls");
+		final String generateFileName = FileNameGenerator.generateFileName("Original", "xls");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
@@ -72,7 +71,7 @@ public class ExpotFileNameTest {
 		final int begin = tempExpectedFileName.length() - maxSize;
 		final String expectedFileName = tempExpectedFileName.substring(begin, tempExpectedFileName.length());
 
-		final String generateFileName = ExportFileName.getInstance().generateFileName(originalFileName, "xls");
+		final String generateFileName = FileNameGenerator.generateFileName(originalFileName, "xls");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
@@ -88,7 +87,7 @@ public class ExpotFileNameTest {
 		final int begin = tempExpectedFileName.length() - maxSize;
 		final String expectedFileName = tempExpectedFileName.substring(begin, tempExpectedFileName.length());
 
-		final String generateFileName = ExportFileName.getInstance().generateFileName(originalFileName);
+		final String generateFileName = FileNameGenerator.generateFileName(originalFileName);
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertEquals(expectedFileName, generateFileName);

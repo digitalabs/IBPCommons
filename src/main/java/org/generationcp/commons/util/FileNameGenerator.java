@@ -1,28 +1,17 @@
 package org.generationcp.commons.util;
 
 import org.generationcp.commons.security.SecurityUtil;
-import org.springframework.security.access.method.P;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class ExportFileName {
+public class FileNameGenerator {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hhmmss");
 	private static final int MAX_SIZE = 256;
 	private static final int MAX_SIZE_NAME = 200;
-	private static ExportFileName instance;
-	private ExportFileName() {
 
-	}
-	public static ExportFileName getInstance() {
-		if (instance == null) {
-			instance = new ExportFileName();
-		}
-		return instance;
-	}
-
-	public String generateFileName(final String origFinalName, final String fileExt, final boolean... isAppendExtension) {
+	public static String generateFileName(final String origFinalName, final String fileExt, final boolean... isAppendExtension) {
 		final String extension = fileExt.contains(".") ? fileExt : "." + fileExt;
 		final boolean isAppend = isAppendExtension.length == 1 ? isAppendExtension[0]: true;
 		final StringBuilder fileName = new StringBuilder();
@@ -30,14 +19,14 @@ public class ExportFileName {
 		fileName.append("_");
 		fileName.append(SecurityUtil.getLoggedInUserName());
 		fileName.append("_");
-		fileName.append(this.getTimeStamp());
+		fileName.append(FileNameGenerator.getTimeStamp());
 		if (isAppend) {
 			fileName.append(extension);
 		}
-		return this.truncateIfNecessary(fileName.toString(), this.getFileNameMaxSize(isAppend, extension));
+		return FileNameGenerator.truncateIfNecessary(fileName.toString(), FileNameGenerator.getFileNameMaxSize(isAppend, extension));
 	}
 
-	public String generateFileName(final String origFinalName) {
+	public static String generateFileName(final String origFinalName) {
 
 		final int maxSize;
 		String fileExt = "";
@@ -49,9 +38,9 @@ public class ExportFileName {
 				// Get the Last Group
 				fileExt = oFileName[oFileName.length - 1];
 			}
-			maxSize = this.getFileNameMaxSize(true, fileExt);
+			maxSize = FileNameGenerator.getFileNameMaxSize(true, fileExt);
 		} else {
-			maxSize = ExportFileName.MAX_SIZE_NAME;
+			maxSize = FileNameGenerator.MAX_SIZE_NAME;
 		}
 
 		final StringBuilder fileName = new StringBuilder();
@@ -59,15 +48,15 @@ public class ExportFileName {
 		fileName.append("_");
 		fileName.append(SecurityUtil.getLoggedInUserName());
 		fileName.append("_");
-		fileName.append(this.getTimeStamp());
+		fileName.append(FileNameGenerator.getTimeStamp());
 		if (!fileExt.contains("\\.") && !fileExt.equals("")) {
 			fileName.append(".");
 		}
 		fileName.append(fileExt);
-		return this.truncateIfNecessary(fileName.toString(), maxSize);
+		return FileNameGenerator.truncateIfNecessary(fileName.toString(), maxSize);
 	}
 
-	private String truncateIfNecessary(final String name, final int maxSize) {
+	private static String truncateIfNecessary(final String name, final int maxSize) {
 		String truncatedName = name;
 		if (name.length() > maxSize) {
 			final int excludeNoChar = name.length() - maxSize;
@@ -75,22 +64,22 @@ public class ExportFileName {
 		}
 		return truncatedName;
 	}
-	private String getTimeStamp() {
+	private static String getTimeStamp() {
 		final Date timeStamp = new Date();
 		final StringBuilder sb = new StringBuilder();
-		sb.append(ExportFileName.DATE_FORMAT.format(timeStamp));
+		sb.append(FileNameGenerator.DATE_FORMAT.format(timeStamp));
 		sb.append("_");
-		sb.append(ExportFileName.TIME_FORMAT.format(timeStamp));
+		sb.append(FileNameGenerator.TIME_FORMAT.format(timeStamp));
 		return sb.toString();
 	}
 
-	private int getFileNameMaxSize(final boolean extensionIncluded, final String extension) {
+	private static int getFileNameMaxSize(final boolean extensionIncluded, final String extension) {
 		if (StringUtil.isEmpty(extension)) {
-			return ExportFileName.MAX_SIZE_NAME;
+			return FileNameGenerator.MAX_SIZE_NAME;
 		} else if (extensionIncluded) {
-			return ExportFileName.MAX_SIZE;
+			return FileNameGenerator.MAX_SIZE;
 		} else {
-			return ExportFileName.MAX_SIZE - extension.length();
+			return FileNameGenerator.MAX_SIZE - extension.length();
 		}
 	}
 }
