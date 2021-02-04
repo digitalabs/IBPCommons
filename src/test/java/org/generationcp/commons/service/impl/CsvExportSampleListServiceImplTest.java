@@ -46,11 +46,11 @@ public class CsvExportSampleListServiceImplTest {
 
 	private CsvExportSampleListServiceImpl csvExportSampleListService;
 
-	private Random random = new Random();
+	private final Random random = new Random();
 
 
 	private final InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
-	
+
 	@Before
 	public void setUp() throws IOException {
 		MockitoAnnotations.initMocks(this);
@@ -60,7 +60,7 @@ public class CsvExportSampleListServiceImplTest {
 		this.csvExportSampleListService.setContextUtil(this.contextUtil);
 		Mockito.doReturn(Mockito.mock(File.class)).when(this.csvExportSampleListService)
 			.generateCSVFile(Matchers.any(List.class), Matchers.any(List.class), Matchers.anyString());
-		
+
 		Mockito.doReturn(ProjectTestDataInitializer.createProject()).when(this.contextUtil).getProjectInContext();
 	}
 
@@ -70,7 +70,8 @@ public class CsvExportSampleListServiceImplTest {
 		final List<String> visibleColumns = SampleListUtilTest.getVisibleColumns();
 		final FileExportInfo exportInfo =
 				this.csvExportSampleListService.export(sampleDetailsDTOs, CsvExportSampleListServiceImplTest.FILENAME, visibleColumns, "");
-		assertThat(CsvExportSampleListServiceImplTest.FILENAME + CSV_EXT, equalTo(exportInfo.getDownloadFileName()));
+		final String[] uSCount = exportInfo.getDownloadFileName().split("_");
+		assertThat("Filename has underscore", uSCount.length >= 3);
 		final File outputFilePath = this.getOutputFilePath();
 		assertThat(outputFilePath.getAbsolutePath(), equalTo(exportInfo.getFilePath()));
 	}
@@ -121,8 +122,8 @@ public class CsvExportSampleListServiceImplTest {
 		for (int i = 0; i < sampleDetailsDTOS.size(); i++) {
 
 			final ExportRow row = exportRows.get(i);
-			for (ExportColumnHeader columnHeader : exportColumnHeaders) {
-				verifyExportColumnValue(columnHeader, sampleDetailsDTOS.get(i), row.getValueForColumn(columnHeader.getId()));
+			for (final ExportColumnHeader columnHeader : exportColumnHeaders) {
+				this.verifyExportColumnValue(columnHeader, sampleDetailsDTOS.get(i), row.getValueForColumn(columnHeader.getId()));
 			}
 		}
 
@@ -183,8 +184,8 @@ public class CsvExportSampleListServiceImplTest {
 			item.setSampleBusinessKey("SampleBusinessKeyId" + i);
 			item.setObsUnitId(String.valueOf(i));
 			item.setGid(i);
-			item.setSampleNumber(random.nextInt(100));
-			item.setObservationUnitNumber(random.nextInt(100));
+			item.setSampleNumber(this.random.nextInt(100));
+			item.setObservationUnitNumber(this.random.nextInt(100));
 			sampleDetailsDTOS.add(item);
 
 		}
@@ -206,12 +207,12 @@ public class CsvExportSampleListServiceImplTest {
 		}
 		return outputFile;
 	}
-	
+
 	@After
 	public void cleanup() {
 		this.deleteTestInstallationDirectory();
 	}
-	
+
 	private void deleteTestInstallationDirectory() {
 		// Delete test installation directory and its contents as part of cleanup
 		final File testInstallationDirectory = new File(InstallationDirectoryUtil.WORKSPACE_DIR);
