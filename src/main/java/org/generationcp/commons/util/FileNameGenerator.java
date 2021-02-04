@@ -17,9 +17,7 @@ public class FileNameGenerator {
 		final StringBuilder fileName = new StringBuilder();
 		fileName.append(origFinalName);
 		fileName.append("_");
-		fileName.append(SecurityUtil.getLoggedInUserName());
-		fileName.append("_");
-		fileName.append(FileNameGenerator.getTimeStamp());
+		fileName.append(FileNameGenerator.getUserNameTimeStamp());
 		if (isAppend) {
 			fileName.append(extension);
 		}
@@ -46,9 +44,7 @@ public class FileNameGenerator {
 		final StringBuilder fileName = new StringBuilder();
 		fileName.append(oFName);
 		fileName.append("_");
-		fileName.append(SecurityUtil.getLoggedInUserName());
-		fileName.append("_");
-		fileName.append(FileNameGenerator.getTimeStamp());
+		fileName.append(FileNameGenerator.getUserNameTimeStamp());
 		if (!fileExt.contains("\\.") && !fileExt.equals("")) {
 			fileName.append(".");
 		}
@@ -64,9 +60,11 @@ public class FileNameGenerator {
 		}
 		return truncatedName;
 	}
-	private static String getTimeStamp() {
+	private static String getUserNameTimeStamp() {
 		final Date timeStamp = new Date();
 		final StringBuilder sb = new StringBuilder();
+		sb.append(SecurityUtil.getLoggedInUserName());
+		sb.append("_");
 		sb.append(FileNameGenerator.DATE_FORMAT.format(timeStamp));
 		sb.append("_");
 		sb.append(FileNameGenerator.TIME_FORMAT.format(timeStamp));
