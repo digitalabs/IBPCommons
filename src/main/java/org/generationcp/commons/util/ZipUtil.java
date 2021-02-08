@@ -106,7 +106,7 @@ public class ZipUtil {
 
 					final String filePath = destination + File.separator + entry.getName();
 
-					extractFile(zip, filePath);
+					this.extractFile(zip, filePath);
 
 					entry = zip.getNextEntry();
 				}
