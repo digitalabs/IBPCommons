@@ -74,10 +74,16 @@ public class FileNameGenerator {
 		final Date timeStamp = new Date();
 		final StringBuilder sb = new StringBuilder();
 		sb.append(fileName);
-		if (!hasUserName(fileName)) {
-			sb.append("_");
-			sb.append(SecurityUtil.getLoggedInUserName());
+
+		try {
+			if (!hasUserName(fileName)) {
+				sb.append("_");
+				sb.append(SecurityUtil.getLoggedInUserName());
+			}
+		} catch (final NullPointerException e) {
+			FileNameGenerator.LOG.debug(e.getMessage(), e);
 		}
+
 		if (!hasDate(fileName)) {
 			sb.append("_");
 			sb.append(FileNameGenerator.DATE_FORMAT.format(timeStamp));
