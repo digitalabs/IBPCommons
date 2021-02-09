@@ -1,23 +1,27 @@
 package org.generationcp.commons.util;
 
 import org.generationcp.commons.security.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FileNameGenerator {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hhmmss");
-	private static final int MAX_SIZE = 256;
+	private static final int MAX_SIZE = 255;
 	private static final int MAX_SIZE_NAME = 200;
+	private static final Logger LOG = LoggerFactory.getLogger(FileNameGenerator.class);
+
 
 	public static String generateFileName(final String origFinalName, final String fileExt, final boolean... isAppendExtension) {
+
 		final String extension = fileExt.contains(".") ? fileExt : "." + fileExt;
 		final boolean isAppend = isAppendExtension.length == 1 ? isAppendExtension[0]: true;
 		final StringBuilder fileName = new StringBuilder();
-		fileName.append(origFinalName);
-		fileName.append("_");
-		fileName.append(FileNameGenerator.getUserNameTimeStamp());
+		fileName.append(FileNameGenerator.getFormattedFileName(origFinalName));
 		if (isAppend) {
 			fileName.append(extension);
 		}
@@ -25,31 +29,18 @@ public class FileNameGenerator {
 	}
 
 	public static String generateFileName(final String origFinalName) {
-
-		final int maxSize;
-		String fileExt = "";
-		String oFName = origFinalName;
 		if (origFinalName.contains(".")) {
-			final String oFileName[] = origFinalName.split("\\.");
-			oFName = oFileName[0];
-			if (oFileName.length >= 2) {
-				// Get the Last Group
-				fileExt = oFileName[oFileName.length - 1];
+			final String[] fNames = origFinalName.split("\\.");
+			if (fNames.length >= 2) {
+				final String fileExtension = fNames[fNames.length - 1];
+				String fileName = origFinalName.replaceAll(fileExtension, "");
+				if (fileName.endsWith(".")) {
+					fileName = fileName.substring(0, fileName.length() - 1);
+				}
+				return FileNameGenerator.generateFileName(fileName, fileExtension);
 			}
-			maxSize = FileNameGenerator.getFileNameMaxSize(true, fileExt);
-		} else {
-			maxSize = FileNameGenerator.MAX_SIZE_NAME;
 		}
-
-		final StringBuilder fileName = new StringBuilder();
-		fileName.append(oFName);
-		fileName.append("_");
-		fileName.append(FileNameGenerator.getUserNameTimeStamp());
-		if (!fileExt.contains("\\.") && !fileExt.equals("")) {
-			fileName.append(".");
-		}
-		fileName.append(fileExt);
-		return FileNameGenerator.truncateIfNecessary(fileName.toString(), maxSize);
+		return FileNameGenerator.generateFileName(origFinalName, "", false);
 	}
 
 	private static String truncateIfNecessary(final String name, final int maxSize) {
@@ -60,16 +51,6 @@ public class FileNameGenerator {
 		}
 		return truncatedName;
 	}
-	private static String getUserNameTimeStamp() {
-		final Date timeStamp = new Date();
-		final StringBuilder sb = new StringBuilder();
-		sb.append(SecurityUtil.getLoggedInUserName());
-		sb.append("_");
-		sb.append(FileNameGenerator.DATE_FORMAT.format(timeStamp));
-		sb.append("_");
-		sb.append(FileNameGenerator.TIME_FORMAT.format(timeStamp));
-		return sb.toString();
-	}
 
 	private static int getFileNameMaxSize(final boolean extensionIncluded, final String extension) {
 		if (StringUtil.isEmpty(extension)) {
@@ -79,5 +60,72 @@ public class FileNameGenerator {
 		} else {
 			return FileNameGenerator.MAX_SIZE - extension.length();
 		}
+	}
+
+	/**
+	 * Check if filename contains username
+	 * Check if filename contains date
+	 * Check if filename contains timestamp
+	 * Check if filename exceeds max_file_name
+	 * @param fileName
+	 * @return String formatted fileName
+	 */
+	private static String getFormattedFileName(final String fileName) {
+		final Date timeStamp = new Date();
+		final StringBuilder sb = new StringBuilder();
+		sb.append(fileName);
+		if (!hasUserName(fileName)) {
+			sb.append("_");
+			sb.append(SecurityUtil.getLoggedInUserName());
+		}
+		if (!hasDate(fileName)) {
+			sb.append("_");
+			sb.append(FileNameGenerator.DATE_FORMAT.format(timeStamp));
+		}
+		if (!hasTimeStamp(fileName)) {
+			sb.append("_");
+			sb.append(FileNameGenerator.TIME_FORMAT.format(timeStamp));
+		}
+		if (sb.toString().length() > FileNameGenerator.MAX_SIZE_NAME) {
+			return FileNameGenerator.truncateIfNecessary(sb.toString(), FileNameGenerator.MAX_SIZE_NAME);
+		} else {
+			return sb.toString();
+		}
+	}
+
+	private static boolean hasUserName(final String fileName) {
+		return fileName.contains(SecurityUtil.getLoggedInUserName());
+	}
+
+	private static boolean hasDate(final String fileName) {
+		final String[] fNames = fileName.split("_");
+		if (fNames.length >= 3) {
+			final String sDate = fNames[fNames.length - 2];
+			try {
+				FileNameGenerator.DATE_FORMAT.parse(sDate);
+				return true;
+			} catch (final ParseException parseException) {
+				FileNameGenerator.LOG.debug(parseException.getMessage(), parseException);
+				return false;
+			}
+
+		}
+		return false;
+	}
+
+	private static boolean hasTimeStamp(final String fileName) {
+		final String[] fNames = fileName.split("_");
+		if (fNames.length >= 3) {
+			final String sTime = fNames[fNames.length - 1];
+			try {
+				FileNameGenerator.TIME_FORMAT.parse(sTime);
+				return true;
+			} catch (final ParseException parseException) {
+				FileNameGenerator.LOG.debug(parseException.getMessage(), parseException);
+				return false;
+			}
+
+		}
+		return false;
 	}
 }
