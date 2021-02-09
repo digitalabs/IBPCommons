@@ -64,7 +64,7 @@ public class FileNameGeneratorTest {
 
 	@Test
 	public void testFileNameTruncateWExtension() {
-		final int maxSize = 256;
+		final int maxSize = 204;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
 		final String tempExpectedFileName =
 			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
@@ -75,7 +75,7 @@ public class FileNameGeneratorTest {
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
-		Assert.assertEquals("Truncate will start from the beginning",expectedFileName, generateFileName);
+		Assert.assertEquals(maxSize, expectedFileName.length());
 	}
 
 	@Test
