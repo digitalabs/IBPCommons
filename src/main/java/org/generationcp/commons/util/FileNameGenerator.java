@@ -27,12 +27,16 @@ public class FileNameGenerator {
 	public static String generateFileName(final String directory, final String extension, final String... fileNames) {
 		final int maxLengthPerName = MAX_SIZE_NAME / fileNames.length;
 		final StringBuilder filename = new StringBuilder();
+		Optional<String> hasExt = Optional.empty();
 		for (final String name : fileNames) {
-			filename.append(truncateIfNecessary(name, maxLengthPerName, true));
+			final Optional<String> nameExt = hasExtension(name);
+			if (nameExt.isPresent()) {
+				hasExt = nameExt;
+			}
+			filename.append(truncateIfNecessary(removeExtension(name), maxLengthPerName, true));
 		}
 		final String ext;
 		if (StringUtils.isEmpty(extension)) {
-			final Optional<String> hasExt = hasExtension(filename.toString());
 			if (hasExt.isPresent()) {
 				ext = preppend(hasExt.get(), ".");
 			} else {
@@ -209,7 +213,7 @@ public class FileNameGenerator {
 	public static Optional<String> hasTimeStamp(final String fileName) {
 		final String[] fNames = fileName.split("_");
 		if (fNames.length >= 3) {
-			final String sTime = fNames[fNames.length - 1];
+			final String sTime = removeExtension(fNames[fNames.length - 1]);
 			try {
 				FileNameGenerator.TIME_FORMAT.parse(sTime);
 				return Optional.of(sTime);
