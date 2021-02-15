@@ -11,8 +11,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 
 public class FileNameGeneratorTest {
 
@@ -44,52 +46,58 @@ public class FileNameGeneratorTest {
 	public void testFileNameWoExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
-		final String generateFileName = FileNameGenerator.generateFileName("Original", "xls", false);
-		final String[] underscores = generateFileName.split("_");
-		Assert.assertTrue(underscores.length >= 3);
-		Assert.assertFalse(underscores[underscores.length - 1].contains(".xls"));
-		Assert.assertEquals(expectedFileName, generateFileName);
+		final String generateFileName = FileNameGenerator.generateFileName("Original");
+		Assert.assertTrue(generateFileName.split("_").length >= 3);
+		Assert.assertTrue(FileNameGenerator.hasDate(generateFileName).isPresent());
+		Assert.assertTrue(FileNameGenerator.hasTimeStamp(generateFileName).isPresent());
+		Assert.assertTrue(hasUserName(generateFileName).isPresent());
+		Assert.assertFalse(generateFileName.contains("."));
 	}
 
 	@Test
 	public void testFileNameAppendExtension() {
-		final String expectedFileName =
-			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
-		final String generateFileName = FileNameGenerator.generateFileName("Original", "xls");
+		final String generateFileName = FileNameGenerator.generateFileName("Original.xls");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
-		Assert.assertEquals(expectedFileName, generateFileName);
+		Assert.assertTrue(FileNameGenerator.hasDate(generateFileName).isPresent());
+		Assert.assertTrue(FileNameGenerator.hasTimeStamp(generateFileName).isPresent());
+		Assert.assertTrue(hasUserName(generateFileName).isPresent());
 	}
 
 	@Test
 	public void testFileNameTruncateWExtension() {
 		final int maxSize = 256;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
-		final String tempExpectedFileName =
-			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
-		final int begin = tempExpectedFileName.length() - maxSize;
-		final String expectedFileName = tempExpectedFileName.substring(begin, tempExpectedFileName.length());
-
-		final String generateFileName = FileNameGenerator.generateFileName(originalFileName, "xls");
+		final String generateFileName = FileNameGenerator.generateFileName(originalFileName + ".xls");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
-		Assert.assertEquals("Truncate will start from the beginning",expectedFileName, generateFileName);
+		Assert.assertEquals("Truncate will start from the beginning", 204, generateFileName.length());
+		Assert.assertTrue(FileNameGenerator.hasDate(generateFileName).isPresent());
+		Assert.assertTrue(FileNameGenerator.hasTimeStamp(generateFileName).isPresent());
+		Assert.assertTrue(hasUserName(generateFileName).isPresent());
 	}
 
 	@Test
 	public void testFileNameTruncateWoExtension() {
 		final int maxSize = 200;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
-		final String tempExpectedFileName =
-			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
-		final int begin = tempExpectedFileName.length() - maxSize;
-		final String expectedFileName = tempExpectedFileName.substring(begin, tempExpectedFileName.length());
-
 		final String generateFileName = FileNameGenerator.generateFileName(originalFileName);
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
-		Assert.assertEquals(expectedFileName, generateFileName);
+		Assert.assertTrue(FileNameGenerator.hasDate(generateFileName).isPresent());
+		Assert.assertTrue(FileNameGenerator.hasTimeStamp(generateFileName).isPresent());
+		Assert.assertTrue(hasUserName(generateFileName).isPresent());
+		Assert.assertEquals("Truncate will start from the beginning",maxSize, generateFileName.length());
+
+	}
+
+	private static Optional<String> hasUserName(final String fileName) {
+		final String username = SecurityUtil.getLoggedInUserName();
+		if (fileName.contains("_" + username)) {
+			return Optional.of(username);
+		}
+		return Optional.empty();
 	}
 }
