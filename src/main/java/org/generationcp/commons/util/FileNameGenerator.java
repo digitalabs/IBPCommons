@@ -124,7 +124,7 @@ public class FileNameGenerator {
 
 	private static String truncateIfNecessary(final String name, final int maxSize, final boolean isForward) {
 		String truncatedName = name;
-		if (StringUtils.isEmpty(name) && name.length() > maxSize) {
+		if (!StringUtils.isEmpty(name) && name.length() > maxSize) {
 			if (isForward) {
 				truncatedName = name.substring(0, maxSize);
 			} else {
