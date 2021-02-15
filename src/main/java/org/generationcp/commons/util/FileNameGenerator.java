@@ -85,7 +85,7 @@ public class FileNameGenerator {
 	 * @return
 	 */
 	private static String fileNameChecker(final String directory, final String fileName) {
-		if (StringUtils.isEmpty(directory)) {
+		if (!StringUtils.isEmpty(directory)) {
 			if (hasExtension(fileName).isPresent()) {
 				File file = new File(directory + File.separator + fileName);
 				while (file.exists()) {
@@ -179,7 +179,7 @@ public class FileNameGenerator {
 
 	public static Optional<String> hasUserName(final String fileName) {
 		final String username = SecurityUtil.getLoggedInUserName();
-		if (fileName.contains("_" + username)) {
+		if (!StringUtils.isEmpty(username) && fileName.contains("_" + username)) {
 			return Optional.of(username);
 		}
 		return Optional.empty();
