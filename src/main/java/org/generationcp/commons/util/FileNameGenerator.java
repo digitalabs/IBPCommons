@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.text.html.Option;
+import javax.validation.constraints.Null;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.text.ParseException;
@@ -61,12 +62,17 @@ public class FileNameGenerator {
 	}
 
 	public static String removeSuffixIfApplicable(final String filename) {
-		final Optional<String> username = hasUserName(filename);
+
 		final Optional<String> date = hasDate(filename);
 		final Optional<String> time = hasTimeStamp(filename);
 		String newFileName = filename;
-		if (username.isPresent()) {
-			newFileName = newFileName.replace("_" +username.get(), "");
+		try {
+			final Optional<String> username = hasUserName(filename);
+			if (username.isPresent()) {
+				newFileName = newFileName.replace("_" + username.get(), "");
+			}
+		} catch (final NullPointerException e){
+			FileNameGenerator.LOG.debug(e.getMessage(), e);
 		}
 		if (date.isPresent()) {
 			newFileName = newFileName.replace("_" +date.get(), "");
@@ -179,7 +185,7 @@ public class FileNameGenerator {
 
 	public static Optional<String> hasUserName(final String fileName) {
 		final String username = SecurityUtil.getLoggedInUserName();
-		if (!StringUtils.isEmpty(username) && fileName.contains("_" + username)) {
+		if (fileName.contains("_" + username)) {
 			return Optional.of(username);
 		}
 		return Optional.empty();
