@@ -226,7 +226,7 @@ public class FileNameGenerator {
 	}
 
 	private static Optional<String> hasExtension(final String fileName) {
-		if (fileName.contains(".")) {
+		if (!StringUtils.isEmpty(fileName) && fileName.contains(".")) {
 			final String[] fileNames = fileName.split("\\.");
 			if (fileNames.length >= 1) {
 				final String extension = fileNames[fileNames.length - 1];
