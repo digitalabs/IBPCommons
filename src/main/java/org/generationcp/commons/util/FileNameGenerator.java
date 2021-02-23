@@ -2,6 +2,9 @@ package org.generationcp.commons.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.generationcp.commons.security.SecurityUtil;
+import org.generationcp.commons.spring.util.ContextUtil;
+import org.generationcp.middleware.pojos.workbench.Project;
+import org.generationcp.middleware.pojos.workbench.ToolName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +26,13 @@ public class FileNameGenerator {
 	private static final int MAX_SIZE_NAME = 200;
 	private static final Logger LOG = LoggerFactory.getLogger(FileNameGenerator.class);
 	private static final Pattern ALPHANUMERIC_PATTERN = Pattern.compile("^[a-zA-Z0-9]*$");
+	private final static InstallationDirectoryUtil installationDirectoryUtil = new InstallationDirectoryUtil();
+
+	public static String generateFileName(final Project project, final ToolName toolName, final String extension,
+										  final String... fileNames) {
+		final String directory = installationDirectoryUtil.getOutputDirectoryForProjectAndTool(project, toolName);
+		return generateFileName(directory, extension, fileNames);
+	}
 
 	public static String generateFileName(final String directory, final String extension, final String... fileNames) {
 		final int maxLengthPerName = MAX_SIZE_NAME / fileNames.length;
