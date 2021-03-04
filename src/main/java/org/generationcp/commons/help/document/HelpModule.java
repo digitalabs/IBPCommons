@@ -55,7 +55,11 @@ public enum HelpModule {
 	MANAGE_SAMPLES("manage.samples"),
 
 	// Site Administration
-	SITE_ADMINISTRATION("site.administration");
+	SITE_ADMINISTRATION("site.administration"),
+
+	// Navigation bar
+	NAVIGATION_BAR_ABOUT_BMS("navigation.bar.about.bms"),
+	NAVIGATION_BAR_ASK_FOR_SUPPORT("navigation.bar.ask.for.support");
 
 	/* This is the variable name from the property file helplinks.properties */
 	private String propertyName;
