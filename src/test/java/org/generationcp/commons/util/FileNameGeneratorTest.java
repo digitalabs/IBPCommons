@@ -33,7 +33,7 @@ public class FileNameGeneratorTest {
 	public void testFileNameWithExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
-		final String generateFileName = FileNameGenerator.generateFileName("Original.xls");
+		final String generateFileName = FileNameGenerator.generateFileName("Original", ".xls");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertTrue(underscores[underscores.length - 1].contains(".xls"));
@@ -44,7 +44,7 @@ public class FileNameGeneratorTest {
 	public void testFileNameWoExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
-		final String generateFileName = FileNameGenerator.generateFileName("Original", "xls", false);
+		final String generateFileName = FileNameGenerator.generateFileName("Original", null);
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertFalse(underscores[underscores.length - 1].contains(".xls"));
@@ -64,7 +64,7 @@ public class FileNameGeneratorTest {
 
 	@Test
 	public void testFileNameTruncateWExtension() {
-		final int maxSize = 256;
+		final int maxSize = 255;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
 		final String tempExpectedFileName =
 			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
@@ -80,14 +80,14 @@ public class FileNameGeneratorTest {
 
 	@Test
 	public void testFileNameTruncateWoExtension() {
-		final int maxSize = 200;
+		final int maxSize = 250;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
 		final String tempExpectedFileName =
 			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
 		final int begin = tempExpectedFileName.length() - maxSize;
 		final String expectedFileName = tempExpectedFileName.substring(begin, tempExpectedFileName.length());
 
-		final String generateFileName = FileNameGenerator.generateFileName(originalFileName);
+		final String generateFileName = FileNameGenerator.generateFileName(originalFileName, null);
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertEquals(expectedFileName, generateFileName);

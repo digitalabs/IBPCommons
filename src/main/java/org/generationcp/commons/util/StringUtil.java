@@ -340,4 +340,17 @@ public abstract class StringUtil {
 		}
 		return param;
 	}
+
+
+	public static String truncate(final String param, final Integer maxSize, boolean isFromStart) {
+		if (!StringUtils.isEmpty(param) && param.length() > maxSize) {
+			if (isFromStart) {
+				return param.substring(0, maxSize);
+			} else {
+				final int excludeNoChar = param.length() - maxSize;
+				return param.substring(excludeNoChar, param.length());
+			}
+		}
+		return param;
+	}
 }
