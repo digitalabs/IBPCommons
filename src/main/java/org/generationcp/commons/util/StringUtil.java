@@ -343,7 +343,10 @@ public abstract class StringUtil {
 
 
 	public static String truncate(final String param, final Integer maxSize, boolean isFromStart) {
-		if (!StringUtils.isEmpty(param) && param.length() > maxSize) {
+		if (StringUtils.isEmpty(param)) {
+			return "";
+		}
+		if (param.length() > maxSize) {
 			if (isFromStart) {
 				return param.substring(0, maxSize);
 			} else {
