@@ -64,7 +64,7 @@ public class FileNameGeneratorTest {
 
 	@Test
 	public void testFileNameTruncateWExtension() {
-		final int maxSize = 255;
+		final int maxSize = FileNameGenerator.MAX_SIZE;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
 		final String tempExpectedFileName =
 			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date()) + ".xls";
@@ -80,7 +80,7 @@ public class FileNameGeneratorTest {
 
 	@Test
 	public void testFileNameTruncateWoExtension() {
-		final int maxSize = 250;
+		final int maxSize = FileNameGenerator.MAX_SIZE_WO_EXTENSION;
 		final String originalFileName = RandomStringUtils.randomAlphabetic(maxSize);
 		final String tempExpectedFileName =
 			originalFileName + "_"+ USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
