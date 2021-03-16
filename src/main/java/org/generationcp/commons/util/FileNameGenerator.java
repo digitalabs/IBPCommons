@@ -8,8 +8,8 @@ import java.util.Date;
 public class FileNameGenerator {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hhmmss");
-	public static final int MAX_SIZE = 205;
-	public static final int MAX_SIZE_WO_EXTENSION = 200;
+	public static final int MAX_SIZE = 100;
+	public static final int MAX_SIZE_WO_EXTENSION = 96;
 
 	/**
 	 *
