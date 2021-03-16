@@ -172,7 +172,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			name.setNval(groupName);
 			// nstat = 1 means it is preferred name.
 			name.setNstat(1);
-			name.setUserId(userId);
+			name.setCreatedBy(userId);
 			name.setLocationId(locationId);
 			name.setNdate(Util.getCurrentDateAsIntegerValue());
 			name.setReferenceId(0);
