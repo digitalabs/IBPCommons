@@ -23,82 +23,82 @@ import org.apache.commons.lang3.StringUtils;
  */
 public abstract class StringUtil {
 
-	public static int parseInt(String string, int defaultValue) {
+	public static int parseInt(final String string, final int defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 		try {
 			return Integer.parseInt(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public static Integer parseInt(String string, Integer defaultValue) {
+	public static Integer parseInt(final String string, final Integer defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 		try {
 			return Integer.parseInt(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public static long parseLong(String string, long defaultValue) {
+	public static long parseLong(final String string, final long defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 		try {
 			return Long.parseLong(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public static Long parseLong(String string, Long defaultValue) {
+	public static Long parseLong(final String string, final Long defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 		try {
 			return Long.parseLong(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public static float parseFloat(String string, float defaultValue) {
+	public static float parseFloat(final String string, final float defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 
 		try {
 			return Float.parseFloat(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public static Float parseFloat(String string, Float defaultValue) {
+	public static Float parseFloat(final String string, final Float defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 
 		try {
 			return Float.parseFloat(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
 
-	public static BigInteger parseBigInteger(String string, BigInteger defaultValue) {
+	public static BigInteger parseBigInteger(final String string, final BigInteger defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 
 		try {
 			return new BigInteger(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
@@ -110,14 +110,14 @@ public abstract class StringUtil {
 	 * @param defaultValue
 	 * @return
 	 */
-	public static double parseDouble(String string, double defaultValue) {
+	public static double parseDouble(final String string, final double defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 
 		try {
 			return Double.parseDouble(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
@@ -130,14 +130,14 @@ public abstract class StringUtil {
 	 * @return <code>defaultValue</code> if <code>string</code> is blank or cannot be parsed as double. Returns the parsed double value
 	 *         otherwise.
 	 */
-	public static Double parseDouble(String string, Double defaultValue) {
+	public static Double parseDouble(final String string, final Double defaultValue) {
 		if (StringUtils.isBlank(string)) {
 			return defaultValue;
 		}
 
 		try {
 			return Double.parseDouble(string);
-		} catch (NumberFormatException e) {
+		} catch (final NumberFormatException e) {
 			return defaultValue;
 		}
 	}
@@ -152,13 +152,13 @@ public abstract class StringUtil {
 	 * @param objectList
 	 * @return
 	 */
-	public static String joinIgnoreEmpty(Object delimiter, Object... objectList) {
-		StringBuilder sb = new StringBuilder();
+	public static String joinIgnoreEmpty(final Object delimiter, final Object... objectList) {
+		final StringBuilder sb = new StringBuilder();
 		if (objectList == null) {
 			return sb.toString();
 		}
 
-		for (Object obj : objectList) {
+		for (final Object obj : objectList) {
 			if (obj == null) {
 				continue;
 			}
@@ -195,13 +195,13 @@ public abstract class StringUtil {
 	 * @param objectList
 	 * @return
 	 */
-	public static String joinIgnoreNull(Object delimiter, Object... objectList) {
-		StringBuilder sb = new StringBuilder();
+	public static String joinIgnoreNull(final Object delimiter, final Object... objectList) {
+		final StringBuilder sb = new StringBuilder();
 		if (objectList == null) {
 			return sb.toString();
 		}
 
-		for (Object obj : objectList) {
+		for (final Object obj : objectList) {
 			if (obj == null) {
 				continue;
 			}
@@ -237,7 +237,7 @@ public abstract class StringUtil {
 	 * @param maxLength
 	 * @return
 	 */
-	public static String prependWith(Object obj, String prefix, int maxLength) {
+	public static String prependWith(final Object obj, final String prefix, final int maxLength) {
 		if (obj == null) {
 			return null;
 		}
@@ -246,7 +246,7 @@ public abstract class StringUtil {
 		}
 
 		String str = obj.toString();
-		int strLength = str.length();
+		final int strLength = str.length();
 		for (int i = strLength; i < maxLength; i++) {
 			str = prefix + str;
 		}
@@ -263,7 +263,7 @@ public abstract class StringUtil {
 	 * @param maxLength
 	 * @return
 	 */
-	public static String appendWith(Object obj, String suffix, int maxLength) {
+	public static String appendWith(final Object obj, final String suffix, final int maxLength) {
 		if (obj == null) {
 			return null;
 		}
@@ -272,7 +272,7 @@ public abstract class StringUtil {
 		}
 
 		String str = obj.toString();
-		int strLength = str.length();
+		final int strLength = str.length();
 		for (int i = strLength; i < maxLength; i++) {
 			str = str + suffix;
 		}
@@ -287,8 +287,8 @@ public abstract class StringUtil {
 	 * @param count
 	 * @return
 	 */
-	public static String stringOf(char ch, int count) {
-		StringBuilder sb = new StringBuilder();
+	public static String stringOf(final char ch, final int count) {
+		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < count; i++) {
 			sb.append(ch);
@@ -304,8 +304,8 @@ public abstract class StringUtil {
 	 * @param count
 	 * @return
 	 */
-	public static String stringOf(String str, int count) {
-		StringBuilder sb = new StringBuilder();
+	public static String stringOf(final String str, final int count) {
+		final StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < count; i++) {
 			sb.append(str);
@@ -314,17 +314,17 @@ public abstract class StringUtil {
 		return sb.toString();
 	}
 
-	public static boolean isEmpty(String s) {
+	public static boolean isEmpty(final String s) {
 		return s == null || s.length() == 0;
 	}
 
-	public static boolean isEmptyOrWhitespaceOnly(String s) {
+	public static boolean isEmptyOrWhitespaceOnly(final String s) {
 		return StringUtil.isEmpty(s) || s.matches("\\A\\s*\\z");
 	}
 
-	public static String stringify(Object[] values, String delimiter) {
-		StringBuilder sb = new StringBuilder();
-		for (Object value : values) {
+	public static String stringify(final Object[] values, final String delimiter) {
+		final StringBuilder sb = new StringBuilder();
+		for (final Object value : values) {
 			if (sb.length() > 0) {
 				sb.append(delimiter);
 			}
@@ -334,7 +334,7 @@ public abstract class StringUtil {
 	}
 
 	public static String replaceInvalidChacaracterFileName(String param, final String character) {
-		String validar[] = {"&gt;","&lt;","&quot;","\\","\"","/",":","*","?","<",">","|",","};
+		final String[] validar = {"&gt;","&lt;","&quot;","\\","\"","/",":","*","?","<",">","|",","};
 		for (int i = 0; i < validar.length; i++) {
 			param = StringUtils.replace(param, validar[i], character);
 		}
@@ -342,7 +342,7 @@ public abstract class StringUtil {
 	}
 
 
-	public static String truncate(final String param, final Integer maxSize, boolean isFromStart) {
+	public static String truncate(final String param, final Integer maxSize, final boolean isFromStart) {
 		if (StringUtils.isEmpty(param)) {
 			return "";
 		}
