@@ -74,7 +74,7 @@ public class CsvExportSampleListServiceImpl implements CsvExportSampleListServic
 		final List<ExportColumnHeader> exportColumnHeaders = this.getExportColumnHeaders(visibleColumns);
 		final List<ExportRow> exportRows = this.getExportColumnValues(exportColumnHeaders, sampleDetailsDTOs);
 
-		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(FileNameGenerator.generateFileName(filenameWithoutExtension, null));
+		final String cleanFilenameWithoutExtension = FileUtils.sanitizeFileName(FileNameGenerator.generateFileName(filenameWithoutExtension));
 		final String filenamePath = this.installationDirectoryUtil
 				.getTempFileInOutputDirectoryForProjectAndTool(cleanFilenameWithoutExtension, FILE_EXTENSION,
 						this.contextUtil.getProjectInContext(), ToolName.FIELDBOOK_WEB);
