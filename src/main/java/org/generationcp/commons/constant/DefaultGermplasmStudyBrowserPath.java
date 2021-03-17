@@ -10,5 +10,6 @@ public interface DefaultGermplasmStudyBrowserPath {
 	String GERMPLASM_BROWSER_LINK = "ibpworkbench/maingpsb/germplasm-";
 	String STUDY_BROWSER_LINK = "ibpworkbench/maingpsb/study-";
 	String GRAPHICAL_FILTERING_TOOL_LINK = "/ibpworkbench/controller/graphical-filtering?studyDbId=%s&crop=%s&restartApplication";
+	String GERMPLASM_DETAILS_LINK = "/ibpworkbench/main/app/#/germplasm-details/";
 
 }
