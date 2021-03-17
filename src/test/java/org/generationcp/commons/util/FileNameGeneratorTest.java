@@ -44,7 +44,7 @@ public class FileNameGeneratorTest {
 	public void testFileNameWoExtension() {
 		final String expectedFileName =
 			"Original_" + USERNAME + "_" + DATE_FORMAT.format(new Date()) + "_" + TIME_FORMAT.format(new Date());
-		final String generateFileName = FileNameGenerator.generateFileName("Original", null);
+		final String generateFileName = FileNameGenerator.generateFileName("Original");
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertFalse(underscores[underscores.length - 1].contains(".xls"));
@@ -87,7 +87,7 @@ public class FileNameGeneratorTest {
 		final int begin = tempExpectedFileName.length() - maxSize;
 		final String expectedFileName = tempExpectedFileName.substring(begin, tempExpectedFileName.length());
 
-		final String generateFileName = FileNameGenerator.generateFileName(originalFileName, null);
+		final String generateFileName = FileNameGenerator.generateFileName(originalFileName);
 		final String[] underscores = generateFileName.split("_");
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertEquals(expectedFileName, generateFileName);

@@ -32,6 +32,10 @@ public class FileNameGenerator {
 		return StringUtil.truncate(fileName.toString(), MAX_SIZE_WO_EXTENSION, false);
 	}
 
+	public static String generateFileName(final String origFinalName) {
+		return generateFileName(origFinalName, "");
+	}
+
 	private static String getUserNameTimeStamp() {
 		final Date timeStamp = new Date();
 		final StringBuilder sb = new StringBuilder();
