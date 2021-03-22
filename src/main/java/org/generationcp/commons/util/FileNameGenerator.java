@@ -10,6 +10,11 @@ public class FileNameGenerator {
 	private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("hhmmss");
 	public static final int MAX_SIZE = 100;
 	public static final int MAX_SIZE_WO_EXTENSION = 96;
+	public static final String CSV_DATE_TIME_PATTERN = "_[0-9]{8}_[0-9]{6}.csv$";
+	public static final String XLS_DATE_TIME_PATTERN = "_[0-9]{8}_[0-9]{6}.xls$";
+	public static final String XLSX_DATE_TIME_PATTERN = "_[0-9]{8}_[0-9]{6}.xlsx$";
+	public static final String XML_DATE_TIME_PATTERN = "_[0-9]{8}_[0-9]{6}.xml$";
+	public static final String ZIP_DATE_TIME_PATTERN = "_[0-9]{8}_[0-9]{6}.zip$";
 
 	/**
 	 *
