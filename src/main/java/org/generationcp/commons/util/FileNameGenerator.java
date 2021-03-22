@@ -4,6 +4,8 @@ import org.generationcp.commons.security.SecurityUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileNameGenerator {
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
@@ -50,5 +52,11 @@ public class FileNameGenerator {
 		sb.append("_");
 		sb.append(FileNameGenerator.TIME_FORMAT.format(timeStamp));
 		return sb.toString();
+	}
+
+	public static boolean isValidFileNameFormat(final String fileName, final String pattern) {
+		final Pattern pattern1 = Pattern.compile(pattern);
+		final Matcher matcher = pattern1.matcher(fileName);
+		return matcher.find();
 	}
 }
