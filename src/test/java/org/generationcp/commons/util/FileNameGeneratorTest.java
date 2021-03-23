@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 
 public class FileNameGeneratorTest {
 
