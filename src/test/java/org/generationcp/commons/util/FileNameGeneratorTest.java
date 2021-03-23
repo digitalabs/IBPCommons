@@ -92,4 +92,19 @@ public class FileNameGeneratorTest {
 		Assert.assertTrue(underscores.length >= 3);
 		Assert.assertEquals(expectedFileName, generateFileName);
 	}
+
+	@Test
+	public void testDifferentFileTypes() {
+		final String userName = RandomStringUtils.randomAlphabetic(5);
+		final String xlsFileName = RandomStringUtils.randomAlphabetic(10) + userName + "_20210322_080607.xls";
+		final String csvFileName = RandomStringUtils.randomAlphabetic(10) + userName + "_20210322_080607.csv";
+		final String xlsxFileName = RandomStringUtils.randomAlphabetic(10) + userName + "_20210322_080607.xlsx";
+		final String xmlFileName = RandomStringUtils.randomAlphabetic(10) + userName + "_20210322_080607.xml";
+		final String zipFileName = RandomStringUtils.randomAlphabetic(10) + userName + "_20210322_080607.zip";
+		Assert.assertTrue(FileNameGenerator.isValidFileNameFormat(xlsFileName, FileNameGenerator.XLS_DATE_TIME_PATTERN));
+		Assert.assertTrue(FileNameGenerator.isValidFileNameFormat(csvFileName, FileNameGenerator.CSV_DATE_TIME_PATTERN));
+		Assert.assertTrue(FileNameGenerator.isValidFileNameFormat(xlsxFileName, FileNameGenerator.XLSX_DATE_TIME_PATTERN));
+		Assert.assertTrue(FileNameGenerator.isValidFileNameFormat(xmlFileName, FileNameGenerator.XML_DATE_TIME_PATTERN));
+		Assert.assertTrue(FileNameGenerator.isValidFileNameFormat(zipFileName, FileNameGenerator.ZIP_DATE_TIME_PATTERN));
+	}
 }
