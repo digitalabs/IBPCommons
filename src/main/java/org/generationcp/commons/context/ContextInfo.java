@@ -13,15 +13,21 @@ public class ContextInfo {
 	private final Integer loggedInUserId;
 	private final Long selectedProjectId;
 	private final String authToken;
+	private final boolean showReleaseNotes;
 
-	public ContextInfo(Integer userId, Long selectedProjectId, String authToken) {
+	public ContextInfo(Integer userId, Long selectedProjectId, String authToken, boolean showReleaseNotes) {
 		this.loggedInUserId = userId;
 		this.selectedProjectId = selectedProjectId;
 		this.authToken = authToken;
+		this.showReleaseNotes = showReleaseNotes;
+	}
+
+	public ContextInfo(final Integer loggedInUserId, final Long selectedProjectId, final String authToken) {
+		this(loggedInUserId, selectedProjectId, authToken, false);
 	}
 
 	public ContextInfo(Integer userId, Long selectedProjectId) {
-		this(userId, selectedProjectId, "");
+		this(userId, selectedProjectId, "", false);
 	}
 
 	public Integer getLoggedInUserId() {
@@ -34,6 +40,10 @@ public class ContextInfo {
 
 	public String getAuthToken() {
 		return this.authToken;
+	}
+
+	public boolean shouldShowReleaseNotes() {
+		return this.showReleaseNotes;
 	}
 
 	@Override

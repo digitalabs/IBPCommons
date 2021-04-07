@@ -66,4 +66,11 @@ public class ContextUtil {
 
 		this.workbenchDataManager.addProjectActivity(projAct);
 	}
+
+	public boolean shouldShowReleaseNotes() {
+		final ContextInfo contextInfo =
+			(ContextInfo) WebUtils.getSessionAttribute(this.request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
+		return contextInfo.shouldShowReleaseNotes();
+	}
+
 }
