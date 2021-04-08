@@ -68,9 +68,14 @@ public class ContextUtil {
 	}
 
 	public boolean shouldShowReleaseNotes() {
-		final ContextInfo contextInfo =
-			(ContextInfo) WebUtils.getSessionAttribute(this.request, ContextConstants.SESSION_ATTR_CONTEXT_INFO);
-		return contextInfo.shouldShowReleaseNotes();
+		final ContextInfo contextInfo = this.getContextInfoFromSession();
+		if (contextInfo.shouldShowReleaseNotes()) {
+			org.generationcp.commons.util.ContextUtil.setContextInfo(this.request, contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId(),
+				contextInfo.getAuthToken(), false);
+			return true;
+		}
+
+		return false;
 	}
 
 }
