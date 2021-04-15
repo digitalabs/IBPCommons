@@ -222,10 +222,14 @@ public class ContextUtil {
 	}
 
 	public static void setContextInfo(final HttpServletRequest request, final Integer userId, final Long projectId, final String authToken) {
+		ContextUtil.setContextInfo(request, userId, projectId, authToken, false);
+	}
+
+	public static void setContextInfo(final HttpServletRequest request, final Integer userId, final Long projectId, final String authToken,
+		final boolean showReleaseNotes) {
 
 			WebUtils.setSessionAttribute(request, ContextConstants.SESSION_ATTR_CONTEXT_INFO,
-					new ContextInfo(userId, projectId,
-							authToken));
+					new ContextInfo(userId, projectId, authToken, showReleaseNotes));
 	}
 
 	static WorkbenchUser getUserById(final UserService userService, final Integer userId) {
