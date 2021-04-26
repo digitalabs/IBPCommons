@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.generationcp</groupId>
 	<artifactId>ibpcommons</artifactId>
-        <version>17.0</version>
+        <version>17.3</version>
 	<packaging>jar</packaging>
 	<name>Commons</name>
 
@@ -124,18 +124,6 @@
 			<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
 			<artifactId>owasp-java-html-sanitizer</artifactId>
 			<version>r239</version>
-		</dependency>
-
-		<!-- Hibernate Dependency -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-			<version>3.5.6-Final</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-annotations</artifactId>
-			<version>3.5.6-Final</version>
 		</dependency>
 		
 		<!-- Apache Commons -->

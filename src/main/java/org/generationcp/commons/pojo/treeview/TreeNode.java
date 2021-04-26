@@ -71,7 +71,7 @@ public class TreeNode {
 	 * @param addClass the add class
 	 * @param icon the icon
 	 */
-	public TreeNode(String key, String title, boolean isFolder, String addClass, Object icon, String programUUID) {
+	public TreeNode(final String key, final String title, final boolean isFolder, final String addClass, final Object icon, final String programUUID) {
 		this.key = key;
 		this.title = title;
 		this.isFolder = isFolder;
@@ -94,7 +94,7 @@ public class TreeNode {
 		return this.isLazy;
 	}
 
-	public void setIsLazy(boolean isLazy) {
+	public void setIsLazy(final boolean isLazy) {
 		this.isLazy = isLazy;
 	}
 
@@ -102,7 +102,7 @@ public class TreeNode {
 		return this.title;
 	}
 
-	public void setTitle(String title) {
+	public void setTitle(final String title) {
 		this.title = title;
 	}
 
@@ -110,7 +110,7 @@ public class TreeNode {
 		return this.key;
 	}
 
-	public void setKey(String key) {
+	public void setKey(final String key) {
 		this.key = key;
 	}
 
@@ -118,7 +118,7 @@ public class TreeNode {
 		return this.isFolder;
 	}
 
-	public void setIsFolder(boolean isFolder) {
+	public void setIsFolder(final boolean isFolder) {
 		this.isFolder = isFolder;
 	}
 
@@ -126,7 +126,7 @@ public class TreeNode {
 		return this.addClass;
 	}
 
-	public void setAddClass(String addClass) {
+	public void setAddClass(final String addClass) {
 		this.addClass = addClass;
 	}
 
@@ -134,7 +134,7 @@ public class TreeNode {
 		return this.icon;
 	}
 
-	public void setIcon(Object icon) {
+	public void setIcon(final Object icon) {
 		this.icon = icon;
 	}
 
@@ -142,7 +142,7 @@ public class TreeNode {
 		return this.children;
 	}
 
-	public void setChildren(List<TreeNode> children) {
+	public void setChildren(final List<TreeNode> children) {
 		this.children = children;
 	}
 
@@ -150,7 +150,7 @@ public class TreeNode {
 		return this.expand;
 	}
 
-	public void setExpand(boolean expand) {
+	public void setExpand(final boolean expand) {
 		this.expand = expand;
 	}
 
@@ -158,7 +158,7 @@ public class TreeNode {
 		return this.isLastChildren;
 	}
 
-	public void setLastChildren(boolean isLastChildren) {
+	public void setLastChildren(final boolean isLastChildren) {
 		this.isLastChildren = isLastChildren;
 	}
 
@@ -166,12 +166,12 @@ public class TreeNode {
 		return this.parentTitle;
 	}
 
-	public void setParentTitle(String parentTitle) {
+	public void setParentTitle(final String parentTitle) {
 		this.parentTitle = parentTitle;
 	}
 
 	public String getParentId() {
-		return parentId;
+		return this.parentId;
 	}
 
 	public void setParentId(final String parentId) {
@@ -182,7 +182,7 @@ public class TreeNode {
 		return this.includeInSearch;
 	}
 
-	public void setIncludeInSearch(boolean includeInSearch) {
+	public void setIncludeInSearch(final boolean includeInSearch) {
 		this.includeInSearch = includeInSearch;
 	}
 
@@ -190,24 +190,24 @@ public class TreeNode {
 		return this.programUUID;
 	}
 
-	public void setProgramUUID(String programUUID) {
+	public void setProgramUUID(final String programUUID) {
 		this.programUUID = programUUID;
 	}
 
 	public int getNumOfChildren() {
-		return numOfChildren;
+		return this.numOfChildren;
 	}
 
 	public void setNumOfChildren(final int numOfChildren) {
 		this.numOfChildren = numOfChildren;
 	}
 
-	public void setNoOfEntries(Integer noOfEntries) {
+	public void setNoOfEntries(final Integer noOfEntries) {
 		this.noOfEntries = noOfEntries;
 	}
 
 	public String getOwner() {
-		return owner;
+		return this.owner;
 	}
 
 	public void setOwner(final String owner) {
@@ -216,16 +216,16 @@ public class TreeNode {
 
 	
 	public String getOwnerId() {
-		return ownerId;
+		return this.ownerId;
 	}
 
 	
-	public void setOwnerId(String ownerId) {
+	public void setOwnerId(final String ownerId) {
 		this.ownerId = ownerId;
 	}
 
 	public String getDescription() {
-		return description;
+		return this.description;
 	}
 
 	public void setDescription(final String description) {
@@ -236,7 +236,7 @@ public class TreeNode {
 		return this.type;
 	}
 
-	public void setType(String type) {
+	public void setType(final String type) {
 		this.type = type;
 	}
 
@@ -246,11 +246,11 @@ public class TreeNode {
 
 	
 	public boolean getIsLocked() {
-		return isLocked;
+		return this.isLocked;
 	}
 
 	
-	public void setIsLocked(boolean isLocked) {
+	public void setIsLocked(final boolean isLocked) {
 		this.isLocked = isLocked;
 	}
 

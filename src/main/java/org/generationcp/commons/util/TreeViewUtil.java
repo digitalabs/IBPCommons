@@ -340,6 +340,7 @@ public class TreeViewUtil {
 		treeNode.setDescription(sampleList.getDescription());
 		if (sampleList.getCreatedBy() != null) {
 			treeNode.setOwner(sampleList.getCreatedBy());
+			treeNode.setOwnerId(String.valueOf(sampleList.getCreatedByUserId()));
 		}
 		treeNode.setIsLazy(false);
 		if (treeNode.getIsFolder()) {
