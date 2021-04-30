@@ -82,7 +82,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			return result;
 		}
 
-		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
+		final List<Germplasm> groupMembers = this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
+		groupMembers.add(0, germplasm);
 		final String generatedCodeName = (String) this.rulesService.runRules(codingRuleExecutionContext);
 
 		for (final Germplasm member : groupMembers) {
@@ -109,7 +110,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			return result;
 		}
 
-		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
+		final List<Germplasm> groupMembers = this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
+		groupMembers.add(0, germplasm);
 		final String nameWithSequence = this.germplasmNamingService.generateNextNameAndIncrementSequence(setting);
 
 		// TODO performance tuning when processing large number of group members

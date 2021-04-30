@@ -117,7 +117,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 
 		final String expectedCodedName = PREFIX + NAMING_CONFIG_STARTING_SEQUENCE + SUFFIX;
 
-		Mockito.when(this.germplasmGroupingService.getGroupMembers(mgid)).thenReturn(Lists.newArrayList(g1, g2, g3));
+		Mockito.when(this.germplasmGroupingService.getDescendantGroupMembers(g1.getGid(), mgid)).thenReturn(Lists.newArrayList(g2, g3));
 		Mockito.when(this.rulesService.runRules(this.codingRuleExecutionContext)).thenReturn(expectedCodedName);
 
 		final GermplasmGroupNamingResult result = this.germplasmCodeGenerationService
@@ -176,7 +176,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 
 		final String expectedCodedName = PREFIX + NAMING_CONFIG_STARTING_SEQUENCE + SUFFIX;
 
-		Mockito.when(this.germplasmGroupingService.getGroupMembers(mgid)).thenReturn(Lists.newArrayList(g1, g2, g3));
+		Mockito.when(this.germplasmGroupingService.getDescendantGroupMembers(g1.getGid(), mgid)).thenReturn(Lists.newArrayList(g2, g3));
 		Mockito.when(this.rulesService.runRules(this.codingRuleExecutionContext)).thenReturn(expectedCodedName);
 
 		final GermplasmGroupNamingResult result = this.germplasmCodeGenerationService
@@ -224,7 +224,6 @@ public class GermplasmCodeGenerationServiceImplTest {
 			oldPreferredNames.put(gid, g1Name);
 
 			Mockito.when(this.germplasmDataManager.getGermplasmByGID(gid)).thenReturn(germplasm);
-			Mockito.when(this.germplasmGroupingService.getGroupMembers(gid)).thenReturn(Lists.newArrayList(germplasm));
 		}
 		Mockito.when(this.ruleFactory.getRuleSequenceForNamespace(GermplasmCodeGenerationServiceImpl.CODING_RULE_SEQUENCE))
 			.thenReturn(new String[] {});
@@ -296,7 +295,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		g3.setGid(3);
 		g3.setMgid(mgid);
 
-		Mockito.when(this.germplasmGroupingService.getGroupMembers(mgid)).thenReturn(Lists.newArrayList(g1, g2, g3));
+		Mockito.when(this.germplasmGroupingService.getDescendantGroupMembers(g1.getGid(), mgid)).thenReturn(Lists.newArrayList(g2, g3));
 
 		final String expectedCodedName = PREFIX + " 000000" + NEXT_NUMBER + " " + SUFFIX;
 
@@ -354,7 +353,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 		g3CodedName.setNstat(1);
 		g3.getNames().add(g3CodedName);
 
-		Mockito.when(this.germplasmGroupingService.getGroupMembers(mgid)).thenReturn(Lists.newArrayList(g1, g2, g3));
+		Mockito.when(this.germplasmGroupingService.getDescendantGroupMembers(g1.getGid(), mgid)).thenReturn(Lists.newArrayList(g2, g3));
 
 		final String expectedCodedName = PREFIX + " 000000" + NEXT_NUMBER + " " + SUFFIX;
 
@@ -403,7 +402,6 @@ public class GermplasmCodeGenerationServiceImplTest {
 			oldPreferredNames.put(gid, g1Name);
 
 			Mockito.when(this.germplasmDataManager.getGermplasmByGID(gid)).thenReturn(germplasm);
-			Mockito.when(this.germplasmGroupingService.getGroupMembers(gid)).thenReturn(Lists.newArrayList(germplasm));
 		}
 		Mockito.when(this.germplasmNamingService.generateNextNameAndIncrementSequence(this.germplasmNameSetting))
 			.thenReturn(this.getExpectedName(startNumber), this.getExpectedName(startNumber + 1), this.getExpectedName(startNumber + 2),
