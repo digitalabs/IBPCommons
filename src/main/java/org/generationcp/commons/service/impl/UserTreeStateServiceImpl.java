@@ -29,7 +29,7 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 
 	@Override
 	public List<String> getUserProgramTreeStateByUserIdProgramUuidAndType(final int userId, final String programUuid, final String type) {
-		return userProgramStateDataManager.getUserProgramTreeStateByUserIdProgramUuidAndType(userId, programUuid, type);
+		return this.userProgramStateDataManager.getUserProgramTreeState(userId, programUuid, type);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 	}
 
 	@Override
-	public List<String> getUserProgramTreeStateForSaveSampleList(final int userId, final String programUuid, String type) {
+	public List<String> getUserProgramTreeStateForSaveSampleList(final int userId, final String programUuid, final String type) {
 		final SampleList sampleList = this.sampleListService.getLastSavedSampleListByUserId(userId, programUuid);
 		final List<String> treeState;
 
@@ -68,7 +68,7 @@ public class UserTreeStateServiceImpl implements UserTreeStateService {
 
 	@Override
 	public UserProgramTreeState saveOrUpdateUserProgramTreeState(final int userId, final String programUuid, final String type, final List<String> treeState) {
-		return userProgramStateDataManager.saveOrUpdateUserProgramTreeState(userId, programUuid, type, treeState);
+		return this.userProgramStateDataManager.saveOrUpdateUserProgramTreeState(userId, programUuid, type, treeState);
 	}
 
 	/**

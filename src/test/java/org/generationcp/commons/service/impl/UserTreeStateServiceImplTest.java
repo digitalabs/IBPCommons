@@ -43,9 +43,9 @@ public class UserTreeStateServiceImplTest {
 
 		// receiving null when retrieving for last saved germplasm list triggers the implem to retrieve the user's last stored navigation
 		// tree state
-		Mockito.when(germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(null);
+		Mockito.when(this.germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(null);
 		Mockito.when(
-				userProgramStateDataManager.getUserProgramTreeStateByUserIdProgramUuidAndType(TEST_USER_ID, TEST_PROGRAM_UUID,
+			this.userProgramStateDataManager.getUserProgramTreeState(TEST_USER_ID, TEST_PROGRAM_UUID,
 						ListTreeState.GERMPLASM_LIST.name())).thenReturn(savedNavigationState);
 
 		// the expected tree state is similar to the saved navigation state, except that it should have a marker at the start to indicate that results
@@ -54,25 +54,25 @@ public class UserTreeStateServiceImplTest {
 				Arrays.asList(UserTreeStateService.USE_PREVIOUS_NAVIGATION_MARKER,
                         UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM, FIRST_LEVEL_FOLDER_ID.toString());
 
-		final List<String> retrievedState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
+		final List<String> retrievedState = this.unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
 		Assert.assertEquals("Service must retrieve the latest tree navigation if no lists have been saved currently", expectedTreeState,
 				retrievedState);
 	}
 
 	@Test
     public void testRetrieveSavedListItemsGermplasmList() {
-        testRetrieveSaveListItemsPreviouslySaved(GermplasmList.LIST_TYPE);
+		this.testRetrieveSaveListItemsPreviouslySaved(GermplasmList.LIST_TYPE);
     }
 
 	void testRetrieveSaveListItemsPreviouslySaved(final String listType) {
-		Mockito.when(germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(
-				constructDummyNestedGermplasmListFolder(listType));
+		Mockito.when(this.germplasmListManager.getLastSavedGermplasmListByUserId(TEST_USER_ID, TEST_PROGRAM_UUID)).thenReturn(
+			this.constructDummyNestedGermplasmListFolder(listType));
 
 		final List<String> expectedTreeState =
 				Arrays.asList(UserTreeStateService.USE_LAST_SAVED_MARKER, UserTreeStateServiceImpl.GERMPLASM_LIST_ROOT_ITEM,
                         FIRST_LEVEL_FOLDER_ID.toString(), SECOND_LEVEL_FOLDER_ID.toString());
 
-		final List<String> actualState = unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
+		final List<String> actualState = this.unitUnderTest.getUserProgramTreeStateForSaveList(TEST_USER_ID, TEST_PROGRAM_UUID);
 
 		Assert.assertEquals(
 				"Service must generate a state starting from the marker, then the list item name, followed by the folder IDs of the containing folders",
