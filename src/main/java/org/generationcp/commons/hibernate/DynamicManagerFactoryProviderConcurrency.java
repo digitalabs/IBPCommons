@@ -63,6 +63,7 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 
 		ContextHolder.setCurrentCrop(project.getCropType().getCropName());
 		ContextHolder.setCurrentProgram(project.getUniqueID());
+		ContextHolder.setLoggedInUserId(this.getCurrentWorkbenchUserId());
 
 		factory.setPedigreeProfile(this.pedigreeProfile);
 		return factory;
@@ -73,6 +74,11 @@ public class DynamicManagerFactoryProviderConcurrency extends ManagerFactoryBase
 		return ContextUtil.getProjectInContext(this.workbenchDataManager,
 				((ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes())
 				.getRequest());
+	}
+
+	private Integer getCurrentWorkbenchUserId() {
+		return ContextUtil.getCurrentWorkbenchUserId(((ServletRequestAttributes) org.springframework.web.context.request.RequestContextHolder.getRequestAttributes())
+			.getRequest());
 	}
 
 	@Override
