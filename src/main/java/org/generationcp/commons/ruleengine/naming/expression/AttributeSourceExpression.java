@@ -1,13 +1,12 @@
 package org.generationcp.commons.ruleengine.naming.expression;
 
-import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.constant.AppConstants;
+import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Component
 public class AttributeSourceExpression extends AttributeExpression {
@@ -17,18 +16,17 @@ public class AttributeSourceExpression extends AttributeExpression {
 
 	public static final String ATTRIBUTE_KEY = "ATTRSC";
 	public static final String PATTERN_KEY = "\\[" + ATTRIBUTE_KEY + "\\.([^\\.]*)\\]"; // Example: ATTRSC.NOTES
-	private static final Pattern pattern = Pattern.compile(PATTERN_KEY);
 
 	@Override
 	public void apply(final List<StringBuilder> values, final AdvancingSource source, final String capturedText) {
 		for (StringBuilder value : values) {
 			String newValue = "";
-			final String attributeName = capturedText.substring(1, capturedText.length() - 1).split("\\.")[1];
+			final Integer variableId = Integer.valueOf(capturedText.substring(1, capturedText.length() - 1).split("\\.")[1]);
 			if (source.getBreedingMethod().getMtype().equals(AppConstants.METHOD_TYPE_DER.getString())
 				|| source.getBreedingMethod().getMtype().equals(AppConstants.METHOD_TYPE_MAN.getString())) {
-				newValue = germplasmDataManager.getAttributeValue(Integer.parseInt(source.getGermplasm().getGid()), attributeName);
+				newValue = germplasmDataManager.getAttributeValue(Integer.parseInt(source.getGermplasm().getGid()), variableId);
 			}
-			this.replaceAttributeExpressionWithValue(value, ATTRIBUTE_KEY, attributeName, newValue);
+			this.replaceAttributeExpressionWithValue(value, ATTRIBUTE_KEY, variableId, newValue);
 		}
 	}
 

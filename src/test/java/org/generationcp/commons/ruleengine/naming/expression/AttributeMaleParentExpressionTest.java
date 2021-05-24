@@ -1,7 +1,7 @@
 package org.generationcp.commons.ruleengine.naming.expression;
 
-import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
+import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
@@ -27,9 +27,9 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 	@InjectMocks
 	AttributeMaleParentExpression expression = new AttributeMaleParentExpression();
 
-	private static final String ATTRIBUTE_NAME = "ORI_COUN";
+	private static final Integer VARIABLE_ID = 2000;
 
-	private static final String PREFIX = "[ATTRMP.ORI_COUN]";
+	private static final String PREFIX = "[ATTRMP.2000]";
 
 	private static final String COUNT = "[SEQUENCE]";
 
@@ -40,7 +40,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 		final int maleParentGidOfGroupSource = 103;
 		groupSource.setGpid2(maleParentGidOfGroupSource);
 
-		Mockito.when(germplasmDataManager.getAttributeValue(maleParentGidOfGroupSource, ATTRIBUTE_NAME)).thenReturn("Mexico");
+		Mockito.when(germplasmDataManager.getAttributeValue(maleParentGidOfGroupSource, VARIABLE_ID)).thenReturn("Mexico");
 		Mockito.when(germplasmDataManager.getGermplasmByGID(104)).thenReturn(groupSource);
 
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
@@ -62,7 +62,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 		final int maleParentGidOfGroupSource = 103;
 		groupSource.setGpid2(maleParentGidOfGroupSource);
 
-		Mockito.when(germplasmDataManager.getAttributeValue(maleParentGidOfGroupSource, ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(maleParentGidOfGroupSource, VARIABLE_ID)).thenReturn("");
 		Mockito.when(germplasmDataManager.getGermplasmByGID(104)).thenReturn(groupSource);
 
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
@@ -84,7 +84,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 		final int maleParentGidOfGroupSource = 103;
 		groupSource.setGpid2(maleParentGidOfGroupSource);
 
-		Mockito.when(germplasmDataManager.getAttributeValue(null, ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(null, VARIABLE_ID)).thenReturn("");
 		Mockito.when(germplasmDataManager.getGermplasmByGID(0)).thenReturn(null);
 
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
@@ -103,7 +103,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 		final int maleParentGidOfGroupSource = 0;
 		groupSource.setGpid2(maleParentGidOfGroupSource);
 
-		Mockito.when(germplasmDataManager.getAttributeValue(null, ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(null, VARIABLE_ID)).thenReturn("");
 
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm = this.createImportedGermplasm(1, "(AA/ABC)", "0", 0, 0, -1, derivativeMethod.getMid());
@@ -121,7 +121,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 		groupSource.setGpid1(0);
 		groupSource.setGpid2(0);
 
-		Mockito.when(germplasmDataManager.getAttributeValue(groupSource.getGpid2(), ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(groupSource.getGpid2(), VARIABLE_ID)).thenReturn("");
 		Mockito.when(germplasmDataManager.getGermplasmByGID(1000)).thenReturn(groupSource);
 
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
@@ -141,7 +141,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 		groupSource.setGpid1(1002);
 		groupSource.setGpid2(1003);
 
-		Mockito.when(germplasmDataManager.getAttributeValue(groupSource.getGpid2(), ATTRIBUTE_NAME)).thenReturn("Mexico");
+		Mockito.when(germplasmDataManager.getAttributeValue(groupSource.getGpid2(), VARIABLE_ID)).thenReturn("Mexico");
 		Mockito.when(germplasmDataManager.getGermplasmByGID(1000)).thenReturn(groupSource);
 
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
@@ -157,7 +157,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 
 	@Test
 	public void testAttributeAsPrefixGenerativeMethod() throws Exception {
-		Mockito.when(germplasmDataManager.getAttributeValue(105, ATTRIBUTE_NAME)).thenReturn("Mexico");
+		Mockito.when(germplasmDataManager.getAttributeValue(105, VARIABLE_ID)).thenReturn("Mexico");
 		final Method generativeMethod = this.createGenerativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 				this.createImportedGermplasm(1, "(AA/ABC)", "1000", 104, 105, -1, generativeMethod.getMid());
@@ -175,7 +175,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 
 	@Test
 	public void testAttributeAsPrefixWithoutAttributeValueGenerativeMethod() throws Exception {
-		Mockito.when(germplasmDataManager.getAttributeValue(105, ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(105, VARIABLE_ID)).thenReturn("");
 		final Method generativeMethod = this.createGenerativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 				this.createImportedGermplasm(1, "(AA/ABC)", "1000", 104, 105, -1, generativeMethod.getMid());
@@ -194,7 +194,7 @@ public class AttributeMaleParentExpressionTest extends TestExpression {
 	@Test
 	public void testAttributeAsPrefixUnknownMaleParentGenerativeMethod() throws Exception {
 
-		Mockito.when(germplasmDataManager.getAttributeValue(0, ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(0, VARIABLE_ID)).thenReturn("");
 		final Method generativeMethod = this.createGenerativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 				this.createImportedGermplasm(1, "(AA/ABC)", "1000", 0, 0, -1, generativeMethod.getMid());
