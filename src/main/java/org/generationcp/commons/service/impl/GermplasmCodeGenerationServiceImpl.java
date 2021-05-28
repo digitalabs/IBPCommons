@@ -82,12 +82,13 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			return result;
 		}
 
-		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
+		final List<Germplasm> groupMembers = this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
+		groupMembers.add(0, germplasm);
 		final String generatedCodeName = (String) this.rulesService.runRules(codingRuleExecutionContext);
 
 		for (final Germplasm member : groupMembers) {
 			// TODO: Pass the userId and locationId. Hard coded to zero for now.
-			this.addName(member, generatedCodeName, nameType, 0, 0, result);
+			this.addName(member, generatedCodeName, nameType, 0, result);
 		}
 
 		return result;
@@ -109,12 +110,13 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			return result;
 		}
 
-		final List<Germplasm> groupMembers = this.germplasmGroupingService.getGroupMembers(germplasm.getMgid());
+		final List<Germplasm> groupMembers = this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
+		groupMembers.add(0, germplasm);
 		final String nameWithSequence = this.germplasmNamingService.generateNextNameAndIncrementSequence(setting);
 
 		// TODO performance tuning when processing large number of group members
 		for (final Germplasm member : groupMembers) {
-			this.addName(member, nameWithSequence, nameType, userId, locationId, result);
+			this.addName(member, nameWithSequence, nameType, locationId, result);
 		}
 
 		return result;
@@ -143,7 +145,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		return assignCodesResultsMap;
 	}
 
-	private void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType, final Integer userId,
+	private void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType,
 		final Integer locationId, final GermplasmGroupNamingResult result) {
 
 		final List<Name> currentNames = germplasm.getNames();
@@ -172,7 +174,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			name.setNval(groupName);
 			// nstat = 1 means it is preferred name.
 			name.setNstat(1);
-			name.setCreatedBy(userId);
 			name.setLocationId(locationId);
 			name.setNdate(Util.getCurrentDateAsIntegerValue());
 			name.setReferenceId(0);

@@ -66,4 +66,17 @@ public class ContextUtil {
 
 		this.workbenchDataManager.addProjectActivity(projAct);
 	}
+
+	public boolean shouldShowReleaseNotes() {
+		final ContextInfo contextInfo = this.getContextInfoFromSession();
+		if (contextInfo.shouldShowReleaseNotes()) {
+			// Set showReleaseNotes value to false in order to don't show again the popup after the success login
+			org.generationcp.commons.util.ContextUtil.setContextInfo(this.request, contextInfo.getLoggedInUserId(), contextInfo.getSelectedProjectId(),
+				contextInfo.getAuthToken(), false);
+			return true;
+		}
+
+		return false;
+	}
+
 }
