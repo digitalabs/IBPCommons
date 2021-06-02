@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
 import org.generationcp.middleware.domain.oms.TermId;
+import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
 import org.generationcp.middleware.pojos.Name;
 import org.slf4j.Logger;
@@ -36,9 +37,9 @@ public class TestExpression {
 	public AdvancingSource createAdvancingSourceTestData(final Method method,final ImportedGermplasm germplasm, final String name, final String season,
 		final String studyName) {
 		final List<Name> names = new ArrayList<>();
-		names.add(new Name(1, 1, 3, 0, name + "_three", 0, 0, 0));
-		names.add(new Name(1, 1, 5, 0, name + "_five", 0, 0, 0));
-		names.add(new Name(1, 1, 2, 1, name + "_two", 0, 0, 0));
+		names.add(new Name(1, new Germplasm(1), 3, 0, name + "_three", 0, 0, 0));
+		names.add(new Name(1, new Germplasm(1), 5, 0, name + "_five", 0, 0, 0));
+		names.add(new Name(1, new Germplasm(1), 2, 1, name + "_two", 0, 0, 0));
 
 		final AdvancingSource source = new AdvancingSource(germplasm, names, 2, method, false, studyName, "1");
 		source.setRootName(name);
@@ -64,9 +65,9 @@ public class TestExpression {
 		final ImportedGermplasm germplasm = new ImportedGermplasm();
 		germplasm.setDesig(name);
 		final List<Name> names = new ArrayList<Name>();
-		names.add(new Name(1, 1, 3, 0, name + "_three", 0, 0, 0));
-		names.add(new Name(1, 1, 5, 0, name + "_five", 0, 0, 0));
-		names.add(new Name(1, 1, 2, 1, name + "_two", 0, 0, 0));
+		names.add(new Name(1, new Germplasm(1), 3, 0, name + "_three", 0, 0, 0));
+		names.add(new Name(1, new Germplasm(1), 5, 0, name + "_five", 0, 0, 0));
+		names.add(new Name(1, new Germplasm(1), 2, 1, name + "_two", 0, 0, 0));
 
 		final AdvancingSource source = new AdvancingSource(germplasm, names, 2, method, false, "MNL", "1");
 		source.setRootName(name);
