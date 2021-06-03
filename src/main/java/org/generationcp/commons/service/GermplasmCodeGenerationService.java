@@ -2,6 +2,7 @@ package org.generationcp.commons.service;
 
 import org.generationcp.commons.ruleengine.RuleException;
 import org.generationcp.commons.ruleengine.coding.CodingRuleExecutionContext;
+import org.generationcp.middleware.domain.germplasm.GermplasmNameBatchRequestDto;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
@@ -65,5 +66,7 @@ public interface GermplasmCodeGenerationService {
 
 
 	String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException;
+
+	Map<Integer, GermplasmGroupNamingResult> createCodeNames( GermplasmNameBatchRequestDto germplasmNameBatchRequestDto) throws RuleException;
 
 }

@@ -6,6 +6,7 @@ import org.generationcp.commons.ruleengine.coding.CodingRuleExecutionContext;
 import org.generationcp.commons.ruleengine.service.RulesService;
 import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.service.GermplasmNamingService;
+import org.generationcp.middleware.domain.germplasm.GermplasmNameBatchRequestDto;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import java.util.Set;
 /**
  * Service to generate Code Names (aka. Group Names)
  */
+@Transactional(propagation = Propagation.MANDATORY)
 public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerationService {
 
 	private static final String GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP =
@@ -50,6 +53,26 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Autowired
 	private GermplasmNamingService germplasmNamingService;
 
+	public GermplasmCodeGenerationServiceImpl() {
+		// do nothing
+	}
+
+	@Override
+	public Map<Integer, GermplasmGroupNamingResult> createCodeNames(final GermplasmNameBatchRequestDto germplasmNameBatchRequestDto)
+		throws RuleException {
+
+		final UserDefinedField nameType =
+			this.germplasmDataManager.getUserDefinedFieldByTableTypeAndCode("NAMES", "NAME", germplasmNameBatchRequestDto.getNameType());
+
+		if (germplasmNameBatchRequestDto.getGermplasmNameSetting() != null) {
+			return this.applyGroupNames(new HashSet<>(germplasmNameBatchRequestDto.getGids()),
+				germplasmNameBatchRequestDto.getGermplasmNameSetting(), nameType, 0, 0);
+		} else {
+			final NamingConfiguration namingConfiguration = this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname());
+			return this.applyGroupNames(new HashSet<>(germplasmNameBatchRequestDto.getGids()), namingConfiguration, nameType);
+		}
+	}
+
 	@Override
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
 		final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
@@ -69,7 +92,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
 	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final NamingConfiguration namingConfiguration,
 		final UserDefinedField nameType, final CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException {
 
@@ -82,7 +104,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			return result;
 		}
 
-		final List<Germplasm> groupMembers = this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
+		final List<Germplasm> groupMembers =
+			this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
 		groupMembers.add(0, germplasm);
 		final String generatedCodeName = (String) this.rulesService.runRules(codingRuleExecutionContext);
 
@@ -96,8 +119,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
-	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final GermplasmNameSetting setting, final UserDefinedField nameType,
+	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final GermplasmNameSetting setting,
+		final UserDefinedField nameType,
 		final Integer userId, final Integer locationId) {
 
 		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
@@ -110,7 +133,8 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			return result;
 		}
 
-		final List<Germplasm> groupMembers = this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
+		final List<Germplasm> groupMembers =
+			this.germplasmGroupingService.getDescendantGroupMembers(germplasm.getGid(), germplasm.getMgid());
 		groupMembers.add(0, germplasm);
 		final String nameWithSequence = this.germplasmNamingService.generateNextNameAndIncrementSequence(setting);
 
@@ -128,7 +152,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	@Override
-	@Transactional(propagation = Propagation.MANDATORY)
 	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
 		final UserDefinedField nameType, final Integer userId, final Integer locationId) {
 		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
