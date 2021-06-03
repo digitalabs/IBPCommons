@@ -169,7 +169,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			}
 
 			final Name name = new Name();
-			name.setGermplasmId(germplasm.getGid());
+			name.setGermplasm(germplasm);
 			name.setTypeId(nameType.getFldno());
 			name.setNval(groupName);
 			// nstat = 1 means it is preferred name.
