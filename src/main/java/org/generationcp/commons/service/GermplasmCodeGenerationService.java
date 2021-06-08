@@ -9,6 +9,7 @@ import org.generationcp.middleware.pojos.germplasm.GermplasmNameSetting;
 import org.generationcp.middleware.pojos.naming.NamingConfiguration;
 import org.generationcp.middleware.service.api.GermplasmGroupNamingResult;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,20 +24,8 @@ public interface GermplasmCodeGenerationService {
 	 * @return
 	 * @throws RuleException
 	 */
-	Map<Integer, GermplasmGroupNamingResult> applyGroupNames(Set<Integer> gidsToProcess, NamingConfiguration namingConfiguration,
+	List<GermplasmGroupNamingResult> applyGroupNames(Set<Integer> gidsToProcess, NamingConfiguration namingConfiguration,
 			UserDefinedField nameType) throws RuleException;
-
-	/**
-	 * Generates code name for the Germplasm based on predefined NamingConfiguration.
-	 *
-	 * @param gid
-	 * @param namingConfiguration
-	 * @param nameType
-	 * @return
-	 * @throws RuleException
-	 */
-	GermplasmGroupNamingResult applyGroupName(Integer gid, NamingConfiguration namingConfiguration, UserDefinedField nameType,
-			CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException;
 
 	/**
 	 * Generates code names for a list of Germplasm based on user specified name setting (GermplasmNameSetting)
@@ -48,25 +37,12 @@ public interface GermplasmCodeGenerationService {
 	 * @param locationId
 	 * @return
 	 */
-	Map<Integer, GermplasmGroupNamingResult> applyGroupNames(Set<Integer> gids, GermplasmNameSetting setting, UserDefinedField nameType,
+	List<GermplasmGroupNamingResult> applyGroupNames(Set<Integer> gids, GermplasmNameSetting setting, UserDefinedField nameType,
 			Integer userId, Integer locationId);
-
-	/**
-	 * Generates code name for the Germplasm based on user specified name setting (GermplasmNameSetting)
-	 *
-	 * @param gid
-	 * @param setting
-	 * @param nameType
-	 * @param userId
-	 * @param locationId
-	 * @return
-	 */
-	GermplasmGroupNamingResult applyGroupName(Integer gid, GermplasmNameSetting setting, UserDefinedField nameType, Integer userId,
-			Integer locationId);
 
 
 	String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException;
 
-	Map<Integer, GermplasmGroupNamingResult> createCodeNames( GermplasmNameBatchRequestDto germplasmNameBatchRequestDto) throws RuleException;
+	List<GermplasmGroupNamingResult> createCodeNames( GermplasmNameBatchRequestDto germplasmNameBatchRequestDto) throws RuleException;
 
 }

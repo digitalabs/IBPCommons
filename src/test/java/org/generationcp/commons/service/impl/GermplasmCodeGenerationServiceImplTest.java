@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -232,26 +233,30 @@ public class GermplasmCodeGenerationServiceImplTest {
 				PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 2) + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 3) + SUFFIX,
 				PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 4) + SUFFIX, PREFIX + (NAMING_CONFIG_STARTING_SEQUENCE + 5) + SUFFIX);
 
-		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
+		final List<GermplasmGroupNamingResult> resultsList =
 			this.germplasmCodeGenerationService.applyGroupNames(gids, this.namingConfiguration, this.codeNameType);
 		Assert.assertEquals("Expected service to return with " + gids.size() + " naming results, one per germplasm.", gids.size(),
-			resultsMap.keySet().size());
+			resultsList.size());
 
-		for (final Integer gid : gids) {
-			final Germplasm germplasm = germplasmMap.get(gid);
+		for (final GermplasmGroupNamingResult germplasmGroupNamingResult : resultsList) {
+			final Germplasm germplasm = germplasmMap.get(germplasmGroupNamingResult.getGid());
 			final String expectedCodedName = PREFIX + (startNumber++) + SUFFIX;
-			Assert.assertEquals("Expected germplasm " + gid + " to have a coded name assigned as preferred name.", expectedCodedName,
+			Assert.assertEquals(
+				"Expected germplasm " + germplasmGroupNamingResult.getGid() + " to have a coded name assigned as preferred name.",
+				expectedCodedName,
 				germplasm.findPreferredName().getNval());
-			Assert.assertEquals("Expected germplasm " + gid + " to have a coded name with coded name type.", this.codeNameType.getFldno(),
+			Assert.assertEquals("Expected germplasm " + germplasmGroupNamingResult.getGid() + " to have a coded name with coded name type.",
+				this.codeNameType.getFldno(),
 				germplasm.findPreferredName().getTypeId());
-			Assert.assertEquals("Expected existing preferred name of germplasm " + gid + " to be set as non-preferred.", new Integer(0),
-				oldPreferredNames.get(gid).getNstat());
+			Assert.assertEquals(
+				"Expected existing preferred name of germplasm " + germplasmGroupNamingResult.getGid() + " to be set as non-preferred.",
+				new Integer(0),
+				oldPreferredNames.get(germplasmGroupNamingResult.getGid()).getNstat());
 
-			Assert.assertNotNull(resultsMap.get(gid));
-			Assert.assertEquals(1, resultsMap.get(gid).getMessages().size());
+			Assert.assertEquals(1, germplasmGroupNamingResult.getMessages().size());
 			Assert.assertEquals(
 				String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
-					expectedCodedName, this.codeNameType.getFcode()), resultsMap.get(gid).getMessages().get(0));
+					expectedCodedName, this.codeNameType.getFcode()), germplasmGroupNamingResult.getMessages().get(0));
 		}
 
 	}
@@ -407,26 +412,30 @@ public class GermplasmCodeGenerationServiceImplTest {
 			.thenReturn(this.getExpectedName(startNumber), this.getExpectedName(startNumber + 1), this.getExpectedName(startNumber + 2),
 				this.getExpectedName(startNumber + 3), this.getExpectedName(startNumber + 4), this.getExpectedName(startNumber + 5));
 
-		final Map<Integer, GermplasmGroupNamingResult> resultsMap =
+		final List<GermplasmGroupNamingResult> resultsList =
 			this.germplasmCodeGenerationService.applyGroupNames(gids, this.germplasmNameSetting, this.codeNameType, 0, 0);
 		Assert.assertEquals("Expected service to return with " + gids.size() + " naming results, one per germplasm.", gids.size(),
-			resultsMap.keySet().size());
+			resultsList.size());
 
-		for (final Integer gid : gids) {
-			final Germplasm germplasm = germplasmMap.get(gid);
+		for (final GermplasmGroupNamingResult germplasmGroupNamingResult : resultsList) {
+			final Germplasm germplasm = germplasmMap.get(germplasmGroupNamingResult.getGid());
 			final String expectedCodedName = PREFIX + " 000000" + (startNumber++) + " " + SUFFIX;
-			Assert.assertEquals("Expected germplasm " + gid + " to have a coded name assigned as preferred name.", expectedCodedName,
+			Assert.assertEquals(
+				"Expected germplasm " + germplasmGroupNamingResult.getGid() + " to have a coded name assigned as preferred name.",
+				expectedCodedName,
 				germplasm.findPreferredName().getNval());
-			Assert.assertEquals("Expected germplasm " + gid + " to have a coded name with coded name type.", this.codeNameType.getFldno(),
+			Assert.assertEquals("Expected germplasm " + germplasmGroupNamingResult.getGid() + " to have a coded name with coded name type.",
+				this.codeNameType.getFldno(),
 				germplasm.findPreferredName().getTypeId());
-			Assert.assertEquals("Expected existing preferred name of germplasm " + gid + " to be set as non-preferred.", new Integer(0),
-				oldPreferredNames.get(gid).getNstat());
+			Assert.assertEquals(
+				"Expected existing preferred name of germplasm " + germplasmGroupNamingResult.getGid() + " to be set as non-preferred.",
+				new Integer(0),
+				oldPreferredNames.get(germplasmGroupNamingResult.getGid()).getNstat());
 
-			Assert.assertNotNull(resultsMap.get(gid));
-			Assert.assertEquals(1, resultsMap.get(gid).getMessages().size());
+			Assert.assertEquals(1, germplasmGroupNamingResult.getMessages().size());
 			Assert.assertEquals(
 				String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
-					expectedCodedName, this.codeNameType.getFcode()), resultsMap.get(gid).getMessages().get(0));
+					expectedCodedName, this.codeNameType.getFcode()), germplasmGroupNamingResult.getMessages().get(0));
 		}
 
 	}

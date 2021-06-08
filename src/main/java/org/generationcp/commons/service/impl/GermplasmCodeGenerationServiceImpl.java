@@ -21,11 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -58,7 +57,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	@Override
-	public Map<Integer, GermplasmGroupNamingResult> createCodeNames(final GermplasmNameBatchRequestDto germplasmNameBatchRequestDto)
+	public List<GermplasmGroupNamingResult> createCodeNames(final GermplasmNameBatchRequestDto germplasmNameBatchRequestDto)
 		throws RuleException {
 
 		final UserDefinedField nameType =
@@ -74,28 +73,45 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	@Override
-	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
+	public List<GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
 		final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
 
 		final List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace(CODING_RULE_SEQUENCE));
 
 		final CodingRuleExecutionContext codingRuleExecutionContext = new CodingRuleExecutionContext(executionOrder, namingConfiguration);
 
-		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
+		final List<GermplasmGroupNamingResult> assignCodesResultsList = new ArrayList<>();
 
 		for (final Integer gid : gidsToProcess) {
-			assignCodesResultsMap.put(gid, this.applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
+			assignCodesResultsList.add(this.applyGroupName(gid, namingConfiguration, nameType, codingRuleExecutionContext));
 			codingRuleExecutionContext.reset();
 		}
 
-		return assignCodesResultsMap;
+		return assignCodesResultsList;
 	}
 
 	@Override
-	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final NamingConfiguration namingConfiguration,
+	public List<GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
+		final UserDefinedField nameType, final Integer userId, final Integer locationId) {
+		final List<GermplasmGroupNamingResult> assignCodesResultsList = new ArrayList<>();
+		final boolean startNumberSpecified = setting.getStartNumber() != null;
+		Integer startNumber = setting.getStartNumber();
+		for (final Integer gid : gids) {
+			// Increment start number of succeeding germplasm processed based on initial start # specified, if any
+			if (startNumberSpecified) {
+				setting.setStartNumber(startNumber++);
+			}
+			final GermplasmGroupNamingResult result = this.applyGroupName(gid, setting, nameType, userId, locationId);
+			assignCodesResultsList.add(result);
+		}
+		return assignCodesResultsList;
+	}
+
+	protected GermplasmGroupNamingResult applyGroupName(final Integer gid, final NamingConfiguration namingConfiguration,
 		final UserDefinedField nameType, final CodingRuleExecutionContext codingRuleExecutionContext) throws RuleException {
 
 		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
+		result.setGid(gid);
 
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
@@ -118,12 +134,12 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 
 	}
 
-	@Override
-	public GermplasmGroupNamingResult applyGroupName(final Integer gid, final GermplasmNameSetting setting,
+	protected GermplasmGroupNamingResult applyGroupName(final Integer gid, final GermplasmNameSetting setting,
 		final UserDefinedField nameType,
 		final Integer userId, final Integer locationId) {
 
 		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
+		result.setGid(gid);
 
 		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
 
@@ -149,23 +165,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	@Override
 	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
 		return this.germplasmNamingService.getNextNameInSequence(setting);
-	}
-
-	@Override
-	public Map<Integer, GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
-		final UserDefinedField nameType, final Integer userId, final Integer locationId) {
-		final Map<Integer, GermplasmGroupNamingResult> assignCodesResultsMap = new LinkedHashMap<>();
-		final boolean startNumberSpecified = setting.getStartNumber() != null;
-		Integer startNumber = setting.getStartNumber();
-		for (final Integer gid : gids) {
-			// Increment start number of succeeding germplasm processed based on initial start # specified, if any
-			if (startNumberSpecified) {
-				setting.setStartNumber(startNumber++);
-			}
-			final GermplasmGroupNamingResult result = this.applyGroupName(gid, setting, nameType, userId, locationId);
-			assignCodesResultsMap.put(gid, result);
-		}
-		return assignCodesResultsMap;
 	}
 
 	private void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType,
