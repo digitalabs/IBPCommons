@@ -6,9 +6,10 @@ import org.generationcp.commons.ruleengine.coding.CodingRuleExecutionContext;
 import org.generationcp.commons.ruleengine.service.RulesService;
 import org.generationcp.commons.service.GermplasmCodeGenerationService;
 import org.generationcp.commons.service.GermplasmNamingService;
-import org.generationcp.middleware.domain.germplasm.GermplasmNameBatchRequestDto;
+import org.generationcp.middleware.domain.germplasm.GermplasmCodeNameBatchRequestDto;
 import org.generationcp.middleware.exceptions.InvalidGermplasmNameSettingException;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
+import org.generationcp.middleware.hibernate.HibernateSessionProvider;
+import org.generationcp.middleware.manager.DaoFactory;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Name;
 import org.generationcp.middleware.pojos.UserDefinedField;
@@ -44,36 +45,43 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	private RuleFactory ruleFactory;
 
 	@Autowired
-	private GermplasmDataManager germplasmDataManager;
-
-	@Autowired
 	private GermplasmGroupingService germplasmGroupingService;
 
 	@Autowired
 	private GermplasmNamingService germplasmNamingService;
 
+	private DaoFactory daoFactory;
+
 	public GermplasmCodeGenerationServiceImpl() {
 		// do nothing
 	}
 
+	public GermplasmCodeGenerationServiceImpl(final HibernateSessionProvider sessionProvider) {
+		this.daoFactory = new DaoFactory(sessionProvider);
+	}
+
 	@Override
-	public List<GermplasmGroupNamingResult> createCodeNames(final GermplasmNameBatchRequestDto germplasmNameBatchRequestDto)
+	public List<GermplasmGroupNamingResult> createCodeNames(final GermplasmCodeNameBatchRequestDto germplasmCodeNameBatchRequestDto)
 		throws RuleException {
 
 		final UserDefinedField nameType =
-			this.germplasmDataManager.getUserDefinedFieldByTableTypeAndCode("NAMES", "NAME", germplasmNameBatchRequestDto.getNameType());
+			this.daoFactory.getUserDefinedFieldDAO().getByTableTypeAndCode("NAMES", "NAME", germplasmCodeNameBatchRequestDto.getNameType());
 
-		if (germplasmNameBatchRequestDto.getGermplasmNameSetting() != null) {
-			return this.applyGroupNames(new HashSet<>(germplasmNameBatchRequestDto.getGids()),
-				germplasmNameBatchRequestDto.getGermplasmNameSetting(), nameType, 0, 0);
+		if (germplasmCodeNameBatchRequestDto.getGermplasmCodeNameSetting() != null) {
+			return this.applyGroupNames(new HashSet<>(germplasmCodeNameBatchRequestDto.getGids()),
+				germplasmCodeNameBatchRequestDto.getGermplasmCodeNameSetting(), nameType, 0, 0);
 		} else {
-			final NamingConfiguration namingConfiguration = this.germplasmDataManager.getNamingConfigurationByName(nameType.getFname());
-			return this.applyGroupNames(new HashSet<>(germplasmNameBatchRequestDto.getGids()), namingConfiguration, nameType);
+			final NamingConfiguration namingConfiguration = this.daoFactory.getNamingConfigurationDAO().getByName(nameType.getFname());
+			return this.applyGroupNames(new HashSet<>(germplasmCodeNameBatchRequestDto.getGids()), namingConfiguration, nameType);
 		}
 	}
 
 	@Override
-	public List<GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
+	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
+		return this.germplasmNamingService.getNextNameInSequence(setting);
+	}
+
+	protected List<GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gidsToProcess,
 		final NamingConfiguration namingConfiguration, final UserDefinedField nameType) throws RuleException {
 
 		final List<String> executionOrder = Arrays.asList(this.ruleFactory.getRuleSequenceForNamespace(CODING_RULE_SEQUENCE));
@@ -90,8 +98,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		return assignCodesResultsList;
 	}
 
-	@Override
-	public List<GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
+	protected List<GermplasmGroupNamingResult> applyGroupNames(final Set<Integer> gids, final GermplasmNameSetting setting,
 		final UserDefinedField nameType, final Integer userId, final Integer locationId) {
 		final List<GermplasmGroupNamingResult> assignCodesResultsList = new ArrayList<>();
 		final boolean startNumberSpecified = setting.getStartNumber() != null;
@@ -113,7 +120,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
 		result.setGid(gid);
 
-		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
+		final Germplasm germplasm = this.daoFactory.getGermplasmDao().getById(gid);
 
 		if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
 			result.addMessage(String.format(GERMPLASM_NOT_PART_OF_MANAGEMENT_GROUP, germplasm.getGid()));
@@ -141,7 +148,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		final GermplasmGroupNamingResult result = new GermplasmGroupNamingResult();
 		result.setGid(gid);
 
-		final Germplasm germplasm = this.germplasmDataManager.getGermplasmByGID(gid);
+		final Germplasm germplasm = this.daoFactory.getGermplasmDao().getById(gid);
 
 		if (germplasm.getMgid() == null || germplasm.getMgid() == 0) {
 			result.addMessage(
@@ -160,11 +167,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		}
 
 		return result;
-	}
-
-	@Override
-	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
-		return this.germplasmNamingService.getNextNameInSequence(setting);
 	}
 
 	private void addName(final Germplasm germplasm, final String groupName, final UserDefinedField nameType,
@@ -201,7 +203,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 			name.setReferenceId(0);
 
 			germplasm.getNames().add(name);
-			this.germplasmDataManager.save(germplasm);
+			this.daoFactory.getGermplasmDao().save(germplasm);
 			result.addMessage(
 				String.format("Germplasm (gid: %s) successfully assigned name %s of type %s as a preferred name.", germplasm.getGid(),
 					groupName, nameType.getFcode()));
