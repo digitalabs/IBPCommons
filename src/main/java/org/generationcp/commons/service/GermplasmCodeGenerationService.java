@@ -12,6 +12,7 @@ public interface GermplasmCodeGenerationService {
 
 	String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException;
 
-	List<GermplasmGroupNamingResult> createCodeNames(GermplasmCodeNameBatchRequestDto germplasmCodeNameBatchRequestDto) throws RuleException;
+	List<GermplasmGroupNamingResult> createCodeNames(GermplasmCodeNameBatchRequestDto germplasmCodeNameBatchRequestDto) throws RuleException,
+		InvalidGermplasmNameSettingException;
 
 }

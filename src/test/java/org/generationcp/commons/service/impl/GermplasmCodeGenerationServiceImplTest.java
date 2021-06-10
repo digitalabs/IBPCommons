@@ -89,7 +89,7 @@ public class GermplasmCodeGenerationServiceImplTest {
 	}
 
 	@Test
-	public void testApplyGroupNamesManualNaming() {
+	public void testApplyGroupNamesManualNaming() throws InvalidGermplasmNameSettingException {
 		final Set<Integer> gids = new HashSet<>(Arrays.asList(1001, 1002, 1003, 1004));
 		final Map<Integer, Germplasm> germplasmMap = new HashMap<>();
 		final Map<Integer, Name> oldPreferredNames = new HashMap<>();

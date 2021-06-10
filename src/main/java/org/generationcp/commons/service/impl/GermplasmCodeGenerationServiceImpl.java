@@ -61,7 +61,7 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 
 	@Override
 	public List<GermplasmGroupNamingResult> createCodeNames(final GermplasmCodeNameBatchRequestDto germplasmCodeNameBatchRequestDto)
-		throws RuleException {
+		throws RuleException, InvalidGermplasmNameSettingException {
 
 		final UserDefinedField nameType =
 			this.daoFactory.getUserDefinedFieldDAO().getByTableTypeAndCode("NAMES", "NAME", germplasmCodeNameBatchRequestDto.getNameType());
@@ -101,10 +101,14 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 	}
 
 	protected List<GermplasmGroupNamingResult> applyGroupNamesForManualNaming(final Set<Integer> gids, final GermplasmNameSetting setting,
-		final UserDefinedField nameType) {
+		final UserDefinedField nameType) throws InvalidGermplasmNameSettingException {
 		final List<GermplasmGroupNamingResult> assignCodesResultsList = new ArrayList<>();
 		final boolean startNumberSpecified = setting.getStartNumber() != null;
 		Integer startNumber = setting.getStartNumber();
+
+		// Call this method to check first if the name settings are valid.
+		this.germplasmNamingService.getNextNameInSequence(setting);
+
 		for (final Integer gid : gids) {
 			// Increment start number of succeeding germplasm processed based on initial start # specified, if any
 			if (startNumberSpecified) {
