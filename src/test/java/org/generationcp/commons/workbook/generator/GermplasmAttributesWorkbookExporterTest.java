@@ -1,11 +1,16 @@
 package org.generationcp.commons.workbook.generator;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.GermplasmExportTestHelper;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.ontology.DataType;
+import org.generationcp.middleware.domain.ontology.Method;
+import org.generationcp.middleware.domain.ontology.Property;
+import org.generationcp.middleware.domain.ontology.Scale;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
@@ -48,6 +53,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 		Mockito.when(this.ontologyVariableDataManager.getWithFilter(Mockito.any())).thenReturn(this.getAttributeVariables());
 		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTE));
 	}
+
 	@Test
 	public void testGetSourceItems() {
 		final List<Variable> attributes = this.attributesWorkbookExporter.getSourceItems();
@@ -59,10 +65,8 @@ public class GermplasmAttributesWorkbookExporterTest {
 
 	@Test
 	public void testGenerateAddedColumnHeader() {
-		final Variable variable1 = new Variable();
-		variable1.setId(1);
-		variable1.setName(GermplasmAttributesWorkbookExporterTest.NOTES);
-		variable1.setDefinition(GermplasmAttributesWorkbookExporterTest.NOTES);
+		final Variable variable1 =
+			this.getVariable(1, GermplasmAttributesWorkbookExporterTest.NOTES, GermplasmAttributesWorkbookExporterTest.NOTES);
 
 		Mockito.when(this.ontologyVariableDataManager.getWithFilter(Mockito.any())).thenReturn(Collections.singletonList(variable1));
 		this.attributesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
@@ -70,7 +74,8 @@ public class GermplasmAttributesWorkbookExporterTest {
 		final HSSFRow headerRow = observationSheet.createRow(0);
 		this.attributesWorkbookExporter.generateAddedColumnHeader(headerRow, 0);
 		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTES, headerRow.getCell(0).getStringCellValue());
-		Assert.assertEquals(this.styleBuilder.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR), headerRow.getCell(0).getCellStyle());
+		Assert.assertEquals(this.styleBuilder.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR),
+			headerRow.getCell(0).getCellStyle());
 	}
 
 	@Test
@@ -80,7 +85,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
 		final HSSFRow row = observationSheet.createRow(0);
 		final GermplasmExportSource data = GermplasmExportTestHelper.generateListEntries(1).get(0);
-		this.attributesWorkbookExporter.generateAddedColumnValue(row, data,0);
+		this.attributesWorkbookExporter.generateAddedColumnValue(row, data, 0);
 		Assert.assertEquals("NOTES:1", row.getCell(0).getStringCellValue());
 	}
 
@@ -103,16 +108,9 @@ public class GermplasmAttributesWorkbookExporterTest {
 
 	@Test
 	public void testGetSourceItemsDuplicate() {
-		final Variable variable1 = new Variable();
-		variable1.setId(1);
-		variable1.setName(GermplasmAttributesWorkbookExporterTest.NOTE);
-		variable1.setDefinition(GermplasmAttributesWorkbookExporterTest.NOTES);
-
-		final Variable variable2 = new Variable();
-		variable2.setId(2);
-		variable2.setName(GermplasmAttributesWorkbookExporterTest.NOTE);
-		variable2.setDefinition("-");
-
+		final Variable variable1 =
+			this.getVariable(1, GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES);
+		final Variable variable2 = this.getVariable(1, GermplasmAttributesWorkbookExporterTest.NOTE, "-");
 		Mockito.when(this.ontologyVariableDataManager.getWithFilter(Mockito.any())).thenReturn(Arrays.asList(variable1, variable2));
 		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTE));
 		final List<Variable> attributes = this.attributesWorkbookExporter.getSourceItems();
@@ -124,11 +122,38 @@ public class GermplasmAttributesWorkbookExporterTest {
 	}
 
 	private List<Variable> getAttributeVariables() {
-		final Variable variable1 = new Variable();
-		variable1.setId(1);
-		variable1.setName(GermplasmAttributesWorkbookExporterTest.NOTE);
-		variable1.setDefinition(GermplasmAttributesWorkbookExporterTest.NOTES);
+		final Variable variable1 =
+			this.getVariable(1, GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES);
 		return Arrays.asList(variable1);
 	}
 
+	private Variable getVariable(final int id, final String name, final String definition) {
+		final Variable variable1 = new Variable();
+		variable1.setId(id);
+		variable1.setName(name);
+		variable1.setDefinition(definition);
+		variable1.setProperty(this.getProperty());
+		variable1.setScale(this.getScale());
+		variable1.setMethod(this.getMethod());
+		return variable1;
+	}
+
+	private Property getProperty() {
+		final Property property = new Property();
+		property.setName(RandomStringUtils.randomAlphabetic(20));
+		return property;
+	}
+
+	private Scale getScale() {
+		final Scale scale = new Scale();
+		scale.setName(RandomStringUtils.randomAlphabetic(20));
+		scale.setDataType(DataType.NUMERIC_VARIABLE);
+		return scale;
+	}
+
+	private Method getMethod() {
+		final Method method = new Method();
+		method.setName(RandomStringUtils.randomAlphabetic(20));
+		return method;
+	}
 }
