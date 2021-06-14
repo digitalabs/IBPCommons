@@ -77,11 +77,6 @@ public class GermplasmCodeGenerationServiceImpl implements GermplasmCodeGenerati
 		}
 	}
 
-	@Override
-	public String getNextNameInSequence(final GermplasmNameSetting setting) throws InvalidGermplasmNameSettingException {
-		return this.germplasmNamingService.getNextNameInSequence(setting);
-	}
-
 	protected List<GermplasmGroupNamingResult> applyGroupNamesForAutomaticNaming(final Set<Integer> gidsToProcess,
 		final UserDefinedField nameType) throws RuleException {
 

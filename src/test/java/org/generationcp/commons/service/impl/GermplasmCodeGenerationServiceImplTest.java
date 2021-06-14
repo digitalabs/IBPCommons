@@ -323,12 +323,6 @@ public class GermplasmCodeGenerationServiceImplTest {
 					+ expectedCodedName + " was not added."));
 	}
 
-	@Test
-	public void testGetNextNameInSequence() throws InvalidGermplasmNameSettingException {
-		Assert.assertEquals(this.getExpectedName(NEXT_NUMBER),
-			this.germplasmCodeGenerationService.getNextNameInSequence(this.germplasmNameSetting));
-	}
-
 	private NamingConfiguration createNamingConfiguration() {
 		final NamingConfiguration namingConfiguration = new NamingConfiguration();
 		namingConfiguration.setPrefix(GermplasmCodeGenerationServiceImplTest.PREFIX);
