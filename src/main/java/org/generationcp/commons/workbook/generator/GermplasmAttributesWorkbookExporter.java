@@ -6,17 +6,14 @@ import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.UserDefinedField;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExporter<UserDefinedField> {
-
-	@Resource
-	private GermplasmDataManager germplasmManager;
+public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExporter<Variable> {
 
 	private List<String> addedAttributeColumns = new ArrayList<>();
 

@@ -3,13 +3,12 @@ package org.generationcp.commons.workbook.generator;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.generationcp.commons.data.initializer.UserDefinedFieldTestDataInitializer;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
 import org.generationcp.commons.parsing.GermplasmExportTestHelper;
 import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
+import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
-import org.generationcp.middleware.manager.api.GermplasmDataManager;
-import org.generationcp.middleware.pojos.UserDefinedField;
+import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,8 +29,9 @@ public class GermplasmAttributesWorkbookExporterTest {
 	private static final String NOTES = "NOTES";
 	private ExcelCellStyleBuilder styleBuilder;
 	private HSSFWorkbook wb;
+
 	@Mock
-	private GermplasmDataManager germplasmManager;
+	private OntologyVariableDataManager ontologyVariableDataManager;
 
 	@Mock
 	private GermplasmListNewColumnsInfo columnsInfo;
@@ -45,23 +45,26 @@ public class GermplasmAttributesWorkbookExporterTest {
 		this.styleBuilder = new ExcelCellStyleBuilder(this.wb);
 		this.attributesWorkbookExporter.setSheetStyles(this.styleBuilder);
 		this.attributesWorkbookExporter.setColumnsInfo(this.columnsInfo);
-		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Collections.singletonList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
-				GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES)));
+		Mockito.when(this.ontologyVariableDataManager.getWithFilter(Mockito.any())).thenReturn(this.getAttributeVariables());
 		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTE));
 	}
 	@Test
 	public void testGetSourceItems() {
-		final List<UserDefinedField> attributes =  this.attributesWorkbookExporter.getSourceItems();
+		final List<Variable> attributes = this.attributesWorkbookExporter.getSourceItems();
 		Assert.assertFalse(attributes.isEmpty());
-		final UserDefinedField attribute = attributes.get(0);
-		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTES, attribute.getFname());
-		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTE, attribute.getFcode());
+		final Variable attribute = attributes.get(0);
+		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTES, attribute.getDefinition());
+		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTE, attribute.getName());
 	}
 
 	@Test
 	public void testGenerateAddedColumnHeader() {
-		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Collections.singletonList(UserDefinedFieldTestDataInitializer.createUserDefinedField(
-				GermplasmAttributesWorkbookExporterTest.NOTES, GermplasmAttributesWorkbookExporterTest.NOTES)));
+		final Variable variable1 = new Variable();
+		variable1.setId(1);
+		variable1.setName(GermplasmAttributesWorkbookExporterTest.NOTES);
+		variable1.setDefinition(GermplasmAttributesWorkbookExporterTest.NOTES);
+
+		Mockito.when(this.ontologyVariableDataManager.getWithFilter(Mockito.any())).thenReturn(Collections.singletonList(variable1));
 		this.attributesWorkbookExporter.setColumnsInfo(GermplasmExportTestHelper.generateAddedColumnsInfo());
 		final HSSFSheet observationSheet = this.wb.createSheet("Observation");
 		final HSSFRow headerRow = observationSheet.createRow(0);
@@ -87,7 +90,7 @@ public class GermplasmAttributesWorkbookExporterTest {
 		this.attributesWorkbookExporter.addRowsToDescriptionSheet(descriptionSheet, 0, this.styleBuilder, this.columnsInfo);
 		final HSSFRow attributeRow = descriptionSheet.getRow(1);
 
-		final UserDefinedField attribute =  this.attributesWorkbookExporter.getSourceItems().get(0);
+		final Variable attribute = this.attributesWorkbookExporter.getSourceItems().get(0);
 		Assert.assertEquals(this.attributesWorkbookExporter.getName(attribute), attributeRow.getCell(0).getStringCellValue());
 		Assert.assertEquals(this.attributesWorkbookExporter.getDescription(attribute), attributeRow.getCell(1).getStringCellValue());
 		Assert.assertEquals(this.attributesWorkbookExporter.getProperty(attribute), attributeRow.getCell(2).getStringCellValue());
@@ -100,17 +103,32 @@ public class GermplasmAttributesWorkbookExporterTest {
 
 	@Test
 	public void testGetSourceItemsDuplicate() {
-		final UserDefinedField userDefinedField1 = UserDefinedFieldTestDataInitializer.createUserDefinedField(
-			GermplasmAttributesWorkbookExporterTest.NOTE, GermplasmAttributesWorkbookExporterTest.NOTES);
-		final UserDefinedField userDefinedField2 = UserDefinedFieldTestDataInitializer.createUserDefinedField(
-			GermplasmAttributesWorkbookExporterTest.NOTE, "-");
-		Mockito.when(this.germplasmManager.getAllAttributesTypes()).thenReturn(Arrays.asList(userDefinedField1, userDefinedField2));
+		final Variable variable1 = new Variable();
+		variable1.setId(1);
+		variable1.setName(GermplasmAttributesWorkbookExporterTest.NOTE);
+		variable1.setDefinition(GermplasmAttributesWorkbookExporterTest.NOTES);
+
+		final Variable variable2 = new Variable();
+		variable2.setId(2);
+		variable2.setName(GermplasmAttributesWorkbookExporterTest.NOTE);
+		variable2.setDefinition("-");
+
+		Mockito.when(this.ontologyVariableDataManager.getWithFilter(Mockito.any())).thenReturn(Arrays.asList(variable1, variable2));
 		Mockito.when(this.columnsInfo.getColumns()).thenReturn(Collections.singletonList(GermplasmAttributesWorkbookExporterTest.NOTE));
-		final List<UserDefinedField> attributes =  this.attributesWorkbookExporter.getSourceItems();
+		final List<Variable> attributes = this.attributesWorkbookExporter.getSourceItems();
 		Assert.assertFalse(attributes.isEmpty());
 		Assert.assertEquals("Returned value is 1 ", 1, attributes.size());
-		final UserDefinedField attribute = attributes.get(0);
-		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTES, attribute.getFname());
-		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTE, attribute.getFcode());
+		final Variable attribute = attributes.get(0);
+		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTES, attribute.getDefinition());
+		Assert.assertEquals(GermplasmAttributesWorkbookExporterTest.NOTE, attribute.getName());
 	}
+
+	private List<Variable> getAttributeVariables() {
+		final Variable variable1 = new Variable();
+		variable1.setId(1);
+		variable1.setName(GermplasmAttributesWorkbookExporterTest.NOTE);
+		variable1.setDefinition(GermplasmAttributesWorkbookExporterTest.NOTES);
+		return Arrays.asList(variable1);
+	}
+
 }
