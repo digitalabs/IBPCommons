@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.generationcp.commons.pojo.CustomReportType;
 
+@Deprecated
 public interface JasperReportService {
 
 	/**
