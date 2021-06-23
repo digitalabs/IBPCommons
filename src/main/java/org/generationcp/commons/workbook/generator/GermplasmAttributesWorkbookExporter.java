@@ -1,11 +1,14 @@
 package org.generationcp.commons.workbook.generator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.generationcp.commons.parsing.ExcelCellStyleBuilder;
+import org.generationcp.middleware.ContextHolder;
 import org.generationcp.middleware.domain.ontology.Variable;
 import org.generationcp.middleware.domain.ontology.VariableType;
 import org.generationcp.middleware.manager.ontology.api.OntologyVariableDataManager;
 import org.generationcp.middleware.manager.ontology.daoElements.VariableFilter;
+import org.generationcp.middleware.util.VariableValueUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +34,10 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 			final VariableFilter variableFilter = new VariableFilter();
 			variableFilter.addVariableType(VariableType.GERMPLASM_PASSPORT);
 			variableFilter.addVariableType(VariableType.GERMPLASM_ATTRIBUTE);
+			final String programUUID = ContextHolder.getCurrentProgram();
+			if (StringUtils.isNotEmpty(programUUID)) {
+				variableFilter.setProgramUuid(programUUID);
+			}
 			final List<Variable> attributeTypes = this.ontologyVariableDataManager.getWithFilter(variableFilter);
 			final Map<String, Variable>
 				attributeTypesMap =
@@ -85,7 +92,7 @@ public class GermplasmAttributesWorkbookExporter extends GermplasmAddedColumnExp
 
 	@Override
 	String getValue(final Variable source) {
-		return "";
+		return VariableValueUtil.getExpectedRange(source);
 	}
 
 	@Override

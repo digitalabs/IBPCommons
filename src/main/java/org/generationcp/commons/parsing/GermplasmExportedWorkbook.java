@@ -643,7 +643,7 @@ public class GermplasmExportedWorkbook {
 			conditionDetailsHeading.createCell(3, this.headingStyle, GermplasmExportedWorkbook.SCALE);
 			conditionDetailsHeading.createCell(4, this.headingStyle, GermplasmExportedWorkbook.METHOD);
 			conditionDetailsHeading.createCell(5, this.headingStyle, GermplasmExportedWorkbook.DATA_TYPE);
-			conditionDetailsHeading.createCell(6, this.headingStyle, "");
+			conditionDetailsHeading.createCell(6, this.headingStyle, GermplasmExportedWorkbook.VALUE);
 			conditionDetailsHeading.createCell(7, this.headingStyle, GermplasmExportedWorkbook.COMMENTS);
 			this.attributesGenerator
 				.addRowsToDescriptionSheet(descriptionSheet, actualRow, this.sheetStyles, this.input.getCurrentColumnsInfo());
