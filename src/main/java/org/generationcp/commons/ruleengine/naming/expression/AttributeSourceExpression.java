@@ -15,11 +15,11 @@ public class AttributeSourceExpression extends AttributeExpression {
 	private GermplasmDataManager germplasmDataManager;
 
 	public static final String ATTRIBUTE_KEY = "ATTRSC";
-	public static final String PATTERN_KEY = "\\[" + ATTRIBUTE_KEY + "\\.([^\\.]*)\\]"; // Example: ATTRSC.NOTES
+	public static final String PATTERN_KEY = "\\[" + ATTRIBUTE_KEY + "\\.([^\\.]*)\\]"; // Example: ATTRSC.1010
 
 	@Override
 	public void apply(final List<StringBuilder> values, final AdvancingSource source, final String capturedText) {
-		for (StringBuilder value : values) {
+		for (final StringBuilder value : values) {
 			String newValue = "";
 			final Integer variableId = Integer.valueOf(capturedText.substring(1, capturedText.length() - 1).split("\\.")[1]);
 			if (source.getBreedingMethod().getMtype().equals(AppConstants.METHOD_TYPE_DER.getString())
