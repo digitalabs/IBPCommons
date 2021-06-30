@@ -1,7 +1,5 @@
 package org.generationcp.commons.workbook.generator;
 
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -13,18 +11,21 @@ import org.generationcp.middleware.domain.gms.GermplasmListNewColumnsInfo;
 import org.generationcp.middleware.domain.gms.ListDataColumnValues;
 import org.generationcp.middleware.interfaces.GermplasmExportSource;
 
-public abstract class GermplasmAddedColumnExporter<SOURCE> {
-	
+import java.util.List;
+
+public abstract class GermplasmAddedColumnExporter<S> {
+
 	protected ExcelCellStyleBuilder sheetStyles;
 	protected GermplasmListNewColumnsInfo columnsInfo;
-	
-	public Integer addRowsToDescriptionSheet(final HSSFSheet descriptionSheet, Integer startingRow, final ExcelCellStyleBuilder sheetStyles, final GermplasmListNewColumnsInfo columnsInfo) {
+
+	public Integer addRowsToDescriptionSheet(final HSSFSheet descriptionSheet, Integer startingRow, final ExcelCellStyleBuilder sheetStyles,
+		final GermplasmListNewColumnsInfo columnsInfo) {
 		this.sheetStyles = sheetStyles;
 		this.columnsInfo = columnsInfo;
-		final List<SOURCE> items = this.getSourceItems();
+		final List<S> items = this.getSourceItems();
 		final CellStyle labelStyle = this.getLabelStyle();
 		final CellStyle dataStyle = this.getDataStyle();
-		for (final SOURCE source : items) {
+		for (final S source : items) {
 			final ExcelWorkbookRow itemRow = new ExcelWorkbookRow(descriptionSheet.createRow(++startingRow));
 			itemRow.createCell(0, labelStyle, this.getName(source));
 			itemRow.createCell(1, dataStyle, this.getDescription(source));
@@ -37,69 +38,65 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 		}
 		return startingRow;
 	}
-	
-	public Integer generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex){
+
+	public Integer generateAddedColumnValue(final HSSFRow row, final GermplasmExportSource data, final Integer startingColumnIndex) {
 		Integer columnIndex = startingColumnIndex;
 		if (this.columnsInfo != null && !this.columnsInfo.getColumns().isEmpty()) {
-			for(final String column : this.columnsInfo.getColumns()) {
+			for (final String column : this.columnsInfo.getColumns()) {
 				if (this.doIncludeColumn(column)) {
 					final List<ListDataColumnValues> columnValues = this.columnsInfo.getColumnValuesMap().get(column);
 					final ListDataColumnValues listDataColumnValues =
-							(ListDataColumnValues) CollectionUtils.find(columnValues, new org.apache.commons.collections.Predicate() {
-								
-								public boolean evaluate(final Object object) {
-									return ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId());
-								}
-							});
+						(ListDataColumnValues) CollectionUtils.find(columnValues,
+							object -> ((ListDataColumnValues) object).getListDataId().equals(data.getListDataId()));
 					final String value = (listDataColumnValues != null ? listDataColumnValues.getValue() : "");
 					row.createCell(columnIndex).setCellValue(value);
 					columnIndex++;
 				}
 			}
 		}
-		return  columnIndex;
+		return columnIndex;
 	}
 
-	public Integer generateAddedColumnHeader(final HSSFRow headerRow, final Integer startingColumnIndex){
+	public Integer generateAddedColumnHeader(final HSSFRow headerRow, final Integer startingColumnIndex) {
 		Integer columnIndex = startingColumnIndex;
 		if (this.columnsInfo != null && !this.columnsInfo.getColumns().isEmpty()) {
-			final List<SOURCE> items = this.getSourceItems();
-			for (final SOURCE source : items) {
+			final List<S> items = this.getSourceItems();
+			for (final S source : items) {
 				final Cell entryTypeCell = headerRow.createCell(columnIndex);
 				entryTypeCell.setCellValue(this.getName(source));
 				entryTypeCell.setCellStyle(this.sheetStyles.getCellStyle(ExcelCellStyleBuilder.ExcelCellStyle.HEADING_STYLE_FACTOR));
 				columnIndex++;
 			}
 		}
-		return  columnIndex;
+		return columnIndex;
 	}
-	
-	public Boolean hasItems(){
+
+	public Boolean hasItems() {
 		return !this.getSourceItems().isEmpty();
 	}
-	
-	abstract List<SOURCE> getSourceItems();
-	
+
+	abstract List<S> getSourceItems();
+
 	abstract CellStyle getLabelStyle();
-	
+
 	abstract CellStyle getDataStyle();
-	
-	abstract String getName(SOURCE source);
-	
-	abstract String getDescription(SOURCE source);
-	
-	abstract String getProperty(SOURCE source);
-	
-	abstract String getScale(SOURCE source);
-	
-	abstract String getMethod(SOURCE source);
-	
-	abstract String getValue(SOURCE source);
-	
-	abstract String getDatatype(SOURCE source);
-	
-	abstract String getComments(SOURCE source);
-	
+
+	abstract String getName(S source);
+
+	abstract String getDescription(S source);
+
+	abstract String getProperty(S source);
+
+	abstract String getScale(S source);
+
+	abstract String getMethod(S source);
+
+	abstract String getValue(S source);
+
+	abstract String getDatatype(S source);
+
+	abstract String getComments(S source);
+
 	abstract Boolean doIncludeColumn(String column);
 
 	public void setSheetStyles(final ExcelCellStyleBuilder sheetStyles) {
@@ -107,7 +104,7 @@ public abstract class GermplasmAddedColumnExporter<SOURCE> {
 	}
 
 	public void setColumnsInfo(final GermplasmListNewColumnsInfo columnsInfo) {
-		this.columnsInfo =  columnsInfo;
+		this.columnsInfo = columnsInfo;
 	}
 
 }
