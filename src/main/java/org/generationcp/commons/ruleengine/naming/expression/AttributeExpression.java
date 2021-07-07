@@ -1,8 +1,7 @@
 package org.generationcp.commons.ruleengine.naming.expression;
 
-import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.constant.AppConstants;
-import org.generationcp.commons.ruleengine.naming.expression.Expression;
+import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.pojos.Method;
 
 public abstract class AttributeExpression implements Expression {
@@ -25,9 +24,9 @@ public abstract class AttributeExpression implements Expression {
 
 	}
 
-	protected void replaceAttributeExpressionWithValue(final StringBuilder container, final String attributeKey, final String attributeName,
+	protected void replaceAttributeExpressionWithValue(final StringBuilder container, final String attributeKey, final Integer variableId,
 			final String value) {
-		final String key = "[" + attributeKey + "." + attributeName + "]";
+		final String key = "[" + attributeKey + "." + variableId + "]";
 		int start = container.indexOf(key, 0);
 		while (start > -1) {
 			int end = start + key.length();

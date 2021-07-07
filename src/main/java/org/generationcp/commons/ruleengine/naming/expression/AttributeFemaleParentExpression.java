@@ -1,7 +1,7 @@
 package org.generationcp.commons.ruleengine.naming.expression;
 
-import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.constant.AppConstants;
+import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Germplasm;
 import org.generationcp.middleware.pojos.Method;
@@ -13,7 +13,7 @@ import java.util.List;
 @Component
 public class AttributeFemaleParentExpression extends AttributeExpression {
 
-	// Example: ATTRFP.NOTES
+	// Example: ATTRFP.2000
 	public static final String ATTRIBUTE_KEY = "ATTRFP";
 	public static final String PATTERN_KEY = "\\[" + ATTRIBUTE_KEY + "\\.([^\\.]*)\\]";
 
@@ -37,11 +37,11 @@ public class AttributeFemaleParentExpression extends AttributeExpression {
 
 		}
 
-		final String attributeName = capturedText.substring(1, capturedText.length() - 1).split("\\.")[1];
-		final String attributeValue = germplasmDataManager.getAttributeValue(gpid1, attributeName);
+		final Integer variableId = Integer.valueOf(capturedText.substring(1, capturedText.length() - 1).split("\\.")[1]);
+		final String attributeValue = germplasmDataManager.getAttributeValue(gpid1, variableId);
 
 		for (final StringBuilder value : values) {
-			replaceAttributeExpressionWithValue(value, ATTRIBUTE_KEY, attributeName, attributeValue);
+			replaceAttributeExpressionWithValue(value, ATTRIBUTE_KEY, variableId, attributeValue);
 		}
 	}
 

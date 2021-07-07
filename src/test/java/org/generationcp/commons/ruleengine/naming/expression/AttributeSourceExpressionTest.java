@@ -1,7 +1,7 @@
 package org.generationcp.commons.ruleengine.naming.expression;
 
-import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.commons.parsing.pojo.ImportedGermplasm;
+import org.generationcp.commons.pojo.AdvancingSource;
 import org.generationcp.middleware.manager.api.GermplasmDataManager;
 import org.generationcp.middleware.pojos.Method;
 import org.junit.Test;
@@ -27,16 +27,16 @@ public class AttributeSourceExpressionTest extends TestExpression {
 	@InjectMocks
 	AttributeSourceExpression expression = new AttributeSourceExpression();
 
-	private static final String ATTRIBUTE_NAME = "IBP_BMS";
+	private static final Integer VARIABLE_ID = 2000;
 
-	private static final String PREFIX = "[ATTRSC.IBP_BMS]";
+	private static final String PREFIX = "[ATTRSC.2000]";
 
 	private static final String COUNT = "[SEQUENCE]";
 
 
 	@Test
 	public void testAttributeAsPrefix() throws Exception {
-		Mockito.when(germplasmDataManager.getAttributeValue(1000, ATTRIBUTE_NAME)).thenReturn("AA");
+		Mockito.when(germplasmDataManager.getAttributeValue(1000, VARIABLE_ID)).thenReturn("AA");
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 			this.createImportedGermplasm(1, "(AA/ABC)", "1000", 104, 104, -1, derivativeMethod.getMid());
@@ -50,7 +50,7 @@ public class AttributeSourceExpressionTest extends TestExpression {
 
 	@Test
 	public void testAttributeAsPrefixMultipleCopies() throws Exception {
-		Mockito.when(germplasmDataManager.getAttributeValue(1000, ATTRIBUTE_NAME)).thenReturn("AA");
+		Mockito.when(germplasmDataManager.getAttributeValue(1000, VARIABLE_ID)).thenReturn("AA");
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX + PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 			this.createImportedGermplasm(1, "(AA/ABC)", "1000", 104, 104, -1, derivativeMethod.getMid());
@@ -64,7 +64,7 @@ public class AttributeSourceExpressionTest extends TestExpression {
 
 	@Test
 	public void testAttributeAsPrefixWithOutAttributeValue() throws Exception {
-		Mockito.when(germplasmDataManager.getAttributeValue(1000, ATTRIBUTE_NAME)).thenReturn("");
+		Mockito.when(germplasmDataManager.getAttributeValue(1000, VARIABLE_ID)).thenReturn("");
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 			this.createImportedGermplasm(1, "(AA/ABC)", "1000", 104, 104, -1, derivativeMethod.getMid());
@@ -79,7 +79,7 @@ public class AttributeSourceExpressionTest extends TestExpression {
 	@Test
 	public void testAttributeAsPrefixGpid2Unknown() throws Exception {
 
-		Mockito.when(germplasmDataManager.getAttributeValue(1000, ATTRIBUTE_NAME)).thenReturn("AA");
+		Mockito.when(germplasmDataManager.getAttributeValue(1000, VARIABLE_ID)).thenReturn("AA");
 		final Method derivativeMethod = this.createDerivativeMethod(PREFIX, COUNT, null, "-", true);
 		final ImportedGermplasm importedGermplasm =
 			this.createImportedGermplasm(1, "(AA/ABC)", "1000", 0, 0, -1, derivativeMethod.getMid());

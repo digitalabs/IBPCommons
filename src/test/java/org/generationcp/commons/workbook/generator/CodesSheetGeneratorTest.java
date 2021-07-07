@@ -34,12 +34,6 @@ public class CodesSheetGeneratorTest {
 	@Mock
 	CodesSheetInventoryScalesRowGenerator inventoryScalesRowGenerator;
 
-	@Mock
-	CodesSheetAttributeTypesRowGenerator attributeTypesRowGenerator;
-
-	@Mock
-	CodesSheetPassportAttributeTypesRowGenerator passportAttributeTypesRowGenerator;
-
 	@InjectMocks
 	private CodesSheetGenerator codesSheetGenerator;
 
